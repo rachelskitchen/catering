@@ -599,7 +599,7 @@ define(["backbone", "async"], function(Backbone) {
                                 } else { // app accessed directly from browser (bug #17548)
                                     self.set({
                                         'isMaintenance': true,
-                                        'maintenanceMessage': ERROR[MAINTENANCE.PAYMENT_OPTION]
+                                        'maintenanceMessage': MAINTENANCE.PAYMENT_OPTION
                                     });
                                 }
                             }
@@ -610,23 +610,13 @@ define(["backbone", "async"], function(Backbone) {
                                 } else { // app accessed directly from browser (bug #17552)
                                     self.set({
                                         'isMaintenance': true,
-                                        'maintenanceMessage': ERROR[MAINTENANCE.DINING_OPTION]
+                                        'maintenanceMessage': MAINTENANCE.DINING_OPTION
                                     });
                                 }
                             }
 
                             break;
-                        // DISALLOW_ONLINE status doesn't use now. Instead we get 404 HTTP-status now from a backend.
-                        /*
-                        case 'DISALLOW_ONLINE':
-                            recoverColorScheme();
-                            console.log('online and app orders unchecked');
-                            self.set({
-                                'isMaintenance': true,
-                                'maintenanceMessage': ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
-                            });
-                            break;
-                        */
+
                         default:
                             App.Data.errors.alert(response.errorMsg, true, false, {
                                 errorServer: true,
@@ -643,7 +633,7 @@ define(["backbone", "async"], function(Backbone) {
                     self.set({
                         settings_system: settings_system, // default settings
                         isMaintenance: true,
-                        maintenanceMessage: ERROR[MAINTENANCE.BACKEND_CONFIGURATION]
+                        maintenanceMessage: MAINTENANCE.BACKEND_CONFIGURATION
                     });
                 },
                 complete: function() {

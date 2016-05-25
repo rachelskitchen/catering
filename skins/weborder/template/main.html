@@ -63,14 +63,19 @@
 </script>
 
 <script type="text/template" id="main_maintenance-template">
-    <section class="maintenance">
-        <header id="header"> <div class="btn back" tabindex="0"> <span class="clip"> <%= _lp.MAIN_BACK %> </span> </div> </header>
-        <div id="content" class="text-center primary-border">
-            <p> <%= errMsg %> </p>
+    <div class="back primary-text link">&lang;&nbsp;<%= _lp.MAIN_BACK %></div>
+    <div id="content" class="text-center primary-border vertical-align">
+        <div class="box">
+            <p class="msg"><%= errMsg %></p>
             <div class="btn reload" tabindex="0"><span><%= _lp.MAIN_RESTART %></span></div>
         </div>
-    </section>
-    <footer class="primary-border">
+    </div>
+    <footer id="footer" class="primary-border">
+        <div class="store_choice fl-left">
+            <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
+            <a class="change_establishment link primary-text" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
+        </div>
+        <a class="powered-by link primary-text fl-right" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
 </script>
 

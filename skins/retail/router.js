@@ -68,7 +68,7 @@ define(["main_router"], function(main_router) {
                 if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) == -1) {
                     App.Data.settings.set({
                         'isMaintenance': true,
-                        'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
+                        'maintenanceMessage': MAINTENANCE.ORDER_TYPE
                     });
                 } else {
                     settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_SHIPPING';
@@ -773,7 +773,7 @@ define(["main_router"], function(main_router) {
             if (settings.get('isMaintenance')) {
                 App.Data.mainModel.set({
                     mod: 'Maintenance',
-                    errMsg: settings.get('maintenanceMessage')
+                    errMsg: ERROR[settings.get('maintenanceMessage')]
                 });
             }
             this.change_page();
