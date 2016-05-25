@@ -112,7 +112,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             var model = this.options.customer.toJSON(),
                 defaultAddress = App.Settings.address,
-                address = this.options.customer.getCheckoutAddress();
+                address = this.options.customer.get('addresses').getCheckoutAddress();
             var country = address && address.country ? address.country : defaultAddress.country;
             var state = country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
             if (!this.model.get('country_code')) {

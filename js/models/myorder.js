@@ -1988,7 +1988,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             isShipping = checkout.dining_option === 'DINING_OPTION_SHIPPING' && customer
                 && (shipping_address = this.getCustomerAddress())
-                && !customer._check_delivery_fields().length;
+                && !customer.get('addresses')._check_delivery_fields().length;
 
             if(isShipping) {
                 order_info.shipping = customer.get('shipping_services')[customer.get('shipping_selected')] || {};
