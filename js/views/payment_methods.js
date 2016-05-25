@@ -23,11 +23,14 @@
 define(["factory"], function(factory) {
     'use strict';
 
-    var PaymentsMain = App.Views.FactoryView.extend({
-        name: 'payments',
+    var PaymentMethodsMain = App.Views.FactoryView.extend({
+        name: 'payment_methods',
         mod: 'main',
         events: {
             'click .payment': 'selectPayment'
+        },
+        onEnterListeners: {
+            '.payment': 'selectPayment'
         },
         bindings: {
             '.cash': 'text: cash',
@@ -71,7 +74,7 @@ define(["factory"], function(factory) {
     });
 
     return new factory(function() {
-        App.Views.PaymentsView = {};
-        App.Views.PaymentsView.PaymentsMainView = PaymentsMain;
+        App.Views.PaymentMethodsView = {};
+        App.Views.PaymentMethodsView.PaymentMethodsMainView = PaymentMethodsMain;
     });
 });

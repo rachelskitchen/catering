@@ -23,6 +23,103 @@
  define(["rewards_view"], function(rewards_view) {
     'use strict';
 
+    var ItemView = App.Views.CoreRewardsView.CoreRewardsItemView.extend({
+        bindings: {
+            ':el': 'classes: {disabled: disabled, animation: true}',
+            '.checkbox': 'classes: {checked: selected}',
+            '.points': 'classes: {"optional-text": not(selected), "attention-text": selected, selected: selected}'
+        }
+    });
+
+    var ItemRewardsView = ItemView.extend({
+        bindings: {
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_ITEM_POINTS)'
+        }
+    });
+
+    var VisitRewardsView = ItemView.extend({
+        bindings: {
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_VISIT_POINTS)'
+        }
+    });
+
+    var PurchaseRewardsView = ItemView.extend({
+        bindings: {
+            '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_PURCHASE_POINTS)'
+        }
+    });
+
+    var RewardsInfoView = App.Views.FactoryView.extend({
+        name: 'rewards',
+        mod: 'info',
+        bindings: {
+            '.rewards-number': 'text: number',
+            '.total-points': 'text: balance_points',
+            '.total-visits': 'text: balance_visits',
+            '.total-purchases': 'text: currencyFormat(balance_purchases)',
+            '.item-rewards-box': 'classes: {hide: not(length($itemRewards))}',
+            '.item-rewards': 'collection: $itemRewards, itemView: "itemRewards"',
+            '.visit-rewards-box': 'classes: {hide: not(length($visitRewards))}',
+            '.visit-rewards': 'collection: $visitRewards, itemView: "visitRewards"',
+            '.purchase-rewards-box': 'classes: {hide: not(length($purchaseRewards))}',
+            '.purchase-rewards': 'collection: $purchaseRewards, itemView: "purchaseRewards"',
+            '.rewards-unavailable': 'toggle: not(length(rewards))',
+            '.total-row-points': 'classes: {hide: isNull(balance_points)}',
+            '.total-row-visits': 'classes: {hide: isNull(balance_visits)}',
+            '.total-row-purchase': 'classes: {hide: isNull(balance_purchases)}',
+            '.apply-reward': 'classes: {disabled: not(length(discounts))}'
+        },
+        events: {
+            'click .apply-reward': 'apply'
+        },
+        onEnterListeners: {
+            '.apply-reward': 'apply'
+        },
+        bindingSources: {
+            itemRewards: function() {
+                return new Backbone.Collection();
+            },
+            visitRewards: function() {
+                return new Backbone.Collection();
+            },
+            purchaseRewards: function() {
+                return new Backbone.Collection();
+            }
+        },
+        bindingFilters: {
+            isNull: function(value) {
+                return value === null;
+            }
+        },
+        itemRewards: ItemRewardsView,
+        visitRewards: VisitRewardsView,
+        purchaseRewards: PurchaseRewardsView,
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'onResetData', this.remove);
+            this.listenTo(this.model.get('rewards'), 'add remove', function() {
+                this.setItemRewards();
+                this.setVisitsRewards();
+                this.setPurchaseRewards();
+            });
+            this.setItemRewards();
+            this.setVisitsRewards();
+            this.setPurchaseRewards();
+        },
+        apply: function() {
+            this.model.trigger('onRedemptionApplied');
+        },
+        setItemRewards: function() {
+            this.getBinding('$itemRewards').reset(this.model.get('rewards').where({type: 1}));
+        },
+        setVisitsRewards: function() {
+            this.getBinding('$visitRewards').reset(this.model.get('rewards').where({type: 2}));
+        },
+        setPurchaseRewards: function() {
+            this.getBinding('$purchaseRewards').reset(this.model.get('rewards').where({type: 0}));
+        }
+    });
+
     var RewardsCardView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
         bindings: {
             '.reward_card_number': 'classes: {disabled: length(customer_rewardCards)}',
@@ -31,6 +128,7 @@
     });
 
     return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
+        App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
         App.Views.RewardsView.RewardsCardView = RewardsCardView;
     });
 });

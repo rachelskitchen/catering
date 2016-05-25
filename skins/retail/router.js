@@ -681,6 +681,8 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('map', function() {
+                var stores = this.getStoresForMap();
+
                 App.Data.header.set('menu_index', 2);
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
@@ -688,6 +690,7 @@ define(["main_router"], function(main_router) {
                     content: {
                         modelName: 'StoreInfo',
                         model: App.Data.timetables,
+                        collection: stores,
                         mod: 'Map',
                         className: 'map'
                     },
@@ -695,6 +698,11 @@ define(["main_router"], function(main_router) {
                 });
 
                 this.change_page();
+
+                if (stores.request.state() == 'pending') {
+                    App.Data.mainModel.trigger('loadStarted');
+                    stores.request.then(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
+                }
             });
         },
         checkout: function() {

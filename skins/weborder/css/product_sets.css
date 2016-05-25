@@ -1,180 +1,37 @@
-
-#modifiers_popup .customize {
-    text-decoration: underline;
+.combo_item {
+    padding: 10px 0 10px 14px;
 }
 
-.modifiers_table .combo_item .customize.link1 {
-    font-size: 15px;
-}
-#modifiers_popup .product_info .customize.link {
-    font-size: 20px;
-    margin: 1px 30px 0 0;
-}
-
-#modifiers_popup .myorder_actions {
-    position: absolute;
-    left: 410px;
-    right: 5px;
-    bottom: 0;
-    height: 70px;
-    line-height: 70px;
-    text-align: right;
-    font-size: 0;
-}
-#modifiers_popup .myorder_actions div {
-    display: inline-block;
-    margin-right: 15px;
-    margin-bottom: -18px;
-    line-height: 1.25;
-    vertical-align: middle;
-}
-#modifiers_popup .myorder_actions .no_combo_link {
-    font-size: 18px;
-}
-#modifiers_popup .myorder_actions .action_button {
-    position: static;
-    margin-top: 0;
-}
-
-.modifiers_table .combo_item {
-    width: 410px;
-    float: left;
-    word-break: break-all;
-    margin: 0 45px 15px 0;
+.combo_item .title {
     cursor: pointer;
-    min-height: 30px;
 }
 
-.modifiers_table .combo_item .input {
-    height: 21px;
-    width: 21px;
-    min-width: 21px;
-    border-radius: 4px;
-    margin-right: 3px;
+.combo_item .input {
+    border-radius: 0;
+    padding: 0;
+    cursor: pointer;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: content-box;
 }
 
-.modifiers_table .combo_item .no-controls .input {
-    opacity: 0.4;
-}
-
-.modifiers_table .combo_item .title {
-    line-height: 1.4em;
-    word-break: normal;
-    word-wrap: break-word;
-}
-
-.modifiers_table .combo_item .mdf_quantity {
+.combo_item .mdf_spacer {
     display: inline-block;
+    margin: 0 5px;
     vertical-align: middle;
-    font-size: 14px;
-    font-weight: bold;
-    margin-top: -2px;
-    height: 26px;
     position: relative;
 }
 
-.modifiers_table .combo_item .mdf_quantity select {
-    font-size: 14px;
-    font-weight: normal;
-    padding-right: 22px;
-    padding-left: 8px;
-    min-width: 45px;
-    max-width: 65px;
-    border: 1px solid transparent;
+.combo_item .mdf_quantity {
+    position: absolute;
+    top: -11px;
 }
 
-@media only screen and (max-device-width: 949px) {
-    .modifiers_table .combo_item .mdf_quantity select {
-        padding-left: 10px !important;
-        padding-right: 24px;
-    }
-}
-@media only screen and (min-width: 949px) {
-    .modifiers_table .combo_item {
-        width: 410px;
-        min-height: 45px;
-        margin-right: 25px; /* test it (45)*/
-        margin-bottom: 5px;
-    }
+.combo_item .customize {
+    margin: 0 10px;
 }
 
-@media only screen and (max-width: 949px) {
-    #modifiers_popup .myorder_actions div {
-        margin-bottom: 0;
-    }
-    #modifiers_popup .myorder_actions .no_combo_link {
-        position: absolute;
-        right: 5px;
-        bottom: 0;
-        white-space: nowrap;
-    }
-    #modifiers_popup .myorder_actions .action_button {
-        position: absolute;
-        right: 0;
-        bottom: auto;
-        top: 10px;
-    }
+.no_combo_link {
+    display: inline-block;
+    padding: 14px 0;
 }
-
-@media only screen and (min-width: 1440px) {
-    .modifiers_table .combo_item {
-        width: 420px;
-        margin-right: 90px;
-    }
-}
-
-@-moz-document url-prefix() {
-    .modifiers_table .combo_item .mdf_quantity select {
-        padding-left: 8px !important; /* sumsung tab fix, bug 25260 */
-        width: 65px; /* max-width is not working for FireFox select tags */
-    }
-}
-
-#modifiers_popup .product_set_list .combo_item_wrap {
-    cursor: pointer;
-    min-height: 30px;
-    display: -webkit-box;
-    display: -moz-box;
-    display: -ms-flexbox;
-    display: -webkit-flex;
-    display: flex;
-    justify-content: flex-start;
-}
-#modifiers_popup .product_set_list .combo_item_wrap.no-controls {
-    cursor: default;
-}
-#modifiers_popup .product_set_list .combo_item_wrap > div {
-	/*-webkit-flex: auto;
-    -moz-flex: auto;
-    -ms-flex: auto;
-    -o-flex: auto;
-    flex: none;*/
-    margin: 0 5px;
-}
-#modifiers_popup .product_set_list .combo_item .fade-out {
-	opacity: 0.5;
-}
-#modifiers_popup .product_set_list .combo_item .cost {
-    height: 32px;
-    margin-top: 2px;
-    -webkit-flex: 0 0 auto;
-}
-#modifiers_popup .product_set_list .combo_item .customize {
-    height: 32px;
-    margin-top: 1px;
-    margin-left: 7px;
-    -webkit-flex: 0 0 auto;
-}
-#modifiers_popup .product_set_list .combo_item .mdf_spacer {
-    height: 32px;
-    -webkit-flex: 0 0 auto;
-    flex: 0 0 auto;
-}
-#modifiers_popup .product_sets h2 {
-    text-shadow: none;
-}
-.modifiers_table .product_sets h2 {
-    font-size: 18px;
-}
-
-

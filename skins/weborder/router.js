@@ -27,11 +27,10 @@ define(["main_router"], function(main_router) {
         carts = {};
 
     /**
-    * Default router data.
-    */
+     * Default router data.
+     */
     function defaultRouterData() {
         headers.main = {mod: 'Main', className: 'main'};
-        headers.checkout = {mod: 'Checkout', className: 'checkout'};
         carts.main = {mod: 'Main', className: 'main'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
@@ -69,36 +68,28 @@ define(["main_router"], function(main_router) {
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
-                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
                     acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES
                 });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.search = new App.Collections.Search();
+                App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
-                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
-                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
                     model: mainModel,
                     headerModel: App.Data.header,
-                    cartCollection: App.Data.myorder
+                    cartCollection: App.Data.myorder,
+                    paymentMethods: App.Data.paymentMethods
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
-                // Once the route is initialized need to set profile panel
-                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
-
-                // init Stanford Card model if it's turned on
-                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
-                    App.Data.stanfordCard = new App.Models.StanfordCard();
-                }
+                // init payments handlers
+                !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
 
                 // listen to navigation control
                 this.navigationControl();
@@ -106,24 +97,122 @@ define(["main_router"], function(main_router) {
                 // run history tracking
                 this.triggerInitializedEvent();
             });
-//retail, weborder
-            this.listenTo(App.Data.myorder, "paymentInProcess", function() {
-                App.Data.mainModel.trigger('loadStarted');
-            }, this);
-//retail, weborder
-            this.listenTo(App.Data.myorder, "paymentInProcessValid", function() {
-                App.Data.mainModel.trigger('loadCompleted');
-            }, this);
-//retail, weborder
-            this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
-                App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message); // user notification
-            }, this);
 
             var checkout = App.Data.myorder.checkout;
                 checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        triggerInitializedEvent: function() {
+            App.Routers.RevelOrderingRouter.prototype.triggerInitializedEvent.apply(this, arguments);
+            App.Data.mainModel.set({customer: App.Data.customer});
+        },
+        initCustomer: function() {
+            App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+            // Once the customer is initialized need to set profile panel
+            this.initProfilePanel();
+        },
+        paymentsHandlers: function() {
+            var mainModel = App.Data.mainModel,
+                myorder = App.Data.myorder,
+                paymentCanceled = false;
+
+            this.listenTo(myorder, 'cancelPayment', function() {
+                paymentCanceled = true;
+            });
+
+            this.listenTo(myorder, "paymentFailed", function(message) {
+                mainModel.trigger('loadCompleted');
+                message && App.Data.errors.alert(message); // user notification
+            }, this);
+
+            // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithCreditCard', function() {
+                var customer = App.Data.customer,
+                    paymentProcessor = App.Data.settings.get_payment_process(),
+                    doPayWithToken = customer.doPayWithToken();
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken,
+                    card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
+                }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
+            }, this);
+
+            /* Gift Card */
+            this.initGiftCard();
+
+            // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithGiftCard', function() {
+                var customer = App.Data.customer,
+                    doPayWithGiftCard = customer.doPayWithGiftCard();
+                myorder.check_order({
+                    giftcard: !doPayWithGiftCard,
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true
+                }, function() {
+                    if (customer.isAuthorized() && !doPayWithGiftCard) {
+                        customer.linkGiftCard(App.Data.giftcard).done(function(data) {
+                            if (_.isObject(data) && data.status == 'OK') {
+                                customer.giftCards.ignoreSelected = false;
+                                sendRequest(PAYMENT_TYPE.GIFT);
+                            }
+                        });
+                    } else {
+                        sendRequest(PAYMENT_TYPE.GIFT);
+                    }
+                });
+            }, this);
+
+            /* Cash Card */
+            // invokes when user chooses the 'Cash' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithCash', function() {
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.NO_PAYMENT));
+            }, this);
+
+            /* PayPal */
+            // invokes when user chooses the 'PayPal' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithPayPal', function() {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.PAYPAL));
+            }, this);
+
+            /* Stanford Card */
+            if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
+                // init Stanford Card model if it's turned on
+                App.Data.stanfordCard = new App.Models.StanfordCard();
+
+                // invokes when user chooses the 'Stanford Card' payment processor
+                this.listenTo(App.Data.paymentMethods, 'payWithStanfordCard', function() {
+                    myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true,
+                    }, sendRequest.bind(window, PAYMENT_TYPE.STANFORD));
+                }, this);
+            }
+
+            function sendRequest(paymentType) {
+                saveAllData();
+                mainModel.trigger('loadStarted');
+                myorder.create_order_and_pay(paymentType);
+                paymentCanceled && mainModel.trigger('loadCompleted');
+                paymentCanceled = false;
+            }
         },
         /**
          * Navigate on #confirm when payment is completed.
@@ -273,7 +362,7 @@ define(["main_router"], function(main_router) {
                         modelName: 'Rewards',
                         mod: 'Info',
                         model: clone,
-                        className: 'rewards-info',
+                        className: 'rewards-info text-left',
                         collection: App.Data.myorder,
                         balance: clone.get('balance'),
                         rewards: clone.get('rewards'),
@@ -295,8 +384,8 @@ define(["main_router"], function(main_router) {
                     modelName: 'Rewards',
                     mod: 'Card',
                     model: rewardsCard,
-                    className: 'rewards-info',
-                    customer: customer
+                    customer: customer,
+                    className: 'rewards-info text-left'
                 });
             });
 
@@ -309,6 +398,13 @@ define(["main_router"], function(main_router) {
             // onResetData events occurs when user resets reward card
             this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
                 App.Data.myorder.get_cart_totals();
+            });
+
+            // when user clicks on any category need to hide search input
+            this.listenTo(App.Data.categories, 'show_subcategory', function() {
+                if (App.Data.searchLine) {
+                    App.Data.searchLine.set('collapsed', true);
+                }
             });
         },
         /**
@@ -435,12 +531,6 @@ define(["main_router"], function(main_router) {
 
             return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
         },
-        showPromoMessage: function() {
-            App.Data.mainModel.set('isShowPromoMessage', true);
-        },
-        hidePromoMessage: function() {
-            App.Data.mainModel.set('isShowPromoMessage', false);
-        },
         /**
         * Get a stores list.
         */
@@ -475,7 +565,10 @@ define(["main_router"], function(main_router) {
                 });
 
                 if (!App.Data.searchLine) {
-                    App.Data.searchLine = new App.Models.SearchLine({search: App.Data.search});
+                    App.Data.searchLine = new App.Models.SearchLine({
+                        search: App.Data.search,
+                        collapsed: true
+                    });
                 }
 
                 App.Data.header.set('tab_index', 0);
@@ -495,16 +588,10 @@ define(["main_router"], function(main_router) {
                             loaded: dfd
                         },
                         {
-                            modelName: 'SubCategories',
-                            collection: App.Data.categories,
-                            search: App.Data.search,
-                            mod: 'Select'
-                        },
-                        {
                             modelName: 'SearchLine',
                             model: App.Data.searchLine,
                             mod: 'Main',
-                            className: 'content search_line'
+                            className: 'content search_line primary-border animation'
                         },
                         {
                             modelName: 'Categories',
@@ -527,7 +614,7 @@ define(["main_router"], function(main_router) {
         about: function() {
             this.prepare('about', function() {
                 if (!App.Data.AboutModel) {
-                    App.Data.AboutModel = new App.Models.AboutModel();
+                    App.Data.aboutModel = new App.Models.AboutModel();
                 }
                 App.Data.header.set('tab_index', 1);
                 App.Data.mainModel.set('mod', 'Main');
@@ -535,9 +622,10 @@ define(["main_router"], function(main_router) {
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.AboutModel,
-                        mod: 'About',
-                        className: 'about'
+                        model: App.Data.timetables,
+                        mod: 'Main',
+                        about: App.Data.aboutModel,
+                        className: 'store-info about-box'
                     },
                     cart: carts.main
                 });
@@ -546,20 +634,27 @@ define(["main_router"], function(main_router) {
         },
         map: function() {
             this.prepare('map', function() {
+                var stores = this.getStoresForMap();
+
                 App.Data.header.set('tab_index', 2);
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.timetables,
                         mod: 'Map',
-                        className: 'map'
+                        collection: stores,
+                        className: 'store-info map-box'
                     },
                     cart: carts.main
                 });
 
                 this.change_page();
+
+                if (stores.request.state() == 'pending') {
+                    App.Data.mainModel.trigger('loadStarted');
+                    stores.request.then(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
+                }
             });
         },
         checkout: function() {
@@ -573,9 +668,9 @@ define(["main_router"], function(main_router) {
                     App.Data.card = new App.Models.Card;
                 }
 
-                this.initGiftCard();
+                var settings = App.Settings;
 
-                var settings = App.Data.settings.get('settings_system');
+                App.Data.header.set('tab_index', null);
 
                 if (!App.Data.customer.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
@@ -584,21 +679,30 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
-                    header: headers.checkout,
+                    header: headers.main,
                     cart: carts.checkout,
                     content: {
                         modelName: 'Checkout',
                         collection: App.Data.myorder,
                         mod: 'Page',
-                        className: 'checkout',
+                        className: 'checkout-order-details',
                         DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
                         noteAllow:  settings.order_notes_allow,
-                        discountAvailable: settings.accept_discount_code
+                        discountAvailable: settings.accept_discount_code,
+                        checkout: App.Data.myorder.checkout,
+                        paymentMethods: App.Data.paymentMethods,
+                        enableRewardCard: settings.enable_reward_cards_collecting,
+                        card: App.Data.card,
+                        giftcard: App.Data.giftcard,
+                        stanfordcard: App.Data.stanfordCard,
+                        promises: this.getProfilePaymentsPromises.bind(this),
+                        needShowBillingAddess: PaymentProcessor.isBillingAddressCard()
                     }
                 });
+
                 this.change_page();
             });
         },
@@ -618,8 +722,24 @@ define(["main_router"], function(main_router) {
                 if(!App.Data.customer) {
                     this.loadCustomer();
                 }
+
+                var other_dining_options = App.Data.myorder.checkout.get('other_dining_options');
+
+                App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
-                    mod: 'Done'
+                    mod: 'Main',
+                    header: headers.main,
+                    cart: carts.checkout,
+                    content: {
+                        modelName: 'Main',
+                        mod: 'Done',
+                        model: App.Data.mainModel,
+                        customer: App.Data.customer,
+                        checkout: App.Data.myorder.checkout,
+                        other_options: other_dining_options || new Backbone.Collection(),
+                        className: 'main-done',
+                        noCache: true
+                    }
                 });
                 this.change_page();
             });
@@ -636,7 +756,13 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            this.setProfileEditContent();
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+            this.setProfileEditContent(true);
             this.change_page();
         },
         promotions_list: function() {
@@ -650,7 +776,14 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_payments: function() {
-            var promises = this.setProfilePaymentsContent();
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var promises = this.setProfilePaymentsContent(true);
 
             if (!promises.length) {
                 return this.navigate('index', true);

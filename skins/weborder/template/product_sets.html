@@ -1,15 +1,15 @@
 <script type="text/template" id="combo_item-template">
   <div class = "combo_item_wrap <% if(!_settings.online_orders) {print('no-controls');} %>">
-    <div type="checkbox" class="input checkbox" id="product<%= id_product %>"></div>
-    <div class="name"><%= name %></div>
-    <div class="customize link link1"><%= _lp.COMBO_CUSTOMIZE %></div>
-    <div class="cost">
-            <span class="plus">+</span><span class="price"></span>
+    <div class="cost fl-right special-text">
+        <span class="plus">+</span><span class="price"></span>
     </div>
+    <div class="customize link fl-right primary-text"><%= _lp.COMBO_CUSTOMIZE %></div>
+    <div type="checkbox" class="input checkbox primary-border" id="product<%= id_product %>"></div>
+    <div class="title"><%= name %></div>
     <% if (!sold_by_weight && !is_gift) { %>
     <div class="mdf_spacer">
-        <span class='mdf_quantity select-wrapper' style="display:none;">
-            <select></select>
+        <span class='mdf_quantity select-wrapper primary-text' style="display:none;">
+            <select class="regular-text"></select>
         </span>
     </div>
      <% } %>
@@ -18,25 +18,23 @@
 
 <script type="text/template" id="combo_list-template">
     <ul class="product_set_list modifiers-list"></ul>
-    <div class='clear'></div>
 </script>
 
 <script type="text/template" id="product_sets_item-template">
     <div class='modifiers_classes_title'>
-        <%= name %>
+        <h3 class="title header-text"><%= name %></h3>
         <% if (_settings.online_orders) { %>
-            <div class='modifiers_classes_subtitle'>
             <% if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
-                <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
+                <div class='modifiers_classes_subtitle special-text'>
+                (<%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>)
+                </div>
             <% } %>
-            </div>
         <% } %>
     </div>
-    <div class="modifier_class_list">
-    </div>
+    <div class="modifier_class_list"></div>
 </script>
 
 <script type="text/template" id="product_sets_list-template">
-    <h2> <%= _lp.PRODUCT_SETS_SELECT_1 %><%= combo_name %><%= _lp.PRODUCT_SETS_SELECT_2 %>:</h2>
-    <div class="modifier_classes"></div>
+    <div class="special-text"><%= _lp.PRODUCT_SETS_SELECT_1 %><%= combo_name %><%= _lp.PRODUCT_SETS_SELECT_2 %>:</div>
+    <div class="modifier_classes primary-border"></div>
 </script>

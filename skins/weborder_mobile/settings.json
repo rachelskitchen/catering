@@ -7,10 +7,10 @@
     "routing": {
         "main": {
             "css": [ "main", "header", "footer", "jquery.smartbanner", "profile", "card"],
-            "model": ["main", "header", "payments", "footer"],
+            "model": ["main", "header", "footer"],
             "templates": ["main", "header", "footer", "profile"],
             "views": ["main", "header", "products", "footer", "profile"],
-            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "payments", "rewards", "rewards_view"],
+            "core": ["geopoint", "stanfordcard", "giftcard", "customers", "payments", "rewards", "rewards_view", "payment_methods"],
             "js" : ["jquery.smartbanner"]
         },
         "index": {
@@ -69,8 +69,9 @@
         },
         "payments": {
             "css": ["payments"],
-            "views": ["checkout", "payments"],
-            "templates": ["checkout", "payments"]
+            "views": ["checkout"],
+            "templates": ["checkout", "payment_methods"],
+            "core": ["payment_methods_view"]
         },
         "card": {
             "css": ["card"],

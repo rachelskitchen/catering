@@ -1,23 +1,16 @@
 <script type="text/template" id="giftcard_main-template">
-    <div class="card_title"> <%= _lp.GIFTCARD_TITLE %> </div>
-    <div>
-        <label for="cardNumber"> <span class="bold required"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="cardNumber" class="number number-input" value="<%= cardNumber %>" min="0">
-        </div>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+        <input type="text" class="number number-input input size2" min="0">
     </div>
-    <div>
-        <label for="cardNumber"> <span class="bold required"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
-        <div class="input_beauty">
-            <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-            <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" class="captcha-input">
-        </div>
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.GIFTCARD_CAPTCHA %></div>
+        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
+        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" class="captcha-input input size3">
     </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="btn btn-reload" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
+    <div class="item captcha_wrap">
+        <img class="captcha img">
+        <div class="captcha-spinner"></div>
     </div>
+    <span class="btn-reload link primary-text" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></span>
 </script>

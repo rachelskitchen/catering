@@ -60,27 +60,18 @@ define(["myorder_view"], function(myorder_view) {
                 return;
             }
             if (e || prev_popup_height !== popup_height || prev_window_height !== window_heigth) {
-                var el = this.$('.modifiers_table_scroll'),
-                    popup_wrapper_height,
-                    product = this.$('.product_info').outerHeight(),
-                    special = this.$('.instruction_block').outerHeight(),
-                    size = this.$('.quantity_info').outerHeight(),
+                var el = this.$('.modifiers_table'),
+                    product = this.$('.product_info').outerHeight(true),
+                    footer = this.$('.product_info_footer').outerHeight(true),
                     prev_el_scroll = el.get(0).scrollTop;
 
-                el.height('auto');
-                popup_height = $('#popup').outerHeight();
-                popup_wrapper_height = $('.popup_wrapper').height();
+                el.css('max-height', (popup_height - product - footer) + 'px');
 
-                if (popup_wrapper_height < popup_height) {
-                    var height = popup_wrapper_height - product - special - size - 117;
-                    el.height(height);
-                    // Bug 37299. Handle scrollTop update here instead of inside $.contentarrow
-                    if (prev_el_scroll > 0) {
-                        el.get(0).scrollTop = prev_el_scroll;
-                    }
+                // Bug 37299. Handle scrollTop update here instead of inside $.contentarrow
+                if (prev_el_scroll > 0) {
+                    el.get(0).scrollTop = prev_el_scroll;
                 }
 
-                popup_height = $('#popup').outerHeight();
                 this.prev_popup_height = popup_height;
                 this.prev_window_height = window_heigth;
 
@@ -151,6 +142,22 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
+
+            var view = App.Views.GeneratorView.create('Product', {
+                el: this.$('.product_price'),
+                model: this.model,
+                mod: 'Price'
+            });
+
+            this.subViews.push(view);
+
+            return this;
+        }
+    });
+
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
@@ -158,5 +165,6 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderItemComboView = MyOrderItemComboView;
         App.Views.MyOrderView.MyOrderItemUpsellView = MyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
+        App.Views.MyOrderView.MyOrderMatrixFooterView = MyOrderMatrixFooterView;
     });
 });

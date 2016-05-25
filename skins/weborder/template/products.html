@@ -3,79 +3,57 @@
 </script>
 
 <script type="text/template" id="product_list_item-template">
-    <dl class="product_list_item s<%= price_length %>">
-        <dt class="name">
-            <% if(!show_product_description && !hide_images) { %>
-            <div class="product_image">
-                <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
-            </div>
-            <% } %>
-            <%= name %>
-        </dt>
-        <dd class="description <% if(sold_by_weight && uom) {print('uom' + (uom.length >= 8 ? 8 : uom.length))} %>">
-        <% if(show_product_description) { %>
-            <% if(!hide_images) { %>
-            <div class="product_image">
-                <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
-            </div>
-            <% } %>
-            <%= description %>
+    <div class="product_list_item primary-border s<%= price_length %>">
+        <% if(!hide_images) { %>
+        <div class="product_image text-center fl-left">
+            <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" class="img <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('safaris'); %>">
+        </div>
         <% } %>
-        </dd>
-        <dt class="hide"> <%= _lp.PRODUCTS_PRICE %> </dt>
-        <dd class='cost_block'>
-            <div class='cost'>
-                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
-            </div>
+        <div class="price-box fl-right text-right">
+            <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
             <% if(sold_by_weight && uom) { %>
             <div class="uom">/ <%= uom %></div>
             <% } %>
-        </dd>
-    </dl>
+        </div>
+        <h3 class="name"><%= name %></h3>
+        <% if(show_product_description) { %>
+        <p class="description"><%= description %></p>
+        <% } %>
+    </div>
 </script>
 
 <script type="text/template" id="product_modifiers-template">
     <% if(!hide_images) { %>
-        <div class='img_wrapper'>
-            <img class="block_img img" src="<%=image%>" alt="<%= name %> <%= id %> " />
+        <div class='img_wrapper fl-left'>
+            <img class="img" src="<%=image%>" alt="<%= name %> <%= id %> " />
         </div>
     <% } %>
-    <dl>
-        <dt class='title'>
-            <span class="name"><%= name %></span>
-            <span class="customize link link1 hide"><%= _lp.COMBO_CUSTOMIZE %></span>
-            <span class="cost">
-                <% if (is_gift && not_size && _settings.online_orders) { %>
-                    <span class='currency_symbol gift_card_symbol' ><%=currency_symbol%></span>
-                    <div class="input_beauty">
-                        <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
-                    </div>
-                <% } else { %>
-                    <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
-                <% } %>
-                <% if(sold_by_weight && uom) { %>
-                <span class="uom">/ <%= uom %></span>
-                <% } %>
-            </span>
-        </dt>
-        <dd><%= description %></dd>
-        <% if (timetables) { %>
-            <dd class="vertical-scrollbar timetables"> <%= _lp.PRODUCTS_AVAILABLE %>: <%= timetables %> </dd>
-        <% } %>
-        <dd class="size_chart_wrapper"><a href="#" target="_blank" class="link1 size_chart"><%= _lp.PRODUCTS_SIZE_CHART %></a></dd>
-    </dl>
-
-    <% if (is_gift && _settings.online_orders) { %>
-    <div class='gift_card'>
-        <span> <%= _lp.PRODUCTS_GIFT_CARD %>: </span>
-        <div class="input_beauty">
-            <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
-        </div>
+    <h3 class="name header-text">
+        <%= name %>
+        <span class="customize link hide fl-right primary-text"><%= _lp.COMBO_CUSTOMIZE %></span>
+    </h3>
+    <% if(!_settings.hide_products_description) { %>
+    <p class="description"><%= description %></p>
+    <% } %>
+    <div class="size_chart_wrapper fl-right">
+        <a href="#" target="_blank" class="link size_chart primary-text"><%= _lp.PRODUCTS_SIZE_CHART %></a>
     </div>
+    <% if (timetables) { %>
+    <div class="timetables"><%= _lp.PRODUCTS_AVAILABLE %>: <%= timetables %> </div>
     <% } %>
-    <div class='clear'></div>
+    <% if (is_gift && _settings.online_orders) { %>
+    <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number input" placeholder="<%= _lp.PRODUCTS_GIFT_CARD %>">
+    <% } %>
 </script>
 
 <script type="text/template" id="product_list_none-template">
-     <span> <%= _lp.PRODUCTS_NOT_FOUND %> </span>
+    <span><%= _lp.PRODUCTS_NOT_FOUND %></span>
+</script>
+
+<script type="text/template" id="product_price-template">
+    <span class="currency"></span>
+    <div class="price-wrapper">
+        <input type="text" class="price input">
+    </div>
+    <span class="uom"></span>
 </script>

@@ -80,16 +80,30 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             var self = this,
                 outer = context.checkedSpan.outer_elem ? $el.closest(context.checkedSpan.outer_elem) : $el;
             !outer && (outer = $el);
+
             this.value = context.checkedSpan.value;
 
-            outer.on('click', function(event) {
+            this.addHandler = function() {
+                outer.on('click', handler);
+            };
+
+            this.removeHandler = function() {
+                outer.off('click', handler);
+            };
+
+            this.addHandler();
+
+            function handler(event) {
                 event.stopImmediatePropagation();
                 event.preventDefault();
                 self.value(!self.value());
-            });
+            }
         },
         set: function($el, value_attr) {
             $el.attr('checked', value_attr.value ? 'checked' : false);
+        },
+        clean: function() {
+            this.removeHandler();
         }
     });
 
