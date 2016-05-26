@@ -319,7 +319,7 @@ define(["backbone"], function(Backbone) {
             billing_address = App.Data.customer.get('addresses').getDefaultProfileAddress();
             return billing_address ? billing_address.toJSON() : null;
         } else if(use_checkout_address) {
-            var address = App.Data.customer.getCheckoutAddress();
+            var address = App.Data.customer.get('addresses').getCheckoutAddress();
             address.country_code = address.country;
             return address;
         } else {

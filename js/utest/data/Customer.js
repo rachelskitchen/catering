@@ -43,6 +43,11 @@ define([], function() {
                     "id": 2,
                     "selected": false,
                     "city": "New York",
+                },
+                {
+                    "id": "DINING_OPTION_DELIVERY",
+                    "city": "New York",
+                    "street_1": "123 5th Ave",
                 }
             ],
             "email": "",

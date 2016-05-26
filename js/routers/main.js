@@ -1011,7 +1011,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                             modelName: 'Profile',
                             mod: 'Edit',
                             model: customer,
-                            address: address,
                             updateAction: update,
                             updateBtn: updateBtn,
                             ui: ui,
