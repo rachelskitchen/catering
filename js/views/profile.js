@@ -178,7 +178,27 @@ define(["factory"], function() {
             '.city': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
             '.province-row': 'toggle: equal(country, "CA")',
             '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
-            '.zipcode': 'value: zipcode, attr: {placeholder: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+            '.zipcode-row .label': 'text: zipLabel',
+            '.zipcode': 'value: zipcode, attr: {placeholder: zipLabel}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+        },
+        computeds: {
+            /**
+             * Generates label and placeholder for zipcode field.
+             * @returns {string}
+             *   - "Zip Code" if selected country is the US, OR there is no selection, but establishment country is US;
+             *   - "Postal Code" otherwise.
+             */
+            zipLabel: {
+                deps: ['country'],
+                get: function(country) {
+                    if (country == 'US' || !country && App.Settings.address.country == 'US') {
+                        return _loc.PROFILE_ZIP_CODE;
+                    }
+                    else {
+                        return _loc.PROFILE_POSTAL_CODE;
+                    }
+                }
+            }
         },
         bindingFilters: {
             parseOptions: function(data) {

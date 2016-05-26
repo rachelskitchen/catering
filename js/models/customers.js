@@ -1576,12 +1576,26 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Sets {@link App.Models.Customer#addresses addresses} collection.
          */
         setAddresses: function() {
+            var addresses = this.get('addresses'),
+                req,
+                self = this;
+
             if (!this.get('addresses')) {
                 this.set('addresses', new App.Collections.CustomerAddresses());
+                addresses = this.get('addresses');
             }
+
             if (this.isAuthorized()) {
-                this.getAddresses();
+                req = this.getAddresses();
             }
+            else {
+                req = Backbone.$.Deferred().resolve();
+            }
+
+            req.always(function() {
+                // if there are no address models, create an empty one
+                !addresses.length && addresses.add({});
+            });
         },
         /**
          * Receives payments from server.
