@@ -3241,6 +3241,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     zipcode: ''
                 },
                 filledAddress = {
+                    id: 1,
                     country: 'US',
                     state: 'CA',
                     province: '',
@@ -3251,55 +3252,22 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 },
                 filledProfileAddress = _.extend(filledAddress, {street_1: '123 Main St'});
 
+                //filledAddress = data.customer1.addresses[0];
+
             beforeEach(function() {
                 this.customer = App.Data.customer;
                 App.Data.customer = {
                     isAuthorized: function() {return isAuthorized;}
                 };
-                model.set('addresses', [emptyAddress, emptyAddress, emptyAddress, filledAddress]);
+                model.set(data.customer1.addresses);
                 this.defaultAddress = App.Settings.address;
                 App.Settings.address = filledAddress;
+                spyOn(model, 'getSelectedAddress').and.returnValue(model.get(1));
             });
 
             afterEach(function() {
                 App.Settings.address = this.defaultAddress;
                 App.Data.customer = this.customer;
-            });
-
-            it('shipping address isn\'t selected, street_1 of last address is not string', function() {
-                model.set('addresses', [emptyAddress, emptyAddress, undefined]);
-                expect(model.getCheckoutAddress()).toBeUndefined();
-            });
-
-            it('shipping address isn\'t selected, street_1 of last address is string', function() {
-                isDefaultShippingAddress.and.returnValue(true);
-                expect(model.getCheckoutAddress()).toEqual(filledAddress);
-            });
-
-            it('selected address if fully filled', function() {
-                model.set('shipping_address', 3);
-                expect(model.getCheckoutAddress()).toEqual(filledAddress);
-            });
-
-            it('selected address is empty', function() {
-                model.set('addresses', [emptyAddress, filledAddress, emptyAddress]);
-                model.set('shipping_address', 0);
-                expect(model.getCheckoutAddress()).toEqual(filledAddress);
-            });
-
-            it('selected address is undefined, other addresses are undefined, profile address is filled, `fromProfile` param is falsy', function() {
-                model.set('addresses', [undefined, undefined, undefined, filledProfileAddress]);
-                model.set('shipping_address', 0);
-                expect(model.getCheckoutAddress()).toBeUndefined;
-            });
-
-            it('selected address is empty, other addresses is empty, profile address is filled, `fromProfile` param is true', function() {
-                model.set('addresses', [undefined, undefined, undefined, filledProfileAddress]);
-                model.set('shipping_address', 0);
-                model.profileAddressIndex = 3;
-                isAuthorized = true;
-                delete filledProfileAddress.country;
-                expect(model.getCheckoutAddress(true)).toEqual(filledProfileAddress);
             });
         });
     });

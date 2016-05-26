@@ -428,7 +428,8 @@ define(['card'], function() {
 
         describe('window.get_billing_address()', function() {
             var billing_address = new Backbone.Model({
-                test: 'test'
+                test: 'test',
+                country: 'US'
             });
 
             beforeEach(function() {
@@ -436,7 +437,8 @@ define(['card'], function() {
 
                 App.Data.customer = new Backbone.Model({
                     addresses: {
-                        getDefaultProfileAddress: jasmine.createSpy().and.returnValue(billing_address)
+                        getDefaultProfileAddress: jasmine.createSpy().and.returnValue(billing_address),
+                        getCheckoutAddress: jasmine.createSpy().and.returnValue(billing_address.toJSON())
                     }
                 });
 
@@ -472,8 +474,8 @@ define(['card'], function() {
                     use_checkout_address: true
                 });
 
-                expect(window.get_billing_address()).toBe('checkout address');
-                expect(App.Data.customer.getCheckoutAddress).toHaveBeenCalled();
+                expect(window.get_billing_address()).toEqual({test: 'test', country: 'US', country_code: 'US'});
+                expect(App.Data.customer.get('addresses').getCheckoutAddress).toHaveBeenCalled();
             });
 
             it('card.use_checkuot_address is false', function() {
@@ -483,7 +485,7 @@ define(['card'], function() {
                 });
 
                 expect(window.get_billing_address()).toEqual(billing_address.toJSON());
-                expect(App.Data.customer.getCheckoutAddress).not.toHaveBeenCalled();
+                expect(App.Data.customer.get('addresses').getCheckoutAddress).not.toHaveBeenCalled();
 
                 App.Data.card.set('billing_address', 'not object');
                 expect(window.get_billing_address()).toBe(null);

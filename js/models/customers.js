@@ -1025,7 +1025,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 data: JSON.stringify(address),
                 success: function(data) {
                     if (_.isObject(data) && data.id == address.id) {
-                        this.get('addresses').findWhere({id: data.id}).set(data);
+                        this.get('addresses').get(data.id).set(data, {parse: true});
                     }
                     this.trigger('onUserAddressUpdate');
                 },
@@ -1918,27 +1918,108 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         },
     });
 
-
+    /**
+     * @class
+     * @classdesc Represents a customer address model.
+     * @alias App.Models.CustomerAddress
+     * @augments Backbone.Model
+     * @example
+     * // create a customer address model
+     * require(['customers'], function() {
+     *     var address = new App.Models.CustomerAddress();
+     * });
+     */
     App.Models.CustomerAddress = Backbone.Model.extend(
-
+    /**
+     * @lends App.Models.CustomerAddress.prototype
+     */
     {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         */
         defaults: {
+            /**
+             * Address ID.
+             * @type {?(number|string)}
+             * @default null
+             */
             id: null,
+            /**
+             * Customer ID. {@link App.Models.Customer#id}
+             * @type {?(number|string)}
+             * @default null
+             */
             customer: null,
+            /**
+             * Indicates whether this address is primary (default) or not.
+             * @type {Boolean}
+             * @default false
+             */
             is_primary: false,
+            /**
+             * Indicates whether this address is selected or not.
+             * @type {Boolean}
+             * @default false
+             */
             selected: false,
+            /**
+             * Zipcode or postal code.
+             * @type {String}
+             * @default ''
+             */
             zipcode: '',
+            /**
+             * Country.
+             * @type {String}
+             * @default ''
+             */
             country: '',
+            /**
+             * State (used id country is US).
+             * @type {String}
+             * @default ''
+             */
             state: '',
+            /**
+             * Province (used if country is Canada).
+             * @type {String}
+             * @default ''
+             */
             province: '',
+            /**
+             * Street address, line 1.
+             * @type {String}
+             * @default ''
+             */
             street_1: '',
+            /**
+             * Street address, line 2.
+             * @type {String}
+             */
             street_2: '',
+            /**
+             * City.
+             * @type {String}
+             * @default ''
+             */
             city: '',
+            /**
+             * String representation of address.
+             * @type {String}
+             * @default ''
+             */
             address: ''
         },
         /**
          * Converts the address objects from API to model format.
-         * This method gets called when {parse: true} is passed to the model concstructor.
+         * This method gets called when {parse: true} is passed to the model constructor or method set, e.g.:
+         * ```
+         * // create a new model
+         * var address = new App.Models.CustomerAddress({country_code: 'AU'}, {parse: true});
+         * // update the model attributes
+         * address.set({country_code: 'FR'}, {parse: true});
+         * ```
          * @param   {object} address
          * @param   {object} options
          * @returns {object} converted address
@@ -2010,12 +2091,35 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         },
     });
 
+    /**
+     * @class
+     * @classdesc Represents a customer addresses collection.
+     * @alias App.Collections.CustomerAddresses
+     * @augments Backbone.Collection
+     * @example
+     * require(['customers'], function() {
+     *     var addresses = new App.Collections.CustomerAddresses();
+     * });
+     */
     App.Collections.CustomerAddresses = Backbone.Collection.extend(
-
+    /**
+     * @lends App.Collections.CustomerAddresses.prototype
+     */
     {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.CustomerAddress
+         */
         model: App.Models.CustomerAddress,
+        /**
+         * Adds listeners to track changes of 'selected' attribute and collection updates.
+         */
         initialize: function() {
             this.listenTo(this, 'change:selected', this.radioSelect);
+            this.listenTo(this, 'change reset add remove', function() {
+                this.trigger('update');
+            });
         },
         /**
          * Coverts the array of addresses objects from API to model format.
@@ -2027,9 +2131,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         parse: function(addresses, options) {
             return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
         },
-        addJSON: function(data) {
-            data instanceof Array && this.set(data);
-        },
+        // addJSON: function(data) {
+        //     data instanceof Array && this.set(data);
+        // },
+        /**
+         * Updates the collection with data received from API.
+         * @param {array} addresses - array of addresses if API format.
+         */
         updateFromAPI: function(addresses) {
             var self = this;
             // remove from collection addresses not presented in api response
@@ -2122,6 +2230,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
 
             addrJson = addr.toJSON();
+
             this.some(function(model, index) {
                 var el = model.toJSON();
                 return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
@@ -2129,31 +2238,34 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (!reverse_addr && fromProfile && customer.isAuthorized()) {
                 reverse_addr = addresses.getDefaultProfileAddress().toJSON(); // use profile address
             }
-            addrJson == undefined && (addrJson = {});
+
             if (reverse_addr) {
                 if ((addrJson.country && reverse_addr.country && addrJson.country == reverse_addr.country) ||
                     (!addrJson.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
                     if (!addrJson.province && !addrJson.street_1 && !addrJson.street_2 && !addrJson.city && !addrJson.zipcode) { //and we will copy address if all target fields are empty only
-                        newAddr = _.extend(addrJson, { state: reverse_addr.state,
-                                                province: reverse_addr.province,
-                                                street_1: reverse_addr.street_1,
-                                                street_2: reverse_addr.street_2,
-                                                city: reverse_addr.city,
-                                                zipcode: reverse_addr.zipcode });
+                        newAddr = _.extend(addrJson, {
+                            state: reverse_addr.state,
+                            province: reverse_addr.province,
+                            street_1: reverse_addr.street_1,
+                            street_2: reverse_addr.street_2,
+                            city: reverse_addr.city,
+                            zipcode: reverse_addr.zipcode
+                        });
                         addr.set(newAddr);
-                        return newAddr;
+                        return this.getOrderAddress(newAddr);
                     }
                 }
             }
 
-            return addrJson && typeof addrJson.street_1 === 'string' ? addrJson : undefined;
+            return addrJson && typeof addrJson.street_1 === 'string' ? this.getOrderAddress(addrJson) : undefined;
         },
         /**
          * Returns customer address for sending to create_order_and_pay/.
+         * @param {?object} address - address object to convert. If not specified, selected address will be used.
          * @returns {object} address object.
          */
-        getOrderAddress: function() {
-            var address = App.Data.customer.get('addresses').getSelectedAddress().toJSON();
+        getOrderAddress: function(address) {
+            var address = _.isObject(address) ? address : App.Data.customer.get('addresses').getSelectedAddress().toJSON();
 
             return {
                 // here we need only the following fields (no need for extra fields from profile address.
@@ -2168,18 +2280,29 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 zipcode: address.zipcode || ''
             };
         },
+        /**
+         * If the selected address is not from profile, changes the selection according to the specified dining option (used as a model id).
+         * @param {string} dining_option - selected dining option.
+         */
         changeSelection: function(dining_option) {
             if (!this.isProfileAddressSelected()) {
                 this.invoke('set', {selected: false});
                 this.get(dining_option) && this.get(dining_option).set('selected', true);
-
             }
         },
+        /**
+         * Implements radio selection behaviour of addresses.
+         * @param {@link App.Models.CustomerAddress} model - address model.
+         * @param {boolean} selected - value of `selected` attribute of the address model.
+         */
         radioSelect: function(model, selected) {
             selected && this.some(function(el) {
                 el !== model && el.get('selected') && el.set('selected', false);
             });
         },
+        /**
+         * Removes profile addresses (models with numeric id) from the collection.
+         */
         removeProfileAddresses: function() {
             this.remove(this.filter(function(model) {
                 return !isNaN(model.get('id'));
