@@ -166,7 +166,13 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileAddressView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'address',
+        tagName: 'li',
+        className: 'address',
         bindings: {
+            '.address__title-text': 'text: _loc.PROFILE_ADDRESS_DETAILS.replace("%s", 1)',
+            '.plus_sign': 'text: select(address_folded, "+ ", "- ")',
+            '.address__fields': 'toggle: not(address_folded)',
+            '.address__default': 'checked: is_primary',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
             '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
@@ -180,6 +186,15 @@ define(["factory"], function() {
             '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
             '.zipcode-row .label': 'text: zipLabel',
             '.zipcode': 'value: zipcode, attr: {placeholder: zipLabel}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+        },
+        events: {
+            'change .address__default': 'setDefaultAddress',
+            'click .address__title': 'toggleFolding',
+        },
+        bindingSources: {
+            address: function() {
+                return new Backbone.Model({folded: true});
+            }
         },
         computeds: {
             /**
@@ -198,7 +213,7 @@ define(["factory"], function() {
                         return _loc.PROFILE_POSTAL_CODE;
                     }
                 }
-            }
+            },
         },
         bindingFilters: {
             parseOptions: function(data) {
@@ -224,6 +239,17 @@ define(["factory"], function() {
             setTimeout(function() {
                 !self.model.get('country') && self.$('.country').val('');
             }, 0); // fix silent autoselect in mobile browsers
+        },
+        setDefaultAddress: function(e) {
+            if (!e.target.checked) {
+                this.model.collection.trigger('change:is_primary');
+            }
+            else {
+                this.model.set('is_primary', true);
+            }
+        },
+        toggleFolding: function() {
+            this.setBinding('address_folded', !this.getBinding('address_folded'));
         }
     });
 
@@ -232,7 +258,34 @@ define(["factory"], function() {
         mod: 'addresses',
         itemView: App.Views.CoreProfileView.CoreProfileAddressView,
         bindings: {
-            '.addresses-list': 'collection: $collection'
+            '.addresses-list': 'collection: $collection',
+            '.addresses__add .plus_sign': 'text: select(addingNewAddress, "- ", "+ ")'
+        },
+        events: {
+            'click .addresses__add': 'toggleNewAddress',
+        },
+        computeds: {
+            addingNewAddress: {
+                deps: ["$collection"],
+                get: function(addresses) {
+                    return addresses.some(function(model) {
+                        return model.get('id') === null;
+                    });
+                }
+            }
+        },
+        toggleNewAddress: function() {
+            var addingNewAddress = this.getBinding('addingNewAddress');
+            if (!addingNewAddress) {
+                this.collection.add({});
+            }
+            else {
+                var modelToRemove;
+                this.collection.some(function(model) {
+                    return _.isEqual(model.toJSON(), App.Models.CustomerAddress.prototype.defaults) && (modelToRemove = model);
+                });
+                modelToRemove && this.collection.remove(modelToRemove);
+            }
         }
     });
 
@@ -263,7 +316,7 @@ define(["factory"], function() {
 
             this.newAddress = new App.Models.CustomerAddress();
             var addresses = App.Views.GeneratorView.create('Profile', {
-                el: this.$('.addresses-box'),
+                el: this.$('.addresses'),
                 mod: 'Addresses',
                 collection: this.model.get('addresses'),
                 newAddress: this.newAddress

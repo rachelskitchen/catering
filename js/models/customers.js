@@ -1985,16 +1985,16 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             zipcode: '',
             /**
              * Country.
-             * @type {String}
-             * @default ''
+             * @type {?String}
+             * @default null
              */
-            country: '',
+            country: null,
             /**
              * State (used id country is US).
-             * @type {String}
-             * @default ''
+             * @type {?String}
+             * @default null
              */
-            state: '',
+            state: null,
             /**
              * Province (used if country is Canada).
              * @type {String}
@@ -2130,7 +2130,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Adds listeners to track changes of 'selected' attribute and collection updates.
          */
         initialize: function() {
-            this.listenTo(this, 'change:selected', this.radioSelect);
+            this.listenTo(this, 'change:selected', this.radioSelection.bind(this, 'selected'));
+            this.listenTo(this, 'change:is_primary', this.radioSelection.bind(this, 'is_primary'));
             this.listenTo(this, 'change reset add remove', function() {
                 this.trigger('update');
             });
@@ -2305,13 +2306,14 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
         },
         /**
-         * Implements radio selection behaviour of addresses.
-         * @param {@link App.Models.CustomerAddress} model - address model.
-         * @param {boolean} selected - value of `selected` attribute of the address model.
+         * When the address is selected, deselects all other addresses (radio button behavior).
+         * @param {App.Models.CustomerAddress} model - address model.
+         * @param {boolean} value - value of the changed attribute.
+         * @param {string} attributeName - name of the changed attribute.
          */
-        radioSelect: function(model, selected) {
-            selected && this.some(function(el) {
-                el !== model && el.get('selected') && el.set('selected', false);
+        radioSelection: function(attributeName, model, value) {
+            value && this.some(function(el) {
+                el !== model && el.get(attributeName) && el.set(attributeName, false);
             });
         },
         /**
