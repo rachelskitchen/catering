@@ -834,6 +834,18 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             });
             return dfd;
         },
+        getProfileAddressesPromises: function() {
+            var customer = App.Data.customer,
+                promises = [],
+                addressesDef = Backbone.$.Deferred();
+
+            if (customer.get('addresses') && customer.addressesRequest) {
+                customer.addressesRequest.always(addressesDef.resolve.bind(addressesDef));
+                promises.push(addressesDef);
+            }
+
+            return promises;
+        },
         getProfilePaymentsPromises: function() {
             var customer = App.Data.customer,
                 promises = [],
@@ -994,7 +1006,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         setProfileEditContent: function(doNotChangeMod) {
-            var promises = this.getProfilePaymentsPromises(),
+            var promises = this.getProfileAddressesPromises(),
                 customer = App.Data.customer,
                 addresses = customer.get('addresses'),
                 updatedAddresses = new Backbone.Collection(),
@@ -1033,22 +1045,22 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         }
                     });
                 }
-            }
 
-            window.setTimeout(function() {
-                var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
-                    passwordEvents = 'change:password change:confirm_password';
-                self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
-                self.listenTo(customer, passwordEvents, accountPasswordChanged);
-                self.listenTo(addresses, 'change', addressChanged);
-                self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
-                self.listenTo(customer, 'onLogout', logout);
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'change', addressChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
-            }, 0);
+                window.setTimeout(function() {
+                    var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
+                        passwordEvents = 'change:password change:confirm_password';
+                    self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                    self.listenTo(customer, passwordEvents, accountPasswordChanged);
+                    self.listenTo(addresses, 'change', addressChanged);
+                    self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
+                    self.listenTo(customer, 'onLogout', logout);
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'change', addressChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
+                }, 0);
+            }
 
             return promises;
 
@@ -1141,18 +1153,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     }
                 }
             }
-        },
-        setProfileAddressesPromises: function() {
-            var customer = App.Data.customer,
-            promises = [],
-            addressesDef = Backbone.$.Deferred();
-
-            if (customer.get('addresses') && customer.addressesRequest) {
-                customer.addressesRequest.always(addressesDef.resolve.bind(addressesDef));
-                promises.push(addressesDef);
-            }
-
-            return promises;
         },
         setProfilePaymentsContent: function(doNotChangeMod) {
             var promises = this.getProfilePaymentsPromises(),
@@ -1400,7 +1400,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         profileEditContent: function() {
-            var promises = this.getProfilePaymentsPromises(),
+            var promises = this.getProfileAddressesPromises(),
                 customer = App.Data.customer,
                 addresses = customer.get('addresses'),
                 updatedAddresses = new Backbone.Collection(),
