@@ -11,8 +11,7 @@
     padding-bottom: 5px;
 }
 
-.stanford-reload-item .row,
-.stanford-reload-item .captcha_container {
+.stanford-reload-item .row {
     width: 400px;
     margin: 20px auto;
 }
@@ -24,10 +23,9 @@
 }
 
 .stanford-reload-item .captcha-wrapper {
-    display: inline-block;
-    width: 120px;
-    height: 48px;
-    vertical-align: middle;
+    width: 138px;
+    height: 55px;
+    margin: 5px 8px;
     position: relative;
 }
 
@@ -38,18 +36,14 @@
     top: 0;
 }
 
-.stanford-reload-item .captcha-input {
-    display: inline-block;
-    width: 260px;
-    margin-top: 7px;
-    margin-left: 12px;
-    vertical-align: middle;
+.stanford-reload-item .captcha-input-wrap {
+    width: 246px;
+    margin-left: 154px;
 }
 
 .stanford-reload-item .btn-reload {
-    display: inline-block;
-    width: 120px;
-    padding: 10px 0;
+    display: block;
+    width: 154px;
 }
 
 .stanford-reload-item .info-block {
@@ -72,6 +66,14 @@
 
 .stanford-reload-item .stanford-plan {
     padding: 0 0 10px 10px;
+}
+
+.stanford-reload-item .card-wrapper {
+    margin-bottom: 40px;
+}
+
+.stanford-reload-item .cancel {
+    margin: 11px 5px !important;
 }
 
 .stanford-plan .name {
@@ -132,4 +134,62 @@
     display: block;
     margin-top: 4px;
     font-size: 18px;
+}
+
+.stanford-student-status .student-status-question {
+    margin: 68px 10px 17px;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.stanford-student-status .stanford-student-instructions {
+    margin: 0 10px 88px;
+    font-size: 16px;
+}
+
+.stanford-student-card .title {
+    padding: 21px 16px;
+    font-size: 14px;
+    letter-spacing: 3.5px;
+    text-transform: uppercase;
+}
+
+.stanford-student-card .header {
+    margin-bottom: 30px;
+    padding: 10px 16px;
+    border-width: 1px 0;
+    border-style: solid;
+}
+
+.stanford-student-card .row {
+    width: 400px;
+    margin: 0 auto 20px;
+}
+
+.stanford-student-card .row.captcha-row {
+    margin-bottom: 50px;
+}
+
+.stanford-student-card .label {
+    padding-left: 14px;
+}
+
+.stanford-student-card .captcha_wrap {
+    width: 138px;
+    height: 55px;
+    margin: 4px 8px 5px;
+    position: relative;
+}
+
+.stanford-student-card .captcha-spinner {
+    position: absolute !important;
+    width: 100%;
+    height: 100%;
+    top: 0;
+    left: 0;
+}
+
+.stanford-student-card .captcha-input-wrap {
+    width: 246px;
+    margin-left: 154px;
 }
