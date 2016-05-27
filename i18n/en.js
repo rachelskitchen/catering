@@ -606,6 +606,7 @@
         "PROFILE_BASIC_DETAILS": "Basic Details",
         "PROFILE_ADDRESS": "Address",
         "PROFILE_ADDRESSES": "Addresses",
+        "PROFILE_ADDRESS_DELETE": "Do you want to delete this address?",
         "PROFILE_ADDRESS_DETAILS": "Address %s Details",
         "PROFILE_DEFAULT_ADDRESS": "Default Address",
         "PROFILE_USER_NOT_ACTIVATED": "User is not activated",

@@ -1051,12 +1051,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         passwordEvents = 'change:password change:confirm_password';
                     self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                     self.listenTo(customer, passwordEvents, accountPasswordChanged);
-                    self.listenTo(addresses, 'change', addressChanged);
+                    self.listenTo(addresses, 'addressFieldsChanged', addressChanged);
                     self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                     self.listenTo(customer, 'onLogout', logout);
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
-                    self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'change', addressChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'addressFieldsChanged', addressChanged));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
                 }, 0);
@@ -1435,9 +1435,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             window.setTimeout(function() {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
-                self.listenTo(addresses, 'change', addressChanged);
+                self.listenTo(addresses, 'addressFieldsChanged', addressChanged);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'change', addressChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'addressFieldsChanged', addressChanged));
                 self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
