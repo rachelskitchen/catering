@@ -757,16 +757,18 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
             var promises = this.setProfileEditContent(true);
+
             if (!promises.length) {
                 return this.navigate('index', true);
             } else {
-                App.Data.header.set('tab_index', null);
-                App.Data.mainModel.set({
-                    mod: 'Main',
-                    header: headers.main,
-                    cart: carts.main
-                });
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
         },

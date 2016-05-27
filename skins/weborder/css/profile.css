@@ -313,6 +313,20 @@
     margin: 13px 0;
 }
 
+.profile-edit .addresses {
+    margin-top: 15px;
+}
+
 .profile-edit .address {
     clear: both;
+    margin-bottom: 15px;
+}
+
+.expand.folded:before {
+    content: '\f196';
+    font-family: "FontAwesome";
+}
+.expand.expanded:before {
+    content: '\f147';
+    font-family: "FontAwesome";
 }
