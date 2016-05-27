@@ -169,6 +169,12 @@ define(["factory"], function() {
         tagName: 'li',
         className: 'address',
         initialize: function() {
+            var id = this.model.get('id');
+            // do not show not profile address (filled on the checkout screen)
+            if (typeof id == 'string') {
+                return;
+            }
+
             this.listenTo(this.model.collection, 'toggleFolding', function(model, expanded) {
                 if (expanded && this.model != model) {
                     this.setBinding('address_expanded', false);
@@ -282,7 +288,7 @@ define(["factory"], function() {
             var self = this;
 
             App.Data.errors.alert(
-                'Do you want to delete this address?',
+                _loc.PROFILE_ADDRESS_DELETE,
                 false,
                 false,
                 {

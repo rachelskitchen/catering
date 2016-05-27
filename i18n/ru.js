@@ -582,6 +582,7 @@
         "PROFILE_BASIC_DETAILS": "Основное",
         "PROFILE_ADDRESS": "Адрес",
         "PROFILE_ADDRESSES": "Адреса",
+        "PROFILE_ADDRESS_DELETE": "Хотите удалить этот адрес?",
         "PROFILE_ADDRESS_DETAILS": "Адрес %s",
         "PROFILE_DEFAULT_ADDRESS": "Основной адрес",
         "PROFILE_USER_NOT_ACTIVATED": "Пользователь не активирован",

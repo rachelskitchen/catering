@@ -1993,15 +1993,15 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             /**
              * Country.
              * @type {?String}
-             * @default null
+             * @default ''
              */
-            country: null,
+            country: '',
             /**
              * State (used id country is US).
              * @type {?String}
-             * @default null
+             * @default ''
              */
-            state: null,
+            state: '',
             /**
              * Province (used if country is Canada).
              * @type {String}
@@ -2108,7 +2108,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
          */
         isProfileAddress: function() {
-            return !isNaN(this.get('id')) && this.get('customer');
+            return !isNaN(this.get('id')) && !!this.get('customer');
         },
     });
 
@@ -2147,6 +2147,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         initialize: function() {
             this.listenTo(this, 'change:selected', this.radioSelection.bind(this, 'selected'));
             this.listenTo(this, 'change:is_primary', this.radioSelection.bind(this, 'is_primary'));
+            this.listenTo(this, 'change', this.onModelChange);
             this.listenTo(this, 'change reset add remove', function() {
                 this.trigger('update');
             });
@@ -2161,9 +2162,20 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         parse: function(addresses, options) {
             return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
         },
-        // addJSON: function(data) {
-        //     data instanceof Array && this.set(data);
-        // },
+        onModelChange: function(model) {
+            var changed = model.changedAttributes(),
+                keys = ['street_1', 'street_2', 'state', 'province', 'country', 'zipcode'],
+                trigger = _.some(keys, function(key) {
+                    return _.has(changed, key);
+                });
+
+            if (trigger) {
+                if ((_.isEqual(changed, {state: null}) || _.isEqual(changed, {country: null})) || _.isEqual(changed, {state: null, country: null})) {
+                    return;
+                }
+                this.trigger('addressFieldsChanged', model);
+            }
+        },
         /**
          * Updates the collection with data received from API.
          * @param {array} addresses - array of addresses if API format.
@@ -2223,7 +2235,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {boolean}
          */
         isProfileAddressSelected: function() {
-            return this.getSelectedAddress() ? (this.getSelectedAddress().isProfileAddress()) : false;
+            return this.getSelectedAddress() ? this.getSelectedAddress().isProfileAddress() : false;
         },
         /**
          * Checks whether the selected address is new (filled on checkout screen) and not from user profile.
