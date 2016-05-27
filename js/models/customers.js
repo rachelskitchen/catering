@@ -907,8 +907,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (!_.isObject(address)) {
                 return;
             }
+            var addressJson = address instanceof Backbone.Model ? address.toJSON() : address;
 
-            address = this.convertAddressToAPIFormat(address);
+            addressJson = this.convertAddressToAPIFormat(addressJson);
 
             return Backbone.$.ajax({
                 url: this.get('serverURL') + "/v1/customers/addresses/",
@@ -916,10 +917,10 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 context: this,
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
-                data: JSON.stringify(address),
+                data: JSON.stringify(addressJson),
                 success: function(data) {
                     if (_.isObject(data)) {
-                        this.get('addresses').updateFromAPI([data]);
+                        address.set(data, {parse: true});
                         this.trigger('onUserAddressCreated');
                     }
                 },
@@ -1098,7 +1099,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {Object} jqXHR object.
          */
         deleteAddress: function(address) {
-            if (!_.isObject(address) || !address.id) {
+            if (!_.isObject(address)) {
+                return;
+            }
+            if (address instanceof Backbone.Model) {
+                address = address.toJSON();
+            }
+            if (!address.id) {
                 return;
             }
 
@@ -1106,7 +1113,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             return Backbone.$.ajax({
                 url: this.get('serverURL') + "/v1/customers/addresses/" + address.id + "/",
-                method: "PATCH",
+                method: "DELETE",
                 context: this,
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
@@ -2127,6 +2134,14 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          */
         model: App.Models.CustomerAddress,
         /**
+         * Collection comparator.
+         * @param   {App.Models.CustomerAddress} model
+         * @returns {number} - a numeric or string value by which the model should be ordered relative to others.
+         */
+        comparator: function(model) {
+            return model.get('is_primary') ? -1 : 0;
+        },
+        /**
          * Adds listeners to track changes of 'selected' attribute and collection updates.
          */
         initialize: function() {
@@ -2157,7 +2172,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             var self = this;
             // remove from collection addresses not presented in api response
             this.each(function(model) {
-                if (!isNaN(model.id) && !_.findWhere(addresses, {id: model.id})) {
+                if (!isNaN(model.get('id')) && !_.findWhere(addresses, {id: model.id})) {
                     self.remove(model);
                 }
             });

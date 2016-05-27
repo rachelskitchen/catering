@@ -1136,7 +1136,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 // update address
                 if (updatedAddresses.length) {
                     updatedAddresses.each(function(addr) {
-                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr.toJSON()));
+                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
                     });
                     Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
                         updatedAddresses.reset();
@@ -1488,7 +1488,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 // update address
                 if (updatedAddresses.length) {
                     updatedAddresses.each(function(addr) {
-                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr.toJSON()));
+                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
                     });
                     Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
                         updatedAddresses.reset();

@@ -168,10 +168,23 @@ define(["factory"], function() {
         mod: 'address',
         tagName: 'li',
         className: 'address',
+        initialize: function() {
+            this.listenTo(this.model.collection, 'toggleFolding', function(model, expanded) {
+                if (expanded && this.model != model) {
+                    this.setBinding('address_expanded', false);
+                }
+            });
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            if (this.getBinding('modelIndex') === 1) {
+                this.setBinding('address_expanded', true);
+            }
+        },
         bindings: {
-            '.address__title-text': 'text: _loc.PROFILE_ADDRESS_DETAILS.replace("%s", 1)',
-            '.plus_sign': 'text: select(address_folded, "+ ", "- ")',
-            '.address__fields': 'toggle: not(address_folded)',
+            '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), "New Address")',
+            '.expand': 'toggle: id, classes: {folded: not(address_expanded), expanded: address_expanded}',
+            '.address__fields': 'toggle: any(not(id), address_expanded)',
             '.address__default': 'checked: is_primary',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
@@ -190,13 +203,25 @@ define(["factory"], function() {
         events: {
             'change .address__default': 'setDefaultAddress',
             'click .address__title': 'toggleFolding',
+            'click .remove-btn': 'removeAddress',
         },
         bindingSources: {
             address: function() {
-                return new Backbone.Model({folded: true});
+                return new Backbone.Model({
+                    expanded: false
+                });
             }
         },
         computeds: {
+            /**
+             * @returns {number} Address index, starting from 1.
+             */
+            modelIndex: {
+                deps: ['$model'],
+                get: function(model) {
+                    return model.collection.indexOf(model) + 1;
+                }
+            },
             /**
              * Generates label and placeholder for zipcode field.
              * @returns {string}
@@ -249,8 +274,27 @@ define(["factory"], function() {
             }
         },
         toggleFolding: function() {
-            this.setBinding('address_folded', !this.getBinding('address_folded'));
-        }
+            var newValue = !this.getBinding('address_expanded');
+            this.setBinding('address_expanded', newValue);
+            this.model.collection.trigger('toggleFolding', this.model, newValue);
+        },
+        removeAddress: function() {
+            var self = this;
+
+            App.Data.errors.alert(
+                'Do you want to delete this address?',
+                false,
+                false,
+                {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            self.model.collection.remove(self.model);
+                            App.Data.customer.deleteAddress(self.model);
+                        }
+                    }
+                });
+        },
     });
 
     App.Views.CoreProfileView.CoreProfileAddressesView = App.Views.FactoryView.extend({
@@ -259,7 +303,7 @@ define(["factory"], function() {
         itemView: App.Views.CoreProfileView.CoreProfileAddressView,
         bindings: {
             '.addresses-list': 'collection: $collection',
-            '.addresses__add .plus_sign': 'text: select(addingNewAddress, "- ", "+ ")'
+            '.addresses__add .expand': 'text: select(addingNewAddress, "- ", "+ ")'
         },
         events: {
             'click .addresses__add': 'toggleNewAddress',
