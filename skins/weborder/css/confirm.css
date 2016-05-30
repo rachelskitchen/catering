@@ -55,3 +55,11 @@
 .main-done .phone {
     margin-top: 5px;
 }
+
+.main-done[class] .stanford-plan {
+    cursor: default;
+}
+
+.main-done[class] .stanford-plan:hover {
+    box-shadow: none;
+}

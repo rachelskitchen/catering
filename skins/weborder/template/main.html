@@ -135,17 +135,23 @@
             <% } %>
         <% } %>
         <% if(stanfordCardBalances) { %>
-            <h2 class="header-underline text-left"><%= _lp.REWARDS_TITLE %></h2>
-            <% _.each(stanfordCardBalances, function(stanfordCard) { %>
-            <div>&ldquo;<%= stanfordCard.name %>&rdquo; <%= _lp.MAIN_STANFORD_CARD_BALANCE %></div>
-            <% if(stanfordCard.type == 'D') { %>
-            <div><%= symbol %><%= stanfordCard.balance %></div>
-            <% } else if(stanfordCard.balance == 1) { %>
-            <div><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEAL %></div>
-            <%} else { %>
-            <div><%= stanfordCard.balance %> <%= _lp.MAIN_STANFORD_CARD_BALANCE_MEALS %></div>
-            <% } %>
+            <h2 class="header-underline text-left"><%= _lp.STANFORDCARD_TITLE_INFO %></h2>
+            <ul class="stanford-plans-box text-left">
+            <% _.each(stanfordCardBalances, function(stanfordCard) {
+                var balance = ''
+                if(stanfordCard.type == 'D') {
+                        balance = symbol + stanfordCard.balance;
+                    } else if(stanfordCard.balance == 1) {
+                        balance = stanfordCard.balance + ' ' + _lp.MAIN_STANFORD_CARD_BALANCE_MEAL;
+                    } else {
+                        balance = stanfordCard.balance + ' ' + _lp.MAIN_STANFORD_CARD_BALANCE_MEALS;
+                } %>
+                <li class="stanford-plan primary-border">
+                    <span class="name optional-text"><%= stanfordCard.name %></span>
+                    <span class="balance"><%= balance %></span>
+                </li>
             <% }); %>
+            </ul>
         <% } %>
     </div>
     <% } %>
