@@ -190,6 +190,7 @@ define(["factory"], function() {
         bindings: {
             '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), "New Address")',
             '.expand': 'toggle: id, classes: {folded: ui_collapsed, expanded: not(ui_collapsed)}',
+            '.address__header': 'classes: {collapsed: ui_collapsed}',
             '.address__fields': 'toggle: any(not(id), not(ui_collapsed))',
             '.address__default': 'checked: is_primary',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
@@ -309,7 +310,8 @@ define(["factory"], function() {
         itemView: App.Views.CoreProfileView.CoreProfileAddressView,
         bindings: {
             '.addresses-list': 'collection: $collection',
-            '.addresses__add .expand': 'text: select(addingNewAddress, "- ", "+ ")'
+            '.addresses__add': 'toggle: not(addingNewAddress)',
+            //'.addresses__add .expand': 'text: select(addingNewAddress, "- ", "+ ")'
         },
         events: {
             'click .addresses__add': 'toggleNewAddress',

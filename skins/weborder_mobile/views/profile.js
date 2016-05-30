@@ -180,9 +180,6 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
     });
 
     var ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView.extend({
-        bindings: {
-            '.address__header': 'classes: {collapsed: ui_collapsed}',
-        },
         removeAddress: function() {
             var self = this;
 
