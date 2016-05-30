@@ -81,12 +81,14 @@
 
 <script type="text/template" id="main_done-template">
     <% if (status === 'error') { %>
-    <h2 class="header-underline attention-text"> <%= _lp.MAIN_ORDER_NOT_SUBMITTED %> </h2>
-    <p class="confirmed-order-txt">
-        <%=message%>
-    </p>
-    <div class="btn btn-long btnReturn" tabindex="0">
-        <span class="clip"> <%= buttonText %> </span>
+    <div class="top primary-border" tabindex="0">
+        <span class="btnReturn primary-text link">&lang;&nbsp;&nbsp;<%= buttonText %></span>
+    </div>
+    <div class="col fl-left border-box">
+        <h2 class="header-underline"><%= _lp.MAIN_ORDER_NOT_SUBMITTED %></h2>
+        <p class="confirmed-order-txt">
+            <%=message%>
+        </p>
     </div>
     <% } else { %>
     <div class="top primary-border" tabindex="0">
