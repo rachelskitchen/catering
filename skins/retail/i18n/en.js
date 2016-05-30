@@ -38,6 +38,7 @@
         'CONFIRM_SUBMIT': 'Submit',
         'CONFIRM_SUBMIT_CARD': 'Submit Card',
         'CONFIRM_SUBMIT_ORDER': 'Submit Order',
+        'ENTER_NEW_ADDRESS': 'Enter New Address',
         'FILTERS_DEFAULT_SORTING': 'Default Sorting',
         'FILTERS_NEW_ARRIVALS': 'New Arrivals',
         'FILTERS_LOW_TO_HIGH': 'Price: Low to High',

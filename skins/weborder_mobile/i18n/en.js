@@ -30,6 +30,7 @@
         'DONE_STANFORD_CARD_BALANCE': 'balance',
         'DONE_STANFORD_CARD_BALANCE_MEAL': 'Meal',
         'DONE_STANFORD_CARD_BALANCE_MEALS': 'Meals',
+        'ENTER_NEW_ADDRESS': 'Enter New Address',
         'FOOTER_ABOUT': 'About',
         'FOOTER_LOYALTY': 'Loyalty',
         'FOOTER_LOCATION': 'Location',
