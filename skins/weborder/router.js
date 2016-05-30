@@ -267,7 +267,6 @@ define(["main_router"], function(main_router) {
             });
 
             // onNotStudent event occurs when a customer answers 'No' on student status question.
-            // App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', completeAsking);
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', function() {
                 askStanfordStudent.pending && typeof askStanfordStudent.proceed == 'function' && askStanfordStudent.proceed();
                 completeAsking();
