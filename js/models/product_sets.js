@@ -146,6 +146,7 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
 
             data['products'].forEach(function(p_data) {
                 p_data.compositeId = p_data.id + '_' + p_data.id_category;
+                p_data.has_upsell = false;
                 var json = {
                     product: p_data,
                     modifiers: p_data.modifier_classes ? p_data.modifier_classes : [],
