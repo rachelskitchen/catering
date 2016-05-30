@@ -428,3 +428,29 @@
     top: initial;
     bottom: initial;
 }
+
+.profile-edit .addresses {
+    width: 240px;
+    margin: 0 auto;
+    margin-top: 15px;
+}
+
+.profile-edit .address-item {
+    clear: both;
+    margin-bottom: 15px;
+}
+
+.profile-edit .address__header {
+    position: relative;
+    margin-bottom: 1em;
+    text-align: left;
+}
+
+.expand.expanded:before {
+    content: '\f147';
+    font-family: "FontAwesome";
+}
+.collapsed .expand:before {
+    content: '\f196';
+    font-family: "FontAwesome";
+}
