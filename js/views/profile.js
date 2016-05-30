@@ -238,7 +238,7 @@ define(["factory"], function() {
             zipLabel: {
                 deps: ['country'],
                 get: function(country) {
-                    if (country == 'US' || !country && App.Settings.address.country == 'US') {
+                    if (country == 'US' || !country && App.Settings.address && App.Settings.address.country == 'US') {
                         return _loc.PROFILE_ZIP_CODE;
                     }
                     else {
