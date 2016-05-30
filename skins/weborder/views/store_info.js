@@ -202,7 +202,11 @@ define(["store_info_view"], function(store_info_view) {
         mod: 'map',
         storeView: StoreInfoStoreItemView,
         bindings: {
-            '.stores-list': 'collection: $collection, itemView: "storeView"'
+            '.stores-list': 'collection: $collection, itemView: "storeView"',
+            '.show-delivery-area': 'toggle: ui_isDeliveryAreaGeoJSON'
+        },
+        events: {
+            'click .show-delivery-area': 'focusOnDeliveryArea'
         },
         render: function() {
             App.Views.CoreStoreInfoView.CoreStoreInfoMainView.prototype.render.apply(this, arguments);

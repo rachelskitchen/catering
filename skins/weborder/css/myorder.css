@@ -79,6 +79,14 @@
     margin: 10px 0;
 }
 
+.modifier_place .price {
+    padding: 0 2px 0 5px;
+}
+
+.modifier_place .mdf-sum {
+    padding-left: 2px;
+}
+
 .myorder .special {
     margin-top: 10px;
     font-style: italic;

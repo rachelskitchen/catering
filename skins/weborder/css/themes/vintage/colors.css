@@ -189,6 +189,7 @@ body,
   border-color: #D4BC26;
 }
 /* [secondary_button] */
+.btn-secondary[class],
 #popup_cancel[id] {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #B5B5B5), color-stop(1, #989898));
   background: -o-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
@@ -196,6 +197,13 @@ body,
   background: -webkit-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
   background: -ms-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
   background: linear-gradient(to bottom, #B5B5B5 0%, #989898 100%);
+}
+/* [secondary_button_highlighted] */
+.btn-secondary[class]:active,
+.btn-secondary[class]:focus,
+#popup_cancel[id]:active,
+#popup_cancel[id]:focus {
+  background: #989898;
 }
 /* [tab_active] active tab (Menu, About, Map) */
 .tab.active,

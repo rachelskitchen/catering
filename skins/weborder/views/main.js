@@ -77,7 +77,7 @@ define(["done_view", "generator"], function(done_view) {
             return this;
         },
         events: {
-            'click #popup .cancel': 'hide_popup',
+            'click #popup .cancel-btn ': 'hide_popup',
             'click .popup .shadow-bg': 'hide_popup',
             'click .change_establishment': 'change_establishment'
         },
@@ -234,7 +234,6 @@ define(["done_view", "generator"], function(done_view) {
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
-            if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             'click .reload': 'reload',

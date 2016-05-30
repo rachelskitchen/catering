@@ -144,7 +144,7 @@ define(["products_view"], function() {
             }));
         },
         pay: function() {
-            this.model.onPay();
+            this.collection.trigger('onPay', this.model.onPay.bind(this.model));
         }
     });
 

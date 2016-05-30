@@ -1465,6 +1465,9 @@ var PaymentProcessor = {
         var payment_processor = null;
 
         var payment = App.Settings.payment_processor;
+        if (!_.isObject(payment)) {
+            return payment_processor;
+        }
         if (payment.usaepay) {
             payment_processor = USAePayPaymentProcessor;
         } else if (payment.mercury) {
