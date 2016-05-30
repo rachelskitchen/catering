@@ -10,11 +10,16 @@
 .slider_wrapper {
     overflow: hidden;
     height: 48px;
+    margin-right: 38px;
 }
 
 .categories {
     white-space: nowrap;
     position: relative;
+    -webkit-transition: .5s;
+    -moz-transition: .5s;
+    -o-transition: .5s;
+    transition: .5s;
 }
 
 .categories li {

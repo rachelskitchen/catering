@@ -341,7 +341,7 @@
 
                         if (settings.get('isMaintenance')) {
                             if (!settings.get('maintenanceMessage')) {
-                                settings.set('maintenanceMessage', ERROR[MAINTENANCE.BACKEND_CONFIGURATION]); // default error message
+                                settings.set('maintenanceMessage', MAINTENANCE.BACKEND_CONFIGURATION); // default error message
                             }
                             location.replace('#maintenance');// need use replace to avoid entry "#" -> "#maintenance" in browser history
                         } else {

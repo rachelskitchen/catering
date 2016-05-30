@@ -65,10 +65,21 @@
     line-height: 0.9em;
     margin-right: 0.3em;
 }
+
 .input.checkbox::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;
+}
+
+.profile-checkbox .input.checkbox::before,
+.card__remember .input.checkbox::before {
+    display: none;
+}
+
+.profile-checkbox input:checked + .input.checkbox::before,
+.card__remember .input.checkbox[checked]::before {
+    display: inline-block;
 }
 
 .checkbox-outer .title_wrapper {

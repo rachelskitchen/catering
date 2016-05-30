@@ -210,6 +210,7 @@
         'DONE_ARRIVE_TIME': 'It should arrive at %s.',
         'DONE_PICKUP_TIME': 'You can pickup your order at %s.',
         'DONE_DETAILS_INFO': 'Checkout out the details below about your order.',
-        'DONE_STORE_ADDRESS': 'Store Address'
+        'DONE_STORE_ADDRESS': 'Store Address',
+        'STORE_INFO_MAP_SHOW_DELIVERY_AREA': 'Show Delivery Area'
     } // end of locale
 }); // end of module

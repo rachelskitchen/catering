@@ -30,6 +30,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             this.listenTo(this.collection, 'change:selected', this.onStoreSelected);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({isDeliveryAreaGeoJSON: false});
+            }
+        },
         map: function(zoomControl, panControl, mapTypeControl) {
             var settings = App.Settings,
                 self = this;
@@ -44,14 +49,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 var address = settings.address,
                     title = settings.business_name || '',
                     coords = new google.maps.LatLng(address.coordinates.lat, address.coordinates.lng),
-                    // popup = new google.maps.InfoWindow({
-                    //     content: '<div id="googlemaps_popup">' +
-                    //         '<div> <strong>' + title + '</strong> </div>' +
-                    //         '<div>' + address.full_address + '</div>' +
-                    //         '</div>' + (((!_.isArray(settings.delivery_post_code_lookup) || !settings.delivery_post_code_lookup[0]) && _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0]) ?
-                    //         '<div> *Delivery area is marked with grey</div>': ''),
-                    //     position: coords
-                    // }),
                     map = new google.maps.Map(self.$('#mapBox')[0], {
                         center: coords,
                         zoom: 18,
@@ -79,8 +76,16 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
                 if ((!_.isArray(settings.delivery_post_code_lookup) || !settings.delivery_post_code_lookup[0]) && _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0]) {
                     try {
+                        map.data.addListener('addfeature', function(event) {
+                            self.mapData.deliveryArea =  event.feature;
+                            self.setBinding('ui_isDeliveryAreaGeoJSON', true);
+                        });
+
                         map.data.addGeoJson(JSON.parse(settings.delivery_geojson[1]));
-                        map.data.setStyle({"strokeWeight": 1});
+                        map.data.setStyle({
+                            strokeWeight: 1,
+                            fillColor: '#00ff00'
+                        });
                     } catch (e) {
                         console.error("Can't parse delivery area GeoJson: " + e);
                     }
@@ -220,6 +225,32 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                     markerData.marker.setZIndex(this.regularMarkerZIndex);
                 }
             };
+        },
+        focusOnDeliveryArea: function() {
+            var deliveryArea = _.isObject(this.mapData) && this.mapData.deliveryArea,
+                map = _.isObject(this.mapData) && this.mapData.map,
+                bounds;
+
+            if (!deliveryArea || !map) {
+                return;
+            }
+
+            bounds = new google.maps.LatLngBounds();
+            processPoints(deliveryArea.getGeometry());
+            map.setCenter(bounds.getCenter());
+            map.fitBounds(bounds);
+
+            function processPoints(geometry) {
+                if (geometry instanceof google.maps.LatLng) {
+                    bounds.extend(geometry);
+                } else if (geometry instanceof google.maps.Data.Point) {
+                    bounds.extend(geometry.get());
+                } else {
+                    geometry.getArray().forEach(function(_geometry) {
+                        processPoints(_geometry);
+                    }, this);
+                }
+            }
         },
         regularPinColor: '#5f6266',
         activePinColor: '#ff0000',

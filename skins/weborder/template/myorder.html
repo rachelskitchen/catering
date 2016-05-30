@@ -81,6 +81,7 @@
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
+    <span class="price fl-right">+<span class="mdf-sum"></span></span>
     <span class="name">
         <%= _lp.ADD %>
         <% if (_settings.enable_quantity_modifiers) { print(quantity + 'x') } %>
@@ -150,19 +151,19 @@
 
 <script type="text/template" id="myorder_stanford_item-template">
     <div class="view view-1 text-left">
-        <div class="header">
+        <div class="header popup-header-bg primary-border">
             <h3 class="name"><%= name %></h3>
             <span class="info"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
         </div>
         <div class="row">
-            <label for="stanford-card-amount" class="label"><%= _lp.AMOUNT %></label>
-            <input id="stanford-card-amount" class="initial-price input ios-safari-caret">
+            <div class="label optional-text required"><%= _lp.AMOUNT %></div>
+            <input class="initial-price input ios-safari-caret">
         </div>
         <div class="card-wrapper"></div>
         <div class="btn next text-center"><%= _lp.NEXT %></div>
     </div>
     <div class="view view-2 text-left">
-        <div class="header text-left">
+        <div class="header text-left popup-header-bg primary-border">
             <h3 class="name"><%= _lp.STANFORD_CARD_CHOOSE_PLAN %></h3>
             <span class="info"><%= _lp.STANFORD_RELOAD_INFO2 %></span>
         </div>
@@ -178,6 +179,6 @@
         </div>
         <div class="plans"></div>
         <div class="btn add-item btn-half border-box fl-right text-center"><%= _lp.MYORDER_ADD_ITEM %></div>
-        <div class="btn back btn-half border-box text-center"><%= _lp.BACK %></div>
+        <div class="btn back btn-half border-box text-center btn-secondary"><%= _lp.BACK %></div>
     </div>
 </script>

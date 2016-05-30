@@ -244,23 +244,25 @@ define(["main_router"], function(main_router) {
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
 
-            // show payment processors list
-            function showPaymentProcessors() {
-                delete showPaymentProcessors.pending;
-                App.Data.mainModel.set('popup', {
-                    modelName: 'Checkout',
-                    mod: 'Pay',
-                    collection: App.Data.myorder
-                });
+            var askStanfordStudent = {
+                pending: false,
+                proceed: null
+            };
+
+            function completeAsking() {
+                askStanfordStudent.pending = false;
+                askStanfordStudent.proceed = null;
+                App.Data.mainModel.unset('popup');
             }
 
             // onPay event occurs when 'Pay' button is clicked
-            this.listenTo(App.Data.myorder, 'onPay', function() {
+            this.listenTo(App.Data.myorder, 'onPay', function(cb) {
                 var stanfordCard = App.Data.stanfordCard;
 
                 // need to check if Stanford Card is turned on and ask a customer about student status
                 if(stanfordCard && stanfordCard.get('needToAskStudentStatus') && !App.Data.myorder.checkout.isDiningOptionOnline()) {
-                    showPaymentProcessors.pending = true; // assing 'pending' status to showPaymentProcessors() function
+                    askStanfordStudent.pending = true;
+                    askStanfordStudent.proceed = cb;
                     App.Data.mainModel.set('popup', {
                         modelName: 'StanfordCard',
                         mod: 'StudentStatus',
@@ -268,15 +270,15 @@ define(["main_router"], function(main_router) {
                         className: 'stanford-student-status'
                     });
                 } else {
-                    showPaymentProcessors();
+                    cb();
                 }
             });
 
             // onNotStudent event occurs when a customer answers 'No' on student status question.
-            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', showPaymentProcessors);
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', completeAsking);
 
             // onCancelStudentVerification event occurs when a customer cancels student verification.
-            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', App.Data.mainModel.unset.bind(App.Data.mainModel, 'popup'));
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', completeAsking);
 
             // onStudent event occurs when a customer answers 'Yes' on student status question.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onStudent', function() {
@@ -285,14 +287,15 @@ define(["main_router"], function(main_router) {
                     mod: 'Popup',
                     model: App.Data.stanfordCard,
                     myorder: App.Data.myorder,
-                    className: 'stanford-student-card'
+                    className: 'stanford-student-card text-left'
                 });
             });
 
             // 'change:validated' event occurs after Stanford Card validation on backend.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:validated', function() {
-                // if showPaymentProcessors() function is waiting for stanfordCard resolution need to invoke it.
-                showPaymentProcessors.pending && showPaymentProcessors();
+                // if askStanfordStudent.pending is waiting for stanfordCard resolution need to invoke it.
+                askStanfordStudent.pending && typeof askStanfordStudent.proceed == 'function' && askStanfordStudent.proceed();
+                completeAsking();
             });
 
             // showSpinner event
@@ -536,7 +539,7 @@ define(["main_router"], function(main_router) {
         */
         getEstablishments: function() {
             this.getEstablishmentsCallback = function() {
-                if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
+                if (/^(index.*|maintenance.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
             App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
@@ -746,14 +749,16 @@ define(["main_router"], function(main_router) {
             });
         },
         maintenance: function() {
-            var settings = App.Data.settings;
+            var settings = App.Data.settings,
+                mainModel = App.Data.mainModel;
             if (settings.get('isMaintenance')) {
-                App.Data.mainModel.set({
+                mainModel.set({
                     mod: 'Maintenance',
-                    errMsg: settings.get('maintenanceMessage')
+                    errMsg: ERROR[settings.get('maintenanceMessage')],
+                    className: 'maintenance'
                 });
             }
-            this.change_page();
+            this.change_page(mainModel.set.bind(mainModel, 'needShowStoreChoice', true));
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {

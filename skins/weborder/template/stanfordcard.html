@@ -40,50 +40,57 @@
 </script>
 
 <script type="text/template" id="stanfordcard_student-template">
-    <h3><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
+    <h3 class="student-status-question"><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
     <p class="stanford-student-instructions"><%= _lp.STANFORD_STUDENT_INSTRUCTIONS %></p>
-    <div class="btn btn-popup btn-no unselectable" tabindex="0"><span><%= _lp.NO %></span></div>
-    <div class="btn btn-popup btn-yes unselectable" tabindex="0"><span><%= _lp.YES %></span></div>
+    <div class="btn btn-half border-box fl-left btn-secondary btn-no" tabindex="0"><%= _lp.NO %></div>
+    <div class="btn btn-half border-box fl-left btn-yes" tabindex="0"><%= _lp.YES %></div>
 </script>
 
 <script type="text/template" id="stanfordcard_popup-template">
-    <h3><%= _lp.STANFORDCARD_TITLE %></h3>
+    <h3 class="title">Stanford Student Verification</h3>
+    <div class="header popup-header-bg primary-border"><%= _lp.STANFORDCARD_TITLE %></div>
     <div class="row">
-        <label for="stanfordCardNumber"> <span class="bold required"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="stanfordCardNumber" class="number-input">
-        </div>
-        <span class="cancel-input"></span>
+        <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+        <input type="text" class="number-input input">
     </div>
-    <div class="row">
-        <label for="stanfordCaptchaValue"> <span class="bold required"><%= _lp.GIFTCARD_CAPTCHA %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" autocomplete="off" id="stanfordCaptchaValue" name="captcha-input" class="captcha-input">
+    <div class="row captcha-row">
+        <div class="captcha_container fl-left text-center">
+            <div class="captcha_wrap">
+                <img class="captcha" width="100%" height="100%">
+                <div class="captcha-spinner"></div>
+            </div>
+            <span class="rewards-card-btn btn-reload primary-text link" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></span>
+        </div>
+        <div class="captcha-input-wrap">
+            <div class="label required optional-text"><%= _lp.GIFTCARD_CAPTCHA %></div>
+            <input type="text" autocomplete="off" name="captcha-input" class="captcha-input input">
         </div>
     </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
-        </div>
-        <span class="rewards-card-btn btn-reload" tabindex="0"><span><%= _lp.GIFTCARD_RELOAD %></span></span>
-    </div>
-    <div class="btn btn-popup btn-cancel unselectable" tabindex="0"><span><%= _lp.CANCEL %></span></div>
-    <div class="btn btn-popup btn-submit unselectable" tabindex="0"><span><%= _lp.CONFIRM_SUBMIT %></span></div>
+    <div class="btn btn-half border-box fl-left btn-cancel text-center btn-secondary" tabindex="0"><%= _lp.CANCEL %></div>
+    <div class="btn btn-half border-box fl-left btn-submit text-center" tabindex="0"><%= _lp.CONFIRM_SUBMIT %></div>
 </script>
 
 <script type="text/template" id="stanfordcard_reload-template">
     <div class="row">
-        <label for="stanford-card-number" class="label"><%= _lp.STANFORD_CARD_NUMBER %></label>
-        <input id="stanford-card-number" class="number-input input ios-safari-caret">
-        <span class="cancel-input"></span>
-    </div>
-    <div class="captcha_container">
-        <div class="captcha-wrapper">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
+        <div class="label optional-text required"><%= _lp.STANFORD_CARD_NUMBER %></div>
+        <div class="pos-relative">
+            <input class="number-input input ios-safari-caret">
+            <label class="ctrl-wrapper cancel">
+                <input type="button" class="ctrl cancel-input hide">
+            </label>
         </div>
-        <input type="text" class="captcha-input input ios-safari-caret fl-right" placeholder="<%= _lp.ENTER_CAPTCHA %>">
-        <span class="btn-reload rewards-card-btn link text-center" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></span>
+    </div>
+    <div class="row captcha_input_line">
+        <div class="captcha_container fl-left">
+            <div class="captcha-wrapper">
+                <img class="captcha" width="100%" height="100%">
+                <div class="captcha-spinner"></div>
+            </div>
+            <span class="btn-reload rewards-card-btn primary-text link text-center" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></span>
+        </div>
+        <div class="captcha-input-wrap">
+            <div class="label optional-text required"><%= _lp.ENTER_CAPTCHA %></div>
+            <input type="text" class="captcha-input input ios-safari-caret">
+        </div>
     </div>
 </script>

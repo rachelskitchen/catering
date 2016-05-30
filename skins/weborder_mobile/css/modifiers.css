@@ -68,9 +68,14 @@
 }
 
 .modifier .input::before {
+    display: none;
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;
+}
+
+.modifier input:checked + .input::before {
+    display: inline-block;
 }
 
 .modifier .cost, .modifier .free, .modifier .special_button {

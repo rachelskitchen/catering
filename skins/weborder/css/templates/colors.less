@@ -214,8 +214,15 @@ body,
 }
 
 /* [secondary_button] */
+.btn-secondary[class],
 #popup_cancel[id] {
     .resolve-background(@secondary_button);
+}
+
+/* [secondary_button_highlighted] */
+.btn-secondary[class]:active, .btn-secondary[class]:focus,
+#popup_cancel[id]:active, #popup_cancel[id]:focus {
+    .resolve-background(@secondary_button_highlighted);
 }
 
 /* [tab_active] active tab (Menu, About, Map) */
