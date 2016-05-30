@@ -57,6 +57,7 @@ define(["main_router"], function(main_router) {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             this.bodyElement = Backbone.$('body');
             this.bodyElement.append('<div class="main-container"></div>');
+            _.isObject(cssua.userAgent) && cssua.userAgent.mobile && this.bodyElement.addClass('mobile');
 
             // set locked routes if online orders are disabled
             if(!App.Settings.online_orders) {
