@@ -61,7 +61,6 @@ define(["generator", "list"], function() {
             }
             else {
                 this.$('input').prop('checked', true);
-                // this.$('input').trigger('change');
 
                 if (!this.collection.saved_parent_selected) {
                     this.$('input').trigger('change');
@@ -379,6 +378,7 @@ define(["generator", "list"], function() {
 
             value = isCategories ? value : model.get('pattern');
 
+            // if search pattern is empty
             if (!isCategories && !value) {
                 return;
             }
