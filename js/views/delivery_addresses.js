@@ -172,23 +172,17 @@ define(['backbone', 'factory'], function(Backbone) {
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
+
+            this.toggleAddressEdit();
+            this.listenTo(this.options.customer.get('addresses'), 'change:selected', this.toggleAddressEdit);
         },
         bindings: {
-            '.address-edit': 'toggle: showAddressEdit', // the address edit form
             '.address-selection': 'toggle: showAddressSelection',
             '.shipping-services': 'toggle: equal(checkout_dining_option, "DINING_OPTION_SHIPPING")'
         },
         events: {
             'change #addresses': 'updateAddress'
         },
-        bindingSources: _.extend({}, AddressView.prototype.bindingSources, {
-            addresses: function() {
-                var model = new Backbone.Model();
-                model.listenTo(App.Data.customer.get('addresses'), 'change:selected', function() {
-                    model.trigger('change');
-                });
-            }
-        }),
         computeds: {
             /**
              * Indicates whether the user is logged in.
@@ -213,15 +207,6 @@ define(['backbone', 'factory'], function(Backbone) {
                     }).length;
                 }
             },
-            /**
-             * Indicates whether the address edit form should be shown.
-             */
-            showAddressEdit: {
-                deps: ['isAuthorized', 'customer_addresses', 'showAddressSelection', '$addresses'],
-                get: function(isAuthorized, customer_addresses, showAddressSelection) {
-                    return !isAuthorized || !customer_addresses.isProfileAddressSelected() || !showAddressSelection;
-                }
-            }
         },
         render: function() {
             this.model.set('isShippingServices', this.isShippingServices);
@@ -312,6 +297,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
                 App.Data.myorder.update_cart_totals({update_shipping_options: true});
             }
+        },
+        toggleAddressEdit: function() {
+            var show = !this.getBinding('isAuthorized') || !this.getBinding('customer_addresses').isProfileAddressSelected() || !this.getBinding('showAddressSelection');
+            this.$('.address-edit').toggle(show);
         }
     });
 
@@ -406,7 +395,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 optionsStr = _.reduce(options, function(memo, option) {
                     return memo + '<option value="' + option.value + '">' + option.label + '</option>';
                 }, '');
-                optionsStr += '<option value="-1">Enter New Address</option>';
+                optionsStr += '<option value="-1">' + _loc.ENTER_NEW_ADDRESS + '</option>';
 
                 this.$('#addresses').html(optionsStr);
 

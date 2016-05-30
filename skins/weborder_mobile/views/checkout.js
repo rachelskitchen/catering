@@ -112,7 +112,7 @@ define(["checkout_view"], function(checkout_view) {
         mod: 'order_type_short',
         bindings: {
             '.address-selection': 'toggle: all(inList(dining_option, "DINING_OPTION_DELIVERY", "DINING_OPTION_SHIPPING", "DINING_OPTION_CATERING"), showAddressSelection)',
-            '.address-edit': 'toggle: all(showAddressSelection, showAddressEdit)'
+            '.address-edit': 'toggle: showAddressEdit'
         },
         events: _.extend({}, App.Views.DeliveryAddressesSelectionView.prototype.computeds, {
             'change #addresses': 'updateShippingServices'

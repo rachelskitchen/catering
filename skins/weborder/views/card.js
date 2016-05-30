@@ -107,7 +107,7 @@ define(["card_view"], function(card_view) {
                         });
                     }
                     options.push({
-                        label: _loc.CARD_NEW_ADDRESS,
+                        label: _loc.ENTER_NEW_ADDRESS,
                         value: newAddress
                     });
                     return options;
@@ -121,7 +121,7 @@ define(["card_view"], function(card_view) {
             }
         },
         setDefaultCountry: function() {
-            var checkoutAddress = this.options.customer.getCheckoutAddress(),
+            var checkoutAddress = this.options.customer.get('addresses').getCheckoutAddress(),
                 storeAddress = App.Settings.address;
             if (_.isObject(checkoutAddress) && checkoutAddress.country) {
                 this.model.set('country_code', checkoutAddress.country);
