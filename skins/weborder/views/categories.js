@@ -61,7 +61,11 @@ define(["generator", "list"], function() {
             }
             else {
                 this.$('input').prop('checked', true);
-                this.$('input').trigger('change');
+                // this.$('input').trigger('change');
+
+                if (!this.collection.saved_parent_selected) {
+                    this.$('input').trigger('change');
+                }
             }
         }
     });
@@ -104,9 +108,22 @@ define(["generator", "list"], function() {
             return this;
         },
         reset_selection: function() {
-            this.collection.parent_selected = null;
-            this.$('ul').find('label').removeClass('checked');
-            this.$('ul').find('input').attr('checked', false);
+            var searchString = this.options.searchLine.get('searchString');
+
+            if (searchString) {
+                if (!this.collection.saved_parent_selected) {
+                    this.collection.saved_parent_selected = this.collection.parent_selected;
+                }
+
+                this.collection.parent_selected = null;
+                this.$('ul').find('label').removeClass('checked');
+                this.$('ul').find('input').attr('checked', false);
+            }
+            else if (this.collection.saved_parent_selected) {
+                this.collection.setSelected(0, true);
+                this.collection.setParentSelected(this.collection.saved_parent_selected);
+                delete this.collection.saved_parent_selected;
+            }
         },
         update_slider_render: function() {
             this.create_slider();
@@ -361,6 +378,10 @@ define(["generator", "list"], function() {
                 data = isCategories ? undefined : model;
 
             value = isCategories ? value : model.get('pattern');
+
+            if (!isCategories && !value) {
+                return;
+            }
 
             // if search result and result is empty
             if(data && (!data.get('products')))
