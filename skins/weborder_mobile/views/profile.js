@@ -179,6 +179,33 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         }
     });
 
+    var ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView.extend({
+        bindings: {
+            '.address__header': 'classes: {collapsed: ui_collapsed}',
+        },
+        removeAddress: function() {
+            var self = this;
+
+            App.Data.errors.alert(
+                _loc.PROFILE_ADDRESS_DELETE,
+                false,
+                true,
+                {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            self.model.collection.remove(self.model);
+                            App.Data.customer.deleteAddress(self.model);
+                        }
+                    }
+                });
+        },
+    });
+
+    var ProfileAddressesView = App.Views.CoreProfileView.CoreProfileAddressesView.extend({
+        itemView: ProfileAddressView,
+    });
+
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfilePaymentsEditionView = ProfilePaymentsEditionView;
@@ -187,5 +214,7 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         App.Views.ProfileView.ProfileRewardCardSelectionView = ProfileRewardCardSelectionView;
         App.Views.ProfileView.ProfileRewardCardsSelectionView = ProfileRewardCardsSelectionView;
         App.Views.ProfileView.ProfileRewardCardsEditionView = ProfileRewardCardsEditionView;
+        App.Views.ProfileView.ProfileAddressView = ProfileAddressView;
+        App.Views.ProfileView.ProfileAddressesView = ProfileAddressesView;
     });
 });

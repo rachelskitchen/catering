@@ -167,7 +167,7 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'address',
         tagName: 'li',
-        className: 'address',
+        className: 'address-item',
         initialize: function() {
             var id = this.model.get('id');
             // do not show not profile address (filled on the checkout screen)
@@ -175,22 +175,22 @@ define(["factory"], function() {
                 return;
             }
 
-            this.listenTo(this.model.collection, 'toggleFolding', function(model, expanded) {
-                if (expanded && this.model != model) {
-                    this.setBinding('address_expanded', false);
+            this.listenTo(this.model.collection, 'toggleFolding', function(model, collapsed) {
+                if (!collapsed && this.model != model) {
+                    this.setBinding('ui_collapsed', true);
                 }
             });
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
 
             if (this.getBinding('modelIndex') === 1) {
-                this.setBinding('address_expanded', true);
+                this.setBinding('ui_collapsed', false);
             }
         },
         bindings: {
             '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), "New Address")',
-            '.expand': 'toggle: id, classes: {folded: not(address_expanded), expanded: address_expanded}',
-            '.address__fields': 'toggle: any(not(id), address_expanded)',
+            '.expand': 'toggle: id, classes: {folded: ui_collapsed, expanded: not(ui_collapsed)}',
+            '.address__fields': 'toggle: any(not(id), not(ui_collapsed))',
             '.address__default': 'checked: is_primary',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
@@ -212,9 +212,9 @@ define(["factory"], function() {
             'click .remove-btn': 'removeAddress',
         },
         bindingSources: {
-            address: function() {
+            ui: function() {
                 return new Backbone.Model({
-                    expanded: false
+                    collapsed: true
                 });
             }
         },
@@ -280,8 +280,8 @@ define(["factory"], function() {
             }
         },
         toggleFolding: function() {
-            var newValue = !this.getBinding('address_expanded');
-            this.setBinding('address_expanded', newValue);
+            var newValue = !this.getBinding('ui_collapsed');
+            this.setBinding('ui_collapsed', newValue);
             this.model.collection.trigger('toggleFolding', this.model, newValue);
         },
         removeAddress: function() {
