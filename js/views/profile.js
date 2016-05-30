@@ -191,7 +191,7 @@ define(["factory"], function() {
             '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), "New Address")',
             '.expand': 'toggle: id, classes: {folded: ui_collapsed, expanded: not(ui_collapsed)}',
             '.address__header': 'classes: {collapsed: ui_collapsed}',
-            '.address__fields': 'toggle: any(not(id), not(ui_collapsed))',
+            '.address__fields': 'css: {display: select(any(not(id), not(ui_collapsed)), "", "none")}',
             '.address__default': 'checked: is_primary',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',

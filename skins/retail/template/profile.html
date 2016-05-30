@@ -94,10 +94,20 @@
 
 <script type="text/template" id="profile_addresses-template">
     <ul class="addresses-list"></ul>
+
+    <div class="addresses__add primary-text link"><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
 </script>
 
 <script type="text/template" id="profile_address-template">
-    <ul class="profile-form text-center">
+    <div class="address__header">
+        <div class="address__title">
+            <span class="expand"></span>
+            <span class="address__title-text"></span>
+        </div>
+        <span class="cancel link remove-btn"></span>
+    </div>
+
+    <ul class="address__fields profile-form text-center">
         <li>
             <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
         </li>
