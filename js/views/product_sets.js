@@ -210,7 +210,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         addItem: function(model) {
             var product = model.get('product');
 
-            if (product.get('attribute_type') != 0 || product.get('is_gift') == true)
+            if (product.get('attribute_type') != 0 || product.get('is_gift') == true || product.get('is_combo') == true)
                 return this;
 
             var view = App.Views.GeneratorView.create('Combo', {
