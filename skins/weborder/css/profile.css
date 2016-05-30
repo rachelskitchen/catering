@@ -322,11 +322,11 @@
     margin-bottom: 15px;
 }
 
-.expand.folded:before {
-    content: '\f196';
-    font-family: "FontAwesome";
-}
 .expand.expanded:before {
     content: '\f147';
+    font-family: "FontAwesome";
+}
+.collapsed .expand:before {
+    content: '\f196';
     font-family: "FontAwesome";
 }
