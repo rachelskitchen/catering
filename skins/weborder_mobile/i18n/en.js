@@ -161,7 +161,7 @@
         'STORE_INFO_HOURS': 'Hours',
         'STORE_INFO_ROUND_THE_CLOCK': 'Round the clock',
         'STORE_INFO_CLOSED': 'Closed',
-        'STORE_INFO_ACCESS': 'Access',
+        'STORE_INFO_ACCESS': 'How to find us',
         'STANFORD': 'Stanford',
         'STANFORD_PLANS': 'Available Plans',
         'STANFORD_BALANCE': 'Balance:',

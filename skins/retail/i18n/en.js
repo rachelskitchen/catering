@@ -103,7 +103,7 @@
         'STORE_INFO_CLOSED': 'Closed',
         'STORE_INFO_PHONE': 'Phone',
         'STORE_INFO_EMAIL': 'Email',
-        'STORE_INFO_ACCESS': 'Access',
+        'STORE_INFO_ACCESS': 'How to find us',
         'STANFORD_PLANS': 'Available Plans',
         'STANFORD_NO_PLANS': 'You do not have any plan at this time.',
         'STANFORD_BALANCE': 'Balance:',
