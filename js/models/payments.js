@@ -150,13 +150,13 @@ define(['backbone'], function(Backbone) {
             Backbone.Model.prototype.initialize.apply(this, arguments);
         },
         /**
-         * Makes the payment token is selected if `is_primary` attribute is `true`
+         * Makes the payment token selected if `is_primary` attribute is `true`
          */
         setPrimaryAsSelected: function() {
             this.get('is_primary') && this.set('selected', true);
         },
         /**
-         * Makes the payment token is primary if `selected` attribute is `true`
+         * Makes the payment token primary if `selected` attribute is `true`
          */
         setSelectedAsPrimary: function() {
             this.get('selected') && this.set('is_primary', true);

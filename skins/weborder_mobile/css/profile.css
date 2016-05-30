@@ -270,11 +270,16 @@
 
 .profile-edit .profile-checkbox {
     display: block;
+    position: relative;
+    padding: .8em 0 .8em 1.8em;
+    color: #838385;
+    text-align: left;
+}
+
+.profile-edit .payment-item .profile-checkbox {
     position: absolute;
     right: 5em;
     top: 0;
-    padding: .8em 0 .8em 1.8em;
-    color: #838385;
 }
 
 .profile-edit .profile-checkbox input {

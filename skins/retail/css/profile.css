@@ -287,6 +287,7 @@
     position: relative;
     line-height: 21px;
     padding-left: 28px;
+    text-align: left;
 }
 
 .profile-edit .profile-checkbox input {
@@ -440,10 +441,15 @@
     margin-bottom: 15px;
 }
 
+.profile-edit .address__header,
+.profile-edit .address-item .default-row {
+    text-align: left;
+    padding: 0 8px;
+}
+
 .profile-edit .address__header {
     position: relative;
     margin-bottom: 1em;
-    text-align: left;
 }
 
 .expand.expanded:before {
