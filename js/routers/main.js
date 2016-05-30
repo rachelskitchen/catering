@@ -1372,7 +1372,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         profileCreateContent: function() {
             var customer = App.Data.customer,
                 mainModel = App.Data.mainModel,
-                address = new Backbone.Model(customer.getEmptyAddress());
+                address = new App.Models.CustomerAddress();
 
             return {
                 modelName: 'Profile',

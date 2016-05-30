@@ -130,6 +130,41 @@
         <li>
             <input type="text" class="zipcode ios-safari-caret input-colors">
         </li>
+        <li>
+            <label class="profile-checkbox">
+                <input type="checkbox" class="address__default"><i class="input checkbox"></i><%= _lp.PROFILE_DEFAULT_ADDRESS %>
+            </label>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="profile_address_create-template">
+    <ul class="address__fields profile-form font-size2 text-center">
+        <li>
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
+        </li>
+        <li>
+            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" class="street_2 ios-safari-caret input-colors">
+        </li>
+        <li>
+            <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" class="city ios-safari-caret input-colors">
+        </li>
+        <li class="country-row">
+            <div class="select-wrapper input-colors country-wrapper" data-placeholder="<%= _lp.CHOOSE_COUNTRY %>">
+                <select class="country"></select>
+            </div>
+        </li>
+        <li class="state-row">
+            <div class="select-wrapper input-colors state-wrapper" data-placeholder="<%= _lp.CHOOSE_STATE %>">
+                <select class="state"></select>
+            </div>
+        </li>
+        <li class="province-row">
+           <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" class="province ios-safari-caret input-colors">
+        </li>
+        <li>
+            <input type="text" class="zipcode ios-safari-caret input-colors">
+        </li>
     </ul>
 </script>
 

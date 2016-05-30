@@ -2139,7 +2139,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {number} - a numeric or string value by which the model should be ordered relative to others.
          */
         comparator: function(model) {
-            return model.get('is_primary') ? -1 : 0;
+            if (model.get('is_primary')) {
+                return -1;
+            }
+            if (model.get('id') === null) {
+                return 2;
+            }
+            return 0;
         },
         /**
          * Adds listeners to track changes of 'selected' attribute and collection updates.
@@ -2150,6 +2156,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.listenTo(this, 'change', this.onModelChange);
             this.listenTo(this, 'change reset add remove', function() {
                 this.trigger('update');
+            });
+            // handle the case when the collection doesn't contain any profile address after the address removal
+            this.listenTo(this, 'remove', function() {
+                if (!this.some(function(model) { return !isNaN(model.get('id')); })) {
+                    this.add({});
+                }
             });
         },
         /**
@@ -2164,12 +2176,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         },
         onModelChange: function(model) {
             var changed = model.changedAttributes(),
-                keys = ['street_1', 'street_2', 'state', 'province', 'country', 'zipcode'],
+                keys = ['street_1', 'street_2', 'state', 'province', 'country', 'zipcode', 'is_primary'],
                 trigger = _.some(keys, function(key) {
                     return _.has(changed, key);
                 });
 
             if (trigger) {
+                // default value is "" but select binging converts it to null
                 if ((_.isEqual(changed, {state: null}) || _.isEqual(changed, {country: null})) || _.isEqual(changed, {state: null, country: null})) {
                     return;
                 }

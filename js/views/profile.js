@@ -126,7 +126,7 @@ define(["factory"], function() {
 
             this.subViews.push(App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
-                mod: 'Address',
+                mod: 'AddressCreate',
                 model: this.options.address
             }));
 
@@ -193,6 +193,7 @@ define(["factory"], function() {
             '.address__header': 'classes: {collapsed: ui_collapsed}',
             '.address__fields': 'css: {display: select(any(not(id), not(ui_collapsed)), "", "none")}',
             '.address__default': 'checked: is_primary',
+            '.checkbox': 'attr: {checked: select(is_primary, "checked", false)}',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
             '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
@@ -273,7 +274,7 @@ define(["factory"], function() {
             }, 0); // fix silent autoselect in mobile browsers
         },
         setDefaultAddress: function(e) {
-            if (!e.target.checked) {
+            if (e.target.checked) {
                 this.model.collection.trigger('change:is_primary');
             }
             else {
@@ -303,6 +304,79 @@ define(["factory"], function() {
                 });
         },
     });
+
+App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.extend({
+    name: 'profile',
+    mod: 'address_create',
+    bindings: {
+        '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
+        '.country-wrapper': 'classes: {placeholder: not(country)}',
+        '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
+        '.state-row': 'toggle: equal(country, "US")',
+        '.state-wrapper': 'classes: {placeholder: not(state)}',
+        '.state': 'value: state, options: parseOptions(_lp_STATES)',
+        '.street_1': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
+        '.street_2': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',
+        '.city': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
+        '.province-row': 'toggle: equal(country, "CA")',
+        '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
+        '.zipcode-row .label': 'text: zipLabel',
+        '.zipcode': 'value: zipcode, attr: {placeholder: zipLabel}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+    },
+    computeds: {
+        /**
+         * @returns {number} Address index, starting from 1.
+         */
+        modelIndex: {
+            deps: ['$model'],
+            get: function(model) {
+                return model.collection.indexOf(model) + 1;
+            }
+        },
+        /**
+         * Generates label and placeholder for zipcode field.
+         * @returns {string}
+         *   - "Zip Code" if selected country is the US, OR there is no selection, but establishment country is US;
+         *   - "Postal Code" otherwise.
+         */
+        zipLabel: {
+            deps: ['country'],
+            get: function(country) {
+                if (country == 'US' || !country && App.Settings.address && App.Settings.address.country == 'US') {
+                    return _loc.PROFILE_ZIP_CODE;
+                }
+                else {
+                    return _loc.PROFILE_POSTAL_CODE;
+                }
+            }
+        },
+    },
+    bindingFilters: {
+        parseOptions: function(data) {
+            var result = [];
+            if (!_.isObject(data)) {
+                return result;
+            }
+            for(var i in data) {
+                result.push({
+                    label: data[i],
+                    value: i
+                });
+            }
+            return result;
+        }
+    },
+    onEnterListeners: {
+        ':el': setCallback('applyChanges')
+    },
+    render: function() {
+        App.Views.FactoryView.prototype.render.apply(this, arguments);
+        var self = this;
+        setTimeout(function() {
+            !self.model.get('country') && self.$('.country').val('');
+        }, 0); // fix silent autoselect in mobile browsers
+    },
+});
 
     App.Views.CoreProfileView.CoreProfileAddressesView = App.Views.FactoryView.extend({
         name: 'profile',
@@ -1009,6 +1083,7 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
         App.Views.ProfileView.ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView;
         App.Views.ProfileView.ProfileAddressesView = App.Views.CoreProfileView.CoreProfileAddressesView;
+        App.Views.ProfileView.ProfileAddressCreateView = App.Views.CoreProfileView.CoreProfileAddressCreateView;
         App.Views.ProfileView.ProfileAccountPasswordView = App.Views.CoreProfileView.CoreProfileAccountPasswordView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
