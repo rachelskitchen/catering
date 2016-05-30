@@ -132,7 +132,7 @@
         'STORE_INFO_CLOSED': 'Closed',
         'STORE_INFO_PHONE': 'Phone',
         'STORE_INFO_EMAIL': 'Email',
-        'STORE_INFO_ACCESS': 'Access',
+        'STORE_INFO_ACCESS': 'How to find us',
         'STORE_INFO_BUSINESS_INFO': 'Business Info',
         'STORE_INFO_OUR_STORY': 'Our Story',
         'STORE_INFO_FIND_US': 'Find Us',
