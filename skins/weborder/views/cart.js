@@ -148,10 +148,17 @@ define(["products_view"], function() {
         }
     });
 
+    var CartConfirmationView = CartCheckoutView.extend({
+        bindings: {
+            '.pay-btn': 'toggle: false'
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.CartView = {};
         App.Views.CartView.CartCoreView = CartCoreView;
         App.Views.CartView.CartMainView = CartMainView;
         App.Views.CartView.CartCheckoutView = CartCheckoutView;
+        App.Views.CartView.CartConfirmationView = CartConfirmationView;
     });
 });

@@ -59,3 +59,17 @@
 .total_block > li {
     padding: 5px 0;
 }
+
+.confirm .qty-box,
+.confirm .remove,
+.confirm .edit {
+    display: none;
+}
+
+.confirm .total_block {
+    bottom: 10px !important;
+}
+
+.confirm .product_place[class] {
+    margin-left: 0;
+}
