@@ -33,6 +33,7 @@ define(["main_router"], function(main_router) {
         headers.main = {mod: 'Main', className: 'main'};
         carts.main = {mod: 'Main', className: 'main'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
+        carts.confirm = {mod: 'Confirmation', className: 'confirm'};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -213,15 +214,6 @@ define(["main_router"], function(main_router) {
                 paymentCanceled && mainModel.trigger('loadCompleted');
                 paymentCanceled = false;
             }
-        },
-        /**
-         * Navigate on #confirm when payment is completed.
-         */
-        onPayHandler: function(capturePhase) {
-            this.navigate('confirm',  {
-                trigger: true,
-                replace: capturePhase
-            });
         },
         /**
          * Change page.
@@ -726,13 +718,21 @@ define(["main_router"], function(main_router) {
                     this.loadCustomer();
                 }
 
-                var other_dining_options = App.Data.myorder.checkout.get('other_dining_options');
+                var other_dining_options = App.Data.myorder.checkout.get('other_dining_options'),
+                    cartData = carts.confirm;
+
+                if (this.recentOrder) {
+                    cartData = _.extend({
+                        collection: this.recentOrder,
+                        checkout: this.recentOrder.checkout,
+                    }, carts.confirm);
+                }
 
                 App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
                     mod: 'Main',
                     header: headers.main,
-                    cart: carts.checkout,
+                    cart: cartData,
                     content: {
                         modelName: 'Main',
                         mod: 'Done',

@@ -573,7 +573,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
                     customer = App.Data.customer,
-                    stanfordCard = App.Data.stanfordCard;
+                    stanfordCard = App.Data.stanfordCard,
+                    myorderClone = myorder.clone();
 
                 App.Data.settings.usaepayBack = true;
 
@@ -596,7 +597,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 }
 
                 // call cb
-                typeof cb == 'function' && cb(myorder.paymentResponse.capturePhase);
+                typeof cb == 'function' && cb(myorder.paymentResponse.capturePhase, myorderClone);
             }, this);
 
             // Check if app is loaded after payment on external payment page (paypal, usaepay and others).
@@ -1737,7 +1738,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 this.initialized = true;
             }
         },
-        onPayHandler: function(capturePhase) {
+        onPayHandler: function(capturePhase, myorderClone) {
+            this.recentOrder = myorderClone;
             this.navigate('confirm',  {
                 trigger: true,
                 replace: capturePhase

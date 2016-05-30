@@ -57,11 +57,6 @@ define(["backbone", "factory"], function() {
         }
     });
 
-    var HeaderConfirmationView = App.Views.FactoryView.extend({
-        name: 'header',
-        mod: 'confirmation'
-    });
-
     var HeaderDeliveryView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'delivery',
@@ -91,8 +86,6 @@ define(["backbone", "factory"], function() {
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
-        App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
         App.Views.HeaderView.HeaderDeliveryView = HeaderDeliveryView;
-        // App.Views.HeaderView.HeaderProfileView = HeaderProfileView;
     });
 });
