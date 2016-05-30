@@ -93,11 +93,18 @@
 </script>
 
 <script type="text/template" id="profile_addresses-template">
-    <ul class="addresses-list"></ul>
+    <ul class="addresses-list profile-edit"></ul>
 </script>
 
 <script type="text/template" id="profile_address-template">
-    <ul class="profile-form font-size2 text-center">
+    <div class="address__header editgroup primary-text text-center primary-bg">
+        <span class="address__title font-size1">
+            <span class="address__title-text"></span>
+        </span>
+        <div class="remove-btn font-size2"></div>
+    </div>
+
+    <ul class="address__fields profile-form font-size2 text-center">
         <li>
             <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
         </li>

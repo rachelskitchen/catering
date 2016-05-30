@@ -183,7 +183,10 @@ define(['backbone', 'factory'], function(Backbone) {
         },
         bindingSources: _.extend({}, AddressView.prototype.bindingSources, {
             addresses: function() {
-                return App.Data.customer.get('addresses');
+                var model = new Backbone.Model();
+                model.listenTo(App.Data.customer.get('addresses'), 'change:selected', function() {
+                    model.trigger('change');
+                });
             }
         }),
         computeds: {
@@ -200,7 +203,7 @@ define(['backbone', 'factory'], function(Backbone) {
              * Indicates whether the address selection drop-down list should be shown.
              */
             showAddressSelection: {
-                deps: ['isAuthorized', '$addresses', 'checkout_dining_option'],
+                deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
                     return isAuthorized && customer_addresses.filter(function(addr) {
                         var address = addr.toJSON();
@@ -214,7 +217,7 @@ define(['backbone', 'factory'], function(Backbone) {
              * Indicates whether the address edit form should be shown.
              */
             showAddressEdit: {
-                deps: ['isAuthorized', '$addresses', 'showAddressSelection',],
+                deps: ['isAuthorized', 'customer_addresses', 'showAddressSelection', '$addresses'],
                 get: function(isAuthorized, customer_addresses, showAddressSelection) {
                     return !isAuthorized || !customer_addresses.isProfileAddressSelected() || !showAddressSelection;
                 }
@@ -334,7 +337,7 @@ define(['backbone', 'factory'], function(Backbone) {
         bindingSources: _.extend({}, DeliveryAddressesView.prototype.bindingSources),
         computeds: _.extend({}, DeliveryAddressesView.prototype.computeds, {
             selectedAddressId: {
-                deps: ['$addresses'],
+                deps: ['customer_addresses'],
                 get: function(customer_addresses) {
                     var selectedAddr = customer_addresses.getSelectedAddress();
                     // set -1 if no address is selected or if selected address is not from profile
@@ -362,7 +365,11 @@ define(['backbone', 'factory'], function(Backbone) {
         changeSelection: function(e) {
             var value = Number(e.target.value),
                 addresses = this.getBinding('customer_addresses'),
-                addr = value != -1 ? addresses.get(value) : addresses.get(this.getBinding('checkout_dining_option'));
+                addressId = value != -1 ? value : this.getBinding('checkout_dining_option'),
+                addr = addresses.get(addressId);
+            if (!addr) {
+                addr = new App.Models.CustomerAddress({id: addressId});
+            }
             addr && addr.set('selected', true);
         },
         /**
