@@ -731,6 +731,8 @@ define(["main_router"], function(main_router) {
                     }, carts.confirm);
                 }
 
+                App.Views.GeneratorView.cacheRemoveView('Main', 'Done', 'content_Main_Done');
+
                 App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
                     mod: 'Main',
@@ -743,8 +745,7 @@ define(["main_router"], function(main_router) {
                         customer: App.Data.customer,
                         checkout: App.Data.myorder.checkout,
                         other_options: other_dining_options || new Backbone.Collection(),
-                        className: 'main-done',
-                        noCache: true
+                        className: 'main-done'
                     }
                 });
                 this.change_page();
