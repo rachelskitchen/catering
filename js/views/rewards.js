@@ -41,10 +41,10 @@
         bindingFilters: {
             /**
              * Sets text that reflects reward type and amount of points to be redeemed.
-             * 
+             *
              * @param  {string} rewardType - Reward type.
              * @param  {Number} points - Amount of points.
-             * @returns {string} - 
+             * @returns {string} -
              */
             redemptionText: function(points) {
                 var text = _loc.REWARDS_POINTS_REDEMPTION_AMOUNT,
@@ -88,11 +88,11 @@
                 var selectedModels = this.model.collection.where(criteria);
                 // remove selection
                 selectedModels.length && _.invoke(selectedModels, 'set', {selected: false});
-            } 
+            }
 
             // toggle selection
             this.model.set('selected', !selected);
-            App.Data.myorder.rewardsCard.trigger('onSelectReward');
+            this.options.collectionView.model.trigger('onSelectReward');
         }
     });
 
@@ -224,7 +224,9 @@
         },
 
         apply: function() {
-            this.model.trigger('onRedemptionApplied');
+            var rewardsCard = this.collection.rewardsCard;
+            rewardsCard.update(this.model);
+            rewardsCard.trigger('onRedemptionApplied');
         }
     });
 
