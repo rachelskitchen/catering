@@ -307,13 +307,13 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this;
         },
         check_model: function() {
-            return this.model.get('product').get("product_sets").check_selected();
+            return this.model.get('product').get('product_sets').check_selected();
         },
         view_check_order: function() {
             return this.model.check_order();
         },
         check_weight_product: function() {
-            var isComboWithWeightProduct = this.model.get('product').get("product_sets").haveWeightProduct();
+            var isComboWithWeightProduct = this.model.get('product').get('product_sets').haveWeightProduct();
             this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
         }
       });
