@@ -93,8 +93,30 @@ define(["quantity_view"], function(quantity_view) {
         }
     });
 
+    var QuantityMainCartView = QuantityMainView.extend({
+        mod: 'main_cart',
+        initialize: function() {
+            QuantityMainView.prototype.initialize.apply(this, arguments);
+            if (this.model.isComboBased() && this.model.get('product').get('product_sets').haveWeightProduct()) {
+                QuantityMainView.prototype.combo_weight_product_change.call(this, true);
+            }
+        },
+        bindings: {
+            '.qty': 'text: quantity'
+        }
+    });
+
+    var QuantityWeightCartView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
+        mod: 'weight_cart',
+        bindings: {
+            '.weight': 'text: integer(weight)'
+        }
+    });
+
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
         App.Views.QuantityView.QuantityMainView = QuantityMainView;
         App.Views.QuantityView.QuantityWeightView = QuantityWeightView;
+        App.Views.QuantityView.QuantityMainCartView = QuantityMainCartView;
+        App.Views.QuantityView.QuantityWeightCartView = QuantityWeightCartView;
     });
 });
