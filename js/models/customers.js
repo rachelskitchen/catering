@@ -2291,7 +2291,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
             });
             if (!reverse_addr && fromProfile && customer.isAuthorized()) {
-                reverse_addr = addresses.getDefaultProfileAddress().toJSON(); // use profile address
+                reverse_addr = this.getDefaultProfileAddress().toJSON(); // use profile address
             }
 
             if (reverse_addr) {
@@ -2320,7 +2320,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @returns {object} address object.
          */
         getOrderAddress: function(address) {
-            var address = _.isObject(address) ? address : App.Data.customer.get('addresses').getSelectedAddress().toJSON();
+            var address = _.isObject(address) ? address : this.getSelectedAddress().toJSON();
 
             return {
                 // here we need only the following fields (no need for extra fields from profile address.
