@@ -344,6 +344,14 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 App.SettingsDirectory.saved_credit_cards = false;
             }
 
+            // set addresses
+            customer.setAddresses();
+
+            // change address selection according to selected dining option
+            this.listenTo(App.Data.myorder.checkout, 'change:dining_option', function(dining_option) {
+                customer.get('addresses').changeSelection(dining_option);
+            });
+
             // set gift cards
             if (App.SettingsDirectory.saved_gift_cards) {
                 customer.setGiftCards(App.Collections.GiftCards);
@@ -482,7 +490,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
          */
         loadCustomer: function() {
             App.Data.customer.loadCustomer();
-            App.Data.customer.loadAddresses();
         },
         /**
          * Init App.Data.promotions.
@@ -828,6 +835,18 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             });
             return dfd;
         },
+        getProfileAddressesPromises: function() {
+            var customer = App.Data.customer,
+                promises = [],
+                addressesDef = Backbone.$.Deferred();
+
+            if (customer.get('addresses') && customer.addressesRequest) {
+                customer.addressesRequest.always(addressesDef.resolve.bind(addressesDef));
+                promises.push(addressesDef);
+            }
+
+            return promises;
+        },
         getProfilePaymentsPromises: function() {
             var customer = App.Data.customer,
                 promises = [],
@@ -988,60 +1007,63 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         setProfileEditContent: function(doNotChangeMod) {
-            var customer = App.Data.customer,
-                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
+            var promises = this.getProfileAddressesPromises(),
+                customer = App.Data.customer,
+                addresses = customer.get('addresses'),
+                updatedAddresses = new Backbone.Collection(),
                 ui = new Backbone.Model({show_response: false}),
                 updateBasicDetails = false,
-                updateAddress = false,
                 updatePassword = false,
                 updateBtn = new Backbone.Model({disabled: true}),
                 self = this;
 
-            if (doNotChangeMod) {
-                App.Data.mainModel.set({
-                    content: {
-                        modelName: 'Profile',
-                        mod: 'Edit',
-                        model: customer,
-                        address: address,
-                        updateAction: update,
-                        updateBtn: updateBtn,
-                        ui: ui,
-                        className: 'profile-edit'
-                    }
-                });
-            } else {
-                App.Data.mainModel.set({
-                    mod: 'Profile',
-                    className: 'profile-container',
-                    profile_title: _loc.PROFILE_EDIT_TITLE,
-                    profile_content: {
-                        modelName: 'Profile',
-                        mod: 'Edit',
-                        model: customer,
-                        address: address,
-                        updateAction: update,
-                        updateBtn: updateBtn,
-                        ui: ui,
-                        className: 'profile-edit text-center'
-                    }
-                });
+            if (promises.length) {
+                if (doNotChangeMod) {
+                    App.Data.mainModel.set({
+                        content: {
+                            modelName: 'Profile',
+                            mod: 'Edit',
+                            model: customer,
+                            updateAction: update,
+                            updateBtn: updateBtn,
+                            ui: ui,
+                            className: 'profile-edit'
+                        }
+                    });
+                } else {
+                    App.Data.mainModel.set({
+                        mod: 'Profile',
+                        className: 'profile-container',
+                        profile_title: _loc.PROFILE_EDIT_TITLE,
+                        profile_content: {
+                            modelName: 'Profile',
+                            mod: 'Edit',
+                            model: customer,
+                            updateAction: update,
+                            updateBtn: updateBtn,
+                            ui: ui,
+                            className: 'profile-edit text-center'
+                        }
+                    });
+                }
+
+                window.setTimeout(function() {
+                    var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
+                        passwordEvents = 'change:password change:confirm_password';
+                    self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
+                    self.listenTo(customer, passwordEvents, accountPasswordChanged);
+                    self.listenTo(addresses, 'addressFieldsChanged', addressChanged);
+                    self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
+                    self.listenTo(customer, 'onLogout', logout);
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'addressFieldsChanged', addressChanged));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
+                }, 0);
             }
 
-            window.setTimeout(function() {
-                var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
-                    passwordEvents = 'change:password change:confirm_password';
-                self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
-                self.listenTo(customer, passwordEvents, accountPasswordChanged);
-                self.listenTo(address, 'change', addressChanged);
-                self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
-                self.listenTo(customer, 'onLogout', logout);
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
-            }, 0);
+            return promises;
 
             function updateAddressAttributes() {
                 address.set(customer.getProfileAddress());
@@ -1063,9 +1085,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 ui.set('show_response', false);
             }
 
-            function addressChanged() {
+            function addressChanged(address) {
                 if (address.get('country')) { // country is the only required field
-                    updateAddress = true;
+                    updatedAddresses.add(address);
                     updateBtn.set('disabled', false);
                     ui.set('show_response', false);
                 }
@@ -1073,9 +1095,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function update() {
                 var mainModel = App.Data.mainModel,
-                    _address = address.toJSON(),
-                    requests = updateBasicDetails + updatePassword + updateAddress,
-                    basicXHR, passwordXHR, addressXHR, check_customer, errorFields = [],
+                    requests = updateBasicDetails + updatePassword + !!updatedAddresses.length,
+                    basicXHR, passwordXHR, addressXHRs = [], check_customer, errorFields = [],
                     error = App.Data.errors.alert.bind(App.Data.errors);
 
                 // show spinner
@@ -1114,12 +1135,14 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 }
 
                 // update address
-                if (updateAddress) {
-                    addressXHR = customer.isProfileAddress(_address) ? customer.updateAddress(_address) : customer.createAddress(_address);
-                    addressXHR.done(function() {
-                        updateAddress = false;
+                if (updatedAddresses.length) {
+                    updatedAddresses.each(function(addr) {
+                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
                     });
-                    addressXHR.always(hideSpinner);
+                    Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
+                        updatedAddresses.reset();
+                    });
+                    Backbone.$.when.apply(Backbone.$, addressXHRs).always(hideSpinner);
                 }
 
                 // hide spinner once all requests are completed
@@ -1350,7 +1373,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         profileCreateContent: function() {
             var customer = App.Data.customer,
                 mainModel = App.Data.mainModel,
-                address = new Backbone.Model(customer.getEmptyAddress());
+                address = new App.Models.CustomerAddress();
 
             return {
                 modelName: 'Profile',
@@ -1378,9 +1401,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         profileEditContent: function() {
-            var customer = App.Data.customer,
+            var promises = this.getProfileAddressesPromises(),
+                customer = App.Data.customer,
+                addresses = customer.get('addresses'),
+                updatedAddresses = new Backbone.Collection(),
                 mainModel = App.Data.mainModel,
-                address = new Backbone.Model(customer.getProfileAddress() || customer.getEmptyAddress()),
                 content = [],
                 updateBasicDetails = false,
                 updateAddress = false,
@@ -1403,43 +1428,36 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 className: 'profile-basic-details'
             }, {
                 modelName: 'Profile',
-                mod: 'Address',
-                model: address,
+                mod: 'Addresses',
+                collection: addresses,
                 applyChanges: update
             });
 
             window.setTimeout(function() {
                 var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email';
                 self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
-                self.listenTo(address, 'change', addressChanged);
-                self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
+                self.listenTo(addresses, 'addressFieldsChanged', addressChanged);
                 self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, address, 'change', addressChanged));
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'addressFieldsChanged', addressChanged));
                 self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
-
-            function updateAddressAttributes() {
-                address.set(customer.getProfileAddress());
-            }
 
             function basicDetailsChanged() {
                 updateBasicDetails = true;
                 App.Data.header.set({enableLink: true});
             }
 
-            function addressChanged() {
+            function addressChanged(address) {
                 if (address.get('country')) { // country is the only required field
-                    updateAddress = true;
+                    updatedAddresses.add(address);
                     App.Data.header.set({enableLink: true});
                 }
             }
 
             function update() {
                 var mainModel = App.Data.mainModel,
-                    _address = address.toJSON(),
-                    requests = updateBasicDetails + updateAddress,
-                    basicXHR, addressXHR, check_customer, errorFields = [],
+                    requests = updateBasicDetails + !!updatedAddresses.length,
+                    basicXHR, addressXHRs = [], check_customer, errorFields = [],
                     error = App.Data.errors.alert.bind(App.Data.errors);
 
                 // show spinner
@@ -1469,12 +1487,14 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 }
 
                 // update address
-                if (updateAddress) {
-                    addressXHR = customer.isProfileAddress(_address) ? customer.updateAddress(_address) : customer.createAddress(_address);
-                    addressXHR.done(function() {
-                        updateAddress = false;
+                if (updatedAddresses.length) {
+                    updatedAddresses.each(function(addr) {
+                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
                     });
-                    addressXHR.always(hideSpinner);
+                    Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
+                        updatedAddresses.reset();
+                    });
+                    Backbone.$.when.apply(Backbone.$, addressXHRs).always(hideSpinner);
                 }
 
                 // hide spinner once all requests are completed
@@ -1486,7 +1506,10 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 }
             }
 
-            return content;
+            return {
+                content: content,
+                promises: promises
+            }
         },
         profileSettingsContent: function() {
             var customer = App.Data.customer,

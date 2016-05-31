@@ -960,22 +960,23 @@ define(["main_router"], function(main_router) {
             });
 
             this.prepare('checkout', function() {
-                self.listenToOnce(self, 'route', function()
-                {
+                self.listenToOnce(self, 'route', function() {
                     App.Data.myorder.checkout.trigger('hide:datepicker');
                 });
 
-                if(!App.Data.card)
+                if (!App.Data.card)
                     App.Data.card = new App.Models.Card();
 
-                if(!App.Data.customer) {
+                if (!App.Data.customer) {
                     App.Data.customer =  new App.Models.Customer();
                     App.Data.customer.loadAddresses();
                 }
 
-                if (!App.Data.customer.isProfileAddressSelected()) {
+                var addresses = App.Data.customer.get('addresses');
+
+                if (!addresses.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    addresses.changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 }
 
                 App.Data.header.set('showPromotionsLink', !!self.promotions);
@@ -1978,16 +1979,19 @@ define(["main_router"], function(main_router) {
             this.change_page();
         },
         profile_edit: function() {
-            var content = this.profileEditContent();
+            var data = this.profileEditContent();
 
-            App.Data.mainModel.set({
-                header: headerModes.Modifiers,
-                footer: footerModes.None,
-                contentClass: 'primary-bg',
-                content: content
-            });
-
-            this.change_page();
+            if (!data.promises.length) {
+                return this.navigate('index', true);
+            } else {
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None,
+                    contentClass: 'primary-bg',
+                    content: data.content
+                });
+                Backbone.$.when.apply(Backbone.$, data.promises).then(this.change_page.bind(this));
+            }
         },
         profile_settings: function() {
             var content = this.profileSettingsContent();

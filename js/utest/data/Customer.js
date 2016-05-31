@@ -10,17 +10,12 @@ define([], function() {
             "phone": "",
             "email": "",
             "id": null,
-            "addresses": [],
-            "shipping_address": -1,
             "shipping_services": [],
             "shipping_selected": -1,
             "load_shipping_status": "",
-            "deliveryAddressIndex": 0,
-            "shippingAddressIndex": 1,
-            "cateringAddressIndex": 2,
-            "profileAddressIndex": 3,
             "password": "",
             "confirm_password": "",
+            "show_password": false,
             "user_id": null,
             "expires_in": null,
             "token_type": "",
@@ -33,6 +28,8 @@ define([], function() {
             "last_name": "Lastone",
             "addresses": [
                 {
+                    "id": 1,
+                    "selected": true,
                     "address": "170 Columbus Ave, San Francisco, 94133",
                     "city": "San Francisco",
                     "country": "US",
@@ -41,18 +38,24 @@ define([], function() {
                     "street_1": "170 Columbus Ave",
                     "street_2": "",
                     "zipcode": "94133"
+                },
+                {
+                    "id": 2,
+                    "selected": false,
+                    "city": "New York",
+                },
+                {
+                    "id": "DINING_OPTION_DELIVERY",
+                    "city": "New York",
+                    "street_1": "123 5th Ave",
                 }
             ],
-            "deliveryAddressIndex": "0",
             "email": "",
             "first_name": "",
             "id": null,
             "last_name": "",
             "load_shipping_status": "",
             "phone": "",
-            "shippingAddressIndex": 1,
-            "shipping_address": -1,
-            "shipping_selected": -1,
             "shipping_services": []
         }
     };

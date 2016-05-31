@@ -660,20 +660,21 @@ define(["main_router"], function(main_router) {
             this.prepare('checkout', function() {
                 this.listenTo(App.Data.customer, 'change:access_token', function() {
                     // update shipping address on login/logout
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 });
 
-                if(!App.Data.card) {
+                if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
 
-                var settings = App.Settings;
+                var settings = App.Data.settings.get('settings_system'),
+                    addresses = App.Data.customer.get('addresses');
 
                 App.Data.header.set('tab_index', null);
 
-                if (!App.Data.customer.isProfileAddressSelected()) {
+                if (!addresses.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    addresses.changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 }
 
                 App.Data.mainModel.set('mod', 'Main');
@@ -772,8 +773,14 @@ define(["main_router"], function(main_router) {
                 header: headers.main,
                 cart: carts.main
             });
-            this.setProfileEditContent(true);
-            this.change_page();
+
+            var promises = this.setProfileEditContent(true);
+
+            if (!promises.length) {
+                return this.navigate('index', true);
+            } else {
+                Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
+            }
         },
         promotions_list: function() {
             // @TODO

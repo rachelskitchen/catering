@@ -77,8 +77,8 @@
             <div class="account-password-box"></div>
         </div>
         <div class="col-right border-box fl-left">
-            <h3 class="header-underline"><%= _lp.PROFILE_ADDRESS %></h3>
-            <div class="address-box"></div>
+            <h3 class="header-underline"><%= _lp.PROFILE_ADDRESSES %></h3>
+            <div class="addresses"></div>
         </div>
     </div>
     <div class="update-btn btn text-center"><%= _lp.UPDATE %></div>
@@ -106,8 +106,22 @@
     </ul>
 </script>
 
+<script type="text/template" id="profile_addresses-template">
+    <ul class="addresses-list"></ul>
+
+    <div class="addresses__add primary-text link"><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
+</script>
+
 <script type="text/template" id="profile_address-template">
-    <ul class="">
+    <div class="address__header">
+        <span class="address__title">
+            <span class="expand"></span>
+            <span class="address__title-text"></span>
+        </span>
+        <span class="cancel link fl-right remove-btn"></span>
+    </div>
+
+    <ul class="address__fields">
         <li>
             <div class="label optional-text"><%= _lp.PROFILE_ADDRESS_LINE1 %></div>
             <input type="text" class="street_1 input ios-safari-caret">
@@ -136,9 +150,16 @@
             <div class="label optional-text"><%= _lp.PROFILE_PROVINCE %></div>
             <input type="text" class="province input ios-safari-caret">
         </li>
-        <li>
-            <div class="label optional-text"><%= _lp.PROFILE_PROVINCE %></div>
+        <li class="zipcode-row">
+            <div class="label optional-text"></div>
             <input type="text" class="zipcode input ios-safari-caret">
+        </li>
+        <li>
+            <label class="profile-checkbox">
+                <input type="checkbox" class="address__default">
+                <span class="checkbox primary-border"></span>
+                <span><%= _lp.PROFILE_DEFAULT_ADDRESS %></span>
+            </label>
         </li>
     </ul>
 </script>

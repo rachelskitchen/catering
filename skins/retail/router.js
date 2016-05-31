@@ -708,7 +708,7 @@ define(["main_router"], function(main_router) {
         checkout: function() {
             App.Data.header.set('menu_index', NaN);
             this.prepare('checkout', function() {
-                if(!App.Data.card) {
+                if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
 
@@ -718,11 +718,12 @@ define(["main_router"], function(main_router) {
                     App.Data.customer = new App.Models.Customer();
                 }
 
-                var settings = App.Data.settings.get('settings_system');
+                var settings = App.Data.settings.get('settings_system'),
+                    addresses = App.Data.customer.get('addresses');
 
-                if (!App.Data.customer.isProfileAddressSelected()) {
+                if (!addresses.isProfileAddressSelected()) {
                     // Need to specify shipping address (Bug 34676)
-                    App.Data.myorder.setShippingAddress(App.Data.myorder.checkout, App.Data.myorder.checkout.get('dining_option'));
+                    addresses.changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 }
 
                 App.Data.mainModel.set('mod', 'Main');
@@ -780,8 +781,13 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            this.setProfileEditContent();
-            this.change_page();
+            var promises = this.setProfileEditContent();
+
+            if (!promises.length) {
+                return this.navigate('index', true);
+            } else {
+                Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
+            }
         },
         profile_payments: function() {
             var promises = this.setProfilePaymentsContent();
