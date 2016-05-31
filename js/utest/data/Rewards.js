@@ -8,7 +8,8 @@ define([], function() {
             "points": 0,
             "rewards_type": null,
             "type": 0,
-            "selected": false
+            "selected": false,
+            "disabled": false,
         },
 
         "rewards": {

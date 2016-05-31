@@ -30,6 +30,7 @@
         'DONE_STANFORD_CARD_BALANCE': 'баланс',
         'DONE_STANFORD_CARD_BALANCE_MEAL': 'Обед',
         'DONE_STANFORD_CARD_BALANCE_MEALS': 'Обеда',
+        'ENTER_NEW_ADDRESS': 'Ввести новый адрес',
         'FOOTER_ABOUT': 'О нас',
         'FOOTER_LOYALTY': 'Бонусы',
         'FOOTER_LOCATION': 'Карта',

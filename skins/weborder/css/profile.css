@@ -262,7 +262,7 @@
     cursor: pointer;
 }
 
-.profile-edit .card-default {
+.profile-edit input[type="checkbox"] {
     position: absolute;
     top: -500px;
 }
@@ -311,4 +311,22 @@
 .profile-edit .reward-cards-list > li,
 .profile-edit .gift-cards-list > li {
     margin: 13px 0;
+}
+
+.profile-edit .addresses {
+    margin-top: 15px;
+}
+
+.profile-edit .address-item {
+    clear: both;
+    margin-bottom: 15px;
+}
+
+.expand.expanded:before {
+    content: '\f147';
+    font-family: "FontAwesome";
+}
+.collapsed .expand:before {
+    content: '\f196';
+    font-family: "FontAwesome";
 }

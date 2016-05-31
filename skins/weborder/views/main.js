@@ -310,7 +310,7 @@ define(["done_view", "generator"], function(done_view) {
                 return label;
             },
             getAddressLine: function(customer, dining_option, isDelivery) {
-                var address = isDelivery ? customer.getCheckoutAddress() : App.Settings.address,
+                var address = isDelivery ? customer.get('addresses').getCheckoutAddress() : App.Settings.address,
                     line = [],
                     street_1, street_2, zipcode, region;
 

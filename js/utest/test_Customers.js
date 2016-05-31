@@ -33,7 +33,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 trimFirstNameValue = new Function(),
                 trimLastNameValue = new Function();
             spyOn(model, 'setCustomerFromCookie');
-            spyOn(model, 'setAddressesIndexes');
             spyOn(model, 'listenTo');
             spyOn(page_visibility, 'on');
             spyOn(model._trimValue, 'bind').and.callFake(function(obj, attr) {
@@ -45,7 +44,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             model.initialize();
-            expect(model.setAddressesIndexes).toHaveBeenCalled();
             expect(model._trimValue.bind).toHaveBeenCalledWith(model, 'first_name');
             expect(model._trimValue.bind).toHaveBeenCalledWith(model, 'last_name');
             expect(model.listenTo).toHaveBeenCalledWith(model, 'change:first_name', trimFirstNameValue);
@@ -219,231 +217,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
-        it("saveAddresses()", function() {
-            spyOn(model, 'get').and.returnValue(1);
-            spyOn(window, 'setData');
-            spyOn(Backbone, 'Model').and.returnValue({});
-            model.saveAddresses();
-            expect(model.get).toHaveBeenCalledWith('addresses');
-            expect(Backbone.Model).toHaveBeenCalledWith({addresses: 1});
-            expect(window.setData).toHaveBeenCalledWith('address', {}, true);
-        });
-
-        describe("loadAddresses()", function() {
-            var values = [null, undefined, 12, NaN, Infinity, '12', '', 0, 1.223],
-                getData, appCache;
-
-            beforeEach(function() {
-                getData = spyOn(window, 'getData');
-                spyOn(model, 'set');
-                appCache = App;
-            });
-
-            afterEach(function(){
-                App = appCache;
-            });
-
-            it("`address` isn't object", function() {
-                values.forEach(function(value) {
-                    getData.and.returnValue(value);
-                    model.loadAddresses();
-                    expect(window.getData).toHaveBeenCalledWith('address', true);
-                    expect(model.set).toHaveBeenCalledWith('addresses', []);
-                });
-            });
-
-            it("`address` is object, `address.addresses` is not array", function() {
-                values.forEach(function(value) {
-                    getData.and.returnValue({addresses: value});
-                    model.loadAddresses();
-                    expect(window.getData).toHaveBeenCalledWith('address', true);
-                    expect(model.set).toHaveBeenCalledWith('addresses', []);
-                });
-            });
-
-            it("`address` is object, `address.addresses` is array with items > 1", function() {
-                var arr = [1,2,3];
-                getData.and.returnValue({addresses: arr});
-                model.loadAddresses();
-                expect(window.getData).toHaveBeenCalledWith('address', true);
-                expect(model.set).toHaveBeenCalledWith('addresses', arr);
-            });
-
-            it("`address` is object, `address.addresses` is array with one item, `App.skin` == `App.Skins.RETAIL`", function() {
-                var arr = [1];
-                App = {skin: true, Skins: {RETAIL: true}};
-                getData.and.returnValue({addresses: arr});
-                model.loadAddresses();
-                expect(window.getData).toHaveBeenCalledWith('address', true);
-                expect(model.set).toHaveBeenCalledWith('addresses', arr);
-            });
-
-
-            it("`address` is object, `address.addresses` is array with one item, `App.skin` != `App.Skins.RETAIL`, `data.addresses[0].country` == `App.Settings.address.country`", function() {
-                var arr = [{country: true}];
-                App = {skin: true, Skins: {RETAIL: false}, Settings: {address: {country: true}}};
-                getData.and.returnValue({addresses: arr});
-                model.loadAddresses();
-                expect(window.getData).toHaveBeenCalledWith('address', true);
-                expect(model.set).toHaveBeenCalledWith('addresses', arr);
-            });
-
-            it("`address` is object, `address.addresses` is array with one item, `App.skin` != `App.Skins.RETAIL`, `data.addresses[0].country` != `App.Settings.address.country`", function() {
-                var arr = [{country: true}];
-                App = {skin: true, Skins: {RETAIL: false}, Settings: {address: {country: false}}};
-                getData.and.returnValue({addresses: arr});
-                model.loadAddresses();
-                expect(window.getData).toHaveBeenCalledWith('address', true);
-                expect(model.set).toHaveBeenCalledWith('addresses', []);
-            });
-        });
-
-        describe("address_str()", function() {
-            var get, appCache;
-
-            beforeEach(function() {
-                get = spyOn(model, 'get');
-                appCache = App;
-            });
-
-            afterEach(function(){
-                App = appCache;
-            });
-
-            it("`addresses` isn't array", function() {
-                var values = [1, 0, -2, 2.087, NaN, Infinity, {}, new Function, 'asd', '', true, false, null, undefined];
-                values.forEach(function(value) {
-                    get.and.returnValue(value);
-                    expect(model.address_str()).toEqual('');
-                    expect(model.get).toHaveBeenCalledWith('addresses');
-                });
-            });
-
-            it("`addresses` is empty array", function() {
-                get.and.returnValue([]);
-                expect(model.address_str()).toEqual('');
-                expect(model.get).toHaveBeenCalledWith('addresses');
-            });
-
-            it("`addresses` is array with one item", function() {
-                get.and.returnValue([{street_1: 1}]);
-                expect(model.address_str()).toEqual('1');
-                expect(model.get).toHaveBeenCalledWith('addresses');
-            });
-
-            it("`addresses` is array with length > 1", function() {
-                get.and.returnValue([{street_1: 1}, {street_1: 2}]);
-                expect(model.address_str()).toEqual('2');
-                expect(model.get).toHaveBeenCalledWith('addresses');
-            });
-
-            it("`addresses` is array with length > 1, `index` param is correct", function() {
-                get.and.returnValue([{street_1: 1}, {street_1: 2}]);
-                expect(model.address_str(0)).toEqual('1');
-                expect(model.get).toHaveBeenCalledWith('addresses');
-            });
-
-            it("`addresses` is array with length > 1, `index` param is incorrect", function() {
-                get.and.returnValue([{street_1: 1}, {street_1: 2}]);
-                expect(model.address_str(2)).toEqual('');
-                expect(model.get).toHaveBeenCalledWith('addresses');
-            });
-
-            it("`App.Settings.address.state` exists", function() {
-                var values = {
-                    street_1: 'street_1',
-                    street_2: 'street_2',
-                    city: 'city',
-                    state: 'state',
-                    zipcode: 'zipcode'
-                };
-
-                App = {Settings: {address: {state: true}}};
-
-                get.and.returnValue([values]);
-                expect(model.address_str()).toEqual(Object.keys(values).join(', '));
-            });
-
-            it("`App.Settings.address.state` doesn't exist", function() {
-                var values = {
-                    street_1: 'street_1',
-                    street_2: 'street_2',
-                    city: 'city',
-                    state: 'state',
-                    zipcode: 'zipcode'
-                }, keys = Object.keys(values);
-
-                App = {Settings: {address: {state: true}}};
-                keys.splice(3, 0);
-                get.and.returnValue([values]);
-                expect(model.address_str()).toEqual(keys.join(', '));
-            });
-        });
-
-        describe("_check_delivery_fields()", function() {
-            var address;
-
-            beforeEach(function() {
-                address = deepClone(App.Data.settings.get('settings_system').address);
-                model.set('shipping_address', 0);
-            });
-
-            afterEach(function() {
-                App.Data.settings.get('settings_system').address = deepClone(address);
-                model.set('shipping_address', -1);
-            });
-
-            it("Address is correctly filled out", function() {
-                model.set('addresses', customer1.addresses);
-                expect(model._check_delivery_fields().length).toBe(0);
-            });
-
-            it("Address isn't filled out, country is US", function() {
-                model.set({
-                   addresses: [{
-                     city: '',
-                     country: 'US',
-                     state: '',
-                     province: '',
-                     street_1: '',
-                     street_2: '',
-                     zipcode: ''
-                   }]
-                });
-                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'State', 'Zip Code' ]);
-            });
-
-            it("Address isn't filled out, country is CA", function() {
-                model.set({
-                   addresses: [{
-                     city: '',
-                     country: 'CA',
-                     state: '',
-                     province: '',
-                     street_1: '',
-                     street_2: '',
-                     zipcode: ''
-                   }]
-                });
-                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Province', 'Zip Code' ]);
-            });
-
-            it("Address isn't filled out, country is neither US nor CA", function() {
-                model.set({
-                   addresses: [{
-                     city: '',
-                     country: 'EN',
-                     state: '',
-                     province: '',
-                     street_1: '',
-                     street_2: '',
-                     zipcode: ''
-                   }]
-                });
-                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Zip Code' ]);
-            });
-        });
-
         describe("check()", function() {
             var skin;
 
@@ -509,20 +282,24 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             it("need to check address fields", function() {
                 var dining_option = 'dining_option';
+                model.set('addresses', {
+                    _check_delivery_fields: jasmine.createSpy()
+                });
                 spyOn(model, 'isNewAddressSelected').and.returnValue(true);
-                spyOn(model, '_check_delivery_fields');
                 model.check(dining_option);
                 expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
-                expect(model._check_delivery_fields).toHaveBeenCalled();
+                expect(model.get('addresses')._check_delivery_fields).toHaveBeenCalled();
             });
 
             it("do not need to check address fields", function() {
                 var dining_option = 'dining_option';
+                model.set('addresses', {
+                    _check_delivery_fields: jasmine.createSpy()
+                });
                 spyOn(model, 'isNewAddressSelected').and.returnValue(false);
-                spyOn(model, '_check_delivery_fields');
                 model.check(dining_option);
                 expect(model.isNewAddressSelected).toHaveBeenCalledWith(dining_option);
-                expect(model._check_delivery_fields).not.toHaveBeenCalled();
+                expect(model.get('addresses')._check_delivery_fields).not.toHaveBeenCalled();
             });
 
             it("passed", function() {
@@ -543,7 +320,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                         ajaxOpts = arguments[0];
                         return ajax.apply(window, arguments);
                     };
-                })(Backbone.$.ajax.bind(Backbone.$));
+                })(Backbone.$.ajax.bind(Backbone.$)),
+                _model = new App.Models.Customer();
 
             beforeEach(function() {
                 ajaxOpts = undefined;
@@ -553,12 +331,25 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 orderItem = new Backbone.Model({id: 123});
                 orderItem.item_submit = new Function();
                 App.Data.myorder = new Backbone.Collection([orderItem]);
-                model.set('addresses', customer1.addresses);
+                model.set('addresses', {
+                    getOrderAddress: function() {
+                        return customer1.addresses[0];
+                    }
+                });
+                _model.set('addresses', {
+                    getOrderAddress: function() {
+                        return customer1.addresses[0];
+                    }
+                });
                 spyOn(orderItem, 'item_submit');
             });
 
-            it("`addresses` is not set", function() {
-                model.set('addresses', []);
+            it("`address` is not set", function() {
+                model.set('addresses', {
+                    getOrderAddress: function() {
+                        return null;
+                    }
+                });
                 expect(model.get_shipping_services()).toBeUndefined();
             });
 
@@ -627,43 +418,15 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(orderItem.item_submit).toHaveBeenCalled();
             });
 
-            it("this.isDefaultShippingAddress() returns `true`", function() {
-                var address = {address: 'test address'};
-                model.get('addresses').push(address);
-                spyOn(model, 'isDefaultShippingAddress').and.returnValue(true);
-                model.get_shipping_services();
-
-                expect(JSON.parse(ajaxOpts.data).address).toEqual(address);
-                expect(orderItem.item_submit).toHaveBeenCalled();
-            });
-
-            it("this.isDefaultShippingAddress() returns `false`", function() {
-                var address = {address: 'test address'},
-                    originalShippingAddress = model.get('shipping_address'),
-                    addresses = model.get('addresses');
-                addresses.push(address);
-                model.set('shipping_address', 0);
-                spyOn(model, 'isDefaultShippingAddress').and.returnValue(false);
-                model.get_shipping_services();
-
-                expect(JSON.parse(ajaxOpts.data).address).toEqual(addresses[0]);
-                expect(orderItem.item_submit).toHaveBeenCalled();
-
-                model.set('shipping_address', originalShippingAddress);
-            });
-
             describe("request is failed:", function() {
                 // Implement async run.
                 // http://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support
-
-                var _model = new App.Models.Customer();
 
                 beforeEach(function(done) {
                     var def = Backbone.$.Deferred(),
                         xhr = {statusText: ''},
                         self = this;
 
-                    _model.set('addresses', customer1.addresses);
                     _model.get_shipping_services(def);
                     def.reject(xhr);
 
@@ -681,14 +444,12 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             describe("request is failed:", function() {
                 // Implement async run.
                 // http://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support
-                var _model = new App.Models.Customer();
 
                 beforeEach(function(done) {
                     var def = Backbone.$.Deferred(),
                         xhr = {statusText: 'abort'},
                         self = this;
 
-                    _model.set('addresses', customer1.addresses);
                     _model.get_shipping_services(def);
 
                     def.reject(xhr);
@@ -707,14 +468,12 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             describe("request is successfully completed:", function() {
                 // Implement async run.
                 // http://jasmine.github.io/2.0/introduction.html#section-Asynchronous_Support
-                var _model = new App.Models.Customer();
 
                 beforeEach(function(done) {
                     var def = Backbone.$.Deferred(),
                         xhr = {status: 'error'},
                         self = this;
 
-                    _model.set('addresses', customer1.addresses);
                     _model.get_shipping_services(def);
 
                     def.resolve(xhr);
@@ -834,33 +593,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             }
         });
 
-        describe("setAddressesIndexes()", function() {
-            it("`addresses` isn't array", function() {
-                model.set('addresses', null);
-                spyOn(model, 'set');
-                model.setAddressesIndexes();
-                expect(model.set).not.toHaveBeenCalled();
-            });
-
-            it("`addresses` is array", function() {
-                model.set('addresses', [1, 2, 3]);
-                model.setAddressesIndexes();
-
-                expect(model.get('deliveryAddressIndex')).toBe(3);
-                expect(model.get('shippingAddressIndex')).toBe(4);
-                expect(model.get('cateringAddressIndex')).toBe(5);
-                expect(model.get('profileAddressIndex')).toBe(6);
-            });
-        });
-
-        it('isDefaultShippingAddress()', function() {
-            model.set('shipping_address', def.shipping_address);
-            expect(model.isDefaultShippingAddress()).toBe(true);
-
-            model.set('shipping_address', 1);
-            expect(model.isDefaultShippingAddress()).toBe(false);
-        });
-
         it('isDefaultShippingSelected()', function() {
             model.set('shipping_selected', def.shipping_selected);
             expect(model.isDefaultShippingSelected()).toBe(true);
@@ -870,183 +602,53 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         describe("isNewAddressSelected()", function() {
-            var originalShippingAddress;
+            var isNewAddressSelected;
 
             beforeEach(function() {
-                originalShippingAddress = originalShippingAddress ? originalShippingAddress : model.get('shipping_address');
+                model.set('addresses', {
+                    isNewAddressSelected: function() {return isNewAddressSelected;}
+                });
             });
 
-            afterEach(function() {
-                model.get('shipping_address', originalShippingAddress);
-            });
 
-            it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is delivery address index", function() {
-                model.set('shipping_address', model.get('deliveryAddressIndex'));
+            it("`dining_option` param is 'DINING_OPTION_DELIVERY', `addresses.isNewAddressSelected()` returns true", function() {
+                isNewAddressSelected = true;
                 expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
             });
 
-            it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is shipping address index", function() {
-                model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
-            });
-
-            it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is catering address index", function() {
-                model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(true);
-            });
-
-            it("`dining_option` param is 'DINING_OPTION_DELIVERY', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
-                model.set('shipping_address', -1);
+            it("`dining_option` param is 'DINING_OPTION_DELIVERY', `addresses.isNewAddressSelected()` returns false", function() {
+                isNewAddressSelected = false;
                 expect(model.isNewAddressSelected('DINING_OPTION_DELIVERY')).toBe(false);
             });
 
-            it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is delivery address index", function() {
-                model.set('shipping_address', model.get('deliveryAddressIndex'));
+            it("`dining_option` param is 'DINING_OPTION_SHIPPING', `addresses.isNewAddressSelected()` returns true", function() {
+                isNewAddressSelected = true;
                 expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
             });
 
-            it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is shipping address index", function() {
-                model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
-            });
-
-            it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is catering address index", function() {
-                model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(true);
-            });
-
-            it("`dining_option` param is 'DINING_OPTION_SHIPPING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
-                model.set('shipping_address', -1);
+            it("`dining_option` param is 'DINING_OPTION_SHIPPING', `addresses.isNewAddressSelected()` returns false", function() {
+                isNewAddressSelected = false;
                 expect(model.isNewAddressSelected('DINING_OPTION_SHIPPING')).toBe(false);
             });
 
-            it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is delivery address index", function() {
-                model.set('shipping_address', model.get('deliveryAddressIndex'));
+            it("`dining_option` param is 'DINING_OPTION_CATERING', `addresses.isNewAddressSelected()` returns true", function() {
+                isNewAddressSelected = true;
                 expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(true);
             });
 
-            it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is shipping address index", function() {
-                model.set('shipping_address', model.get('shippingAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(true);
-            });
-
-            it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is catering address index", function() {
-                model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(true);
-            });
-
-            it("`dining_option` param is 'DINING_OPTION_CATERING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
-                model.set('shipping_address', -1);
+            it("`dining_option` param is 'DINING_OPTION_CATERING', `addresses.isNewAddressSelected()` returns false", function() {
+                isNewAddressSelected = false;
                 expect(model.isNewAddressSelected('DINING_OPTION_CATERING')).toBe(false);
             });
 
-            it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is delivery address index", function() {
-                model.set('shipping_address', model.get('deliveryAddressIndex'));
+            it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `addresses.isNewAddressSelected()` returns true", function() {
+                isNewAddressSelected = true;
                 expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
             });
 
-            it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is shipping address index", function() {
-                model.set('shipping_address', model.get('shippingAddressIndex'));
+            it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `addresses.isNewAddressSelected()` returns false", function() {
+                isNewAddressSelected = false;
                 expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
-            });
-
-            it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is catering address index", function() {
-                model.set('shipping_address', model.get('cateringAddressIndex'));
-                expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
-            });
-
-            it("`dining_option` param is neither 'DINING_OPTION_DELIVERY' nor 'DINING_OPTION_SHIPPING' nor 'DINING_OPTION_CATERING', `shipping_address` is neither delivery nor shipping nor catering address index", function() {
-                model.set('shipping_address', -1);
-                expect(model.isNewAddressSelected('DINING_OPTION_TOGO')).toBe(false);
-            });
-        });
-
-        describe('isProfileAddressSelected()', function() {
-            it('`shipping_address` is less than 3', function() {
-                model.set('shipping_address', 2);
-                expect(model.isProfileAddressSelected()).toBe(false);
-            });
-
-            it('`shipping_address` is 3', function() {
-                model.set('shipping_address', 3);
-                expect(model.isProfileAddressSelected()).toBe(true);
-            });
-
-            it('`shipping_address` is more than 3', function() {
-                model.set('shipping_address', 4);
-                expect(model.isProfileAddressSelected()).toBe(true);
-            });
-        });
-
-        describe('getCheckoutAddress()', function() {
-            var address,
-                isDefaultShippingAddress,
-                emptyAddress = {
-                    country: 'US',
-                    state: 'CA',
-                    province: '',
-                    street_1: '',
-                    street_2: '',
-                    city: '',
-                    zipcode: ''
-                },
-                filledAddress = {
-                    country: 'US',
-                    state: 'CA',
-                    province: '',
-                    street_1: '170 Columbus Ave',
-                    street_2: '',
-                    city: 'San Francisco',
-                    zipcode: '94133'
-                },
-                filledProfileAddress = _.extend(filledAddress, {street_1: '123 Main St'});
-
-            beforeEach(function() {
-                model.set('addresses', [emptyAddress, emptyAddress, emptyAddress, filledAddress]);
-                isDefaultShippingAddress = spyOn(model, 'isDefaultShippingAddress');
-                this.defaultAddress = App.Settings.address;
-                App.Settings.address = filledAddress;
-            });
-
-            afterEach(function() {
-                App.Settings.address = this.defaultAddress;
-            });
-
-            it('shipping address isn\'t selected, street_1 of last address is not string', function() {
-                model.set('addresses', [emptyAddress, emptyAddress, undefined]);
-                isDefaultShippingAddress.and.returnValue(true);
-                expect(model.getCheckoutAddress()).toBeUndefined();
-            });
-
-            it('shipping address isn\'t selected, street_1 of last address is string', function() {
-                isDefaultShippingAddress.and.returnValue(true);
-                expect(model.getCheckoutAddress()).toEqual(filledAddress);
-            });
-
-            it('selected address if fully filled', function() {
-                model.set('shipping_address', 3);
-                expect(model.getCheckoutAddress()).toEqual(filledAddress);
-            });
-
-            it('selected address is empty', function() {
-                model.set('addresses', [emptyAddress, filledAddress, emptyAddress]);
-                model.set('shipping_address', 0);
-                expect(model.getCheckoutAddress()).toEqual(filledAddress);
-            });
-
-            it('selected address is undefined, other addresses are undefined, profile address is filled, `fromProfile` param is falsy', function() {
-                model.set('addresses', [undefined, undefined, undefined, filledProfileAddress]);
-                model.set('shipping_address', 0);
-                expect(model.getCheckoutAddress()).toBeUndefined;
-            });
-
-            it('selected address is empty, other addresses is empty, profile address is filled, `fromProfile` param is true', function() {
-                model.set('addresses', [undefined, undefined, undefined, filledProfileAddress]);
-                model.set('shipping_address', 0);
-                model.profileAddressIndex = 3;
-                spyOn(model, 'isAuthorized').and.returnValue(true);
-                delete filledProfileAddress.country;
-                expect(model.getCheckoutAddress(true)).toEqual(filledProfileAddress);
             });
         });
 
@@ -1226,6 +828,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
                 spyOn(model, 'updateCookie');
                 spyOn(model, 'setCustomerFromAPI');
+                spyOn(model, 'getAddresses');
                 spyOn(model, 'initPayments');
                 spyOn(model, 'initGiftCards');
                 spyOn(model, 'trigger');
@@ -1269,6 +872,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 commonExpectations();
                 expect(model.updateCookie).toHaveBeenCalledWith(_data);
                 expect(model.setCustomerFromAPI).toHaveBeenCalledWith(_data);
+                expect(model.getAddresses).toHaveBeenCalled();
                 expect(model.initPayments).toHaveBeenCalled();
                 expect(model.initGiftCards).toHaveBeenCalled();
                 expect(model.trigger).toHaveBeenCalledWith('onLogin');
@@ -1349,6 +953,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             spyOn(docCookies, 'removeItem');
             spyOn(model, 'removePayments');
             spyOn(model, 'removeGiftCards');
+            spyOn(model, 'removeRewardCards');
             spyOn(model, 'trigger');
 
             model.set({
@@ -1356,19 +961,23 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 last_name: 'Last Name',
                 email: 'First Name',
                 phone: '98423782364786',
-                access_token: '13123213'
+                access_token: '13123213',
+                addresses: {
+                    removeProfileAddresses: jasmine.createSpy()
+                }
             });
-
-            model.get('addresses').push({city: 'SF'});
 
             model.logout();
 
             expect(docCookies.removeItem).toHaveBeenCalledWith('user', '/weborder', 'revelup.com');
+            expect(model.get('addresses').removeProfileAddresses).toHaveBeenCalled();
             expect(model.removePayments).toHaveBeenCalled();
             expect(model.removeGiftCards).toHaveBeenCalled();
+            expect(model.removeRewardCards).toHaveBeenCalled();
             expect(model.trigger).toHaveBeenCalledWith('onLogout');
-            expect(model.toJSON()).toEqual(model.defaults);
-            expect(model.defaults.addresses).toEqual([]);
+            var modelJson = model.toJSON();
+            delete modelJson.addresses;
+            expect(modelJson).toEqual(model.defaults);
         });
 
         describe("signup()", function() {
@@ -1404,7 +1013,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     return ajaxMock;
                 });
 
-                spyOn(model, 'convertAddressToAPIFormat').and.callFake(function() {
+                spyOn(App.Models.CustomerAddress.prototype, 'convertToAPIFormat').and.callFake(function() {
                     return address;
                 });
                 spyOn(window, 'getInstanceName').and.returnValue(instanceName);
@@ -1434,7 +1043,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 expect(data.first_name).toBe(first_name);
                 expect(data.last_name).toBe(last_name);
                 expect(data.phone_number).toBe(phone);
-                expect(model.convertAddressToAPIFormat).toHaveBeenCalled();
+                expect(App.Models.CustomerAddress.prototype.convertToAPIFormat).toHaveBeenCalled();
                 expect(window.getInstanceName).toHaveBeenCalled();
                 expect(data.instance).toBe(instanceName);
             }
@@ -1521,18 +1130,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
-        it("getEmptyAddress()", function() {
-            expect(model.getEmptyAddress()).toEqual({
-                country: '',
-                state: '',
-                province: '',
-                street_1: '',
-                street_2: '',
-                city: '',
-                zipcode: ''
-            });
-        });
-
         describe("getAuthorizationHeader()", function() {
             var originalTokenType, originalAccessToken;
 
@@ -1588,46 +1185,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     Authorization: token_type + ' ' + access_token
                 });
             });
-        });
-
-        describe("setProfileAddress()", function() {
-            var address, originalAddresses;
-
-            beforeEach(function() {
-                originalAddresses = model.get('addresses');
-                address = {city: 'SF'};
-                spyOn(model, 'convertAddressFromAPIFormat').and.callFake(function() {
-                    return address;
-                });
-            });
-
-            afterEach(function() {
-                model.set('addresses', originalAddresses);
-            });
-
-            it("`address` param isn't object", function() {
-                model.setProfileAddress();
-
-                expect(model.convertAddressFromAPIFormat).not.toHaveBeenCalled();
-                expect(model.get('addresses')[model.get('profileAddressIndex')]).not.toBe(address);
-            });
-
-            it("`address` param is object", function() {
-                model.setProfileAddress(address);
-
-                expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
-                expect(model.get('addresses')[model.get('profileAddressIndex')]).toBe(address);
-            });
-        });
-
-        it("getProfileAddress()", function() {
-            var addresses = model.get('addresses'),
-                address = {city: 'SF'};
-
-            spyOn(model, 'convertAddressFromAPIFormat').and.returnValue(address);
-            model.setProfileAddress(address);
-
-            expect(model.getProfileAddress()).toBe(address);
         });
 
         describe("updateCustomer()", function() {
@@ -1698,7 +1255,8 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             }
 
             it("successful response", function() {
-                model.updateCustomer().resolve();
+                var result = model.updateCustomer();
+                result.resolve();
 
                 commonExpectations();
                 expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
@@ -1773,6 +1331,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
         describe("createAddress()", function() {
             var ajaxMock, ajaxOpts, address,
+                addresses,
                 dataInAPIFormat = 123,
                 headers = {Authorization: "Bearer Tch5zvK5tSL1AjWIO3YU4NXeMENG6J1UNdxv3D2gJKUrIGWpHzcNnf7qdQ9s"};
 
@@ -1787,12 +1346,11 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     return ajaxMock;
                 });
 
-                spyOn(model, 'convertAddressToAPIFormat').and.callFake(function() {
-                    return address;
+                model.set('addresses', {
+                    updateFromAPI: jasmine.createSpy()
                 });
-                spyOn(model, 'getCustomerInAPIFormat').and.returnValue(dataInAPIFormat);
+                addresses = model.get('addresses');
                 spyOn(model, 'getAuthorizationHeader').and.returnValue(headers);
-                spyOn(model, 'setProfileAddress');
                 spyOn(model, 'updateCookie');
                 spyOn(model, 'logout');
                 spyOn(model, 'trigger');
@@ -1812,7 +1370,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             it("`address` param isn't object", function() {
                 model.createAddress();
 
-                expect(model.convertAddressToAPIFormat).not.toHaveBeenCalled();
+                expect(addresses.updateFromAPI).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
             });
 
@@ -1821,14 +1379,21 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 commonExpectations();
             });
 
-            it("successful response", function() {
+            it("successful response, response is not an object", function() {
                 var data = 123;
                 model.createAddress(address).resolve(data);
 
                 commonExpectations();
-                expect(model.setProfileAddress).toHaveBeenCalledWith(data);
-                expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
-                expect(model.updateCookie).toHaveBeenCalledWith(dataInAPIFormat);
+                expect(addresses.updateFromAPI).not.toHaveBeenCalledWith();
+                expect(model.trigger).not.toHaveBeenCalledWith('onUserAddressCreated');
+            });
+
+            it("successful response, responsed is an object", function() {
+                var data = {street_1: '123'};
+                model.createAddress(address).resolve(data);
+
+                commonExpectations();
+                expect(addresses.updateFromAPI).toHaveBeenCalledWith([data]);
                 expect(model.trigger).toHaveBeenCalledWith('onUserAddressCreated');
             });
 
@@ -1899,7 +1464,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 });
                 spyOn(model, 'getCustomerInAPIFormat').and.returnValue(dataInAPIFormat);
                 spyOn(model, 'getAuthorizationHeader').and.returnValue(headers);
-                spyOn(model, 'setProfileAddress');
                 spyOn(model, 'updateCookie');
                 spyOn(model, 'logout');
                 spyOn(model, 'trigger');
@@ -1932,9 +1496,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.updateAddress(address).resolve(data);
 
                 commonExpectations();
-                expect(model.setProfileAddress).toHaveBeenCalledWith(data);
-                expect(model.getCustomerInAPIFormat).toHaveBeenCalled();
-                expect(model.updateCookie).toHaveBeenCalledWith(dataInAPIFormat);
+                expect(model.convertAddressToAPIFormat).toHaveBeenCalledWith(address);
                 expect(model.trigger).toHaveBeenCalledWith('onUserAddressUpdate');
             });
 
@@ -2299,34 +1861,9 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
 
-        describe("isProfileAddress()", function() {
-            it("`address` param isn't object", function() {
-                values = [1, '', 0, '123', NaN, Infinity, false, undefined, null];
-                values.forEach(function(value) {
-                    expect(model.isProfileAddress(value)).toBe(false);
-                });
-            });
-
-            it("`address` param is object, `address.id` is undefined", function() {
-                var address = {};
-                expect(model.isProfileAddress(address)).toBe(false);
-            });
-
-            it("`address` param is object, `address.id` is specified, `address.customer` is undefined", function() {
-                var address = {id: 123};
-                expect(model.isProfileAddress(address)).toBe(false);
-            });
-
-            it("`address` param is object, `address.id` is specified, `address.customer` is specified", function() {
-                var address = {id: 123, customer: 2123};
-                expect(model.isProfileAddress(address)).toBe(true);
-            });
-        });
-
         describe("setCustomerFromAPI()", function() {
             var originalEmail, originalFirstName, originalLastName, originalPhone,
                 originalUserId, originalAccessToken, originalTokenType, originalExpiresIn,
-                address,
                 notObjectValues,
                 customer, token;
 
@@ -2339,7 +1876,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 originalAccessToken = model.get('access_token');
                 originalTokenType = model.get('token_type');
                 originalExpiresIn = model.get('expires_in');
-                address = {city: 'SF'};
                 notObjectValues = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
                 customer = {
                     first_name: 'Test FN',
@@ -2354,14 +1890,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                     expires_in: 3600
                 };
 
-                spyOn(model, 'getEmptyAddress').and.callFake(returnAddress);
-                spyOn(model, 'convertAddressFromAPIFormat').and.callFake(returnAddress);
-                spyOn(model, 'setProfileAddress');
                 spyOn(model, 'clearPasswords');
-
-                function returnAddress() {
-                    return address;
-                }
             });
 
             afterEach(function() {
@@ -2378,8 +1907,6 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             function failureExpectations() {
-                expect(model.convertAddressFromAPIFormat).not.toHaveBeenCalled();
-                expect(model.setProfileAddress).not.toHaveBeenCalled();
                 expect(model.clearPasswords).not.toHaveBeenCalled();
             }
 
@@ -2424,47 +1951,14 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 });
             });
 
-            it("`data` param is object, `data.customer` is object, `data.token` is object, `data.customer.addresses` isn't array", function() {
-                notObjectValues.forEach(function(value) {
-                    var data = {
-                        customer: _.extend(customer, {addresses: value}),
-                        token: token
-                    };
-
-                    model.setCustomerFromAPI(data);
-                    successfulExpectations();
-                    expect(model.getEmptyAddress).toHaveBeenCalled();
-                    expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
-                    expect(model.setProfileAddress).toHaveBeenCalledWith(address);
-                });
-            });
-
-            it("`data` param is object, `data.customer` is object, `data.token` is object, `data.customer.addresses` is array, `data.customer.addresses[0]` isn't object", function() {
-                notObjectValues.forEach(function(value) {
-                    var data = {
-                        customer: _.extend(customer, {addresses: [value]}),
-                        token: token
-                    };
-
-                    model.setCustomerFromAPI(data);
-                    successfulExpectations();
-                    expect(model.getEmptyAddress).toHaveBeenCalled();
-                    expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
-                    expect(model.setProfileAddress).toHaveBeenCalledWith(address);
-                });
-            });
-
-            it("`data` param is object, `data.customer` is object, `data.token` is object, `data.customer.addresses` is array, `data.customer.addresses[0]` is object", function() {
+            it("`data` param is object, `data.customer` is object, `data.token` is object", function() {
                 var data = {
-                    customer: _.extend(customer, {addresses: [address]}),
+                    customer: customer,
                     token: token
                 };
 
                 model.setCustomerFromAPI(data);
                 successfulExpectations();
-                expect(model.getEmptyAddress).not.toHaveBeenCalled();
-                expect(model.convertAddressFromAPIFormat).toHaveBeenCalledWith(address);
-                expect(model.setProfileAddress).toHaveBeenCalledWith(address);
             });
         });
 
@@ -2488,7 +1982,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             it("`data` param isn't object", function() {
-                var value = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
+                var values = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
                 values.forEach(function(value) {
                     model.updateCookie(value);
                     expect(model.get).not.toHaveBeenCalled();
@@ -2497,7 +1991,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
 
             it("`data` param is object, `data.token` isn't object", function() {
-                var value = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
+                var values = [1, '22', 0, '', NaN, Infinity, false, true, undefined, null];
                 values.forEach(function(value) {
                     model.updateCookie(_.extend(_data, {token: value}));
                     expect(model.get).not.toHaveBeenCalled();
@@ -2564,19 +2058,15 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         it("getCustomerInAPIFormat()", function() {
-            var address = 123, result, data;
-
-            spyOn(model, 'getProfileAddress').and.returnValue(address);
+            var result, data;
 
             result = model.getCustomerInAPIFormat(),
             data = model.toJSON();
 
-            expect(model.getProfileAddress).toHaveBeenCalled();
             expect(result.customer.email).toBe(data.email);
             expect(result.customer.first_name).toBe(data.first_name);
             expect(result.customer.last_name).toBe(data.last_name);
             expect(result.customer.phone_number).toBe(data.phone);
-            expect(result.customer.addresses).toEqual([address]);
             expect(result.token.user_id).toBe(data.user_id);
             expect(result.token.access_token).toBe(data.access_token);
             expect(result.token.token_type).toBe(data.token_type);
@@ -3669,4 +3159,117 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             });
         });
     });
+
+    describe('App.Models.CustomerAddress', function() {
+
+    });
+
+    describe('App.Collections.CustomerAddresses', function() {
+        var model;
+
+        beforeEach(function() {
+            model = new App.Collections.CustomerAddresses;
+        });
+
+        it('Enviroment', function() {
+            expect(App.Collections.CustomerAddresses).toBeDefined();
+        });
+
+        it('initialize()', function() {
+            spyOn(App.Collections.CustomerAddresses.prototype, 'radioSelect');
+            model = new App.Collections.CustomerAddresses;
+            model.set(data.customer1.addresses);
+            model.get(2).set('selected', true);
+            expect(model.radioSelect).toHaveBeenCalled();
+        });
+
+        describe("_check_delivery_fields()", function() {
+            var address,
+                selectedAddress;
+
+            beforeEach(function() {
+                address = deepClone(App.Data.settings.get('settings_system').address);
+                model.set(data.customer1.addresses);
+                selectedAddress = new Backbone.Model({
+                    city: '',
+                    country: '',
+                    state: '',
+                    province: '',
+                    street_1: '',
+                    street_2: '',
+                    zipcode: ''
+                });
+                spyOn(model, 'getSelectedAddress').and.returnValue(selectedAddress);
+            });
+
+            afterEach(function() {
+                App.Data.settings.get('settings_system').address = deepClone(address);
+            });
+
+            it("Address is correctly filled out", function() {
+                model.set(data.customer1.addresses);
+                model.getSelectedAddress.and.returnValue(model.get(1));
+                expect(model._check_delivery_fields().length).toBe(0);
+            });
+
+            it("Address isn't filled out, country is US", function() {
+                selectedAddress.set('country', 'US');
+                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'State', 'Zip Code' ]);
+            });
+
+            it("Address isn't filled out, country is CA", function() {
+                selectedAddress.set('country', 'CA');
+                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Province', 'Zip Code' ]);
+            });
+
+            it("Address isn't filled out, country is neither US nor CA", function() {
+                selectedAddress.set('country', 'AU');
+                expect(model._check_delivery_fields()).toEqual([ 'Address Line 1', 'City', 'Zip Code' ]);
+            });
+        });
+
+        describe('getCheckoutAddress()', function() {
+            var address,
+                isAuthorized,
+                emptyAddress = {
+                    country: 'US',
+                    state: 'CA',
+                    province: '',
+                    street_1: '',
+                    street_2: '',
+                    city: '',
+                    zipcode: ''
+                },
+                filledAddress = {
+                    id: 1,
+                    country: 'US',
+                    state: 'CA',
+                    province: '',
+                    street_1: '170 Columbus Ave',
+                    street_2: '',
+                    city: 'San Francisco',
+                    zipcode: '94133'
+                },
+                filledProfileAddress = _.extend(filledAddress, {street_1: '123 Main St'});
+
+                //filledAddress = data.customer1.addresses[0];
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+                App.Data.customer = {
+                    isAuthorized: function() {return isAuthorized;}
+                };
+                model.set(data.customer1.addresses);
+                this.defaultAddress = App.Settings.address;
+                App.Settings.address = filledAddress;
+                spyOn(model, 'getSelectedAddress').and.returnValue(model.get(1));
+            });
+
+            afterEach(function() {
+                App.Settings.address = this.defaultAddress;
+                App.Data.customer = this.customer;
+            });
+        });
+    });
+
 });
