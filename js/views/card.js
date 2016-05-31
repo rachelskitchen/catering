@@ -112,7 +112,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             var model = this.options.customer.toJSON(),
                 defaultAddress = App.Settings.address,
-                address = this.options.customer.getCheckoutAddress();
+                address = this.options.customer.get('addresses').getCheckoutAddress();
             var country = address && address.country ? address.country : defaultAddress.country;
             var state = country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
             if (!this.model.get('country_code')) {
@@ -156,8 +156,10 @@ define(["backbone", "factory"], function(Backbone) {
             use_profile_address_title: {
                 deps: ["customer_addresses"],
                 get: function() {
-                    var customer = this.options.customer;
-                    var addr = customer.getProfileAddress();
+                    var customer = this.options.customer,
+                        addr = customer.get('addresses').getDefaultProfileAddress();
+                    addr = addr ? addr.toJSON() : null;
+
                     if (!customer.isAuthorized() || !addr) {
                         return "";
                     }
@@ -168,8 +170,10 @@ define(["backbone", "factory"], function(Backbone) {
             hide_profile_address: {
                 deps: ["customer_addresses"],
                 get: function() {
-                    var customer = this.options.customer;
-                    var addr = customer.getProfileAddress();
+                    var customer = this.options.customer,
+                        addr = customer.get('addresses').getDefaultProfileAddress();
+                    addr = addr ? addr.toJSON() : null;
+
                     if (!customer.isAuthorized() || !addr || !addr.city || !addr.country_code || !addr.street_1 || !addr.zipcode)
                         return true;
                     else

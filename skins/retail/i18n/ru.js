@@ -38,6 +38,7 @@
         'CONFIRM_SUBMIT': 'Оплатить',
         'CONFIRM_SUBMIT_CARD': 'Данные карты',
         'CONFIRM_SUBMIT_ORDER': 'Оплатить заказ',
+        'ENTER_NEW_ADDRESS': 'Ввести новый адрес',
         'FILTERS_DEFAULT_SORTING': 'Сортировка по умолчанию',
         'FILTERS_NEW_ARRIVALS': 'Новые поступления',
         'FILTERS_LOW_TO_HIGH': 'Цена: по возрастанию',

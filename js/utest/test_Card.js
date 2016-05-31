@@ -428,16 +428,19 @@ define(['card'], function() {
 
         describe('window.get_billing_address()', function() {
             var billing_address = new Backbone.Model({
-                test: 'test'
+                test: 'test',
+                country: 'US'
             });
 
             beforeEach(function() {
                 this.customer = App.Data.customer;
 
-                App.Data.customer = {
-                    getProfileAddress: jasmine.createSpy().and.returnValue('profile address'),
-                    getCheckoutAddress: jasmine.createSpy().and.returnValue('checkout address'),
-                };
+                App.Data.customer = new Backbone.Model({
+                    addresses: {
+                        getDefaultProfileAddress: jasmine.createSpy().and.returnValue(billing_address),
+                        getCheckoutAddress: jasmine.createSpy().and.returnValue(billing_address.toJSON())
+                    }
+                });
 
                 App.Data.card = new Backbone.Model({billing_address: billing_address});
             });
@@ -450,15 +453,15 @@ define(['card'], function() {
             it('card.use_profile_address is true', function() {
                 App.Data.card.set('use_profile_address', true);
 
-                expect(window.get_billing_address()).toBe('profile address');
-                expect(App.Data.customer.getProfileAddress).toHaveBeenCalled();
+                expect(window.get_billing_address()).toEqual(billing_address.toJSON());
+                expect(App.Data.customer.get('addresses').getDefaultProfileAddress).toHaveBeenCalled();
             });
 
             it('card.use_profile_address is false', function() {
                 App.Data.card.set('use_profile_address', false);
 
                 expect(window.get_billing_address()).toEqual(billing_address.toJSON());
-                expect(App.Data.customer.getProfileAddress).not.toHaveBeenCalled();
+                expect(App.Data.customer.get('addresses').getDefaultProfileAddress).not.toHaveBeenCalled();
 
                 App.Data.card.set('billing_address', 'not object');
                 expect(window.get_billing_address()).toBe(null);
@@ -471,8 +474,8 @@ define(['card'], function() {
                     use_checkout_address: true
                 });
 
-                expect(window.get_billing_address()).toBe('checkout address');
-                expect(App.Data.customer.getCheckoutAddress).toHaveBeenCalled();
+                expect(window.get_billing_address()).toEqual({test: 'test', country: 'US', country_code: 'US'});
+                expect(App.Data.customer.get('addresses').getCheckoutAddress).toHaveBeenCalled();
             });
 
             it('card.use_checkuot_address is false', function() {
@@ -482,7 +485,7 @@ define(['card'], function() {
                 });
 
                 expect(window.get_billing_address()).toEqual(billing_address.toJSON());
-                expect(App.Data.customer.getCheckoutAddress).not.toHaveBeenCalled();
+                expect(App.Data.customer.get('addresses').getCheckoutAddress).not.toHaveBeenCalled();
 
                 App.Data.card.set('billing_address', 'not object');
                 expect(window.get_billing_address()).toBe(null);
