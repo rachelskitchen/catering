@@ -316,9 +316,10 @@ define(["backbone"], function(Backbone) {
             use_profile_address = App.Data.card.get("use_profile_address"),
             use_checkout_address = App.Data.card.get("use_checkout_address");
         if (use_profile_address) {
-            return App.Data.customer.getProfileAddress();
+            billing_address = App.Data.customer.get('addresses').getDefaultProfileAddress();
+            return billing_address ? billing_address.toJSON() : null;
         } else if(use_checkout_address) {
-            var address = App.Data.customer.getCheckoutAddress();
+            var address = App.Data.customer.get('addresses').getCheckoutAddress();
             address.country_code = address.country;
             return address;
         } else {

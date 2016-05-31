@@ -69,6 +69,7 @@
 /**/
 .checkout-short {
     margin-top: 2em;
+    position: relative;
 }
 
 .checkout-short .title {
@@ -90,6 +91,9 @@
 }
 
 .checkout-short-right {
+    position: absolute;
+    top: 0;
+    right: 0;
     width: 55% !important;
 }
 

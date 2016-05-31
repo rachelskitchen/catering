@@ -67,8 +67,8 @@
         <div class="account-password-box"></div>
     </div>
     <div class="right-side side text-center border-box">
-        <h2 class="title"><%= _lp.PROFILE_ADDRESS %></h2>
-        <div class="address-box"></div>
+        <h2 class="title"><%= _lp.PROFILE_ADDRESSES %></h2>
+        <div class="addresses"></div>
     </div>
     <div class="successful-update animation"><%= _lp.PROFILE_UPDATE_SUCCESSFUL %></div>
     <div class="update-btn flat-btn"><%= _lp.UPDATE %></div>
@@ -92,8 +92,22 @@
     </ul>
 </script>
 
+<script type="text/template" id="profile_addresses-template">
+    <ul class="addresses-list"></ul>
+
+    <div class="addresses__add primary-text link"><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
+</script>
+
 <script type="text/template" id="profile_address-template">
-    <ul class="profile-form text-center">
+    <div class="address__header">
+        <div class="address__title">
+            <span class="expand"></span>
+            <span class="address__title-text"></span>
+        </div>
+        <span class="cancel link remove-btn"></span>
+    </div>
+
+    <ul class="address__fields profile-form text-center">
         <li>
             <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
         </li>
@@ -118,6 +132,11 @@
         </li>
         <li>
             <input type="text" class="zipcode ios-safari-caret input-colors">
+        </li>
+        <li class="default-row">
+            <label class="profile-checkbox">
+                <input type="checkbox" class="address__default"><i class="input checkbox"></i> <%= _lp.PROFILE_DEFAULT_ADDRESS %>
+            </label>
         </li>
     </ul>
 </script>

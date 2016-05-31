@@ -88,18 +88,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             id: null,
             /**
-             * Array of addresses assigned to the customer.
-             * @type {Array}
-             * @default []
-             */
-            addresses: [],
-            /**
-             * Index of address selected for shipping. -1 means no address selected.
-             * @type {number}
-             * @default -1
-             */
-            shipping_address: -1,
-            /**
              * Array of available shipping services. This array depends on order items.
              * @type {Array}
              * @default []
@@ -117,30 +105,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              * @default ""
              */
             load_shipping_status: "",
-            /**
-             * Index of address used for "Delivery" dining option.
-             * @type {number}
-             * @default 0
-             */
-            deliveryAddressIndex: 0,
-            /**
-             * Index of address used for "Shipping" dining option.
-             * @type {number}
-             * @default 1
-             */
-            shippingAddressIndex: 1,
-            /**
-             * Index of address used for "Catering" dining option.
-             * @type {number}
-             * @default 2
-             */
-            cateringAddressIndex: 2,
-            /**
-             * Index of primary address used in "Profile".
-             * @type {?number}
-             * @default null
-             */
-            profileAddressIndex: 3,
             /**
              * User's password
              * @type {string}
@@ -201,9 +165,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
-            // init addresses indexes
-            this.setAddressesIndexes();
-
             // trim for `first_name`, `last_name`
             this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
             this.listenTo(this, 'change:last_name', this._trimValue.bind(this, 'last_name'));
@@ -239,7 +200,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return (first_name + last_name);
         },
         /**
-         * Saves attributes values of the customer in a storage.
+         * Saves attributes values of the customer to a storage.
          */
         saveCustomer: function() {
             setData('customer', this);
@@ -251,96 +212,19 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         loadCustomer: function() {
             var data = getData('customer');
             data = data instanceof Object ? data : {};
-            var rewardCards = data.rewardCards;
+            var rewardCards = data.rewardCards,
+                addresses = data.addresses;
             delete data.rewardCards;
+            delete data.addresses;
             this.set(data);
-            var rewardCardsCol = new App.Collections.RewardCards;
+            var rewardCardsCol = new App.Collections.RewardCards,
+                addressesCol = new App.Collections.CustomerAddresses;
             this.set('rewardCards', rewardCardsCol.addJSON(rewardCards));
+            this.set('addresses', addressesCol.addJSON(addresses));
             var shipping_services = this.get("shipping_services");
-            if(Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
+            if (Array.isArray(shipping_services) && shipping_services.length && this.get("shipping_selected") > -1) {
                 this.set("load_shipping_status", "restoring", {silent: true});
             }
-        },
-        /**
-         * Saves addresses in a storage.
-         */
-        saveAddresses: function() {
-            setData('address', new Backbone.Model({addresses: this.get('addresses')}), true);
-        },
-        /**
-         * Loads addresses from a storage.
-         */
-        loadAddresses: function() {
-            var data = getData('address', true);
-            if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
-                if (data.addresses[0].country != App.Settings.address.country) {
-                    //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
-                    data = undefined;
-                }
-            }
-            this.set('addresses', data instanceof Object ? (data.addresses || []) : []);
-        },
-        /**
-         * Converts address object literal to full address line.
-         * @param {number} index=index of last element - index of addresses array
-         * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
-         * @returns {string} full address line
-         */
-        address_str: function(index) {
-            var addresses = this.get('addresses'),
-                settings = App.Settings,
-                str = [];
-
-            if (!Array.isArray(addresses) || addresses.length <= 0) {
-                return '';
-            }
-
-            index = index >= 0 ? index : addresses.length - 1;
-
-            addresses = addresses[index];
-
-            if (!(addresses instanceof Object)) {
-                return '';
-            }
-
-            addresses.street_1 && str.push(addresses.street_1);
-            addresses.street_2 && str.push(addresses.street_2);
-            addresses.city && str.push(addresses.city);
-            settings.address && settings.address.state && addresses.state && str.push(addresses.state);
-            addresses.zipcode && str.push(addresses.zipcode);
-
-            return str.join(', ');
-        },
-        /**
-         * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
-         * @returns {Array} empty array if all properties pass validation or array with invalid properties.
-         */
-        _check_delivery_fields: function() {
-            var settings = App.Settings,
-                empty = [],
-                address = this.get('addresses'),
-                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address'),
-                req = {
-                    street_1: _loc.PROFILE_ADDRESS_LINE1,
-                    city: _loc.PROFILE_CITY,
-                    state: _loc.PROFILE_STATE,
-                    province: _loc.PROFILE_PROVINCE,
-                    zipcode: _loc.PROFILE_ZIP_CODE
-                };
-
-            address = address[shipping_addr_index];
-
-            // if not USA exclude state property
-            if(address.country != 'US')
-                delete req.state;
-            // if not Canada exclude province property
-            if(address.country != 'CA')
-                delete req.province;
-            for(var i in req) {
-                !address[i] && empty.push(req[i]);
-            }
-
-            return empty;
         },
         /**
          * Validates `first_name`, `last_name`, `email`, `phone` attributes values for checkout.
@@ -369,8 +253,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
             !this.get('phone') && err.push(_loc.PROFILE_PHONE);
 
-            if(this.isNewAddressSelected(dining_option)) {
-                err = err.concat(this._check_delivery_fields());
+            if (this.isNewAddressSelected(dining_option)) {
+                err = err.concat(this.get('addresses')._check_delivery_fields());
             }
 
             if (err.length) {
@@ -405,18 +289,18 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         get_shipping_services: function(jqXHR, getShippingOptions) {
             var self = this,
                 data = {},
-                address = this.get('addresses'),
-                shipping_addr_index = this.isDefaultShippingAddress() ? address.length - 1 : this.get('shipping_address');
+                address = this.get('addresses').getOrderAddress();
 
-            if (!address.length)
+            if (!address) {
                 return;
+            }
 
             // restore saved values
-            if(this.get("load_shipping_status") == "restoring") {
+            if (this.get("load_shipping_status") == "restoring") {
                 return complete();
             }
 
-            data.address = address[shipping_addr_index];
+            data.address = address;
             data.items = [];
             data.establishment = App.Data.settings.get("establishment");
             App.Data.myorder.each(function(model) {
@@ -488,29 +372,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.trigger('change:shipping_services');
         },
         /**
-         * Sets indexes for delivery and shipping addresses in `addresses` array.
-         * If initially addresses is empty array deliveryAddressIndex is 0, shippingAddressIndex is 1, cateringAddressIndex is 2
-         */
-        setAddressesIndexes: function() {
-            var addresses = this.get('addresses');
-            if(Array.isArray(addresses)) {
-                this.set({
-                    deliveryAddressIndex: addresses.length,
-                    shippingAddressIndex: addresses.length + 1,
-                    cateringAddressIndex: addresses.length + 2,
-                    profileAddressIndex: addresses.length + 3
-                });
-            }
-
-        },
-        /**
-         * Checks `shipping_address` attribute has default value or not.
-         * @returns {boolean} `true` if `shipping_address` is default or `false` otherwise.
-         */
-        isDefaultShippingAddress: function() {
-            return this.get('shipping_address') === this.defaults.shipping_address;
-        },
-        /**
          * Checks `shipping_selected` attribute has default value or not.
          * @returns {boolean} `true` if `shipping_selected` is default or `false` otherwise.
          */
@@ -518,61 +379,13 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return this.get('shipping_selected') === this.defaults.shipping_selected;
         },
         /**
-         * Checks `shipping_address` attribute value is new.
+         * Checks whether dining_option requires shipping address and it's selected.
          * @param {string} dining_option - selected order type.
-         * @returns {boolean} true is a new address selected or false if address already exists in DB.
-         */
-        isNewAddressSelected: function(dining_option) {
-            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING',
-                shipping_address = this.get('shipping_address');
-            return (shipping_address == this.get('deliveryAddressIndex') || shipping_address == this.get('shippingAddressIndex') || shipping_address == this.get('cateringAddressIndex')) && isDelivery ? true : false;
-        },
-        /**
-         * Checks whether the selected address is from user profile.
          * @returns {boolean}
          */
-        isProfileAddressSelected: function() {
-            return this.get('shipping_address') > 2;
-        },
-        /**
-         * Get address set for shipping/delivery or default address set in backend.
-         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
-         * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
-         */
-        getCheckoutAddress: function(fromProfile) {
-            var customer = this.toJSON(),
-                shipping_address = customer.shipping_address,
-                reverse_addr;
-
-            // if shipping address isn't selected take last index
-            if (this.isDefaultShippingAddress()) {
-                shipping_address = customer.addresses.length - 1;
-            } else {
-                var addr = customer.addresses[shipping_address];
-                customer.addresses.some(function(el, index) {
-                    return index != shipping_address && index != customer.profileAddressIndex && (reverse_addr = el); // use the first existing address
-                });
-                if (!reverse_addr && fromProfile && this.isAuthorized()) {
-                    reverse_addr = customer.addresses[customer.profileAddressIndex]; // use profile address
-                }
-                addr == undefined && (addr = {});
-                if (reverse_addr) {
-                    if ((addr.country && reverse_addr.country && addr.country == reverse_addr.country) ||
-                        (!addr.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
-                        if (!addr.province && !addr.street_1 && !addr.street_2 && !addr.city && !addr.zipcode) { //and we will copy address if all target fields are empty only
-                            return _.extend(addr, { state: reverse_addr.state,
-                                                    province: reverse_addr.province,
-                                                    street_1: reverse_addr.street_1,
-                                                    street_2: reverse_addr.street_2,
-                                                    city: reverse_addr.city,
-                                                    zipcode: reverse_addr.zipcode });
-                        }
-                    }
-                }
-            }
-
-            // return last address
-            return customer.addresses[shipping_address] && typeof customer.addresses[shipping_address].street_1 === 'string' ? customer.addresses[shipping_address] : undefined;
+        isNewAddressSelected: function(dining_option) {
+            var isDelivery = dining_option === 'DINING_OPTION_DELIVERY' || dining_option === 'DINING_OPTION_SHIPPING' || dining_option === 'DINING_OPTION_CATERING';
+            return isDelivery && this.get('addresses').isNewAddressSelected();
         },
         /**
          * Validates `first_name`, `last_name`, `email` and `password` attributes for Sign Up.
@@ -766,6 +579,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.updateCookie(data);
                     this.setCustomerFromAPI(data);
                     this.initPayments();
+                    this.getAddresses();
                     this.initGiftCards();
                     this.getRewardCards();
                     this.trigger('onLogin');
@@ -798,14 +612,14 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Changes attributes values on default values. Emits `onLogout` event.
          */
         logout: function() {
-            this.defaults.addresses = [];
-
             docCookies.removeItem(cookieName, cookiePath, cookieDomain);
 
-            for(var attr in this.defaults) {
-                this.set(attr, this.defaults[attr]);
+            for (var attr in this.defaults) {
+                if (attr != 'addresses') {
+                    this.set(attr, this.defaults[attr]);
+                }
             }
-
+            this.get('addresses').removeProfileAddresses();
             this.removePayments();
             this.removeGiftCards();
             this.removeRewardCards();
@@ -877,7 +691,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         signup: function(address) {
             var attrs = this.toJSON();
 
-            address = this.convertAddressToAPIFormat(address);
+            address = App.Models.CustomerAddress.prototype.convertToAPIFormat(address);
 
             return Backbone.$.ajax({
                 url: attrs.serverURL + "/v1/customers/register-customer/",
@@ -919,32 +733,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             });
         },
         /**
-         * Creates an object containing empty address data (address object template).
-         * @returns {Object}
-         * ```
-         * {
-         *     country: '',
-         *     state: '',
-         *     province: '',
-         *     street_1: '',
-         *     street_2: '',
-         *     city: '',
-         *     zipcode: ''
-         * }
-         * ```
-         */
-        getEmptyAddress: function() {
-            return {
-                country: '',
-                state: '', //null,
-                province: '', //null,
-                street_1: '',
-                street_2: '',
-                city: '',
-                zipcode: ''
-            };
-        },
-        /**
          * @returns {Object} An object with Authorization HTTP header if the customer has access token.
          */
         getAuthorizationHeader: function() {
@@ -957,31 +745,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
 
             return header;
-        },
-        /**
-         * Sets profile address.
-         *
-         * @param {Object} address - address data.
-         */
-        setProfileAddress: function(address) {
-            if(!_.isObject(address)) {
-                return;
-            }
-
-            address = this.convertAddressFromAPIFormat(address);
-
-            var addresses = this.get('addresses'),
-                profileAddressIndex = this.get('profileAddressIndex');
-
-            addresses[profileAddressIndex] = address;
-        },
-        /**
-         * @returns {Object} profile address object.
-         */
-        getProfileAddress: function() {
-            var addresses = this.get('addresses'),
-                profileAddressIndex = this.get('profileAddressIndex');
-            return addresses[profileAddressIndex];
         },
         /**
          * Updates the customer. Sends request with following parameters:
@@ -1063,8 +826,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
                             break;
                         case 404:
                             this.trigger('onUserNotFound');
@@ -1145,8 +907,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (!_.isObject(address)) {
                 return;
             }
+            var addressJson = address instanceof Backbone.Model ? address.toJSON() : address;
 
-            address = this.convertAddressToAPIFormat(address);
+            addressJson = this.convertAddressToAPIFormat(addressJson);
 
             return Backbone.$.ajax({
                 url: this.get('serverURL') + "/v1/customers/addresses/",
@@ -1154,17 +917,17 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 context: this,
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
-                data: JSON.stringify(address),
+                data: JSON.stringify(addressJson),
                 success: function(data) {
-                    this.setProfileAddress(data);
-                    this.updateCookie(this.getCustomerInAPIFormat());
-                    this.trigger('onUserAddressCreated');
+                    if (_.isObject(data)) {
+                        address.set(data, {parse: true});
+                        this.trigger('onUserAddressCreated');
+                    }
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
                             break;
                         case 400:
                             this.trigger('onUserValidationError', getResponse());
@@ -1262,15 +1025,107 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(address),
                 success: function(data) {
-                    this.setProfileAddress(data);
-                    this.updateCookie(this.getCustomerInAPIFormat());
+                    if (_.isObject(data) && data.id == address.id) {
+                        this.get('addresses').get(data.id).set(data, {parse: true});
+                    }
                     this.trigger('onUserAddressUpdate');
                 },
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
+                            break;
+                        case 404:
+                            this.trigger('onUserAddressNotFound');
+                            break;
+                        case 400:
+                            this.trigger('onUserValidationError', getResponse());
+                            break;
+                        default:
+                            this.trigger('onUserAPIError', getResponse());
+                    }
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
+         * Deletes customer's address. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/addresses/<id>/",
+         *     method: "DELETE",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"}
+         * }
+         * ```
+         * Server may return the following response:
+         * - Address is successfully deleted:
+         * ```
+         * Status: 200
+         * ```
+         * The model emits `onUserAddressDelete` event in this case.
+         *
+         * - Session is already expired or invalid token is used:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * The model emits `onUserSessionExpired` event in this case. Method `.logout()` is automatically called in this case.
+         *
+         * - The address isn't found:
+         * ```
+         * Status: 404
+         * {
+         *     "detail":"Not found."
+         * }
+         * ```
+         * The model emits `onUserAddressNotFound` event in this case.
+         *
+         * - New data is invalid:
+         * ```
+         * Status: 400
+         * {
+         *     <field name>: <validation error>
+         * }
+         * ```
+         * The model emits `onUserValidationError` event in this case.
+         *
+         * @param {Object} address - an object containing address data
+         *
+         * @returns {Object} jqXHR object.
+         */
+        deleteAddress: function(address) {
+            if (!_.isObject(address)) {
+                return;
+            }
+            if (address instanceof Backbone.Model) {
+                address = address.toJSON();
+            }
+            if (!address.id) {
+                return;
+            }
+
+            address = {id: address.id};
+
+            return Backbone.$.ajax({
+                url: this.get('serverURL') + "/v1/customers/addresses/" + address.id + "/",
+                method: "DELETE",
+                context: this,
+                contentType: "application/json",
+                headers: this.getAuthorizationHeader(),
+                data: JSON.stringify(address),
+                success: function(data) {
+                    this.get('addresses').remove(address.id);
+                    this.trigger('onUserAddressUpdate');
+                },
+                error: function(jqXHR) {
+                    switch(jqXHR.status) {
+                        case 403:
+                            this.onForbidden();
                             break;
                         case 404:
                             this.trigger('onUserAddressNotFound');
@@ -1360,8 +1215,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 error: function(jqXHR) {
                     switch(jqXHR.status) {
                         case 403:
-                            this.trigger('onUserSessionExpired');
-                            this.logout(); // need to reset current account to allow to re-log in
+                            this.onForbidden();
                             break;
                         case 404:
                             this.trigger('onPasswordInvalid');
@@ -1512,13 +1366,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return address;
         },
         /**
-         * @param {Object} address - an object containing address data
-         * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
-         */
-        isProfileAddress: function(address) {
-            return _.isObject(address) && typeof address.id != 'undefined' && typeof address.customer != 'undefined';
-        },
-        /**
          * Set attributes values.
          *
          * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
@@ -1528,10 +1375,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 console.error('Incorrect `v1/authorization/token-customer/` data format');
                 return;
             }
-
-            // set profile address
-            var address = Array.isArray(data.customer.addresses) && _.isObject(data.customer.addresses[0]) ? data.customer.addresses[0] : this.getEmptyAddress();
-            this.setProfileAddress(this.convertAddressFromAPIFormat(address));
 
             // need to reset password and set `email` attribute as username
             this.set({
@@ -1557,6 +1400,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 return;
             }
 
+            delete data.addresses;
+
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
 
             docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
@@ -1569,6 +1414,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             try {
                 data = docCookies.getItem(cookieName);
+                data && delete data.addresses;
             } catch(e) {
                 console.error(e);
             }
@@ -1594,8 +1440,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     email: attrs.email,
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
-                    phone_number: attrs.phone,
-                    addresses: [this.getProfileAddress()]
+                    phone_number: attrs.phone
                 },
                 token: {
                     user_id: attrs.user_id,
@@ -1667,12 +1512,97 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             function ifSessionIsExpired(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             }
 
             return def;
+        },
+        /**
+         * Receives customer addresses from server. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/addresses/",
+         *     method: "GET",
+         *     headers: {Authorization: "Bearer XXX"}
+         * }
+         * ```
+         * There are available following responses:
+         * - Success:
+         * ```
+         * Status code 200
+         * {
+         *     status: "OK"
+         *     data: []
+         * }
+         * ```
+         *
+         * - Authorization header is invalid:
+         * ```
+         * Status code 403
+         * ```
+         */
+        getAddresses: function() {
+            var self = this,
+                authorizationHeader = this.getAuthorizationHeader(),
+                req;
+
+            if (!_.isObject(authorizationHeader)) {
+                return;
+            }
+
+            req = Backbone.$.ajax({
+                url: this.get('serverURL') + '/v1/customers/addresses/',
+                method: "GET",
+                headers: authorizationHeader,
+                success: function(data) {
+                    if (Array.isArray(data)) {
+                        self.get('addresses').updateFromAPI(data);
+                    }
+                },
+                error: new Function() // to override global ajax error handler
+            });
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            /**
+             * Reward cards request.
+             * @alias App.Models.Customer#addressesRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.addressesRequest = req;
+
+            return req;
+        },
+        /**
+         * Sets {@link App.Models.Customer#addresses addresses} collection.
+         */
+        setAddresses: function() {
+            var addresses = this.get('addresses'),
+                req,
+                self = this;
+
+            if (!this.get('addresses')) {
+                this.set('addresses', new App.Collections.CustomerAddresses());
+                addresses = this.get('addresses');
+            }
+
+            if (this.isAuthorized()) {
+                req = this.getAddresses();
+            }
+            else {
+                req = Backbone.$.Deferred().resolve();
+            }
+
+            req.always(function() {
+                // if there are no address models, create an empty one
+                !addresses.length && addresses.add({});
+            });
         },
         /**
          * Receives payments from server.
@@ -1688,8 +1618,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1742,22 +1671,17 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @param {number} token_id - token id.
          * @return {Object} jqXHR object.
          */
-        changePayment: function(token_id)
-        {
+        changePayment: function(token_id) {
             var req = this.payments.changePayment(token_id, this.getAuthorizationHeader()),
                 self = this;
 
-            if (req)
-            {
+            if (req) {
                 req.fail(function(jqXHR)
                 {
-                    if (jqXHR.status == 403)
-                    {
-                        self.trigger('onUserSessionExpired');
-                        self.logout(); // need to reset current account to allow to re-log in
+                    if (jqXHR.status == 403) {
+                        self.onForbidden();
                     }
-                    else if (jqXHR.status == 404)
-                    {
+                    else if (jqXHR.status == 404) {
                         self.trigger('onTokenNotFound');
                     }
                 });
@@ -1786,8 +1710,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (req) {
                 req.fail(function(jqXHR) {
                     if (jqXHR.status == 403) {
-                        self.trigger('onUserSessionExpired');
-                        self.logout(); // need to reset current account to allow to re-log in
+                        self.onForbidden();
                     } else if (jqXHR.status == 404) {
                         self.trigger('onTokenNotFound');
                     }
@@ -1831,8 +1754,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1840,7 +1762,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 if (jqXHR.status == "OK" && self.get('rewardCards').length == 1) {
                     App.Data.myorder.rewardsCard.selectRewardCard(self.get('rewardCards').at(0));
                 }
-            })
+            });
 
             /**
              * Reward cards request.
@@ -1892,8 +1814,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1928,8 +1849,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1950,8 +1870,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -1984,8 +1903,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
@@ -2006,12 +1924,476 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
-                    self.trigger('onUserSessionExpired');
-                    self.logout(); // need to reset current account to allow to re-log in
+                    self.onForbidden();
                 }
             });
 
             return req;
         },
+        /**
+         * Handler of jqXHR.status 403 of customer-related ajax requests.
+         */
+        onForbidden: function() {
+            this.trigger('onUserSessionExpired');
+            this.logout(); // need to reset current account to allow to re-log in
+        },
     });
+
+    /**
+     * @class
+     * @classdesc Represents a customer address model.
+     * @alias App.Models.CustomerAddress
+     * @augments Backbone.Model
+     * @example
+     * // create a customer address model
+     * require(['customers'], function() {
+     *     var address = new App.Models.CustomerAddress();
+     * });
+     */
+    App.Models.CustomerAddress = Backbone.Model.extend(
+    /**
+     * @lends App.Models.CustomerAddress.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         */
+        defaults: {
+            /**
+             * Address ID.
+             * @type {?(number|string)}
+             * @default null
+             */
+            id: null,
+            /**
+             * Customer ID. {@link App.Models.Customer#id}
+             * @type {?(number|string)}
+             * @default null
+             */
+            customer: null,
+            /**
+             * Indicates whether this address is primary (default) or not.
+             * @type {Boolean}
+             * @default false
+             */
+            is_primary: false,
+            /**
+             * Indicates whether this address is selected or not.
+             * @type {Boolean}
+             * @default false
+             */
+            selected: false,
+            /**
+             * Zipcode or postal code.
+             * @type {String}
+             * @default ''
+             */
+            zipcode: '',
+            /**
+             * Country.
+             * @type {?String}
+             * @default ''
+             */
+            country: '',
+            /**
+             * State (used id country is US).
+             * @type {?String}
+             * @default ''
+             */
+            state: '',
+            /**
+             * Province (used if country is Canada).
+             * @type {String}
+             * @default ''
+             */
+            province: '',
+            /**
+             * Street address, line 1.
+             * @type {String}
+             * @default ''
+             */
+            street_1: '',
+            /**
+             * Street address, line 2.
+             * @type {String}
+             */
+            street_2: '',
+            /**
+             * City.
+             * @type {String}
+             * @default ''
+             */
+            city: '',
+            /**
+             * String representation of address.
+             * @type {String}
+             * @default ''
+             */
+            address: ''
+        },
+        /**
+         * Converts the address objects from API to model format.
+         * This method gets called when {parse: true} is passed to the model constructor or method set, e.g.:
+         * ```
+         * // create a new model
+         * var address = new App.Models.CustomerAddress({country_code: 'AU'}, {parse: true});
+         * // update the model attributes
+         * address.set({country_code: 'FR'}, {parse: true});
+         * ```
+         * @param   {object} address
+         * @param   {object} options
+         * @returns {object} converted address
+         */
+        parse: function(address, options) {
+            return this.convertFromAPIFormat(address);
+        },
+        /**
+         * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
+         * `country` -> `country_code`, `state`/`province` -> `region`.
+         *
+         * @param {Object} address - an object containing address data
+         * @returns {Object} Modified address object.
+         */
+        convertToAPIFormat: function(address) {
+            if (!_.isObject(address)) {
+                return address;
+            }
+
+            address.postal_code = address.zipcode;
+            address.country_code = address.country;
+            address.region = address.country == 'US' ? address.state
+                           : address.country == 'CA' ? address.province
+                           : null;
+
+            return address;
+        },
+        /**
+         * Converts address from 'customers/addresses/' API format. Changes `postal_code` property to `zipcode`,
+         * `country_code` -> `country`, `region` -> `state`/`province`.
+         *
+         * @param {Object} address - an object containing address data
+         * @returns {Object} Modified address object.
+         */
+        convertFromAPIFormat: function(address) {
+            if (!_.isObject(address)) {
+                return address;
+            }
+
+            address.zipcode = address.postal_code;
+            address.country = address.country_code;
+            address.state = address.country == 'US' ? address.region : '';
+            address.province = address.country == 'CA' ? address.region : '';
+
+            return address;
+        },
+        /**
+         * Converts address to full address line.
+         * @see {@link http://mediawiki.middlebury.edu/wiki/LIS/Address_Standards} for detail format information.
+         * @returns {string} full address line
+         */
+        toString: function(address) {
+            var address = address || this.toJSON(),
+                settings = App.Settings,
+                str = [];
+            address.street_1 && str.push(address.street_1);
+            address.street_2 && str.push(address.street_2);
+            address.city && str.push(address.city);
+            settings.address && settings.address.state && address.state && str.push(address.state);
+            address.zipcode && str.push(address.zipcode);
+
+            return str.join(', ');
+        },
+        /**
+         * @returns {boolean} `true` if the address has `id`, `customer` properties and `false` otherwise.
+         */
+        isProfileAddress: function() {
+            return !isNaN(this.get('id')) && !!this.get('customer');
+        },
+    });
+
+    /**
+     * @class
+     * @classdesc Represents a customer addresses collection.
+     * @alias App.Collections.CustomerAddresses
+     * @augments Backbone.Collection
+     * @example
+     * require(['customers'], function() {
+     *     var addresses = new App.Collections.CustomerAddresses();
+     * });
+     */
+    App.Collections.CustomerAddresses = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.CustomerAddresses.prototype
+     */
+    {
+        /**
+         * Item constructor.
+         * @type {Function}
+         * @default App.Models.CustomerAddress
+         */
+        model: App.Models.CustomerAddress,
+        /**
+         * Collection comparator.
+         * @param   {App.Models.CustomerAddress} model
+         * @returns {number} - a numeric or string value by which the model should be ordered relative to others.
+         */
+        comparator: function(model) {
+            if (model.get('is_primary')) {
+                return -1;
+            }
+            if (model.get('id') === null) {
+                return 2;
+            }
+            return 0;
+        },
+        /**
+         * Adds listeners to track changes of 'selected' attribute and collection updates.
+         */
+        initialize: function() {
+            this.listenTo(this, 'change:selected', this.radioSelection.bind(this, 'selected'));
+            this.listenTo(this, 'change:is_primary', this.radioSelection.bind(this, 'is_primary'));
+            this.listenTo(this, 'change', this.onModelChange);
+            this.listenTo(this, 'change reset add remove', function() {
+                this.trigger('update');
+            });
+            // handle the case when the collection doesn't contain any profile address after the address removal
+            this.listenTo(this, 'remove', function() {
+                if (!this.some(function(model) { return !isNaN(model.get('id')); })) {
+                    this.add({});
+                }
+            });
+        },
+        /**
+         * Coverts the array of addresses objects from API to model format.
+         * This method gets called when {parse: true} is passed to the collection constructor.
+         * @param   {array} addresses
+         * @param   {object} options
+         * @returns {array} converted addresses
+         */
+        parse: function(addresses, options) {
+            return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
+        },
+        onModelChange: function(model) {
+            var changed = model.changedAttributes(),
+                keys = ['street_1', 'street_2', 'state', 'province', 'country', 'zipcode', 'is_primary'],
+                trigger = _.some(keys, function(key) {
+                    return _.has(changed, key);
+                });
+
+            if (trigger) {
+                // default value is "" but select binging converts it to null
+                if ((_.isEqual(changed, {state: null}) || _.isEqual(changed, {country: null})) || _.isEqual(changed, {state: null, country: null})) {
+                    return;
+                }
+                this.trigger('addressFieldsChanged', model);
+            }
+        },
+        /**
+         * Updates the collection with data received from API.
+         * @param {array} addresses - array of addresses if API format.
+         */
+        updateFromAPI: function(addresses) {
+            var self = this;
+            // remove from collection addresses not presented in api response
+            this.each(function(model) {
+                if (!isNaN(model.get('id')) && !_.findWhere(addresses, {id: model.id})) {
+                    self.remove(model);
+                }
+            });
+            // add all addreesses
+            _.each(addresses, function(address) {
+                self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
+            });
+        },
+        /**
+         * Saves addresses to a storage.
+         */
+        saveToStorage: function() {
+            setData('address', new Backbone.Model({addresses: this.toJSON()}), true);
+        },
+        /**
+         * Loads addresses from a storage.
+         */
+        loadFromStorage: function() {
+            var data = getData('address', true);
+            if (data instanceof Object && Array.isArray(data.addresses) && data.addresses.length == 1 && App.skin != App.Skins.RETAIL) {
+                if (data.addresses[0].country != App.Settings.address.country) {
+                    //the thread come here e.g. when we navigate from 'Retail' skin with other country payment previously submitted to weborder_mobile skin
+                    data = undefined;
+                }
+            }
+            this.set(data instanceof Object ? (data.addresses || []) : []);
+        },
+        /**
+         * Returns the default profile address.
+         * @returns {?@link App.Models.CustomerAddress}
+         *   - the default address, if it exists
+         *   - undefined otherwise
+         */
+        getDefaultProfileAddress: function() {
+            return this.findWhere({is_primary: true});
+        },
+        /**
+         * Returns the selected address.
+         * @returns {?@link App.Models.CustomerAddress}
+         *   - the selected address, if it exists
+         *   - undefined otherwise
+         */
+        getSelectedAddress: function() {
+            return this.findWhere({selected: true});
+        },
+        /**
+         * Checks whether the selected address is from user profile.
+         * @returns {boolean}
+         */
+        isProfileAddressSelected: function() {
+            return this.getSelectedAddress() ? this.getSelectedAddress().isProfileAddress() : false;
+        },
+        /**
+         * Checks whether the selected address is new (filled on checkout screen) and not from user profile.
+         * @returns {Boolean} [description]
+         */
+        isNewAddressSelected: function() {
+            return this.getSelectedAddress() ? !this.getSelectedAddress().isProfileAddress() : false;
+        },
+        /**
+         * Get address set for shipping/delivery or default address set in backend.
+         * @param {string} [dining_option] - dining option.
+         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
+         * @returns {object} with state, province, city, street_1, street_2, zipcode, contry fields
+         */
+        getCheckoutAddress: function(dining_option, fromProfile) {
+            var customer = App.Data.customer,
+                addr = this.getSelectedAddress(),
+                addrJson,
+                reverse_addr,
+                newAddr;
+
+            // if shipping address isn't selected take last index
+            if (!addr) {
+                addr = this.get(dining_option);
+                if (!addr) {
+                    addr = new App.Models.CustomerAddress({
+                        id: dining_option,
+                        selected: true,
+                        country : App.Settings.address.country,
+                        state: App.Settings.address.state
+                    });
+                    this.add(addr);
+                }
+            }
+
+            addrJson = addr.toJSON();
+
+            this.some(function(model, index) {
+                var el = model.toJSON();
+                return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
+            });
+            if (!reverse_addr && fromProfile && customer.isAuthorized()) {
+                reverse_addr = this.getDefaultProfileAddress().toJSON(); // use profile address
+            }
+
+            if (reverse_addr) {
+                if ((addrJson.country && reverse_addr.country && addrJson.country == reverse_addr.country) ||
+                    (!addrJson.country && reverse_addr.country == App.Settings.address.country)) { //if country was changed then we can't copy address
+                    if (!addrJson.province && !addrJson.street_1 && !addrJson.street_2 && !addrJson.city && !addrJson.zipcode) { //and we will copy address if all target fields are empty only
+                        newAddr = _.extend(addrJson, {
+                            state: reverse_addr.state,
+                            province: reverse_addr.province,
+                            street_1: reverse_addr.street_1,
+                            street_2: reverse_addr.street_2,
+                            city: reverse_addr.city,
+                            zipcode: reverse_addr.zipcode
+                        });
+                        addr.set(newAddr);
+                        return this.getOrderAddress(newAddr);
+                    }
+                }
+            }
+
+            return addrJson && typeof addrJson.street_1 === 'string' ? this.getOrderAddress(addrJson) : undefined;
+        },
+        /**
+         * Returns customer address for sending to create_order_and_pay/.
+         * @param {?object} address - address object to convert. If not specified, selected address will be used.
+         * @returns {object} address object.
+         */
+        getOrderAddress: function(address) {
+            var address = _.isObject(address) ? address : this.getSelectedAddress().toJSON();
+
+            return {
+                // here we need only the following fields (no need for extra fields from profile address.
+                // once Backend receives customer.address.id, it will look for this address in the database, but it could be saved on another instance.)
+                address: address.address || '',
+                city: address.city || '',
+                country: address.country || '',
+                province: address.province || '',
+                state: address.state || '',
+                street_1: address.street_1 || '',
+                street_2: address.street_2 || '',
+                zipcode: address.zipcode || ''
+            };
+        },
+        /**
+         * If the selected address is not from profile, changes the selection according to the specified dining option (used as a model id).
+         * @param {string} dining_option - selected dining option.
+         */
+        changeSelection: function(dining_option) {
+            if (!this.isProfileAddressSelected()) {
+                this.invoke('set', {selected: false});
+                this.get(dining_option) && this.get(dining_option).set('selected', true);
+            }
+        },
+        /**
+         * When the address is selected, deselects all other addresses (radio button behavior).
+         * @param {App.Models.CustomerAddress} model - address model.
+         * @param {boolean} value - value of the changed attribute.
+         * @param {string} attributeName - name of the changed attribute.
+         */
+        radioSelection: function(attributeName, model, value) {
+            value && this.some(function(el) {
+                el !== model && el.get(attributeName) && el.set(attributeName, false);
+            });
+        },
+        /**
+         * Removes profile addresses (models with numeric id) from the collection.
+         */
+        removeProfileAddresses: function() {
+            this.remove(this.filter(function(model) {
+                return !isNaN(model.get('id'));
+            }));
+        },
+        /**
+         * Validates values of address object properties `street_1`, `city`, `state`, `province`, `zipcode`.
+         * @returns {Array} empty array if all properties pass validation or array with invalid properties.
+         */
+        _check_delivery_fields: function() {
+            var settings = App.Settings,
+                empty = [],
+                address = this.getSelectedAddress().toJSON(),
+                req = {
+                    street_1: _loc.PROFILE_ADDRESS_LINE1,
+                    city: _loc.PROFILE_CITY,
+                    state: _loc.PROFILE_STATE,
+                    province: _loc.PROFILE_PROVINCE,
+                    zipcode: _loc.PROFILE_ZIP_CODE
+                };
+
+            // if not USA exclude state property
+            if (address.country != 'US') {
+                delete req.state;
+            }
+            // if not Canada exclude province property
+            if (address.country != 'CA') {
+                delete req.province;
+            }
+            for (var i in req) {
+                !address[i] && empty.push(req[i]);
+            }
+
+            return empty;
+        },
+    });
+
 });

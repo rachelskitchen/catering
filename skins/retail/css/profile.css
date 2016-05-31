@@ -287,6 +287,7 @@
     position: relative;
     line-height: 21px;
     padding-left: 28px;
+    text-align: left;
 }
 
 .profile-edit .profile-checkbox input {
@@ -427,4 +428,35 @@
     position: relative;
     top: initial;
     bottom: initial;
+}
+
+.profile-edit .addresses {
+    width: 240px;
+    margin: 0 auto;
+    margin-top: 15px;
+}
+
+.profile-edit .address-item {
+    clear: both;
+    margin-bottom: 15px;
+}
+
+.profile-edit .address__header,
+.profile-edit .address-item .default-row {
+    text-align: left;
+    padding: 0 8px;
+}
+
+.profile-edit .address__header {
+    position: relative;
+    margin-bottom: 1em;
+}
+
+.expand.expanded:before {
+    content: '\f147';
+    font-family: "FontAwesome";
+}
+.collapsed .expand:before {
+    content: '\f196';
+    font-family: "FontAwesome";
 }

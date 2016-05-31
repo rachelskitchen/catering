@@ -126,7 +126,7 @@ define(["factory"], function() {
 
             this.subViews.push(App.Views.GeneratorView.create('Profile', {
                 el: this.$('.address-box'),
-                mod: 'Address',
+                mod: 'AddressCreate',
                 model: this.options.address
             }));
 
@@ -166,7 +166,34 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileAddressView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'address',
+        tagName: 'li',
+        className: 'address-item',
+        initialize: function() {
+            var id = this.model.get('id');
+            // do not show not profile address (filled on the checkout screen)
+            if (typeof id == 'string') {
+                return;
+            }
+
+            this.listenTo(this.model.collection, 'toggleFolding', function(model, collapsed) {
+                if (!collapsed && this.model != model) {
+                    this.setBinding('ui_collapsed', true);
+                }
+            });
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            if (this.getBinding('modelIndex') === 1) {
+                this.setBinding('ui_collapsed', false);
+            }
+        },
         bindings: {
+            '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), "New Address")',
+            '.expand': 'toggle: id, classes: {folded: ui_collapsed, expanded: not(ui_collapsed)}',
+            '.address__header': 'classes: {collapsed: ui_collapsed}',
+            '.address__fields': 'css: {display: select(any(not(id), not(ui_collapsed)), "", "none")}',
+            '.address__default': 'checked: is_primary',
+            '.checkbox': 'attr: {checked: select(is_primary, "checked", false)}',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
             '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
@@ -178,7 +205,48 @@ define(["factory"], function() {
             '.city': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
             '.province-row': 'toggle: equal(country, "CA")',
             '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
-            '.zipcode': 'value: zipcode, attr: {placeholder: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+            '.zipcode-row .label': 'text: zipLabel',
+            '.zipcode': 'value: zipcode, attr: {placeholder: zipLabel}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+        },
+        events: {
+            'change .address__default': 'setDefaultAddress',
+            'click .address__title': 'toggleFolding',
+            'click .remove-btn': 'removeAddress',
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    collapsed: true
+                });
+            }
+        },
+        computeds: {
+            /**
+             * @returns {number} Address index, starting from 1.
+             */
+            modelIndex: {
+                deps: ['$model'],
+                get: function(model) {
+                    return model.collection.indexOf(model) + 1;
+                }
+            },
+            /**
+             * Generates label and placeholder for zipcode field.
+             * @returns {string}
+             *   - "Zip Code" if selected country is the US, OR there is no selection, but establishment country is US;
+             *   - "Postal Code" otherwise.
+             */
+            zipLabel: {
+                deps: ['country'],
+                get: function(country) {
+                    if (country == 'US' || !country && App.Settings.address && App.Settings.address.country == 'US') {
+                        return _loc.PROFILE_ZIP_CODE;
+                    }
+                    else {
+                        return _loc.PROFILE_POSTAL_CODE;
+                    }
+                }
+            },
         },
         bindingFilters: {
             parseOptions: function(data) {
@@ -204,6 +272,146 @@ define(["factory"], function() {
             setTimeout(function() {
                 !self.model.get('country') && self.$('.country').val('');
             }, 0); // fix silent autoselect in mobile browsers
+        },
+        setDefaultAddress: function(e) {
+            if (e.target.checked) {
+                this.model.collection.trigger('change:is_primary');
+            }
+            else {
+                this.model.set('is_primary', true);
+            }
+        },
+        toggleFolding: function() {
+            var newValue = !this.getBinding('ui_collapsed');
+            this.setBinding('ui_collapsed', newValue);
+            this.model.collection.trigger('toggleFolding', this.model, newValue);
+        },
+        removeAddress: function() {
+            var self = this;
+
+            App.Data.errors.alert(
+                _loc.PROFILE_ADDRESS_DELETE,
+                false,
+                false,
+                {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            self.model.collection.remove(self.model);
+                            App.Data.customer.deleteAddress(self.model);
+                        }
+                    }
+                });
+        },
+    });
+
+App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.extend({
+    name: 'profile',
+    mod: 'address_create',
+    bindings: {
+        '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
+        '.country-wrapper': 'classes: {placeholder: not(country)}',
+        '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
+        '.state-row': 'toggle: equal(country, "US")',
+        '.state-wrapper': 'classes: {placeholder: not(state)}',
+        '.state': 'value: state, options: parseOptions(_lp_STATES)',
+        '.street_1': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
+        '.street_2': 'value: firstLetterToUpperCase(street_2), events: ["input"], trackCaretPosition: street_2',
+        '.city': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
+        '.province-row': 'toggle: equal(country, "CA")',
+        '.province': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
+        '.zipcode-row .label': 'text: zipLabel',
+        '.zipcode': 'value: zipcode, attr: {placeholder: zipLabel}, pattern: /^((\\w|\\s){0,20})$/' // all requirements are in Bug 33655
+    },
+    computeds: {
+        /**
+         * @returns {number} Address index, starting from 1.
+         */
+        modelIndex: {
+            deps: ['$model'],
+            get: function(model) {
+                return model.collection.indexOf(model) + 1;
+            }
+        },
+        /**
+         * Generates label and placeholder for zipcode field.
+         * @returns {string}
+         *   - "Zip Code" if selected country is the US, OR there is no selection, but establishment country is US;
+         *   - "Postal Code" otherwise.
+         */
+        zipLabel: {
+            deps: ['country'],
+            get: function(country) {
+                if (country == 'US' || !country && App.Settings.address && App.Settings.address.country == 'US') {
+                    return _loc.PROFILE_ZIP_CODE;
+                }
+                else {
+                    return _loc.PROFILE_POSTAL_CODE;
+                }
+            }
+        },
+    },
+    bindingFilters: {
+        parseOptions: function(data) {
+            var result = [];
+            if (!_.isObject(data)) {
+                return result;
+            }
+            for(var i in data) {
+                result.push({
+                    label: data[i],
+                    value: i
+                });
+            }
+            return result;
+        }
+    },
+    onEnterListeners: {
+        ':el': setCallback('applyChanges')
+    },
+    render: function() {
+        App.Views.FactoryView.prototype.render.apply(this, arguments);
+        var self = this;
+        setTimeout(function() {
+            !self.model.get('country') && self.$('.country').val('');
+        }, 0); // fix silent autoselect in mobile browsers
+    },
+});
+
+    App.Views.CoreProfileView.CoreProfileAddressesView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'addresses',
+        itemView: App.Views.CoreProfileView.CoreProfileAddressView,
+        bindings: {
+            '.addresses-list': 'collection: $collection',
+            '.addresses__add': 'toggle: not(addingNewAddress)',
+            //'.addresses__add .expand': 'text: select(addingNewAddress, "- ", "+ ")'
+        },
+        events: {
+            'click .addresses__add': 'toggleNewAddress',
+        },
+        computeds: {
+            addingNewAddress: {
+                deps: ["$collection"],
+                get: function(addresses) {
+                    return addresses.some(function(model) {
+                        return model.get('id') === null;
+                    });
+                }
+            }
+        },
+        toggleNewAddress: function() {
+            var addingNewAddress = this.getBinding('addingNewAddress');
+            if (!addingNewAddress) {
+                this.collection.add({});
+            }
+            else {
+                var modelToRemove;
+                this.collection.some(function(model) {
+                    return _.isEqual(model.toJSON(), App.Models.CustomerAddress.prototype.defaults) && (modelToRemove = model);
+                });
+                modelToRemove && this.collection.remove(modelToRemove);
+            }
         }
     });
 
@@ -232,13 +440,15 @@ define(["factory"], function() {
                 model: this.model
             });
 
-            var address = App.Views.GeneratorView.create('Profile', {
-                el: this.$('.address-box'),
-                mod: 'Address',
-                model: this.options.address
+            this.newAddress = new App.Models.CustomerAddress();
+            var addresses = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.addresses'),
+                mod: 'Addresses',
+                collection: this.model.get('addresses'),
+                newAddress: this.newAddress
             });
 
-            this.subViews.push(basicDetails, address);
+            this.subViews.push(basicDetails, addresses);
 
             return this;
         },
@@ -872,6 +1082,8 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileCreateView = App.Views.CoreProfileView.CoreProfileCreateView;
         App.Views.ProfileView.ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView;
         App.Views.ProfileView.ProfileAddressView = App.Views.CoreProfileView.CoreProfileAddressView;
+        App.Views.ProfileView.ProfileAddressesView = App.Views.CoreProfileView.CoreProfileAddressesView;
+        App.Views.ProfileView.ProfileAddressCreateView = App.Views.CoreProfileView.CoreProfileAddressCreateView;
         App.Views.ProfileView.ProfileAccountPasswordView = App.Views.CoreProfileView.CoreProfileAccountPasswordView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;

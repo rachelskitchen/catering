@@ -41,6 +41,7 @@
         'CONFIRM_SUBMIT_ORDER': 'Оплатить заказ',
         'CONFIRM_TODAY_ASAP': 'В ближ. время',
         'CONFIRM_MINUTES': 'мин',
+        'ENTER_NEW_ADDRESS': 'Ввести новый адрес',
         'GIFTCARD_TITLE': 'Введите данные кредитной карты',
         'GIFTCARD_NUMBER': 'Номер карты',
         'GIFTCARD_CAPTCHA': 'Код с картинки',
