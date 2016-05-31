@@ -30,13 +30,25 @@ define(["backbone", "factory"], function(Backbone) {
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            this.setBinding('product_stock_amount', this.model.get_product().get('stock_amount'));
+
             this.listenTo(this.model, 'change:quantity', this.update, this);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.hide_show);
             this.hide_show();
         },
+        bindings: {
+            '.decrease': 'classes: {disabled: equal(quantity, 1)}',
+            '.increase': 'classes: {disabled: equal(quantity, product_stock_amount)}'
+        },
         events: {
             'click .increase:not(.disabled)': 'increase',
             'click .decrease:not(.disabled)': 'decrease'
+        },
+        bindingSources: {
+            product: function() {
+                return new Backbone.Model({stock_amount: App.Models.Product.prototype.defaults.stock_amount});
+            }
         },
         hide_show: function(isComboWithWeightProduct) {
             var product = this.model.get_product(),
@@ -65,8 +77,12 @@ define(["backbone", "factory"], function(Backbone) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
             } else {
-                this.$('.decrease').removeClass('disabled');
-                this.$('.increase').removeClass('disabled');
+                if (this.model.get('quantity') > 1) {
+                    this.$('.decrease').removeClass('disabled');
+                }
+                if (this.model.get('quanity') < stock_amount) {
+                    this.$('.increase').removeClass('disabled');
+                }
             }
         },
         increase: function(event) {
@@ -91,7 +107,8 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'quantity',
         mod: 'weight',
         bindings: {
-            '.weight_edit_input': 'restrictInput: "0123456789.", kbdSwitcher: "float", pattern: weight_regex, attr: {"data-size": stringLength(scalesFormat(weight))}'
+            '.weight_edit_input': 'restrictInput: "0123456789.", kbdSwitcher: "float", pattern: weight_regex, attr: {"data-size": stringLength(scalesFormat(weight))}',
+            '.decrease': 'classes: {disabled: equal(integer(weight), 0)}'
         },
         computeds: {
             weight_regex: {
