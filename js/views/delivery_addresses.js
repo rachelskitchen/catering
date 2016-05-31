@@ -30,10 +30,16 @@ define(['backbone', 'factory'], function(Backbone) {
      */
     var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
-            this.initModel();
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.updateAddress();
-            this.listenTo(App.Data.customer, 'change:access_token', this.updateAddress);
+            var dfd = this.options.customer.addressesRequest || new Backbone.$.Deferred().resolve(),
+                self = this;
+
+            // wait until customer addresses are loaded
+            dfd.always(function() {
+                self.initModel();
+                App.Views.FactoryView.prototype.initialize.apply(self, arguments);
+                self.updateAddress();
+                self.listenTo(App.Data.customer, 'change:access_token', self.updateAddress);
+            });
         },
         initModel: function() {
             var model = {},
