@@ -24,9 +24,10 @@ define(['products_view'], function(products_view) {
     'use strict';
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
-        showModifiers: function(event, status) {
+        showModifiers: function(event, options) {
             var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                combo_based = this.model.isComboBased() && status != 'No_Combo',
+                no_combo = _.isObject(options) ? options.no_combo : false,
+                combo_based = this.model.isComboBased() && !no_combo,
                 has_upsell = this.model.isUpsellProduct();
 
             var myorder = App.Models.create(combo_based ? (has_upsell ? 'MyorderUpsell' : 'MyorderCombo') : 'Myorder');
@@ -37,8 +38,11 @@ define(['products_view'], function(products_view) {
             def.then(function() {
                 var cache_id = combo_based ? myorder.get("id_product") : undefined;
                 var clone = myorder.clone();
-                if (status == 'No_Combo') {
+                if (no_combo) {
                     clone.get('product').set('has_upsell', false, {silent: true});
+                }
+                if (no_combo && options.combo_root) {
+                    clone.get_modifiers().update(options.combo_root.get_modifiers());
                 }
 
                 $('#main-spinner').removeClass('ui-visible');
