@@ -49,14 +49,16 @@
         }
     });
 
-    var RewardsInfoView = App.Views.FactoryView.extend({
+    var RewardsInfoView = App.Views.RewardsView.RewardsInfoView.extend({
         name: 'rewards',
         mod: 'info',
         bindings: {
-            '.rewards-number': 'text: number',
-            '.total-points': 'text: balance_points',
-            '.total-visits': 'text: balance_visits',
-            '.total-purchases': 'text: currencyFormat(balance_purchases)',
+            '.total-points-redemption': 'toggle: redemption_points',
+            '.total-points-redemption__value': 'text: redemption_points',
+            '.total-visits-redemption': 'toggle: redemption_visits',
+            '.total-visits-redemption__value': 'text: redemption_visits',
+            '.total-purchases-redemption': 'toggle: redemption_purchases',
+            '.total-purchases-redemption__value': 'text: redemption_purchases',
             '.item-rewards-box': 'classes: {hide: not(length($itemRewards))}',
             '.item-rewards': 'collection: $itemRewards, itemView: "itemRewards"',
             '.visit-rewards-box': 'classes: {hide: not(length($visitRewards))}',
@@ -68,9 +70,6 @@
             '.total-row-visits': 'classes: {hide: isNull(balance_visits)}',
             '.total-row-purchase': 'classes: {hide: isNull(balance_purchases)}',
             '.apply-reward': 'classes: {disabled: not(length(discounts))}'
-        },
-        events: {
-            'click .apply-reward': 'apply'
         },
         onEnterListeners: {
             '.apply-reward': 'apply'
@@ -84,6 +83,13 @@
             },
             purchaseRewards: function() {
                 return new Backbone.Collection();
+            },
+            redemption: function() {
+                return new Backbone.Model({
+                    points: 0,
+                    visits: 0,
+                    purchases: 0
+                });
             }
         },
         bindingFilters: {
@@ -105,18 +111,38 @@
             this.setItemRewards();
             this.setVisitsRewards();
             this.setPurchaseRewards();
-        },
-        apply: function() {
-            this.model.trigger('onRedemptionApplied');
+
+            var itemRewards = this.getBinding('$itemRewards'),
+                visitRewards = this.getBinding('$visitRewards'),
+                purchaseRewards = this.getBinding('$purchaseRewards');
+
+            this.setBinding('redemption_points', this.countPointsToRedeem(itemRewards));
+            this.setBinding('redemption_visits', this.countPointsToRedeem(visitRewards));
+            this.setBinding('redemption_purchases', this.countPointsToRedeem(purchaseRewards));
+
+            this.listenTo(itemRewards, 'change:selected', function() {
+                this.setBinding('redemption_points', this.countPointsToRedeem(itemRewards));
+            });
+            this.listenTo(visitRewards, 'change:selected', function() {
+                this.setBinding('redemption_visits', this.countPointsToRedeem(visitRewards));
+            });
+            this.listenTo(purchaseRewards, 'change:selected', function() {
+                this.setBinding('redemption_purchases', this.countPointsToRedeem(purchaseRewards));
+            });
         },
         setItemRewards: function() {
-            this.getBinding('$itemRewards').reset(this.model.get('rewards').where({type: 1}));
+            this.getBinding('$itemRewards').reset(this.model.get('rewards').where({rewards_type: 1}));
         },
         setVisitsRewards: function() {
-            this.getBinding('$visitRewards').reset(this.model.get('rewards').where({type: 2}));
+            this.getBinding('$visitRewards').reset(this.model.get('rewards').where({rewards_type: 2}));
         },
         setPurchaseRewards: function() {
-            this.getBinding('$purchaseRewards').reset(this.model.get('rewards').where({type: 0}));
+            this.getBinding('$purchaseRewards').reset(this.model.get('rewards').where({rewards_type: 0}));
+        },
+        countPointsToRedeem: function(collection) {
+            return _.reduce(collection.where({selected: true}), function(memo, model) {
+                return memo + model.get('points');
+            }, 0);
         }
     });
 

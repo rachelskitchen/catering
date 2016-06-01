@@ -80,6 +80,10 @@
     padding-left: 30px;
 }
 
+.rewards-info .total-redemption {
+    padding-left: 3px;
+}
+
 .rewards-info .rewards-box {
     max-height: 520px;
     overflow-y: auto;
@@ -116,6 +120,6 @@
 }
 
 .rewards-info .points.selected::before {
-    content: '-';
+    content: '−';
     padding-right: 5px;
 }
