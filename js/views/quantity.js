@@ -108,18 +108,12 @@ define(["backbone", "factory"], function(Backbone) {
         mod: 'weight',
         bindings: {
             '.weight_edit_input': 'restrictInput: "0123456789.", kbdSwitcher: "float", pattern: weight_regex, attr: {"data-size": stringLength(scalesFormat(weight))}',
-            '.decrease': 'classes: {disabled: disableDecrease}'
+            '.decrease': 'classes: {disabled: equal(integer(weight), 1)}'
         },
         computeds: {
             weight_regex: {
                 get: function() {
                     return RegExp(this.reg_str);
-                }
-            },
-            disableDecrease: {
-                deps: ['weight'],
-                get: function(weight) {
-                    return weight < 1.1;
                 }
             }
         },
