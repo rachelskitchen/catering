@@ -156,9 +156,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             /**
              * Authorization URL.
              * @type {string}
-             * @default "https://identity-dev.revelup.com/customers-auth"
+             * @default "https://identity-dev.revelup.com/customers-auth/v1/"
              */
-            serverURL: "https://identity-dev.revelup.com/customers-auth"
+            serverURL: "https://identity-dev.revelup.com/customers-auth/v1/"
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -560,7 +560,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         login: function() {
             var attrs = this.toJSON();
             return Backbone.$.ajax({
-                url: attrs.serverURL + "/v1/authorization/token-customer/",
+                url: attrs.serverURL + "/authorization/token-customer/",
                 method: "POST",
                 context: this,
                 data: {
@@ -694,7 +694,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             address = App.Models.CustomerAddress.prototype.convertToAPIFormat(address);
 
             return Backbone.$.ajax({
-                url: attrs.serverURL + "/v1/customers/register-customer/",
+                url: attrs.serverURL + "/customers/register-customer/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -808,7 +808,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             var attrs = this.toJSON();
 
             return Backbone.$.ajax({
-                url: attrs.serverURL + "/v1/customers/customers/" + attrs.user_id + "/",
+                url: attrs.serverURL + "/customers/customers/" + attrs.user_id + "/",
                 method: "PATCH",
                 context: this,
                 contentType: "application/json",
@@ -912,7 +912,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             addressJson = this.convertAddressToAPIFormat(addressJson);
 
             return Backbone.$.ajax({
-                url: this.get('serverURL') + "/v1/customers/addresses/",
+                url: this.get('serverURL') + "/customers/addresses/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1018,7 +1018,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             address = this.convertAddressToAPIFormat(address);
 
             return Backbone.$.ajax({
-                url: this.get('serverURL') + "/v1/customers/addresses/" + address.id + "/",
+                url: this.get('serverURL') + "/customers/addresses/" + address.id + "/",
                 method: "PATCH",
                 context: this,
                 contentType: "application/json",
@@ -1199,7 +1199,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             var attrs = this.toJSON();
 
             return Backbone.$.ajax({
-                url: attrs.serverURL + "/v1/customers/change-password/" + attrs.user_id + "/",
+                url: attrs.serverURL + "/customers/change-password/" + attrs.user_id + "/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1295,7 +1295,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          */
         resetPassword: function() {
             return Backbone.$.ajax({
-                url: this.get('serverURL') + "/v1/customers/reset-password/",
+                url: this.get('serverURL') + "/customers/reset-password/",
                 method: "POST",
                 context: this,
                 contentType: "application/json",
@@ -1368,11 +1368,11 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         /**
          * Set attributes values.
          *
-         * @param {Object} data - object corresponding to response of `v1/authorization/token-customer/` {@link App.Models.Customer#login request}
+         * @param {Object} data - object corresponding to response of `authorization/token-customer/` {@link App.Models.Customer#login request}
          */
         setCustomerFromAPI: function(data) {
             if(!_.isObject(data) || !_.isObject(data.customer) || !_.isObject(data.token)) {
-                console.error('Incorrect `v1/authorization/token-customer/` data format');
+                console.error('Incorrect `authorization/token-customer/` data format');
                 return;
             }
 
