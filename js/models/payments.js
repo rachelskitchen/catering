@@ -239,7 +239,7 @@ define(['backbone'], function(Backbone) {
             }
 
             return Backbone.$.ajax({
-                url: serverURL + "/v1/customers/payments/" + this.type + "/" + this.get('id') + "/",
+                url: serverURL + "/customers/payments/" + this.type + "/" + this.get('id') + "/",
                 method: "DELETE",
                 headers: authorizationHeader,
                 success: new Function(),        // to override global ajax success handler
@@ -476,7 +476,7 @@ define(['backbone'], function(Backbone) {
         getPayments: function(authorizationHeader) {
             var self = this;
             return Backbone.$.ajax({
-                url: this.serverURL + "/v1/customers/payments/" + this.type + "/",
+                url: this.serverURL + "/customers/payments/" + this.type + "/",
                 method: "GET",
                 headers: authorizationHeader,
                 success: function(data) {
@@ -682,7 +682,7 @@ define(['backbone'], function(Backbone) {
             var self = this;
 
             return Backbone.$.ajax({
-                url: this.serverURL + "/v1/customers/payments/" + this.type + "/",
+                url: this.serverURL + "/customers/payments/" + this.type + "/",
                 method: "POST",
                 data: JSON.stringify(data),
                 headers: authorizationHeader,
