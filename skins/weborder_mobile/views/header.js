@@ -182,6 +182,7 @@ define(["factory"], function() {
             this.listenTo(App.Data.myorder, 'add remove change', function() {
                 this.model.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
             });
+            this.listenTo(App.Data.myorder, 'add_upsell_item_to_cart', this.link_add, this);//used for the case when root modifiers were not selected before user press Add Item
         },
         reinit: function() {
             this.setHeaders();
@@ -232,6 +233,12 @@ define(["factory"], function() {
             if(!App.Settings.online_orders) return;
 
             var order = this.options.order;
+
+            var check_root_modifiers = order.check_order({ modifiers_only: true });
+            if (check_root_modifiers.status !== 'OK') {
+                this.model.trigger("set_modifiers_before_add");//invoke modifiers page for the root product
+                return;
+            }
 
             this.model.addProduct(order).done(function () {
                 //self.setHeaderToUpdate();

@@ -142,6 +142,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 model: this.model,
                 mod: 'MatrixFooter',
                 action: this.options.action,
+                action_text_label: this.options.action_text_label,
                 flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
                 real: this.options.real,
                 action_callback: this.options.action_callback
@@ -215,7 +216,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            if (this.options.action === 'add') {
+            var action_text_label = this.options.action_text_label ? this.options.action_text_label : this.options.action;
+            if (action_text_label === 'add') {
                 this.$('.action_button').html(_loc['MYORDER_ADD_ITEM']);
             } else {
                 this.$('.action_button').html(_loc['MYORDER_UPDATE_ITEM']);
@@ -309,9 +311,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         check_model: function() {
             return this.model.get('product').get("product_sets").check_selected();
         },
-        view_check_order: function() {
-            return this.model.check_order();
-        },
         check_weight_product: function() {
             var isComboWithWeightProduct = this.model.get('product').get("product_sets").haveWeightProduct();
             this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
@@ -327,17 +326,27 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             if (this.options.action === 'update') {
                this.$('.no_combo_link').hide();
             }
+            this.listenTo(this.model, "action_add_item", this.action); //used for the case when root modifiers were not selected before user press Add Item
             return this;
         },
         events: {
             'click .no_combo_link': 'no_combo'
         },
         no_combo: function() {
+            var self = this;
             $('#popup .cancel').trigger('click');
             var target_product_view = $('.product_list_item[data-id='+ this.model.get('product').get('compositeId') + ']');
             setTimeout( function() {
-                target_product_view && target_product_view.trigger('click', ['No_Combo']);
+                target_product_view && target_product_view.trigger('click', {no_combo: true, combo_root: self.model});
             }, 10);
+        },
+        action: function (event) {
+            var check_root_modifiers = this.model.check_order({ modifiers_only: true });
+            if (check_root_modifiers.status !== 'OK') {
+                this.model.trigger("set_modifiers_before_add");//invoke modifiers page for the root product
+            } else {
+                _base.prototype.action.apply(this, arguments);
+            }
         }
       });
     }
