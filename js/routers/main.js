@@ -629,11 +629,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         loadViewEstablishments: function() {
             var ests = App.Data.establishments,
                 modelForView = ests.getModelForView(),// get a model for the stores list view
-                settings = App.Data.settings,
-                cssCore = settings.get('settings_skin').routing.establishments.cssCore;
+                settings = App.Data.settings;
 
             if (modelForView.get('isMobileVersion')) {
-                cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
                 (!App.skin) && settings.set('skin', App.Skins.WEBORDER_MOBILE);
             } else {
                 (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
@@ -642,7 +640,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
                 var locale = App.Data.locale;
                 locale.dfd_load.done(function() {
-                    var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                    var view = App.Views.GeneratorView.create('Establishments', {
                         mod: 'Main',
                         className: 'establishments_view',
                         collection: ests,

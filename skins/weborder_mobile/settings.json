@@ -120,6 +120,10 @@
             "core": ["promotions", "promotions_view"],
             "css": ["promotions"],
             "templates": ["promotions"]
+        },
+        "establishments": {
+            "css": ["establishments"],
+            "templates": ["establishments"]
         }
     }
 }

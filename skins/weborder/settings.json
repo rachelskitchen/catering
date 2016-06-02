@@ -46,6 +46,11 @@
         },
         "pay": {
             "core": ["card", "giftcard", "customers"]
+        },
+        "establishments": {
+            "views": ["establishments"],
+            "cssCore": ["establishments"],
+            "templatesCore": ["establishments"]
         }
     }
 }

@@ -45,6 +45,10 @@
         },
         "pay": {
             "core": ["card", "giftcard", "customers"]
+        },
+        "establishments": {
+            "css": ["establishments"],
+            "templates": ["establishments"]
         }
     }
 }
