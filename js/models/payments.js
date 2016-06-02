@@ -286,7 +286,7 @@ define(['backbone'], function(Backbone) {
             }
 
             return Backbone.$.ajax({
-                url: serverURL + "/v1/customers/payments/" + this.type + "/" + this.get('id') + "/",
+                url: serverURL + "/customers/payments/" + this.type + "/" + this.get('id') + "/",
                 method: "PATCH",
                 headers: authorizationHeader,
                 contentType: 'application/json',

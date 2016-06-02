@@ -192,9 +192,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             /**
              * Authorization URL.
              * @type {string}
-             * @default "https://identity-dev.revelup.com/customers-auth/v1/"
+             * @default "https://identity-dev.revelup.com/customers-auth/v1"
              */
-            serverURL: "https://identity-dev.revelup.com/customers-auth/v1/"
+            serverURL: "https://identity-dev.revelup.com/customers-auth/v1"
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
