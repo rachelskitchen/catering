@@ -53,7 +53,7 @@
         'HEADER_SEARCH': 'Search',
         'HEADER_SHOP': 'Shop',
         'HEADER_ABOUT': 'About',
-        'HEADER_LOCATIONS': 'Locations',
+        'HEADER_MAP': 'Locations',
         'HEADER_ORDER_DETAILS': 'Checkout & Order Details',
         'MAIN_CURRENT_STORE': 'Current Store',
         'MAIN_CHANGE': 'Change?',

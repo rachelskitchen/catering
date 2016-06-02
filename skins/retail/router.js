@@ -123,8 +123,6 @@ define(["main_router"], function(main_router) {
 //common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-//common
-                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
                 mainModel.set({
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
@@ -280,7 +278,11 @@ define(["main_router"], function(main_router) {
             });
 
             // onShop event occurs when 'Shop' item is clicked
-            this.listenTo(App.Data.header, 'onShop', this.navigate.bind(this, 'index', true));
+            this.listenTo(App.Data.header, 'onShop', function() {
+                if (location.hash.indexOf("#index") == -1) {
+                    this.navigate('index', true);
+                }
+            });
 
             // onMenu event occurs when 'Return to Menu'
             this.listenTo(App.Data.mainModel, 'onMenu', this.navigate.bind(this, 'index', true));

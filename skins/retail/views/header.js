@@ -26,17 +26,32 @@ define(["backbone", "factory"], function(Backbone) {
     var HeaderMainView = App.Views.FactoryView.extend({
         name: 'header',
         mod: 'main',
+        bindings: {
+            '.search-box': 'classes: {active: ui_showSearchInput, link: not(ui_showSearchInput)}',
+            'input[name=search]': 'value: ui_searchInput, events: ["input"], attr: {disabled: select(ui_isSearching, "disabled", false)}',
+            '.shop': 'classes: {active: equal(menu_index, 0)}',
+            '.about': 'classes: {active: equal(menu_index, 1)}',
+            '.map': 'classes: {active: equal(menu_index, 2)}'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    showSearchInput: false,
+                    searchInput: '',
+                    isSearching: false,
+                    quantity: 0
+                });
+            }
+        },
         initialize: function() {
             this.listenTo(this.model, 'change:menu_index', this.menu, this);
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
             this.listenTo(this.options.search, 'onRestore', this.restoreState, this);
-            this.listenTo(this.model, 'change:isShowPromoMessage', this.calculatePromoMessageWidth, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
-            if (App.Settings.promo_message) this.calculatePromoMessageWidth(); // calculate a promo message width
             App.Views.FactoryView.prototype.render.apply(this, arguments);
             var view = new App.Views.GeneratorView.create('Categories', {
                 collection: this.collection,
@@ -52,30 +67,19 @@ define(["backbone", "factory"], function(Backbone) {
         },
         events: {
             'click .shop': 'onMenu',
-            'keydown .shop': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.onMenu();
-                }
-            },
             'click .about': 'onAbout',
-            'keydown .about': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.onAbout();
-                }
-            },
             'click .locations': 'onLocations',
-            'keydown .locations': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.onLocations();
-                }
-            },
             'click .cart': 'onCart',
-            'keydown .cart': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.onCart();
-                }
-            },
-            'submit .search': 'onSearch'
+            'click .search-label': 'showSearchInput',
+            'click .cancel-search': 'cancelSearch'
+        },
+        onEnterListeners: {
+            '.shop': 'onMenu',
+            '.about': 'onAbout',
+            '.locations': 'onLocations',
+            '.cart': 'onCart',
+            '.search-label': 'showSearchInput',
+            '.cancel-search': 'cancelSearch'
         },
         menu: function(model, value) {
             var menu = this.$('.menu li'),
@@ -88,9 +92,7 @@ define(["backbone", "factory"], function(Backbone) {
                 tabs.addClass('hidden');
         },
         onMenu: function() {
-            if (!this.onIndex()) {
-                this.model.trigger('onShop');
-            }
+            this.model.trigger('onShop');
         },
         onAbout: function() {
             this.model.trigger('onAbout');
@@ -101,118 +103,33 @@ define(["backbone", "factory"], function(Backbone) {
         onCart: function() {
             this.model.trigger('onCart');
         },
-        onSearch: function(event) {
-            event.preventDefault();
-            var search = this.$('input[name=search]').val();
-            if(search.length > 0) {
-                if (!this.onIndex()) {
-                    this.model.trigger('onShop');
-                }
+        onSearch: function() {
+            var search = this.getBinding('ui_searchInput');
+            if (search.length > 0) {
+                this.searchStart();
+                this.model.trigger('onShop');
                 this.options.search.search(search);
             }
         },
-        onIndex: function() {
-            return (location.hash.indexOf("#index") !== -1) ? true : false;
-        },
-        searchComplete: function(result) {
-            this.$('.search').get(0).reset();
-            var products = result.get('products');
-            if(!products || products.length == 0)
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
+        searchComplete: function() {
+            this.setBinding('ui_searchInput', '');
+            this.setBinding('ui_isSearching', false);
         },
         searchStart: function() {
-            // reset selections in App.Data.categories
-            this.collection.parent_selected = 0;
-            this.collection.selected = 0;
-            this.$('input[name=search]').blur();
+            this.setBinding('ui_isSearching', true);
         },
         update: function() {
-            var quantity = this.options.cart.get_only_product_quantity(),
-                cart = this.$('.cart');
-            if(quantity)
-                cart.text(quantity);
-            else
-                cart.text('');
+            this.setBinding('ui_quantity', this.options.cart.get_only_product_quantity());
         },
         restoreState: function() {
-            var pattern = this.options.search.lastPattern,
-                input = this.$('input[name=search]');
-            pattern && input.attr('disabled', 'disabled').val(pattern);
-            input.removeAttr('disabled');
-            this.onSearch({preventDefault: new Function});
+            this.setBinding('ui_searchInput', this.options.search.lastPattern || '');
+            this.onSearch();
         },
-        /**
-         * Calculate a promo message width.
-         */
-        calculatePromoMessageWidth: function() {
-            if (this.model.get('isShowPromoMessage')) {
-                var promo_message = Backbone.$('<div class="promo_message promo_message_internal"> <span>' + App.Settings.promo_message + '</span> </div>');
-                $('body').append(promo_message);
-                this.model.set('widthPromoMessage', promo_message.find('span').width());
-                promo_message.remove();
-                this.model.set('widthWindow', $(window).width());
-                var self = this;
-                var interval = window.setInterval(function() {
-                    var img_logo = self.$('img.logo');
-                    if (img_logo.length !== 0) {
-                        self.resizeLogoPromoMessage(); // resize a logo & a promo message
-                        self.addPromoMessage(); // add a promo message
-                        $(window).resize(self, self.resizePromoMessage);
-                        clearInterval(interval);
-                    }
-                }, 100);
-            } else {
-                this.$('.promo_message').hide();
-            }
+        showSearchInput: function() {
+            this.setBinding('ui_showSearchInput', true);
         },
-        /**
-         * Resize of a promo message.
-         */
-        resizePromoMessage: function() {
-            if (arguments[0].data.model.get('widthWindow') !== $(window).width()) {
-                arguments[0].data.model.set('widthWindow', $(window).width());
-                arguments[0].data.resizeLogoPromoMessage(); // resize a logo & a promo message
-                arguments[0].data.addPromoMessage(); // add a promo message
-            }
-        },
-        /**
-         * Resize a logo & a promo message.
-         */
-        resizeLogoPromoMessage: function() {
-            var header_left = this.$('div.header_left')
-            var logo_container = this.$('div.logo');
-            var promo_container = this.$('div.promo');
-            var percent_logo = logo_container.width() / header_left.width();
-            if (percent_logo > 0.6) logo_container.css({'max-width': '60%'});
-            var width_logo = logo_container.width();
-            promo_container.css({'left': width_logo + 15 + 'px'});
-        },
-        /**
-         * Add a promo message.
-         */
-        addPromoMessage: function() {
-            var self = this;
-            window.setTimeout(function() {
-                var promo_container = self.$('.promo');
-                var promo_text = self.$('.promo_text');
-                var promo_marquee = self.$('.promo_marquee');
-                if (self.model.get('widthPromoMessage') >= promo_container.width()) {
-                    var isFirefox = /firefox/g.test(navigator.userAgent.toLowerCase());
-                    if (isFirefox) {
-                        // bug #15981: "First Firefox displays long promo message completely then erases it and starts scrolling"
-                        $(document).ready(function() {
-                            promo_text.hide();
-                            promo_marquee.show();
-                        });
-                    } else {
-                        promo_text.hide();
-                        promo_marquee.show();
-                    }
-                } else {
-                    promo_text.show();
-                    promo_marquee.hide();
-                }
-            }, 0);
+        cancelSearch: function() {
+            this.setBinding('ui_showSearchInput', false);
         }
     });
 

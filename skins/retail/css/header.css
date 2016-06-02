@@ -1,0 +1,81 @@
+#header .top {
+    padding: 0 32px;
+outline: 1px solid red; /* remove */
+}
+
+#header .business-name {
+    padding: 16px 10px 16px 0;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+#header .search-box {
+    padding: 8px 0;
+    margin: 7px 16px 7px 0;
+    position: relative;
+}
+
+#header .search-box.active {
+    width: 208px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    margin-bottom: 6px;
+}
+
+#header .search-box::before {
+    content: '\f002';
+    font-family: 'FontAwesome';
+    font-size: 15px;
+    padding-right: 5px;
+    vertical-align: bottom;
+}
+
+#header .search-label {
+    font-size: 12px;
+    letter-spacing: 3px;
+    vertical-align: bottom;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.active .search-label {
+    display: none;
+}
+
+#search {
+    display: none;
+    width: 170px;
+    padding: 0 15px 0 0;
+    margin-left: -1px;
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    background: transparent;
+}
+
+.active #search {
+    display: inline-block;
+}
+
+.search-box .cancel-search {
+    display: none;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 20px;
+    height: 100%;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.search-box.active .cancel-search {
+    display: block;
+}
+
+#header .profile-panel-box {
+    padding: 0 16px;
+    margin: 15px 0;
+    border-width: 0 1px;
+    border-style: solid;
+}

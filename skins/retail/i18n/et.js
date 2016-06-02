@@ -45,7 +45,7 @@ define([], function() {
         "HEADER_SEARCH": "Otsi",
         "HEADER_SHOP": "Ostle",
         "HEADER_ABOUT": "Teave",
-        "HEADER_LOCATIONS": "Asukohad",
+        "HEADER_MAP": "Asukohad",
         "HEADER_ORDER_DETAILS": "Vormistamine ja tellimuse üksikasjad",
         "MAIN_CURRENT_STORE": "Praegune kauplus",
         "MAIN_CHANGE": "Kas muuta?",

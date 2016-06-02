@@ -53,7 +53,7 @@
         'HEADER_SEARCH': 'Поиск',
         'HEADER_SHOP': 'Меню',
         'HEADER_ABOUT': 'О нас',
-        'HEADER_LOCATIONS': 'Карта',
+        'HEADER_MAP': 'Карта',
         'HEADER_ORDER_DETAILS': 'Параметры заказа и доставки',
         'MAIN_CURRENT_STORE': 'Текущий магазин',
         'MAIN_CHANGE': 'Изменить?',

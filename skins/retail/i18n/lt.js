@@ -45,7 +45,7 @@ define([], function() {
         "HEADER_SEARCH": "Paieška",
         "HEADER_SHOP": "Parduotuvė",
         "HEADER_ABOUT": "Apie mus",
-        "HEADER_LOCATIONS": "Vietos",
+        "HEADER_MAP": "Vietos",
         "HEADER_ORDER_DETAILS": "Atsiskaitymas ir užsakymo duomenys",
         "MAIN_CURRENT_STORE": "Dabartinė parduotuvė",
         "MAIN_CHANGE": "Keisti?",
