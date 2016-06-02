@@ -94,9 +94,6 @@ define(["products_view"], function(products_view) {
         initialize: function() {
             var self = this;
             ProductModifiersView.prototype.initialize.apply(this, arguments);
-            if (this.model.check_order({modifiers_only: true}).status != 'OK') {
-                setTimeout( function(){ self.$(".customize").click(); }, 200);
-            }
         },
         bindings: {
             '.customize': 'classes:{hide:not(is_modifiers)}',
@@ -125,7 +122,7 @@ define(["products_view"], function(products_view) {
             App.Data.router.combo_child_products(this.model, this.model.get("id_product"));
         },
         no_combo: function() {
-            App.Data.router.modifiers(this.model.get('product').get('id_category'), this.model.get("id_product"), 'No_Combo');
+            App.Data.router.modifiers(this.model.get('product').get('id_category'), this.model.get("id_product"), {no_combo: true, combo_root: this.model});
         }
     });
 

@@ -105,7 +105,26 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderItemComboView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemComboView );
     var MyOrderItemUpsellView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView );
 
-    function _MyOrderItemView(_base){ return _base.extend({
+    function _MyOrderItemView(_base) { return _base.extend({
+        render: function() {
+            _base.prototype.render.apply(this, arguments);
+
+            var view, mod,
+                sold_by_weight = this.model.get_product().get("sold_by_weight");
+
+            if (sold_by_weight || !this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
+                mod = sold_by_weight ? 'WeightCart' : 'MainCart';
+
+                view = App.Views.GeneratorView.create('Quantity', {
+                    el: this.$('.qty-box'),
+                    model: this.model,
+                    mod: mod
+                });
+                this.subViews.push(view);
+            }
+
+            return this;
+        },
         editItem: function(event) {
             event.preventDefault();
             var self = this,
@@ -128,7 +147,7 @@ define(["myorder_view"], function(myorder_view) {
                                                           //the view will be removed from cache after the product is added/updated into the cart.
             });
         }
-      })
+    });
     }
 
     var MyOrderItemSpecialView = App.Views.FactoryView.extend({

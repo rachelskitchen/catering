@@ -221,9 +221,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         initialize: function() {
             var self = this;
             CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
-            if (this.model.check_order({modifiers_only: true}).status != 'OK') {
-                setTimeout( function(){ self.$(".customize").click(); }, 200);
-            }
+            this.listenTo(this.model, "set_modifiers_before_add", this.customize.bind(this, "then_add_item"));
         },
         bindings: {
             '.customize': 'classes:{hide:not(is_modifiers)}'
@@ -251,8 +249,11 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 combo_child: true,
                 real: this.model,
                 action: 'update',
+                action_text_label: event == "then_add_item" ? 'add' : 'update',
                 action_callback: function(status) {
-                    if (self.model.check_order({modifiers_only: true}).status == 'OK') {
+                    if (event == "then_add_item" && self.model.check_order({modifiers_only: true}).status == 'OK') {
+                        self.model.trigger("action_add_item");//add upsell product to the cart
+                    } else {
                         //return back to the Upsell root product view:
                         App.Data.mainModel.set('popup', {
                                 modelName: 'MyOrder',

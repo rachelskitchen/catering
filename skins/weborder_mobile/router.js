@@ -569,7 +569,7 @@ define(["main_router"], function(main_router) {
                 });
             });
         },
-        modifiers: function(id_category, id_product, sub_action) {
+        modifiers: function(id_category, id_product, options) {
             this.prepare('modifiers', function() {
                 var self = this,
                     header = App.Data.header,
@@ -610,9 +610,12 @@ define(["main_router"], function(main_router) {
                         order = order.clone();
                     }
 
-                    if (sub_action == 'No_Combo') {
+                    if (options && options.no_combo == true) {
                         order.get('product').set('has_upsell', false, {silent: true});
                         originOrder && originOrder.get('product').set('has_upsell', false, {silent: true});
+                        if (options.combo_root) {
+                            order.get_modifiers().update(options.combo_root.get_modifiers());
+                        }
                     }
 
                     var content = self.getStanfordReloadItem(order) || {
@@ -683,12 +686,13 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        combo_child_products: function(combo_order, product_id) {
+        combo_child_products: function(combo_order, product_id, options) {
             this.prepare('modifiers', function() {
                 var self = this, order,
                     header = App.Data.header,
                     isEditMode = true,
-                    originOrder = null;
+                    originOrder = null,
+                    action = _.isObject(options) ? options.action : undefined;
 
                 if (!combo_order) {
                     return this.navigate('index', true);
@@ -759,7 +763,7 @@ define(["main_router"], function(main_router) {
                 function setHeaderToUpdate() {
                     header.set({
                         page_title: _loc.CUSTOMIZE,
-                        link_title: _loc.UPDATE,
+                        link_title: action == "then_add_item" ? _loc.ADD_TO_CART : _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             var status = header.updateProduct(order);
                             if (status) {
@@ -767,6 +771,8 @@ define(["main_router"], function(main_router) {
                                 originOrder.update(order);
                                 combo_order.trigger("change:modifiers");
                             }
+                            if (action == "then_add_item")
+                                App.Data.myorder.trigger("add_upsell_item_to_cart");
                         }
                     });
                     self.listenTo(order, 'change', setHeaderToUpdate);
@@ -879,6 +885,12 @@ define(["main_router"], function(main_router) {
                         contentClass: '',
                         content: content
                     });
+
+                    if (has_upsell && !isEditMode) {
+                        self.listenTo(header, "set_modifiers_before_add", function() {
+                            self.combo_child_products(order, order.get("id_product"), {action: "then_add_item"});
+                        });
+                    }
 
                     self.change_page();
                 }
