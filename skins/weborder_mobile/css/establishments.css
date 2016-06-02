@@ -3,7 +3,7 @@
     -ms-user-select: none;
     -o-user-select: none;
     -webkit-user-select: none;
-    background-color: rgba(55, 59, 64, 0.6);
+    background-color: rgba(0, 0, 0, 0.6);
     display: table;
     font-family: 'helveticaneue', 'helvetica neue', 'texgyreherosregular', 'helvetica', 'tahoma', 'geneva', 'arial', sans-serif;
     font-weight: normal;
@@ -16,6 +16,22 @@
     user-select: none;
     width: 100%;
     z-index: 101;
+}
+.establishments select {
+    -moz-appearance: none;
+    -ms-appearance: none;
+    -webkit-appearance: none;
+    appearance: none;
+    background-color: transparent;
+    border: none;
+    color: #686868;
+    cursor: pointer;
+    float: left;
+    font-size: 16px;
+    height: 100%;
+    outline: none;
+    padding: 0 25px 0 10px;
+    width: 100%;
 }
 .establishments select:-moz-focusring {
     color: transparent;
@@ -43,30 +59,50 @@
     width: 13em;
 }
 .establishments .select-wrapper {
+    background: #fcfcfc;
+    border-color: #cecece;
+    border-radius: 20px;
+    border-style: solid;
+    border-width: 1px;
     display: inline-block;
+    height: 22px;
+    overflow: hidden;
 }
 .establishments .select-wrapper:hover {
     border-color: #66ccff;
 }
-.establishments .wnd-wrapper {
-    background: white;
-    max-width: 50em;
-    width: 80%;
-    margin: 0 auto;
-    padding-top: 2em;
+.establishments .select-wrapper:after {
+    background-color: inherit;
+    background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSI4IiBoZWlnaHQ9IjE1LjIiPjxnPjxwYXRoIGQ9Im00LDBMMSw2TDcsNloiIGZpbGw9IiM2ODY4NjgiLz48cmVjdCBoZWlnaHQ9IjEiIHdpZHRoPSI4IiB5PSI3IiB4PSIwIiBmaWxsPSIjNjg2ODY4Ii8+PHBhdGggZD0ibTQsMTUuMkwxLDkuMkw3LDkuMloiIGZpbGw9IiM2ODY4NjgiLz48L2c+PC9zdmc+');
+    background-position: 5px 50%;
+    background-repeat: no-repeat;
+    border-bottom-right-radius: inherit;
+    border-top-right-radius: inherit;
+    content: '';
+    display: block;
+    float: left;
+    height: 100%;
+    margin-left: -22px;
+    pointer-events: none;
+    position: relative;
+    width: 22px;
+    z-index: 1;
 }
 .establishments > div {
     display: table-cell;
     vertical-align: middle;
 }
-.establishments .choose_brand_title{
+.establishments > div div {
+    margin-bottom: 1em;
+}
+.establishments > div div:nth-child(1) {
+    color: #fff;
     font-size: 19.2px;
     font-weight: bold;
     text-shadow: none;
-    margin-bottom: 0.7em;
 }
-.establishments .wnd-wrapper .select-wrapper {
-    margin-bottom: 6em;
+.establishments > div div:nth-child(2) {
+    margin-bottom: 4em;
 }
 .establishments footer {
     bottom: 0px;
@@ -83,3 +119,71 @@
     outline: none;
     width: 141px;
 }
+
+.establishments > div {
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+/*
+    Override establishments styles.
+    [class] is used to increase priority.
+ */
+.establishments[class] {
+    position: fixed;
+    top: 0;
+    left: 0;
+    background: rgba(0,0,0,.8);
+}
+
+.establishments[class] > div div:nth-child(1) {
+    font-size: 4em;
+    font-weight: 200;
+}
+
+.establishments[class] > div div:nth-child(2) {
+    margin-bottom: 9em;
+}
+
+.establishments[class] .select-wrapper {
+    width: 95%;
+    height: auto;
+    font-size: 3em;
+    padding: 0;
+}
+
+.establishments[class] .select-wrapper::after {
+    content: '\f0dc';
+    font-family: "FontAwesome";
+    font-size: 1.5em;
+    display: block;
+    width: 1em;
+    height: 100%;
+    line-height: 1.5em;
+    text-indent: 0.1em;
+    position: absolute;
+    top: 0;
+    right: 0;
+    background-color: inherit;
+    pointer-events: none;
+    background-image: none;
+    -webkit-transform: scaleX(.7);
+    -moz-transform: scaleX(.7);
+    -ms-transform: scaleX(.7);
+    transform: scaleX(.7);
+}
+
+.establishments[class] select {
+    float: none;
+}
+
+.establishments[class] button {
+    font-size: 3em;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2em;
+    font-weight: 100;
+    margin-bottom: 1em;
+}
+
+
