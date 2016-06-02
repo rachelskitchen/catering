@@ -289,7 +289,7 @@ define(["backbone", "async"], function(Backbone) {
                 skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
-                defaultSkin = (settings.type_of_service == ServiceType.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
+                defaultSkin = (settings.layout_style == LayoutStyle.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
 
             // set alias to current skin
             App.skin = isUnknownSkin ? defaultSkin : skin;
@@ -420,6 +420,7 @@ define(["backbone", "async"], function(Backbone) {
                         number_of_digits_to_right_of_decimal: 0
                     },
                     type_of_service: ServiceType.TABLE_SERVICE,
+                    layout_style: LayoutStyle.RESTAURANT,
                     default_dining_option: 'DINING_OPTION_TOGO',
                     accept_discount_code: true,
                     enable_quantity_modifiers: true,

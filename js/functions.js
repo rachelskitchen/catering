@@ -88,6 +88,12 @@ var ServiceType = {
     DONATION : 6
 };
 
+var LayoutStyle = {
+    RESTAURANT : 0,
+    RETAIL : 1,
+    HYBRID : 2
+};
+
 var EVENT = {
     START:     "Start",
     NAVIGATE:  "Navigate",
