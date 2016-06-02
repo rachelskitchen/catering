@@ -45,7 +45,7 @@ define([], function() {
         "HEADER_SEARCH": "Rechercher",
         "HEADER_SHOP": "Acheter",
         "HEADER_ABOUT": "À propos",
-        "HEADER_LOCATIONS": "Emplacements",
+        "HEADER_MAP": "Emplacements",
         "HEADER_ORDER_DETAILS": "Détails du paiement et de la commande",
         "MAIN_CURRENT_STORE": "Magasin actuel",
         "MAIN_CHANGE": "Changer ?",
