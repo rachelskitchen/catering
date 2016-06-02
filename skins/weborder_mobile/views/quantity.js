@@ -31,9 +31,6 @@ define(["quantity_view"], function(quantity_view) {
             'input .quantity_edit_input': 'change_quantity',
             'blur .quantity_edit_input': 'blur_quantity'
         },
-        bindings: {
-            '.decrease': 'classes: {"disabled": equal(quantity, 1)}'
-        },
         initialize: function() {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.model, 'combo_weight_product_change', this.combo_weight_product_change);
@@ -41,15 +38,18 @@ define(["quantity_view"], function(quantity_view) {
         hide_show: function(isComboWithWeightProduct) {
             App.Views.CoreQuantityView.CoreQuantityMainView.prototype.hide_show.apply(this, arguments);
             var product = this.model.get_product(),
+                stock_amount = product.get('stock_amount'),
                 disallowNegativeInventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory;
-            if (product.get('stock_amount') === 1 || product.isParent() || isComboWithWeightProduct) {
+            if (stock_amount === 1 || product.isParent() || isComboWithWeightProduct) {
                 this.$('.quantity_edit_input').addClass('disabled').prop('disabled', true);
                 disallowNegativeInventory && this.model.set('quantity', 1); // bug 13494
             } else {
                 if (this.model.get('quantity') > 1) {
                     this.$('.decrease').removeClass('disabled');
                 }
-                this.$('.increase').removeClass('disabled');
+                if (this.model.get('quanity') < stock_amount) {
+                    this.$('.increase').removeClass('disabled');
+                }
                 this.$('.quantity_edit_input').removeClass('disabled').prop('disabled', false);
             }
         },

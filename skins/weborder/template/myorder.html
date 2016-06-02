@@ -11,11 +11,7 @@
 <script type="text/template" id="myorder_item-template">
     <% var isUsualProduct = id_product !== null && is_child_product != true; %>
     <% if(!is_service_fee && isUsualProduct) { %>
-    <div class="qty-box fl-left text-center secondary-border">
-        <div class="btn-up primary-icon"></div>
-        <span class="qty"><%= quantity %></span>
-        <div class="btn-down primary-icon"></div>
-    </div>
+    <div class="qty-box fl-left text-center secondary-border"></div>
     <% } %>
     <% if(isUsualProduct) { %>
     <div class="remove cancel fl-right link"><%= _lp.MYORDER_REMOVE %></div>

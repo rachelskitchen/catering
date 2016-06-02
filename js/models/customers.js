@@ -156,9 +156,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             /**
              * Authorization URL.
              * @type {string}
-             * @default "https://identity-dev.revelup.com/customers-auth/v1/"
+             * @default "https://identity-dev.revelup.com/customers-auth/v1"
              */
-            serverURL: "https://identity-dev.revelup.com/customers-auth/v1/"
+            serverURL: "https://identity-dev.revelup.com/customers-auth/v1"
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -1112,7 +1112,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             address = {id: address.id};
 
             return Backbone.$.ajax({
-                url: this.get('serverURL') + "/v1/customers/addresses/" + address.id + "/",
+                url: this.get('serverURL') + "/customers/addresses/" + address.id + "/",
                 method: "DELETE",
                 context: this,
                 contentType: "application/json",
@@ -1552,7 +1552,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
 
             req = Backbone.$.ajax({
-                url: this.get('serverURL') + '/v1/customers/addresses/',
+                url: this.get('serverURL') + '/customers/addresses/',
                 method: "GET",
                 headers: authorizationHeader,
                 success: function(data) {
