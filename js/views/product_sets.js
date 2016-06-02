@@ -45,6 +45,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         events: {
             'click .customize': 'customize',
             'click .checkbox': 'change',
+            'click .name': 'change',
             'click .title': 'change'
         },
         bindings: {
