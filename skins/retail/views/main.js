@@ -44,20 +44,19 @@ define(["done_view", "generator"], function(done_view) {
         name: 'main',
         mod: 'main',
         bindings: {
-            '.store_choice': 'toggle: needShowStoreChoice'
+            '.store_choice': 'toggle: needShowStoreChoice',
+            '#cart': 'classes: {visible: cartModel_visible}'
         },
         initialize: function() {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
-            this.listenTo(this.model, 'change:popup', this.popup_change, this);
             this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
             this.listenTo(App.Data.search, 'onSearchComplete', this.hideSpinner.bind(this, EVENT.SEARCH, true), this);
-            this.listenTo(this.model, 'onRoute', this.hide_popup, this);
 
             this.iOSFeatures();
 
-            this.subViews.length = 3;
+            this.subViews.length = 2;
 
             SpinnerView.prototype.initialize.apply(this, arguments);
         },
@@ -69,7 +68,6 @@ define(["done_view", "generator"], function(done_view) {
             return this;
         },
         events: {
-            'click #popup .cancel': 'hide_popup',
             'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
@@ -77,7 +75,7 @@ define(["done_view", "generator"], function(done_view) {
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            while (this.subViews.length > 3)
+            while (this.subViews.length > 2)
                 this.subViews.pop().removeFromDOMTree();
 
             if (Array.isArray(data))
@@ -112,28 +110,6 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[1] = App.Views.GeneratorView.create(data.modelName, data, id);
             this.$('#cart').append(this.subViews[1].el);
         },
-        popup_change: function(model, value) {
-            var popup = this.$('.popup'),
-                data, id;
-
-            this.subViews[2] && this.subViews[2].remove();//this.subViews[2].removeFromDOMTree();
-
-            if (typeof value == 'undefined')
-                return popup.removeClass('ui-visible');
-
-            data = _.defaults(this.model.get('popup'), this.popup_defaults());
-
-            $('#popup').addClass("popup-background");
-
-            id = 'popup_' + data.modelName + '_' + data.mod;
-            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
-            this.$('#popup').append(this.subViews[2].el);
-
-            value ? popup.addClass('ui-visible') : popup.removeClass('ui-visible');
-        },
-        hide_popup: function() {
-            this.model.unset('popup');
-        },
         header_defaults: function() {
             return {
                 model: this.options.headerModel,
@@ -141,11 +117,13 @@ define(["done_view", "generator"], function(done_view) {
                 modelName: 'Header',
                 mainModel: this.model,
                 cart: this.options.cartCollection,
-                search: this.options.search
+                search: this.options.search,
+                profilePanel: this.model.get('profile_panel')
             };
         },
         cart_defaults: function() {
             return {
+                model: this.options.cartModel,
                 collection: this.options.cartCollection,
                 className: 'cart',
                 modelName: 'Cart'
@@ -164,7 +142,7 @@ define(["done_view", "generator"], function(done_view) {
                 delete data.className;
 
             var subView = App.Views.GeneratorView.create(data.modelName, data, id);
-            this.subViews.push(subView); // subViews length always > 3
+            this.subViews.push(subView); // subViews length always > 2
 
             return subView.el;
         },

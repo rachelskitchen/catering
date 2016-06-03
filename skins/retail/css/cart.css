@@ -1,0 +1,51 @@
+#cart {
+    width: 397px;
+    padding: 3px 10px 0;
+    border-left-width: 1px;
+    border-left-style: solid;
+    position: fixed;
+    right: -418px;
+    top: 47px;
+    bottom: 51px;
+    z-index: 100;
+}
+
+#cart.visible {
+    right: 0;
+}
+
+#cart .header-underline {
+    padding-bottom: 15px;
+    padding-left: 25px;
+    padding-right: 25px;
+}
+
+#cart .hide-cart {
+    padding-right: 5px;
+    position: absolute;
+    top: 9px;
+    right: 10px;
+    font-size: 24px;
+}
+
+#cart .btn.checkout-btn {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+#cart .order-items {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+}
+
+#cart .btn .animate-spin {
+    margin-left: 5px;
+}
+
+#cart .btn .animate-spin::before {
+    content: '\f021';
+    font-family: 'FontAwesome';
+}

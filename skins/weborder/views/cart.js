@@ -20,110 +20,10 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["products_view"], function() {
+define(["cart_view"], function(cart_view) {
     'use strict';
 
-    var CartCoreView = App.Views.FactoryView.extend({
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, "add remove", this.onChangeOrder, this);
-        },
-        bindings: {
-            '.btn': 'classes: {disabled: any(not(orderItems_quantity), orderItems_pending, shippingPending)}',
-            '.animate-spin': 'classes: {hide: all(not(orderItems_pending), not(shippingPending))}'
-        },
-        computeds: {
-            shippingPending: {
-                deps: ['checkout_dining_option', 'customer_shipping_selected'],
-                get: function(checkout_dining_option, customer_shipping_selected) {
-                    return checkout_dining_option == 'DINING_OPTION_SHIPPING' && customer_shipping_selected == -1;
-                }
-            }
-        },
-        bindingSources: {
-            orderItems: function() {
-                var model = new Backbone.Model({
-                    pending: App.Data.myorder.pending,
-                    quantity: App.Data.myorder.get_only_product_quantity()
-                });
-
-                model.listenTo(App.Data.myorder, 'add change remove', function() {
-                    model.set('quantity', App.Data.myorder.get_only_product_quantity());
-                });
-                // update_cart_totals is in progress
-                model.listenTo(App.Data.myorder, 'onCartTotalsUpdate', function() {
-                    model.set('pending', true);
-                });
-                // update_cart_totals completed
-                model.listenTo(App.Data.myorder, 'DiscountsComplete NoRequestDiscountsComplete', function() {
-                    model.set('pending', false);
-                });
-
-                return model;
-            }
-        },
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.listenTo(App.Data.mainModel, 'loadCompleted', this.resize.bind(this));
-
-            this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
-                el: this.$('.order-items'),
-                mod: 'List',
-                collection: this.collection
-            }));
-
-            this.onChangeOrder();
-        },
-        onChangeOrder: function() {
-            if (this.collection.get_only_product_quantity() > 0)
-                this.$(".order-items_wrapper, .total_block").show();
-            else
-                this.$(".order-items_wrapper, .total_block").hide();
-        },
-        resize: function() {
-            var button = this.$('.btn').outerHeight(true),
-                totalBlock = this.$('.total_block').outerHeight(true);
-            this.$('.order-items_wrapper').css('bottom', (button + totalBlock) + 'px');
-            this.$('.total_block').css('bottom', button + 'px');
-        }
-    });
-
-    var CartMainView = CartCoreView.extend({
-        name: 'cart',
-        mod: 'main',
-        render: function() {
-            App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
-
-            this.subViews.push(App.Views.GeneratorView.create('Total', {
-                el: this.$('.subtotal-box'),
-                mod: 'Main',
-                model: this.collection.total,
-                collection: this.collection
-            }));
-        },
-        bindings: {
-            '.subtotal-subline': 'toggle: orderItems_quantity'
-        },
-        events: {
-            'click .btn': 'checkout_event'
-        },
-        onEnterListeners: {
-            '.btn': 'checkout_event'
-        },
-        checkout_event: function() {
-            var self = this;
-
-            App.Data.myorder.check_order({
-                order: true,
-                first_page: true,
-                skipDeliveryAmount: true
-            }, function() {
-                self.collection.trigger('onCheckoutClick');
-            });
-        }
-    });
-
-    var CartCheckoutView = CartCoreView.extend({
+    var CartCheckoutView = App.Views.CoreCartView.CoreCartCoreView.extend({
         name: 'cart',
         mod: 'checkout',
         events: {
@@ -154,10 +54,7 @@ define(["products_view"], function() {
         }
     });
 
-    return new (require('factory'))(function() {
-        App.Views.CartView = {};
-        App.Views.CartView.CartCoreView = CartCoreView;
-        App.Views.CartView.CartMainView = CartMainView;
+    return new (require('factory'))(cart_view.initViews.bind(cart_view), function() {
         App.Views.CartView.CartCheckoutView = CartCheckoutView;
         App.Views.CartView.CartConfirmationView = CartConfirmationView;
     });
