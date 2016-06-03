@@ -345,7 +345,7 @@ define(["backbone"], function(Backbone) {
                 value: ''
             },
             /**
-             * Splits `choices` on array (',' separator is used) if it is a string.
+             * Splits `choices` into an array (',' separator is used) if it is a string.
              */
             initialize: function() {
                 if (typeof this.get('choices') == 'string') {

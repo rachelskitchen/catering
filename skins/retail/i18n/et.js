@@ -2,7 +2,8 @@ define([], function() {
     return {
         "DINING_OPTION_NAME": {
             "DINING_OPTION_TOGO": "Kättesaamine kauplusest",
-            "DINING_OPTION_SHIPPING": "Tarne"
+            "DINING_OPTION_SHIPPING": "Tarne",
+            "DINING_OPTION_OTHER": "Muu"
         },
         "CARD_TITLE": "Sisestage oma kaardi teave",
         "CARD_FIRST_NAME": "Eesnimi",
