@@ -413,7 +413,7 @@ define(["backbone", "async"], function(Backbone) {
                     order_notes_allow: true,
                     min_items: 1,
                     hide_products_description: false,
-                    color_scheme: saved_color_scheme instanceof Object ? saved_color_scheme.color_scheme : 'default',
+                    color_scheme: saved_color_scheme instanceof Object ? saved_color_scheme.color_scheme : 'Default',
                     scales: {
                         default_weighing_unit: "",
                         label_for_manual_weights: "",
