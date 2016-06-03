@@ -435,7 +435,12 @@ define({
          * @type {string}
          * @description The actual path of [payment_methods_view]{@link module:payment_methods_view} module.
          */
-        payment_methods_view: 'js/views/payment_methods'
+        payment_methods_view: 'js/views/payment_methods',
+        /**
+         * @type {string}
+         * @description The actual path of [cart_view]{@link module:cart_view} module.
+         */
+        cart_view: 'js/views/cart'
     },
     /**
      * A waiting time of a module loading.
@@ -642,6 +647,9 @@ define({
             deps: ['backbone']
         },
         'payment_methods_view': {
+            deps: ['factory']
+        },
+        'cart_view': {
             deps: ['factory']
         }
     },

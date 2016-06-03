@@ -93,15 +93,14 @@ define(["main_router"], function(main_router) {
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
-                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
-                    acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES
+                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd
                 });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.subCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
                 App.Data.filter = new App.Models.Filter();
+                App.Data.cart = new Backbone.Model({visible: false});
 
                 // sync sort saving and loading with myorder saving and loading
                 App.Data.myorder.saveOrders = function() {
@@ -114,13 +113,7 @@ define(["main_router"], function(main_router) {
                     App.Data.filter.loadSort();
                 }
 
-//common
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
-//common
-                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
-//common
-                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
-//common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
 
@@ -129,6 +122,7 @@ define(["main_router"], function(main_router) {
                     model: mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder,
+                    cartModel: App.Data.cart,
                     categories: App.Data.categories,
                     search: App.Data.search
                 });
@@ -163,7 +157,7 @@ define(["main_router"], function(main_router) {
             }, this);
 
             var checkout = App.Data.myorder.checkout;
-                checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+            checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.on('route', function() {
                 // can be called when App.Data.mainModel is not initializd yet ('back' btn in browser history control)
@@ -293,8 +287,8 @@ define(["main_router"], function(main_router) {
             // onAbout event occurs when 'About' item is clicked
             this.listenTo(App.Data.header, 'onAbout', this.navigate.bind(this, 'about', true));
 
-            // onLocations event occurs when 'Locations' item is clicked
-            this.listenTo(App.Data.header, 'onLocations', this.navigate.bind(this, 'map', true));
+            // onMap event occurs when 'Map' item is clicked
+            this.listenTo(App.Data.header, 'onMap', this.navigate.bind(this, 'map', true));
 
             // onCart event occurs when 'cart' item is clicked
             this.listenTo(App.Data.header, 'onCart', function() {
@@ -537,14 +531,6 @@ define(["main_router"], function(main_router) {
 
             return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
         },
-        showPromoMessage: function() {
-            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
-            App.Data.header && App.Data.header.set('isShowPromoMessage', true);
-        },
-        hidePromoMessage: function() {
-            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
-            App.Data.header && App.Data.header.set('isShowPromoMessage', false);
-        },
         /**
         * Get a stores list.
         */
@@ -596,6 +582,7 @@ define(["main_router"], function(main_router) {
 
                 App.Data.header.set('menu_index', 0);
                 App.Data.mainModel.set('mod', 'Main');
+                App.Data.cart.set('visible', false);
 
                 App.Data.mainModel.set({
                     header: headers.main,

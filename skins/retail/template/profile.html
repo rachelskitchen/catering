@@ -1,61 +1,70 @@
 <script type="text/template" id="profile_panel-template">
     <div class="close"></div>
-    <div class="links fl-right">
-        <div class="signup-link link fl-left"><%= _lp.PROFILE_SIGN_UP_LINK %></div>
-        <div class="login-link link fl-left"><%= _lp.PROFILE_LOG_IN %></div>
-        <div class="logged-as fl-left">asdasdasdasdsss</div>
+    <div class="links">
+        <span class="signup-link link pos-relative" tabindex="0"><%= _lp.PROFILE_SIGN_UP_LINK %></span>
+        <span class="slash">&frasl;</span>
+        <span class="login-link link pos-relative" tabindex="0"><%= _lp.PROFILE_LOG_IN %></span>
+        <span class="logged-as link" tabindex="0"></span>
     </div>
-    <div class="sign-up-box box text-center"></div>
-    <div class="log-in-box box text-center"></div>
-    <div class="menu-items box text-center"></div>
-    <div class="reset-password-box box text-center"></div>
+    <div class="sign-up-box box"></div>
+    <div class="log-in-box box"></div>
+    <div class="menu-items box"></div>
+    <div class="reset-password-box box"></div>
 </script>
 
 <script type="text/template" id="profile_log_in-template">
     <ul class="profile-form">
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" autocorrect="off" autocapitalize="none">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
         </li>
-        <li class="required">
-            <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="pwd ios-safari-caret input-colors">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_PASSWORD %></div>
+            <input type="password" class="pwd ios-safari-caret input">
         </li>
     </ul>
-    <div class="forgot-password link primary-text text-left"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
-    <div class="login-btn flat-btn primary-button"><%= _lp.PROFILE_LOG_IN %></div>
+    <div class="forgot-password link text-right"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
+    <div class="btn login-btn text-center"><%= _lp.PROFILE_LOG_IN %></div>
 </script>
 
 <script type="text/template" id="profile_sign_up-template">
     <ul class="profile-form">
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="first-name ios-safari-caret">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_FIRST_NAME %></div>
+            <input type="text" class="first-name ios-safari-caret input">
         </li>
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="last-name ios-safari-caret">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_LAST_NAME %></div>
+            <input type="text" class="last-name ios-safari-caret input">
         </li>
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret" autocorrect="off" autocapitalize="none">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
         </li>
-        <li class="required">
-            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret">
-            <span class="field-description regular-text text-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        <li>
+            <div class="label required"><%= _lp.PROFILE_PHONE %></div>
+            <input type="tel" class="phone ios-safari-caret input">
+            <span class="phone-privacy"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
-        <li class="required">
-            <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="password ios-safari-caret">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_PASSWORD %></div>
+            <input type="password" class="password ios-safari-caret input">
         </li>
-        <li class="required">
-            <input type="password" placeholder="<%= _lp.PROFILE_REENTER_PASSWORD %>" class="password-confirm ios-safari-caret">
-            <span class="field-description passwords-mismatch text-left attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
-            <span class="field-description regular-text text-left"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
+        <li class="pos-relative">
+            <div class="label required"><%= _lp.PROFILE_REENTER_PASSWORD %></div>
+            <input type="password" class="password-confirm ios-safari-caret input">
+            <span class="passwords-mismatch"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
+            <span class="phone-privacy"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
     </ul>
-    <div class="signup-btn flat-btn primary-button"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
+    <div class="btn signup-btn text-center"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
 </script>
 
 <script type="text/template" id="profile_menu-template">
-    <ul class="profile-items text-left">
-        <li class="profile-link"><%= _lp.PROFILE_EDIT_TITLE %></li>
-        <li class="payments-link"><%= _lp.PAYMENT_METHODS %></li>
-        <li class="logout-link"><%= _lp.PROFILE_LOG_OUT %></li>
+    <ul class="profile-items">
+        <li class="profile-link profile-item"><%= _lp.PROFILE_EDIT_TITLE %></li>
+        <li class="payments-link profile-item"><%= _lp.PAYMENT_METHODS %></li>
+        <li class="logout-link profile-item"><%= _lp.PROFILE_LOG_OUT %></li>
     </ul>
 </script>
 
@@ -165,13 +174,14 @@
 </script>
 
 <script type="text/template" id="profile_reset_password-template">
-    <div class="reset-password-info"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
+    <div class="reset-password-info text-center"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
     <ul class="profile-form">
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" autocorrect="off" autocapitalize="none">
+        <li>
+            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email ios-safari-caret input " autocorrect="off" autocapitalize="none">
         </li>
     </ul>
-    <div class="reset-btn flat-btn"><%= _lp.PROFILE_CHANGE_PASSWORD %></div>
+    <div class="btn reset-btn text-center"><%= _lp.PROFILE_CHANGE_PASSWORD %></div>
 </script>
 
 <script type="text/template" id="profile_payment_selection-template">

@@ -1,6 +1,5 @@
 <script type="text/template" id="header_main-template">
     <div class="top">
-        <h1 class="business-name inline-block"><%= business_name %></h1>
         <ul class="inline-block fl-right">
             <li class="search-box inline-block">
                 <label for="search" class="search-label" tabindex="0"><%= _lp.HEADER_SEARCH %></label>
@@ -8,38 +7,19 @@
                 <span class="cancel-search link" tabindex="0">&times;</span>
             </li>
             <li class="profile-panel-box inline-block"></li>
-            <li class="cart-box inline-block" tabindex="0"></li>
+            <li class="cart-box inline-block">
+                <span class="cart-qty" tabindex="0"></span>
+            </li>
         </ul>
+        <h1 class="business-name"><%= business_name %></h1>
     </div>
-    <div class='logo'>
-        <img src='<%= logo %>' alt='<%= business_name %> logo' class='logo' data-default-index='1'>
-    </div>
-    <ul class="menu">
-        <li class="shop" title="<%= _lp.HEADER_SHOP %>" tabindex="0"><%= _lp.HEADER_SHOP %></li>
-        <li class="about" title="<%= _lp.HEADER_ABOUT %>" tabindex="0"><%= _lp.HEADER_ABOUT %></li>
-        <li class="map" title="<%= _lp.HEADER_MAP %>" tabindex="0"><%= _lp.HEADER_MAP %></li>
-    </ul>
-</script>
-
-<script type="text/template" id="header_confirmation-template">
-    <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo" data-default-index="1">
-</script>
-
-<script type="text/template" id="header_checkout-template">
-    <h3 class="title"> <%= _lp.HEADER_ORDER_DETAILS %> </h3>
-    <div class="logo">
-        <img src="<%= logo %>" alt="<%= business_name %> logo" class="logo" data-default-index="1">
+    <div class="logo fl-left">
+        <img src='<%= logo %>' alt='<%= business_name %> logo' class='img' data-default-index='1'>
+        <div class="img-spinner"></div>
     </div>
     <ul class="menu">
-        <li class="shop <% if (menu_index === 0) { %> active <% } %>" title="<%= _lp.HEADER_SHOP %>" tabindex="0">
-            <span class="clip"> <%= _lp.HEADER_SHOP %> </span>
-        </li>
-        <li class="about <% if (menu_index === 1) { %> active <% } %>" title="<%= _lp.HEADER_ABOUT %>" tabindex="0">
-            <span class="clip"> <%= _lp.HEADER_ABOUT %> </span>
-        </li>
-        <li class="locations <% if (menu_index === 2) { %> active <% } %>" title="<%= _lp.HEADER_LOCATIONS %>" tabindex="0">
-            <span class="clip"> <%= _lp.HEADER_LOCATIONS %> </span>
-        </li>
-        <li class="cart"></li>
+        <li class="shop menu-item animation" title="<%= _lp.HEADER_SHOP %>" tabindex="0"><%= _lp.HEADER_SHOP %></li>
+        <li class="about menu-item animation" title="<%= _lp.HEADER_ABOUT %>" tabindex="0"><%= _lp.HEADER_ABOUT %></li>
+        <li class="map menu-item animation" title="<%= _lp.HEADER_MAP %>" tabindex="0"><%= _lp.HEADER_MAP %></li>
     </ul>
 </script>

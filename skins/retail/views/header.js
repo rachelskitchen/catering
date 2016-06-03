@@ -31,7 +31,9 @@ define(["backbone", "factory"], function(Backbone) {
             'input[name=search]': 'value: ui_searchInput, events: ["input"], attr: {disabled: select(ui_isSearching, "disabled", false)}',
             '.shop': 'classes: {active: equal(menu_index, 0)}',
             '.about': 'classes: {active: equal(menu_index, 1)}',
-            '.map': 'classes: {active: equal(menu_index, 2)}'
+            '.map': 'classes: {active: equal(menu_index, 2)}',
+            '.cart-qty': 'text: format("($1)", ui_quantity), toggle: ui_quantity',
+            '.menu-item.active': 'attr: {tabindex: "-1"}'
         },
         bindingSources: {
             ui: function() {
@@ -44,7 +46,6 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         initialize: function() {
-            this.listenTo(this.model, 'change:menu_index', this.menu, this);
             this.listenTo(this.options.cart, 'add remove', this.update, this);
             this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
             this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
@@ -53,22 +54,19 @@ define(["backbone", "factory"], function(Backbone) {
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            var view = new App.Views.GeneratorView.create('Categories', {
-                collection: this.collection,
-                mod: 'Tabs',
-                el: this.$('.categories'),
-                model: this.options.mainModel,
-                search: this.options.search
-            });
+            var profilePanel = this.options.profilePanel;
+            var view = new App.Views.GeneratorView.create(profilePanel.modelName, _.extend(profilePanel, {
+                el: this.$('.profile-panel-box')
+            }));
             this.subViews.push(view);
-            loadSpinner(this.$('img.logo'));
+            loadSpinner(this.$('.img'));
             this.update();
             return this;
         },
         events: {
             'click .shop': 'onMenu',
             'click .about': 'onAbout',
-            'click .locations': 'onLocations',
+            'click .map': 'onMap',
             'click .cart': 'onCart',
             'click .search-label': 'showSearchInput',
             'click .cancel-search': 'cancelSearch'
@@ -76,20 +74,10 @@ define(["backbone", "factory"], function(Backbone) {
         onEnterListeners: {
             '.shop': 'onMenu',
             '.about': 'onAbout',
-            '.locations': 'onLocations',
+            '.map': 'onMap',
             '.cart': 'onCart',
             '.search-label': 'showSearchInput',
             '.cancel-search': 'cancelSearch'
-        },
-        menu: function(model, value) {
-            var menu = this.$('.menu li'),
-                tabs = this.subViews[0].$el;
-            menu.removeClass('active');
-            menu.eq(value).addClass('active');
-            if(value === 0)
-                tabs.removeClass('hidden');
-            else
-                tabs.addClass('hidden');
         },
         onMenu: function() {
             this.model.trigger('onShop');
@@ -97,8 +85,8 @@ define(["backbone", "factory"], function(Backbone) {
         onAbout: function() {
             this.model.trigger('onAbout');
         },
-        onLocations: function() {
-            this.model.trigger('onLocations');
+        onMap: function() {
+            this.model.trigger('onMap');
         },
         onCart: function() {
             this.model.trigger('onCart');
@@ -133,36 +121,8 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
-    var HeaderConfirmationView = App.Views.FactoryView.extend({
-        name: 'header',
-        mod: 'confirmation'
-    });
-
-    var HeaderCheckoutView = HeaderMainView.extend({
-        name: 'header',
-        mod: 'checkout',
-        initialize: function() {
-            this.listenTo(this.options.cart, 'add remove', this.update, this);
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },
-        render: function() {
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
-            loadSpinner(this.$('img.logo'));
-            this.update();
-            return this;
-        },
-        onCart: function() {
-            return;
-        },
-        onSearch: function() {
-            return;
-        }
-    });
-
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
-        App.Views.HeaderView.HeaderConfirmationView = HeaderConfirmationView;
-        App.Views.HeaderView.HeaderCheckoutView = HeaderCheckoutView;
     });
 });
