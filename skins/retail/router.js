@@ -65,13 +65,21 @@ define(["main_router"], function(main_router) {
 
             if (settings.dining_options instanceof Array) {
                 // check available dining options and set default
-                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) == -1) {
+                if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) == -1 && settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_OTHER) == -1) {
                     App.Data.settings.set({
                         'isMaintenance': true,
                         'maintenanceMessage': ERROR[MAINTENANCE.ORDER_TYPE]
                     });
                 } else {
-                    settings.default_dining_option = settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1 ? 'DINING_OPTION_TOGO' : 'DINING_OPTION_SHIPPING';
+                    if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_TOGO) > -1) {
+                        settings.default_dining_option = 'DINING_OPTION_TOGO';
+                    }
+                    else if (settings.dining_options.indexOf(DINING_OPTION.DINING_OPTION_SHIPPING) > -1) {
+                        settings.default_dining_option = 'DINING_OPTION_SHIPPING';
+                    }
+                    else {
+                        settings.default_dining_option = 'DINING_OPTION_OTHER';
+                    }
                     App.Data.myorder.checkout.set('dining_option', settings.default_dining_option);
                 }
             }

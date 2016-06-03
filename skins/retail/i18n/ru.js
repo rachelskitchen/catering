@@ -2,7 +2,8 @@
     return {
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO': 'Заберу в магазине',
-            'DINING_OPTION_SHIPPING': 'Доставка'
+            'DINING_OPTION_SHIPPING': 'Доставка',
+            'DINING_OPTION_OTHER': 'Другой'
         },
         'CARD_TITLE': 'Введите данные кредитной карты',
         'CARD_FIRST_NAME': 'Имя',

@@ -247,9 +247,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         name: 'checkout',
         mod: 'other_item',
         bindings: {
-            'input': 'valueTrim: value, events:["blur","change"]',
-            'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}',
-            '[data-isrequired]': 'classes:{required:required}'
+            'input': 'valueTrim: value, events: ["blur", "change"]',
+            'select': 'value: value, options: choices',
+            '[data-isrequired]': 'classes: {required: required}'
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            var choices = this.model.get('choices');
+            // select the first option by default
+            Array.isArray(choices) && choices[0] && this.model.set('value', choices[0]);
         }
     });
 
@@ -274,8 +281,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             this.listenTo(this.model, 'change:dining_option', this.listenOrderType, this);
 
-            this.listenTo(this.model, 'hide:datepicker', function()
-            {
+            this.listenTo(this.model, 'hide:datepicker', function() {
                 self.picker.hide();
             }, this);
 
