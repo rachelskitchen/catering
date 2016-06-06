@@ -94,6 +94,8 @@
 
 <script type="text/template" id="profile_addresses-template">
     <ul class="addresses-list profile-edit"></ul>
+
+    <div class="addresses__add text-center primary-text link"><span class="plus_sign">+ </span><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
 </script>
 
 <script type="text/template" id="profile_address-template">
@@ -131,7 +133,7 @@
             <input type="text" class="zipcode ios-safari-caret input-colors">
         </li>
         <li>
-            <label class="profile-checkbox">
+            <label class="address__default-checkbox profile-checkbox">
                 <input type="checkbox" class="address__default"><i class="input checkbox"></i><%= _lp.PROFILE_DEFAULT_ADDRESS %>
             </label>
         </li>

@@ -605,6 +605,7 @@
         "PROFILE_ADD_ANOTHER_CARD": "Добавить другую карту",
         "PROFILE_UPDATE_SUCCESSFUL": "Успешно обновлено",
         "PROFILE_ADD_NEW_ADDRESS": "Добавить адрес",
+        "PROFILE_NEW_ADDRESS": "Новый адрес",
         "PROFILE_ADD_NEW_GIFT_CARD": "Добавить подарочную карту",
         "PROFILE_ADD_NEW_REWARD_CARD": "Добавить бонусную карту",
         'BILLING_ADDRESS_TITLE': 'Задайте билинг-адрес',
