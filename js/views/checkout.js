@@ -218,6 +218,9 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 deps: ['dining_option', 'selected_dining_option'],
                 get: function(dining_option, selected_dining_option) {
                     return dining_option == 'DINING_OPTION_ONLINE' ? selected_dining_option : dining_option;
+                },
+                set: function(value) {
+                    this.model.set('dining_option', value);
                 }
             }
         }
