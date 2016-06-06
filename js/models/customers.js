@@ -2154,7 +2154,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.listenTo(this, 'change:selected', this.radioSelection.bind(this, 'selected'));
             this.listenTo(this, 'change:is_primary', this.radioSelection.bind(this, 'is_primary'));
             this.listenTo(this, 'change', this.onModelChange);
-            this.listenTo(this, 'change reset add remove', function() {
+            this.listenTo(this, 'reset add remove', function() {
                 this.trigger('update');
             });
             // handle the case when the collection doesn't contain any profile address after the address removal
