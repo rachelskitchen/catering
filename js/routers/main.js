@@ -1051,21 +1051,15 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                     self.listenTo(customer, passwordEvents, accountPasswordChanged);
                     self.listenTo(addresses, 'addressFieldsChanged', addressChanged);
-                    self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                     self.listenTo(customer, 'onLogout', logout);
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'addressFieldsChanged', addressChanged));
-                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
                 }, 0);
             }
 
             return promises;
-
-            function updateAddressAttributes() {
-                address.set(customer.getProfileAddress());
-            }
 
             function logout() {
                 self.navigate('index', true);
