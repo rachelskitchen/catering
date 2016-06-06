@@ -632,6 +632,7 @@
         "PROFILE_ADD_ANOTHER_CARD": "Add Another Card",
         "PROFILE_UPDATE_SUCCESSFUL": "Update Successful",
         "PROFILE_ADD_NEW_ADDRESS": "Add New Address",
+        "PROFILE_NEW_ADDRESS": "New Address",
         "PROFILE_ADD_NEW_GIFT_CARD": "Add New Gift Card",
         "PROFILE_ADD_NEW_REWARD_CARD": "Add New Reward Card",
         'BILLING_ADDRESS_TITLE': 'Specify a card billing address',
