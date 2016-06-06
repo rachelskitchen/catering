@@ -150,7 +150,7 @@
 
 .profile-edit .successful-update {
     position: relative;
-    top: -12px;
+    margin-bottom: 12px;
     text-align: center;
     opacity: 0;
     filter: alpha(opacity=0);
