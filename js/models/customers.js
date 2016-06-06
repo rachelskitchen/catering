@@ -2194,14 +2194,18 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @param {array} addresses - array of addresses if API format.
          */
         updateFromAPI: function(addresses) {
-            var self = this;
+            var self = this,
+                modelsToRemove = [];
+
             // remove from collection addresses not presented in api response
             this.each(function(model) {
                 if (!isNaN(model.get('id')) && !_.findWhere(addresses, {id: model.id})) {
-                    self.remove(model);
+                    modelsToRemove.push(model);
                 }
             });
-            // add all addreesses
+            self.remove(modelsToRemove);
+
+            // add all addresses
             _.each(addresses, function(address) {
                 self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
             });
