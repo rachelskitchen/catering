@@ -30,7 +30,7 @@ define(['backbone', 'factory'], function(Backbone) {
      */
     var AddressView = App.Views.FactoryView.extend({
         initialize: function() {
-            var dfd = this.options.customer.addressesRequest || new Backbone.$.Deferred().resolve(),
+            var dfd = this.options.customer.addressesRequest || Backbone.$.Deferred().resolve(),
                 self = this;
 
             // wait until customer addresses are loaded
