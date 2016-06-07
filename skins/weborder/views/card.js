@@ -39,9 +39,19 @@ define(["card_view"], function(card_view) {
         name: 'card',
         mod: 'billing_address',
         initialize: function() {
-            // set default country for new address
-            this.setDefaultCountry();
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            var dfd = this.options.customer.addressesRequest || Backbone.$.Deferred().resolve(),
+                self = this;
+
+            // wait until customer addresses are loaded
+            dfd.always(function() {
+                // set default country for new address
+                self.setDefaultCountry();
+                App.Views.FactoryView.prototype.initialize.apply(self, arguments);
+
+                self.listenTo(self.options.customer.get('addresses'), 'change:selected', function() {
+                    self.getBinding('$customerAddresses').trigger('change');
+                });
+            });
         },
         bindings: {
             '.countries': 'value: country_code, options: countries',
@@ -53,6 +63,12 @@ define(["card_view"], function(card_view) {
             '.street_1': 'value: street_1, events: ["input"]',
             '.city': 'value: city, events: ["input"]',
             '.zipcode': 'value: zipcode, events: ["input"]'
+        },
+        bindingSources: {
+            // used to trigger update of 'addresses' computed attribute
+            customerAddresses: function() {
+                return new Backbone.Model();
+            }
         },
         computeds: {
             hideNewAddress: function() {
@@ -78,33 +94,35 @@ define(["card_view"], function(card_view) {
                 }
             },
             addresses: {
-                deps: ['checkout_dining_option', 'customer_shipping_address', 'customer_access_token'],
-                get: function(dining_option, shipping_address) {
-                    var customer = this.getBinding('$customer'),
+                deps: ['checkout_dining_option', '$customer', 'customer_addresses', 'customer_access_token', '$customerAddresses'],
+                get: function(dining_option, customer, customer_addresses) {
+                    var shipping_address = customer_addresses.getSelectedAddress(),
                         options = [];
-                    if (customer.isAuthorized() && customer.getProfileAddress()) {
+                    if (customer.isAuthorized() && customer_addresses.getDefaultProfileAddress()) {
                         options.push({
                             label: _loc.CARD_PROFILE_ADDRESS,
                             value: profileAddress
                         });
                     }
-                    if (dining_option == 'DINING_OPTION_DELIVERY' && shipping_address == customer.get('deliveryAddressIndex')) {
-                        options.push({
-                            label: _loc.CARD_DELIVERY_ADDRESS,
-                            value: checkoutAddress
-                        });
-                    }
-                    if (dining_option == 'DINING_OPTION_SHIPPING' && shipping_address == customer.get('shippingAddressIndex')) {
-                        options.push({
-                            label: _loc.CARD_SHIPPING_ADDRESS,
-                            value: checkoutAddress
-                        });
-                    }
-                    if (dining_option == 'DINING_OPTION_CATERING' && shipping_address == customer.get('cateringAddressIndex')) {
-                        options.push({
-                            label: _loc.CARD_CATERING_ADDRESS,
-                            value: checkoutAddress
-                        });
+                    if (shipping_address && shipping_address.get('id') == dining_option) {
+                        if (dining_option == 'DINING_OPTION_DELIVERY') {
+                            options.push({
+                                label: _loc.CARD_DELIVERY_ADDRESS,
+                                value: checkoutAddress
+                            });
+                        }
+                        if (dining_option == 'DINING_OPTION_SHIPPING') {
+                            options.push({
+                                label: _loc.CARD_SHIPPING_ADDRESS,
+                                value: checkoutAddress
+                            });
+                        }
+                        if (dining_option == 'DINING_OPTION_CATERING') {
+                            options.push({
+                                label: _loc.CARD_CATERING_ADDRESS,
+                                value: checkoutAddress
+                            });
+                        }
                     }
                     options.push({
                         label: _loc.ENTER_NEW_ADDRESS,
