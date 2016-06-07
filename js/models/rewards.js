@@ -365,7 +365,7 @@ define(['backbone', 'captcha'], function(Backbone) {
                             number: number
                         }
                     },
-                    captchaKey: captchaKey,
+                //    captchaKey: captchaKey,
                     captchaValue: captchaValue
                 }),
                 dataType: 'json',

@@ -154,6 +154,94 @@
         }
     });
 
+    App.Views.CoreRecaptchaView = {};
+    App.Views.CoreRecaptchaView.CoreRecaptchaMainView = App.Views.FactoryView.extend({
+        name: 'recaptcha',
+        mod: 'main',
+        initialize: function() {
+            var self = this,
+                dfd = App.Data.settings.load_google_captcha();
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            if (dfd.state() != 'resolved') {
+                this.loadResourceSpinner();
+            }
+            dfd.done(function(){
+                self.removeResourceSpinner();
+                grecaptcha.render(self.$('.captcha_container')[0], {
+                   'sitekey' : App.Settings.recaptcha_site_key,
+                   'theme' : 'light',  // optional
+                   'callback': self.sessionKeyCallback.bind(self),
+                   'expired-callback': self.sessionExpiresCallback.bind(self)
+                });
+            });
+            this.updateCaptcha();
+        },
+        loadResourceSpinner: function() {
+            this.$('.spinner-container').spinner();
+            this.resourceSpinner = this.$('.ui-spinner');
+        },
+        removeResourceSpinner: function() {
+            this.resourceSpinner && this.resourceSpinner.remove();
+            delete this.resourceSpinner;
+        },
+        sessionKeyCallback: function(response) {
+            trace("sessionKeyCallback=>", response);
+            this.model.set('captchaValue', response);
+        },
+        sessionExpiresCallback: function() {
+            trace("sessionKeyExpires =>");
+            this.model.set('captchaValue', '');
+        },
+        updateCaptcha: function() {
+            this.model.loadCaptcha();
+        }
+       // get_session_key: function() {
+       //     return grecaptcha.getResponse( this.widgetId );
+       // }
+    });
+
+    App.Views.CoreRewardsView.CoreRewardsCardView = App.Views.FactoryView.extend({
+        name: 'rewards',
+        mod: 'card',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.subViews.push(App.Views.GeneratorView.create('CoreRecaptcha', {
+                    el: this.$('.recaptcha_view'),
+                    model: this.model,
+                    mod: 'Main',
+                    cacheId: true }));
+
+            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
+                self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
+            });
+        },
+        bindings: {
+            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards)',
+            '.submit-card': 'classes: {disabled: disableBtn}',
+        },
+        events: {
+            'click .submit-card': 'submit',
+            'keydown .submit-card': function(e) {
+                if (this.pressedButtonIsEnter(e)) {
+                    this.submit();
+                }
+            },
+        },
+        computeds: {
+            disableBtn: {
+                deps: ['number', 'captchaValue'],
+                get: function(number, captchaValue) {
+                    return !(number && captchaValue);
+                }
+            },
+        },
+        submit: function() {
+            this.model.trigger('onGetRewards');
+        }
+    });
+
     var RewardsCardProfileView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
         name: 'profile',
         mod: 'rewardcard'
