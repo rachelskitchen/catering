@@ -1,3 +1,7 @@
+.rewards-info .captcha_container {
+    min-height: 100px;
+}
+
 .rewards-info .captcha-header {
     min-height: 40px;
     margin-top: 58px;

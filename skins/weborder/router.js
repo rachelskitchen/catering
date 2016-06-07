@@ -552,8 +552,6 @@ define(["main_router"], function(main_router) {
                     dfd = $.Deferred(),
                     self = this;
 
-                App.Views.TotalView.TotalMainView.prototype.integrity_test();
-
                 // load content block for categories
                 if (!categories.receiving) {
                     categories.receiving = categories.get_categories();
