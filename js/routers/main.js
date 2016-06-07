@@ -1005,15 +1005,114 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         setProfileEditContent: function(doNotChangeMod) {
-            var promises = this.getProfileAddressesPromises(),
+            this.profileEditData = this.profileEditData || {};
+
+            var self = this,
+                promises = this.getProfileAddressesPromises(),
                 customer = App.Data.customer,
                 addresses = customer.get('addresses'),
-                updatedAddresses = new Backbone.Collection(),
-                ui = new Backbone.Model({show_response: false}),
                 updateBasicDetails = false,
                 updatePassword = false,
-                updateBtn = new Backbone.Model({disabled: true}),
-                self = this;
+                updateBtn = this.profileEditData.updateBtn || new Backbone.Model({disabled: true}),
+                ui = this.profileEditData.ui || new Backbone.Model({show_response: false}),
+                updatedAddresses = this.profileEditData.updatedAddresses || new Backbone.Collection(),
+
+                basicDetailsChanged = this.profileEditData.basicDetailsChanged || function() {
+                    updateBasicDetails = true;
+                    updateBtn.set('disabled', false);
+                    ui.set('show_response', false);
+                },
+
+                accountPasswordChanged = this.profileEditData.accountPasswordChanged || function() {
+                    updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+                    updateBtn.set('disabled', updateBtn.get('disabled') && !updatePassword);
+                    ui.set('show_response', false);
+                },
+
+                addressChanged = this.profileEditData.addressChanged || function(address) {
+                    if (address.get('country')) { // country is the only required field
+                        updatedAddresses.add(address);
+                        updateBtn.set('disabled', false);
+                        ui.set('show_response', false);
+                    }
+                },
+
+                update = this.profileEditData.update || function() {
+                    var mainModel = App.Data.mainModel,
+                        requests = updateBasicDetails + updatePassword + !!updatedAddresses.length,
+                        basicXHR, passwordXHR, addressXHRs = [], check_customer, errorFields = [],
+                        error = App.Data.errors.alert.bind(App.Data.errors);
+
+                    // show spinner
+                    requests > 0 && mainModel.trigger('loadStarted');
+
+                    // update basic details
+                    if (updateBasicDetails) {
+                        check_customer = customer.check();
+                        if (check_customer.status === 'OK') {
+                            basicXHR = customer.updateCustomer();
+                            basicXHR.done(function() {
+                                updateBasicDetails = false;
+                            });
+                            basicXHR.always(hideSpinner);
+                        }
+                        else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
+                            if (App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
+                                errorFields.splice.apply(errorFields, [0, 0].concat(check_customer.errorList));
+                            } else {
+                                errorFields = errorFields.concat(check_customer.errorList);
+                            }
+                        }
+                        if (errorFields.length) {
+                            error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, errorFields.join(', '))); // user notification
+                            hideSpinner();
+                        }
+                    }
+
+                    // update password
+                    if (updatePassword) {
+                        passwordXHR = customer.changePassword();
+                        passwordXHR.done(function() {
+                            updatePassword = false;
+                        });
+                        passwordXHR.always(hideSpinner);
+                    }
+
+                    // update address
+                    if (updatedAddresses.length) {
+                        updatedAddresses.each(function(addr) {
+                            addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
+                        });
+                        Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
+                            updatedAddresses.reset();
+                        });
+                        Backbone.$.when.apply(Backbone.$, addressXHRs).always(hideSpinner);
+                    }
+
+                    // hide spinner once all requests are completed
+                    function hideSpinner() {
+                        if(--requests <= 0) {
+                            mainModel.trigger('loadCompleted');
+                            updateBtn.set('disabled', true);
+                            ui.set('show_response', true);
+                        }
+                    }
+                }
+
+            if (_.isEmpty(this.profileEditData)) {
+                this.profileEditData = {
+                    updateBtn: updateBtn,
+                    ui: ui,
+                    updatedAddresses: updatedAddresses,
+                    basicDetailsChanged: basicDetailsChanged,
+                    accountPasswordChanged: accountPasswordChanged,
+                    addressChanged: addressChanged,
+                    update: update
+                };
+            }
+            else {
+                this.profileEditData.ui.set('show_response', false);
+            }
 
             if (promises.length) {
                 if (doNotChangeMod) {
@@ -1063,88 +1162,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function logout() {
                 self.navigate('index', true);
-            }
-
-            function basicDetailsChanged() {
-                updateBasicDetails = true;
-                updateBtn.set('disabled', false);
-                ui.set('show_response', false);
-            }
-
-            function accountPasswordChanged() {
-                updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
-                updateBtn.set('disabled', updateBtn.get('disabled') && !updatePassword);
-                ui.set('show_response', false);
-            }
-
-            function addressChanged(address) {
-                if (address.get('country')) { // country is the only required field
-                    updatedAddresses.add(address);
-                    updateBtn.set('disabled', false);
-                    ui.set('show_response', false);
-                }
-            }
-
-            function update() {
-                var mainModel = App.Data.mainModel,
-                    requests = updateBasicDetails + updatePassword + !!updatedAddresses.length,
-                    basicXHR, passwordXHR, addressXHRs = [], check_customer, errorFields = [],
-                    error = App.Data.errors.alert.bind(App.Data.errors);
-
-                // show spinner
-                requests > 0 && mainModel.trigger('loadStarted');
-
-                // update basic details
-                if (updateBasicDetails) {
-                    check_customer = customer.check();
-                    if (check_customer.status === 'OK') {
-                        basicXHR = customer.updateCustomer();
-                        basicXHR.done(function() {
-                            updateBasicDetails = false;
-                        });
-                        basicXHR.always(hideSpinner);
-                    }
-                    else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
-                        if (App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
-                            errorFields.splice.apply(errorFields, [0, 0].concat(check_customer.errorList));
-                        } else {
-                            errorFields = errorFields.concat(check_customer.errorList);
-                        }
-                    }
-                    if (errorFields.length) {
-                        error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, errorFields.join(', '))); // user notification
-                        hideSpinner();
-                    }
-                }
-
-                // update password
-                if (updatePassword) {
-                    passwordXHR = customer.changePassword();
-                    passwordXHR.done(function() {
-                        updatePassword = false;
-                    });
-                    passwordXHR.always(hideSpinner);
-                }
-
-                // update address
-                if (updatedAddresses.length) {
-                    updatedAddresses.each(function(addr) {
-                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
-                    });
-                    Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
-                        updatedAddresses.reset();
-                    });
-                    Backbone.$.when.apply(Backbone.$, addressXHRs).always(hideSpinner);
-                }
-
-                // hide spinner once all requests are completed
-                function hideSpinner() {
-                    if(--requests <= 0) {
-                        mainModel.trigger('loadCompleted');
-                        updateBtn.set('disabled', true);
-                        ui.set('show_response', true);
-                    }
-                }
             }
         },
         setProfilePaymentsContent: function(doNotChangeMod) {
