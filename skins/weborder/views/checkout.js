@@ -103,7 +103,8 @@ define(["checkout_view"], function(checkout_view) {
 
             paymentMethods = App.Views.GeneratorView.create('PaymentMethods', {
                 mod: 'Main',
-                model: this.options.paymentMethods
+                model: this.options.paymentMethods,
+                checkout: this.collection.checkout
             });
 
             this.subViews.push(paymentMethods);
