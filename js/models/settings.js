@@ -451,7 +451,7 @@ define(["backbone", "async"], function(Backbone) {
                         "braintree":false,
                         "globalcollect":false
                     },
-                    recaptcha_site_key: '6LcQ4yETAAAAABTro764aGSyhL3uMgR--zNc3ZvE'
+                    recaptcha_site_key: '6LcTkCETAAAAAO-aSGuRIl6Habqu3f0s8WeAvV5R'
                 },
                 load = $.Deferred();
 
