@@ -247,7 +247,7 @@ define(["backbone", "captcha"], function(Backbone) {
                 data: JSON.stringify({
                     establishment: est,
                     number: data.number,
-                    captchaKey: data.captchaKey,
+                    //captchaKey: data.captchaKey,
                     captchaValue: data.captchaValue,
                     reload: reload ? true : undefined
                 }),

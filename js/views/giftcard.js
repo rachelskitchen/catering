@@ -117,6 +117,68 @@ define(["backbone", "factory"], function(Backbone) {
         }
     });
 
+    App.Views.CoreGiftCardView.CoreGiftCardMainView = App.Views.FactoryView.extend({
+        name: 'giftcard',
+        mod: 'main',
+        initialize: function() {
+            var self = this;
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            inputTypeMask(this.$('#cardNumber'), /^\d*$/, this.model.get('cardNumber'), 'numeric');
+
+            var view = App.Views.GeneratorView.create('CoreRecaptcha', {
+                    model: this.model,
+                    mod: 'Main'},
+                    'CoreRecaptcha' + this.name + this.mod);
+            this.$('.recaptcha_view').append(view.el);
+            this.subViews.push(view);
+        },
+        bindings: {
+            '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
+        },
+        events: {
+        },
+        computeds: {
+        },
+        render: function() {
+            var cardNumber, model = {}, self = this;
+            model.cardNumber = this.model.escape('cardNumber');
+            model.isFirefox = /firefox/i.test(navigator.userAgent);
+            this.$el.html(this.template(model));
+
+            var captcha = this.$('#id_captcha_value');
+            inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
+            cardNumber = this.$('.number');
+            if (cssua.userAgent.mobile) {
+                var ios_version_old = false;
+                if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {
+                    ios_version_old = true;
+                }
+                var hack = false;
+                if (cssua.userAgent.android) {
+                    /*
+                     Hack for bug: https://code.google.com/p/android/issues/detail?id=24626.
+                     Bug of Revel Systems: http://bugzilla.revelup.com/bugzilla/show_bug.cgi?id=5368.
+                     */
+                    if (check_android_old_version(cssua.userAgent.android)) { // checking version OS Android (old version is Android <= 4.2.1)
+                        hack = true;
+                        cardNumber.attr("type", "text");
+                        cardNumber.focus(function () {
+                            $(this).attr("type", "number");
+                        });
+                        cardNumber.blur(function () {
+                            $(this).attr("type", "text");
+                        });
+                    }
+                }
+                if (!hack) {
+                    if (ios_version_old) {
+                        cardNumber.attr("type", "text");
+                    }
+                }
+            }
+        }
+    });
+
     App.Views.CoreGiftCardView.CoreGiftCardProfileView = App.Views.CoreGiftCardView.CoreGiftCardMainView.extend({
         name: 'profile',
         mod: 'giftcard'

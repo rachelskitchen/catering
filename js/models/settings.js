@@ -593,6 +593,8 @@ define(["backbone", "async"], function(Backbone) {
                                 App.Data.is_stanford_mode = true;
                             }
 
+                           // settings_system.payment_processor.stanford = true;
+
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");
 
@@ -739,8 +741,13 @@ define(["backbone", "async"], function(Backbone) {
             if (set_sys.recaptcha_load.state() == 'resolved') {
                 return set_sys.recaptcha_load;
             }
-            require(["https://www.google.com/recaptcha/api.js?render=explicit&hl=" + App.Data.curLocale], function() {
-                return set_sys.recaptcha_load.resolve();
+            if (!window.onloadCaptchaLibrary) {
+                window.onloadCaptchaLibrary = function() {
+                    set_sys.recaptcha_load.resolve();
+                }
+            }
+            require(["https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadCaptchaLibrary&hl=" + App.Data.curLocale], function() {
+                return;
             });
 
             return set_sys.recaptcha_load;
