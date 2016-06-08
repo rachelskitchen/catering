@@ -82,78 +82,6 @@
         }
     });
 
-    App.Views.CoreRewardsView.CoreRewardsCardView = App.Views.FactoryView.extend({
-        name: 'rewards',
-        mod: 'card',
-        bindings: {
-            '.rewards-input': 'value: number, events: ["input"], disabled: length(customer_rewardCards)',
-            '.rewards-captcha-input': 'value: captchaValue, events: ["input"]',
-            '.submit-card': 'classes: {disabled: disableBtn}',
-            '.captcha-image': 'updateCaptcha: url'
-        },
-        events: {
-            'click .submit-card': 'submit',
-            'keydown .submit-card': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.submit();
-                }
-            },
-            'click .update-captcha': 'updateCaptcha',
-            'keydown .update-captcha': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.updateCaptcha();
-                }
-            }
-        },
-        initialize: function() {
-            var self = this;
-            this.listenTo(this.model, 'onResetData', this.updateCaptcha);
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
-            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
-            this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
-                self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
-            });
-            this.updateCaptcha();
-        },
-        computeds: {
-            disableBtn: {
-                deps: ['number', 'captchaValue', 'captchaKey'],
-                get: function(number, captchaValue, captchaKey) {
-                    return !(number && captchaValue && captchaKey);
-                }
-            },
-            url: {
-                deps: ['captchaImage', '_settings_host'],
-                get: function(captchaImage, _settings_host) {
-                    if(captchaImage) {
-                        return _settings_host + captchaImage;
-                    } else {
-                        return '';
-                    }
-                }
-            }
-        },
-        submit: function() {
-            this.model.trigger('onGetRewards');
-        },
-        updateCaptcha: function() {
-            this.removeCaptchaSpinner();
-            this.createCaptchaSpinner();
-            this.model.set('captchaImage', '');
-            this.model.set('captchaValue', '');
-            this.model.loadCaptcha();
-        },
-        createCaptchaSpinner: function() {
-            this.$('.captcha-spinner').spinner();
-            this.captchaSpinner = this.$('.ui-spinner');
-        },
-        removeCaptchaSpinner: function() {
-            this.captchaSpinner && this.captchaSpinner.remove();
-            delete this.captchaSpinner;
-        }
-    });
-
     App.Views.CoreRecaptchaView = {};
     App.Views.CoreRecaptchaView.CoreRecaptchaMainView = App.Views.FactoryView.extend({
         name: 'recaptcha',
@@ -169,14 +97,18 @@
             }
             dfd.done(function(){
                 self.removeResourceSpinner();
-                grecaptcha.render(self.$('.captcha_container')[0], {
-                   'sitekey' : App.Settings.recaptcha_site_key,
-                   'theme' : 'light',
-                   'callback': self.sessionKeyCallback.bind(self),
-                   'expired-callback': self.sessionExpiresCallback.bind(self)
-                });
+                if (!self.widgetId) {
+                    self.widgetId =  grecaptcha.render(self.$('.captcha_container')[0], {
+                       'sitekey' : App.Settings.recaptcha_site_key,
+                       'theme' : 'light',
+                       'callback': self.sessionKeyCallback.bind(self),
+                       'expired-callback': self.sessionExpiresCallback.bind(self)
+                    });
+                }
+                self.updateCaptcha();
             });
-            this.updateCaptcha();
+            this.listenTo(this.model, 'onResetData', this.updateCaptcha.bind(this, 'onResetData' ), this);
+            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha.bind(this, 'updateCaptcha'), this);
         },
         loadResourceSpinner: function() {
             this.$('.spinner-container').spinner();
@@ -192,8 +124,10 @@
         sessionExpiresCallback: function() {
             this.model.set('captchaValue', '');
         },
-        updateCaptcha: function() {
+        updateCaptcha: function(param) {
+            //trace("updateCaptcha =>", param);
             this.model.loadCaptcha();
+            grecaptcha.reset(this.widgetId);
         }
     });
 
@@ -201,13 +135,14 @@
         name: 'rewards',
         mod: 'card',
         initialize: function() {
+            var self = this;
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
 
             var view = App.Views.GeneratorView.create('CoreRecaptcha', {
                     model: this.model,
                     mod: 'Main'},
-                    'CoreRecaptchaMain');
+                    'CoreRecaptcha' + this.name + this.mod);
             this.$('.recaptcha_view').append(view.el);
             this.subViews.push(view);
 
