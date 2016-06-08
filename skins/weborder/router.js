@@ -384,7 +384,8 @@ define(["main_router"], function(main_router) {
                     mod: 'Card',
                     model: rewardsCard,
                     customer: customer,
-                    className: 'rewards-info text-left'
+                    className: 'rewards-info text-left',
+                    cache_id: true
                 });
             });
 

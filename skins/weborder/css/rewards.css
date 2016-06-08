@@ -1,5 +1,6 @@
 .rewards-info .captcha_container {
     min-height: 100px;
+    padding-left: 3px;
 }
 
 .rewards-info .captcha-header {

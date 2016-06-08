@@ -171,7 +171,7 @@
                 self.removeResourceSpinner();
                 grecaptcha.render(self.$('.captcha_container')[0], {
                    'sitekey' : App.Settings.recaptcha_site_key,
-                   'theme' : 'light',  // optional
+                   'theme' : 'light',
                    'callback': self.sessionKeyCallback.bind(self),
                    'expired-callback': self.sessionExpiresCallback.bind(self)
                 });
@@ -187,19 +187,14 @@
             delete this.resourceSpinner;
         },
         sessionKeyCallback: function(response) {
-            trace("sessionKeyCallback=>", response);
             this.model.set('captchaValue', response);
         },
         sessionExpiresCallback: function() {
-            trace("sessionKeyExpires =>");
             this.model.set('captchaValue', '');
         },
         updateCaptcha: function() {
             this.model.loadCaptcha();
         }
-       // get_session_key: function() {
-       //     return grecaptcha.getResponse( this.widgetId );
-       // }
     });
 
     App.Views.CoreRewardsView.CoreRewardsCardView = App.Views.FactoryView.extend({
@@ -207,11 +202,14 @@
         mod: 'card',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.subViews.push(App.Views.GeneratorView.create('CoreRecaptcha', {
-                    el: this.$('.recaptcha_view'),
+            inputTypeMask(this.$('.rewards-input'), /^\d*$/, this.model.get('number'), 'numeric');
+
+            var view = App.Views.GeneratorView.create('CoreRecaptcha', {
                     model: this.model,
-                    mod: 'Main',
-                    cacheId: true }));
+                    mod: 'Main'},
+                    'CoreRecaptchaMain');
+            this.$('.recaptcha_view').append(view.el);
+            this.subViews.push(view);
 
             this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
                 self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
