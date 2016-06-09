@@ -26,30 +26,6 @@
     padding-bottom: 3px;
 }
 
-.stanford-reload-item .captcha-wrapper {
-    width: 138px;
-    height: 55px;
-    margin: 5px 8px;
-    position: relative;
-}
-
-.stanford-reload-item .captcha-spinner {
-    width: 100%;
-    height: 100%;
-    position: absolute !important;
-    top: 0;
-}
-
-.stanford-reload-item .captcha-input-wrap {
-    width: 246px;
-    margin-left: 154px;
-}
-
-.stanford-reload-item .btn-reload {
-    display: block;
-    width: 154px;
-}
-
 .stanford-reload-item .info-block {
     margin: 20px 24px 40px;
 }
