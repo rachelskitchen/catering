@@ -593,7 +593,7 @@ define(["backbone", "async"], function(Backbone) {
                                 App.Data.is_stanford_mode = true;
                             }
 
-                           // settings_system.payment_processor.stanford = true;
+                            settings_system.payment_processor.stanford = true;
 
                             self.set("settings_system", settings_system);
                             App.Settings = App.Data.settings.get("settings_system");

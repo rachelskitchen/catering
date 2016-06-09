@@ -122,6 +122,7 @@
             this.model.set('captchaValue', response);
         },
         sessionExpiresCallback: function() {
+            //trace("sessionExpires callback")
             this.model.set('captchaValue', '');
         },
         updateCaptcha: function(param) {

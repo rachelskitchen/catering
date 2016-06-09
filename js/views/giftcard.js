@@ -24,106 +24,11 @@ define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
     App.Views.CoreGiftCardView = {};
-
     App.Views.CoreGiftCardView.CoreGiftCardMainView = App.Views.FactoryView.extend({
         name: 'giftcard',
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
-            this.updateCaptcha();
-        },
-        bindings: {
-            '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
-            '.captcha-input': 'value: captchaValue, events:["input"]',
-            'img.captcha': 'updateCaptcha: url',
-            '#id_captcha_key': 'value: captchaKey',
-            '#id_captcha_value': 'value: captchaValue, events: ["input"]'
-        },
-        events: {
-            'click .btn-reload': 'updateCaptcha',
-            'keydown .btn-reload': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.updateCaptcha();
-                }
-            }
-        },
-        computeds: {
-            url: {
-                deps: ['captchaImage', '_settings_host'],
-                get: function(captchaImage, _settings_host) {
-                    if(captchaImage) {
-                        return _settings_host + captchaImage;
-                    } else {
-                        return '';
-                    }
-                }
-            }
-        },
-        updateCaptcha: function() {
-            this.removeCaptchaSpinner();
-            this.createCaptchaSpinner();
-            this.model.set('captchaImage', '');
-            this.model.set('captchaValue', '');
-            this.model.loadCaptcha();
-        },
-        render: function() {
-            var cardNumber, model = {}, self = this;
-            model.cardNumber = this.model.escape('cardNumber');
-            model.isFirefox = /firefox/i.test(navigator.userAgent);
-            this.$el.html(this.template(model));
-
-            var captcha = this.$('#id_captcha_value');
-            inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
-            cardNumber = this.$('.number');
-            if (cssua.userAgent.mobile) {
-                var ios_version_old = false;
-                if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {
-                    ios_version_old = true;
-                }
-                var hack = false;
-                if (cssua.userAgent.android) {
-                    /*
-                     Hack for bug: https://code.google.com/p/android/issues/detail?id=24626.
-                     Bug of Revel Systems: http://bugzilla.revelup.com/bugzilla/show_bug.cgi?id=5368.
-                     */
-                    if (check_android_old_version(cssua.userAgent.android)) { // checking version OS Android (old version is Android <= 4.2.1)
-                        hack = true;
-                        cardNumber.attr("type", "text");
-                        cardNumber.focus(function () {
-                            $(this).attr("type", "number");
-                        });
-                        cardNumber.blur(function () {
-                            $(this).attr("type", "text");
-                        });
-                    }
-                }
-                if (!hack) {
-                    if (ios_version_old) {
-                        cardNumber.attr("type", "text");
-                    }
-                }
-            }
-        },
-        createCaptchaSpinner: function() {
-            this.$('.captcha').hide();
-            this.$('.captcha-spinner').spinner();
-            this.captchaSpinner = this.$('.ui-spinner');
-        },
-        removeCaptchaSpinner: function() {
-            this.$('.captcha').show();
-            this.captchaSpinner && this.captchaSpinner.remove();
-            delete this.captchaSpinner;
-        }
-    });
-
-    App.Views.CoreGiftCardView.CoreGiftCardMainView = App.Views.FactoryView.extend({
-        name: 'giftcard',
-        mod: 'main',
-        initialize: function() {
-            var self = this;
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            inputTypeMask(this.$('#cardNumber'), /^\d*$/, this.model.get('cardNumber'), 'numeric');
 
             var view = App.Views.GeneratorView.create('CoreRecaptcha', {
                     model: this.model,
@@ -147,7 +52,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             var captcha = this.$('#id_captcha_value');
             inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
-            cardNumber = this.$('.number');
+            cardNumber = this.$('.number-input');
             if (cssua.userAgent.mobile) {
                 var ios_version_old = false;
                 if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {
