@@ -134,6 +134,10 @@
      */
     App.Settings = {};
 
+    if (App.Data.devMode) {
+        App.dbgView = {};
+    }
+
     /**
      * A simple object factory for App.Models objects
      * @param {string} type_name - the subname of the object constructor to be used

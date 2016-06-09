@@ -44,7 +44,7 @@ define(["factory", "giftcard_view"], function(factory) {
         },
         reset: function() {
             this.model.reset();
-            this.updateCaptcha();
+            this.model.trigger("updateCaptcha");
         },
         removeFromDOMTree: function() {
             this.updateCartTotals();
@@ -130,7 +130,7 @@ define(["factory", "giftcard_view"], function(factory) {
         mod: 'reload',
         initialize: function() {
             var model = this.model.toJSON();
-            this.ignoreUpdateCaptcha = model.captchaImage && model.captchaKey && model.captchaValue;
+            this.ignoreUpdateCaptcha = model.captchaKey && model.captchaValue;
             App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
             delete this.ignoreUpdateCaptcha;
         },
