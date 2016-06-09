@@ -959,8 +959,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             function logout() {
-                customer.logout();
                 customer.trigger('hidePanel');
+                customer.logout();
             }
 
             function register() {
