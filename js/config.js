@@ -440,7 +440,12 @@ define({
          * @type {string}
          * @description The actual path of [cart_view]{@link module:cart_view} module.
          */
-        cart_view: 'js/views/cart'
+        cart_view: 'js/views/cart',
+        /**
+         * @type {string}
+         * @description The actual path of [tree]{@link module:tree} module.
+         */
+        tree: 'js/models/tree',
     },
     /**
      * A waiting time of a module loading.
@@ -651,6 +656,9 @@ define({
         },
         'cart_view': {
             deps: ['factory']
+        },
+        'tree': {
+            deps: ['backbone']
         }
     },
     /**

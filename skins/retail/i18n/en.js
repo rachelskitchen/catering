@@ -16,6 +16,7 @@
         'CART_CHECKOUT': 'Checkout',
         'CART_CHECKOUT_TITLE': 'Your Shopping Bag',
         'CART_PAY': 'Pay',
+        'CATEGORIES_TITLE': 'Category',
         'CATEGORIES_SEARCH': 'Search',
         'CATEGORIES_ALL': 'All',
         'CHECKOUT_REWARD_CARD': 'Rewards #',

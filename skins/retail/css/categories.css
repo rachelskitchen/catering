@@ -1,0 +1,80 @@
+.categories-tree {
+    width: 189px;
+    border-width: 0 1px 1px 0;
+    border-style: solid;
+}
+
+.categories-tree .tree {
+    border-top-width: 1px;
+    border-top-style: solid;
+}
+
+.tree-title {
+    padding: 12px 11px;
+    font-size: 12px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+.tree-title:focus .break-word {
+    outline-width: 1px;
+    outline-style: dotted;
+}
+
+.no-focus-css .tree-title:focus .break-word {
+    outline: none !important;
+}
+
+.categories-tree .break-word {
+    display: block;
+    padding-right: 10px;
+    word-break: break-word;
+}
+
+.categories-tree .tree-item {
+    margin: 12px 0;
+    border-color: transparent;
+}
+
+.categories-tree .tree-item.no-subtree {
+    margin-bottom: 0;
+}
+
+.categories-tree > .tree > .tree-item {
+    padding: 0 11px;
+}
+
+.categories-tree .subtree {
+    padding-left: 15px;
+}
+
+.categories-tree .subtree-icon::before {
+    content: '\f078';
+    font-family: 'FontAwesome';
+    font-size: 8px;
+    display: block;
+    width: 8px;
+    margin-top: 4px;
+}
+
+.categories-tree .collapsed > .subtree-icon::before {
+    content: '\f054';
+}
+
+.categories-tree .has-subtree.collapsed > .subtree {
+    display: none;
+}
+
+.categories-tree .no-subtree > .subtree-icon {
+    display: none;
+}
+
+.categories-tree .name {
+    cursor: pointer;
+}
+
+.categories-tree .name.active {
+    color: red;
+    cursor: default;
+}

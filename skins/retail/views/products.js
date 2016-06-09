@@ -24,34 +24,41 @@ define(["products_view"], function(products_view) {
     'use strict';
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
-        showModifiers: function() {
-            var myorder = new App.Models.Myorder(),
-                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
+        tagName: 'li',
+        className: 'product-item',
+        bindings: {
+            ':el': 'attr: {tabindex: 0}'
+        }
+        // showModifiers: function() {
+        //     var myorder = new App.Models.Myorder(),
+        //         isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
+        //         def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
-            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-            def.then(function() {
-                $('#main-spinner').removeClass('ui-visible');
-                App.Data.mainModel.set('popup', {
-                    modelName: 'MyOrder',
-                    mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
-                    className: isStanfordItem ? 'stanford-reload-item' : '',
-                    model: myorder.clone(),
-                    action: 'add'
-                });
-            });
-        },
-        show_hide: function() {
-            this.parent = this.parent && this.parent.length ? this.parent : this.$el.parent();
-            if (!this.model.get('active')) {
-                this.$el.detach();
-            } else {
-                this.parent.append(this.$el);
-            }
+        //     $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        //     def.then(function() {
+        //         $('#main-spinner').removeClass('ui-visible');
+        //         App.Data.mainModel.set('popup', {
+        //             modelName: 'MyOrder',
+        //             mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+        //             className: isStanfordItem ? 'stanford-reload-item' : '',
+        //             model: myorder.clone(),
+        //             action: 'add'
+        //         });
+        //     });
+        // },
+    });
+
+    var ProductListView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'list',
+        itemView: ProductListItemView,
+        bindings: {
+            '.products': 'collection: $collection, itemView: "itemView"',
+            '.loading': 'toggle: equal(status, "pending")'
         }
     });
 
-  var ProductListView = _ProductListView( App.Views.CoreProductView.CoreProductListView );
+    //var ProductListView = _ProductListView( App.Views.CoreProductView.CoreProductListView );
     function _ProductListView( _base ) {
       return _base.extend({
         initialize: function() {
@@ -101,6 +108,36 @@ define(["products_view"], function(products_view) {
       });
     }
 
+    var ProductCategoryListView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'category_list',
+        bindings: {
+            ':el': 'updateContent: value'
+        },
+        bindingHandlers: {
+            updateContent: {
+                set: function($el, value) {
+                    var subViews = this.view.subViews,
+                        view;
+
+                    // clear content
+                    while (subViews.length) {
+                        subViews.shift().removeFromDOMTree();
+                    }
+
+                    view = App.Views.GeneratorView.create('Product', {
+                        mod: 'List',
+                        model: value,
+                        collection: value.get('products')
+                    }, value.id);
+
+                    subViews.push(view);
+                    $el.append(view.el);
+                }
+            }
+        }
+    });
+
     var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
         render: function() {
             App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
@@ -145,5 +182,6 @@ define(["products_view"], function(products_view) {
         App.Views.ProductView.ProductListItemView = ProductListItemView;
         App.Views.ProductView.ProductListView = ProductListView;
         App.Views.ProductView.ProductModifiersView = ProductModifiersView;
+        App.Views.ProductView.ProductCategoryListView = ProductCategoryListView;
     });
 });

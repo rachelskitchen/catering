@@ -1,0 +1,44 @@
+.products-view {
+    margin-left: 190px;
+}
+
+.products-view .products {
+    margin: 22px 0;
+}
+
+.products-view .product-item {
+    display: inline-block;
+    width: 170px;
+    margin: 0 22px 37px;
+    vertical-align: top;
+    cursor: pointer;
+}
+
+.products-view .product_image {
+    width: 170px;
+    height: 170px;
+    line-height: 170px;
+    position: relative;
+}
+
+.products-view .img {
+    max-width: 164px;
+    max-height: 164px;
+    vertical-align: middle;
+}
+
+.products-view .name {
+    padding: 6px 0 5px;
+}
+
+.products-view .uom {
+    font-size: 11px;
+}
+
+.products-view .loading {
+    position: fixed;
+    top: 170px;
+    bottom: 51px;
+    left: 222px;
+    right: 32px;
+}

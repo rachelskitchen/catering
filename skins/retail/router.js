@@ -97,10 +97,12 @@ define(["main_router"], function(main_router) {
                 });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
-                App.Data.subCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
                 App.Data.filter = new App.Models.Filter();
                 App.Data.cart = new Backbone.Model({visible: false});
+                App.Data.categorySelection = new App.Models.CategorySelection();
+                App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProducts()});
+                App.Data.productsSets = new App.Collections.ProductsSets();
 
                 // sync sort saving and loading with myorder saving and loading
                 App.Data.myorder.saveOrders = function() {
@@ -185,27 +187,12 @@ define(["main_router"], function(main_router) {
             this.mainView = mainView;
         },
         navigationControl: function() {
-            // change:parent_selected event occurs when any category tab is clicked
-            this.listenTo(App.Data.categories, 'change:parent_selected', function() {
-                var categories = App.Data.categories,
-                    subCategories = App.Data.subCategories,
-                    parent = App.Data.categories.parent_selected,
-                    subs = categories.where({parent_name: parent});
-                if(!subCategories.get(parent)) {
-                    subCategories.add({
-                        id: parent,
-                        subs: subs
-                    });
-                    subs.length > 1 && subCategories.get(parent).addAllSubs();
-                }
-                App.Data.categories.trigger('onSubs', subCategories.getSubs(parent));
-            }, this);
-
-            // change:selected event occurs when any subcategory is clicked
-            this.listenTo(App.Data.categories, 'change:selected', function() {
-                App.Data.mainModel.trigger('loadCompleted');
-                App.Data.search.clearLastPattern();
-            }, this);
+            // 'change:subCategory' event occurs when any subcategory is clicked
+            this.listenTo(App.Data.categorySelection, 'change:subCategory', function(model, value) {
+                this.showProducts(value);
+                // App.Data.mainModel.trigger('loadCompleted');
+                // App.Data.search.clearLastPattern();
+            });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
@@ -393,7 +380,7 @@ define(["main_router"], function(main_router) {
             }
 
             var filter = App.Data.filter,
-                categories = App.Data.categories,
+                categorySelection = App.Data.categorySelection,
                 search = App.Data.search,
                 subCategoryIsNotSelected = true;
 
@@ -403,8 +390,8 @@ define(["main_router"], function(main_router) {
             }, this);
 
             // listen to subcategory change and add entry to browser history
-            this.listenTo(categories, 'change:selected', function() {
-                updateState.call(this, categories, {replaceState: subCategoryIsNotSelected});
+            this.listenTo(categorySelection, 'change:subCategory', function() {
+                updateState.call(this, categorySelection, {replaceState: subCategoryIsNotSelected});
                 // handle case when subcategory is selected at first time (hash changes on #index/<base64 string>)
                 subCategoryIsNotSelected = false;
             }, this);
@@ -439,7 +426,7 @@ define(["main_router"], function(main_router) {
         restoreState: function(event) {
             var filter = App.Data.filter,
                 search = App.Data.search,
-                categories = App.Data.categories,
+                categorySelection = App.Data.categorySelection,
                 est = App.Data.settings.get('establishment'),
                 hashData = location.hash.match(/^#index\/(\w+)/), // parse decoded state string from hash
                 mainRouterData, isSearchPatternPresent, state, data;
@@ -472,13 +459,12 @@ define(["main_router"], function(main_router) {
 
             // If data.categories is object restore 'selected', 'parent_selected' props of App.Data.categories and set restoring mode.
             // If search pattern is present categories shouldn't be restored
-            if(data.categories instanceof Object && !isSearchPatternPresent) {
-                categories.isRestoring = true;
-                categories.setParentSelected(data.categories.parent_selected);
-                categories.setSelected(data.categories.selected);
+            if(_.isObject(data.categories)) {
+                categorySelection.isRestoring = true;  // ?
+                categorySelection.set(data.categories);
                 // remove restoring mode
-                delete categories.isRestoring;
-                delete filter.isRestoring;
+                delete categorySelection.isRestoring;  // ?
+                delete filter.isRestoring;      // ?
             };
 
             // If data.searchPattern is string restore last searched pattern and set restoring mode
@@ -505,14 +491,14 @@ define(["main_router"], function(main_router) {
          */
         getState: function() {
             var filter = App.Data.filter,
-                categories = App.Data.categories,
+                categorySelection = App.Data.categorySelection,
                 search = App.Data.search,
                 data = {},
                 hash = location.hash,
                 searchPattern;
 
             // if hash is present but isn't index, need to return default value
-            if(hash && !/^#index/i.test(hash) || !filter || !categories || !search) {
+            if(hash && !/^#index/i.test(hash) || !filter || !categorySelection || !search) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }
 
@@ -524,8 +510,8 @@ define(["main_router"], function(main_router) {
                 data.searchPattern = searchPattern;
             } else {
                 data.categories = {
-                    parent_selected: categories.parent_selected,
-                    selected: categories.selected
+                    parentCategory: categorySelection.get('parentCategory'),
+                    subCategory: categorySelection.get('subCategory')
                 };
             }
 
@@ -561,8 +547,6 @@ define(["main_router"], function(main_router) {
                     dfd = $.Deferred(),
                     self = this;
 
-                categories.selected = 0;
-
                 // load content block for categories
                 // and restore state from hash
                 if (!categories.receiving) {
@@ -589,51 +573,48 @@ define(["main_router"], function(main_router) {
                     cart: carts.main,
                     content: [
                         {
-                            modelName: 'Categories',
-                            collection: categories,
-                            model: App.Data.mainModel,
-                            search: App.Data.search,
-                            mod: 'SubList',
-                            className: 'subcategories'
+                            modelName: 'Tree',
+                            collection: this.getCategoriesTree(),
+                            mod: 'Categories',
+                            className: 'categories-tree fl-left'
                         },
+                        // {
+                        //     modelName: 'Filter',
+                        //     model: App.Data.filter,
+                        //     categories: categories,
+                        //     search: App.Data.search,
+                        //     products: App.Data.products,
+                        //     mod: 'Sort',
+                        //     className: 'filter sort select-wrapper'
+                        // },
+                        // {
+                        //     modelName: 'Filter',
+                        //     model: App.Data.filter,
+                        //     categories: categories,
+                        //     search: App.Data.search,
+                        //     products: App.Data.products,
+                        //     attr: 2,
+                        //     mod: 'Attribute',
+                        //     className: 'filter attribute select-wrapper',
+                        //     uniqId: '2'
+                        // },
+                        // {
+                        //     modelName: 'Filter',
+                        //     model: App.Data.filter,
+                        //     categories: categories,
+                        //     search: App.Data.search,
+                        //     products: App.Data.products,
+                        //     attr: 1,
+                        //     mod: 'Attribute',
+                        //     className: 'filter attribute select-wrapper',
+                        //     uniqId: '1'
+                        // },
                         {
-                            modelName: 'Filter',
-                            model: App.Data.filter,
-                            categories: categories,
-                            search: App.Data.search,
-                            products: App.Data.products,
-                            mod: 'Sort',
-                            className: 'filter sort select-wrapper'
-                        },
-                        {
-                            modelName: 'Filter',
-                            model: App.Data.filter,
-                            categories: categories,
-                            search: App.Data.search,
-                            products: App.Data.products,
-                            attr: 2,
-                            mod: 'Attribute',
-                            className: 'filter attribute select-wrapper',
-                            uniqId: '2'
-                        },
-                        {
-                            modelName: 'Filter',
-                            model: App.Data.filter,
-                            categories: categories,
-                            search: App.Data.search,
-                            products: App.Data.products,
-                            attr: 1,
-                            mod: 'Attribute',
-                            className: 'filter attribute select-wrapper',
-                            uniqId: '1'
-                        },
-                        {
-                            modelName: 'Categories',
-                            collection: categories,
-                            search: App.Data.search,
+                            modelName: 'Product',
+                            collection: App.Data.curProductsSet,
                             filter: App.Data.filter,
-                            mod: 'MainProducts',
-                            className: 'content products'
+                            mod: 'CategoryList',
+                            className: 'products-view'
                         }
                     ]
                 });
@@ -786,6 +767,127 @@ define(["main_router"], function(main_router) {
             } else {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
+        },
+        getCategoriesTree: function() {
+            var tree = new App.Collections.Tree(),
+                categories = App.Data.categories,
+                categorySelection = App.Data.categorySelection,
+                lastSelected;
+
+            // remember last selected subcategory to deselect it after new selection
+            // and update selected 'subCategory' and 'parentCategory' values
+            this.listenTo(tree, 'onItemSelected', function(model, value) {
+                if (value) {
+                    lastSelected && lastSelected.set('selected', false);
+                    lastSelected = model;
+                    categorySelection.set({
+                        subCategory: model.get('id'),
+                        parentCategory: model.get('parent_id')
+                    });
+                }
+            });
+
+            // need to update tree when 'subCategory' updates
+            this.listenTo(categorySelection, 'change:subCategory', function(model, value) {
+                var item = tree.getItem('id', value, true);
+                item && item.set('selected', true);
+            });
+
+            // need to update tree when 'parentCategory' updates
+            this.listenTo(categorySelection, 'change:parentCategory', function(model, value) {
+                var item = tree.getItem('id', value);
+                item && item.set('collapsed', false);
+            });
+
+            // once categories are loaded need to add them to tree collection
+            categories.receiving.always(setCategoriesItems);
+
+            return tree;
+
+            function setCategoriesItems() {
+                var selected, parent_selected, data;
+
+                // need to abort execution in case of empty categories collection
+                if (!categories.length) {
+                    return;
+                }
+
+                // need to convert categories collection to array of tree items.
+                data = _.toArray(_.mapObject(categories.groupBy('parent_id'), function(value, key) {
+                    var data = {
+                        id: Number(key),
+                        name: value[0].get('name'),
+                        sort: value[0].get('parent_sort'),
+                        items: _.invoke(value, 'toJSON')
+                    };
+                    // add 'View All' category
+                    value.length > 1 && data.items.unshift({
+                        id: _.pluck(value, 'id'),
+                        name: _loc.SUBCATEGORIES_VIEW_ALL,
+                        sort: 0,
+                        parent_id: value[0].get('parent_id')
+                    });
+                    return data;
+                }));
+
+                // and reset 'tree' collection with adding new data
+                tree.reset(data);
+
+                // need to define selected subcategory in tree.
+                // 'isEqual' param is used in tree.getItem due to 'id' may be array of ids (View All category is selected)
+                if (selected = tree.getItem('id', categorySelection.get('subCategory'), true)) {
+                    selected.set('selected', true);
+                } else {
+                    categorySelection.set('subCategory', tree.at(0).get('items').at(0).get('id'));
+                }
+
+                // need to define expanded parent category in tree
+                if (parent_selected = tree.getItem('id', categorySelection.get('parentCategory'))) {
+                    parent_selected.set('collapsed', false);
+                } else {
+                    categorySelection.set('parentCategory', tree.at(0).get('id'));
+                }
+            }
+        },
+        showProducts: function(ids) {
+            var self = this,
+                isCached = false,
+                cachedSet, key;
+
+            ids = Array.isArray(ids) ? ids : [ids];
+            key = ids.join();
+
+            if (cachedSet = App.Data.productsSets.get(key)) {
+                isCached = true;
+            } else {
+                cachedSet = App.Data.productsSets.add({id: key});
+            }
+
+            App.Data.curProductsSet.set('value', cachedSet);
+
+            // get items
+            !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
+                var products = [];
+                ids.forEach(function(id) {
+                    var items = App.Data.products[id],
+                        last = Math.max.apply(Math, items.pluck('sort')),
+                        floatNumber = Math.pow(10, String(last).length);
+                    items.each(function(item) {
+                        var product = item.toJSON();
+                        // need to exclude 'is_combo' and 'has_upsell' product
+                        if (product.is_combo || product.has_upsell) {
+                            return;
+                        }
+                        // add product with new sort value
+                        products.push(_.extend(product, {
+                            sort: Number(App.Data.categories.get(id).get('sort')) + product.sort / floatNumber
+                        }));
+                    });
+                });
+
+                cachedSet.get('products').reset(products);
+                setTimeout(cachedSet.set.bind(cachedSet, 'status', 'resolved'), 500);
+            });
         }
     });
 
