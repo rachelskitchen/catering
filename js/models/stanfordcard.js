@@ -249,7 +249,7 @@ define(["backbone", "captcha"], function(Backbone) {
                     number: data.number,
                     //captchaKey: data.captchaKey,
                     captchaValue: data.captchaValue,
-                    reload: reload ? true : undefined
+                    //reload: reload ? true : undefined
                 }),
                 dataType: 'json',
                 success: function(data) {
