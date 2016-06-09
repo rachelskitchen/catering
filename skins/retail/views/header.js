@@ -29,11 +29,10 @@ define(["backbone", "factory"], function(Backbone) {
         bindings: {
             '.search-box': 'classes: {active: ui_showSearchInput, link: not(ui_showSearchInput)}',
             'input[name=search]': 'value: ui_searchInput, events: ["input"], attr: {disabled: select(ui_isSearching, "disabled", false)}',
-            '.shop': 'classes: {active: equal(menu_index, 0)}',
-            '.about': 'classes: {active: equal(menu_index, 1)}',
-            '.map': 'classes: {active: equal(menu_index, 2)}',
-            '.cart-qty': 'text: format("($1)", ui_quantity), toggle: ui_quantity',
-            '.menu-item.active': 'attr: {tabindex: "-1"}'
+            '.shop': 'classes: {active: equal(menu_index, 0)}, attr: {tabindex: select(equal(menu_index, 0), -1, 0)}',
+            '.about': 'classes: {active: equal(menu_index, 1)}, attr: {tabindex: select(equal(menu_index, 1), -1, 0)}',
+            '.map': 'classes: {active: equal(menu_index, 2)}, attr: {tabindex: select(equal(menu_index, 2), -1, 0)}',
+            '.cart-qty': 'text: format("($1)", ui_quantity), toggle: ui_quantity'
         },
         bindingSources: {
             ui: function() {

@@ -1,24 +1,26 @@
 <script type="text/template" id="product_list-template">
     <ul class="products"></ul>
+    <div class="loading">
+        <div class="ui-spinner animate-spin"></div>
+    </div>
 </script>
 
 <script type="text/template" id="product_list_item-template">
     <% if(!hide_images) { %>
-    <div class="product_image <% if(isDefaultImage) print('no-photo'); %>">
-        <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('class="safari"'); %>>
+    <div class="product_image text-center <% if(isDefaultImage) print('no-photo'); %>">
+        <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" class="img">
     </div>
     <% } %>
-    <dl class="s<%= price_length %>">
-        <dt class="name"><%= name %></dt>
-        <dd class='cost_block'>
-            <div class='cost'>
-                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
-                <% if(sold_by_weight && uom) { %>
-                <span class="uom">/ <%= uom %></span>
-                <% } %>
-            </div>
-        </dd>
-    </dl>
+    <div class="name bold"><%= name %></div>
+    <div class="cost">
+        <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
+        <% if(sold_by_weight && uom) { %>
+        <span class="uom">/ <%= uom %></span>
+        <% } %>
+    </div>
+</script>
+
+<script type="text/template" id="product_category_list-template">
 </script>
 
 <script type="text/template" id="product_modifiers-template">
