@@ -103,7 +103,7 @@ select::-ms-expand { /*Removes default IE style*/
     outline: none;
 }
 
-.no-focus-css *:focus {
+.no-focus-css:focus {
     outline: none !important;
 }
 
@@ -354,5 +354,9 @@ textarea:focus {
 #main-spinner.ui-visible {
     opacity: 1;
     filter: alpha(opacity=100);
+    z-index: 10000;
+}
+
+#loader {
     z-index: 10000;
 }

@@ -22,7 +22,7 @@
     outline-style: dotted;
 }
 
-.no-focus-css .tree-title:focus .break-word {
+.no-focus-css:focus .break-word {
     outline: none !important;
 }
 

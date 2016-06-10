@@ -27,6 +27,9 @@ define(['products'], function() {
         defaults: {
             subCategory: -1,
             parentCategory: -1,
+        },
+        areDefaultAttrs: function() {
+            return _.isMatch(this.toJSON(), this.defaults);
         }
     });
 

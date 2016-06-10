@@ -20,31 +20,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone", "factory"], function() {
+define(["search_line_view"], function(search_line_view) {
     'use strict';
 
-    App.Views.CoreSearchLineView = {};
-
-    App.Views.CoreSearchLineView.CoreSearchLineMainView = App.Views.FactoryView.extend({
-        name: 'search_line',
-        mod: 'main',
-        bindings: {
-            ':el': 'classes: {collapsed: collapsed}',
-            '.search-input': 'value: dummyString, valueTimeout: searchString, params: {timeout: 1500}, events: ["input", "blur", "change"]'
-        },
+    var SearchLineView = App.Views.CoreSearchLineView.CoreSearchLineMainView.extend({
         events: {
-            'click .cancel-input': 'onCancel'
+            'click .search-label': 'show'
         },
         onEnterListeners: {
-            '.cancel-input': 'onCancel'
+            '.search-label': 'show'
         },
-        onCancel: function() {
-            this.model.empty_search_line();
+        show: function() {
+            this.model.set('collapsed', false);
+            this.$('.search-input').focus();
         }
     });
 
-    return new (require('factory'))(function() {
-        App.Views.SearchLineView = {};
-        App.Views.SearchLineView.SearchLineMainView = App.Views.CoreSearchLineView.CoreSearchLineMainView;
+    return new (require('factory'))(search_line_view.initViews.bind(search_line_view), function() {
+        App.Views.SearchLineView.SearchLineMainView = SearchLineView;
     });
 });

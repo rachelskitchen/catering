@@ -24,24 +24,14 @@ define(["search_line_view"], function(search_line_view) {
     'use strict';
 
     var SearchLineView = App.Views.CoreSearchLineView.CoreSearchLineMainView.extend({
-        bindings: {
-            ':el': 'classes: {collapsed: collapsed}',
-            '.btn-search': 'checkedSpan: {value: collapsed}',
-            '.cancel-input': 'checkedSpan: {value: collapsed}'
-        },
-        bindingSources: {
-            ui: function() {
-                return new Backbone.Model({
-                    collapsed: true
-                });
-            }
-        },
         events: {
-            'click .cancel-input': 'onDelete'
+            'click .btn-search': 'show'
         },
-        collapse: function() {
-            var $ui = this.getBinding('$ui');
-            $ui.set('collapsed', !$ui.get('collapsed'));
+        onEnterListeners: {
+            '.btn-search': 'show'
+        },
+        show: function() {
+            this.model.set('collapsed', !this.model.get('collapsed'));
         }
     });
 

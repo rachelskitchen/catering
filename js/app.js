@@ -228,7 +228,7 @@
             app.get['srv'] == '2-16' && (app.REVEL_HOST = 'https://2-16.revelup.com');
             app.get['srv'] == '2-17' && (app.REVEL_HOST = 'https://2-17.revelup.com');
 
-            // Add 'no-focus-css' class to <html> when user clicks on [tabindex] element.
+            // Add 'no-focus-css' class to [tabindex] element when user clicks on it.
             // This class is used for :focus CSS disabling.
             controlFocusCSS();
 
@@ -485,7 +485,7 @@
     }
 
     /**
-     * Adds 'no-focus-css' class to <html> element.
+     * Adds 'no-focus-css' class to [tabindex] element.
      * This class can be used to disable CSS for [tabindex]:focus elements.
      *
      * We should apply some CSS for [tabindex] elements to highlight them in navigation via TAB button.
@@ -493,20 +493,13 @@
      * because it gains the focus.
      */
     function controlFocusCSS() {
-        var html = Backbone.$(document.documentElement),
-            className = 'no-focus-css',
-            el;
+        Backbone.$(document.documentElement).on('mousedown', '[tabindex]', function(event) {
+            var el = Backbone.$(event.currentTarget),
+                className = 'no-focus-css';
 
-        html.on('mousedown', '[tabindex]', function(event) {
             // add 'className'
-            html.addClass(className);
-            // remember last element gained the focus
-            el = event.currentTarget;
-        });
-
-        html.on('blur', '[tabindex]', function(event) {
-            // once 'el' looses the focus need to remove 'className'
-            el === event.currentTarget && html.removeClass(className);
+            el.addClass(className);
+            el.one('blur', el.removeClass.bind(el, className));
         });
     }
 })();

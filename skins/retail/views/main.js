@@ -51,8 +51,6 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
-            this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
-            this.listenTo(App.Data.search, 'onSearchComplete', this.hideSpinner.bind(this, EVENT.SEARCH, true), this);
 
             this.iOSFeatures();
 
@@ -117,7 +115,7 @@ define(["done_view", "generator"], function(done_view) {
                 modelName: 'Header',
                 mainModel: this.model,
                 cart: this.options.cartCollection,
-                search: this.options.search,
+                searchLine: this.options.searchLine,
                 profilePanel: this.model.get('profile_panel')
             };
         },

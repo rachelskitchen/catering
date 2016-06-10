@@ -56,6 +56,12 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             if (!this.timeout) {
                 console.error("timeout param is not specified for valueTimeout binding");
             }
+            this.clearTimeout = function() {
+                if (this.inputTimeout) {
+                    clearTimeout(this.inputTimeout);
+                    this.inputTimeout = null;
+                }
+            }
         },
         set: function( $element, value) {
             $element.val(value);
@@ -64,14 +70,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             if (event.type == 'blur' || event.type == 'change') {
                 return $element.val().trim();
             }
+            this.clearTimeout();
+            this.inputTimeout = setTimeout((function(){
+                $element.trigger("change");
+                this.clearTimeout();
+            }).bind(this), this.timeout);
+            return value;
+        },
+        clean: function() {
             if (this.inputTimeout) {
                 clearTimeout(this.inputTimeout);
             }
-            this.inputTimeout = setTimeout((function(){
-                this.$el.trigger("change");
-                this.inputTimeout = null;
-            }).bind(this), this.timeout);
-            return value;
         }
     });
 
