@@ -1,0 +1,83 @@
+.promotions-link {
+    position: relative;
+}
+
+.promotions-link:before,
+.promotion-icon:before {
+    font-family: FontAwesome;
+    content: '\f02b';
+}
+
+.promotions-link:before {
+    margin-right: 5px;
+}
+
+.promotion-icon:before {
+    font-size: 2.5em;
+    line-height: 2em;
+    position: absolute;
+    top: 0;
+    left: 24px;
+}
+
+.promotions {
+
+}
+
+.promotions__list {
+    max-height: 520px;
+    overflow-y: auto;
+}
+
+.promotions__title,
+.promotions__group {
+    padding: 0 24px;
+}
+
+.promotions__title {
+    text-transform: uppercase;
+    font-weight: 200;
+    font-size: 14px;
+    letter-spacing: 3px;
+    padding: 1.5em 24px;
+}
+
+.promotions__group-title {
+    margin: 0px -24px;
+    padding: 14px 24px;
+    border-width: 1px;
+    border-style: solid;
+    padding-left: 68px;
+    position: relative;
+}
+
+.promotions__group-title-text {
+    display: inline-block;
+    font-weight: bold;
+    font-size: 16px;
+    margin-bottom: 2px;
+}
+
+.promotions__group-title-description {
+    font-size: 12px;
+}
+
+.promotions__available-text {
+    padding: 1.5em 0;
+}
+
+.promotions__item {
+    box-sizing: border-box;
+    height: 60px;
+    padding: 20px 0;
+}
+li:not(:last-child) .promotions__item {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.promotions__item-applied:before {
+    font-family: FontAwesome;
+    content: '\f00c';
+    margin-right: 2px;
+}
