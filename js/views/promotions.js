@@ -40,14 +40,22 @@ define(['factory'], function() {
         mod: 'ListItem',
         tagName: 'li',
         bindings: {
-            '.promotion': 'classes: {disabled: not(is_applicable)}',
-            '.promotion__name': 'text: name',
-            '.promotion__description': 'toggle: not(is_applicable)',
-            '.promotion__apply': 'text: select(all(is_applicable, is_applied), _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {added: all(is_applicable, is_applied)}',
+            '.promotions__item': 'classes: {disabled: not(is_applicable)}',
+            '.promotions__item-name': 'text: name',
+            '.promotions__item-description': 'toggle: not(is_applicable)',
+            '.promotions__item-apply': 'text: select(applied, _loc.PROMOTION_APPLIED, _loc.PROMOTION_APPLY), classes: {"promotions__item-applied": applied, "primary-text": not(applied), "special-text": applied}',
         },
         events: {
-            'click .promotion__link': 'seeInfo',
-            'click .promotion:not(.disabled) .promotion__apply': 'apply'
+            'click .promotions__item-link': 'seeInfo',
+            'click .promotions__item:not(.disabled) .promotions__item-apply': 'apply'
+        },
+        computeds: {
+            applied: {
+                deps: ['is_applicable', 'is_applied'],
+                get: function(is_applicable, is_applied) {
+                    return is_applicable && is_applied;
+                }
+            }
         },
         /**
          * Marks the selected promotion as applied.
@@ -78,10 +86,10 @@ define(['factory'], function() {
             this.updateBindings();
         },
         bindings: {
-            '.promotions-other': 'toggle: length($_other)',
-            '.promotions-available__text': 'toggle: not(length($_available))',
-            '.promotions-available__list': 'collection: $_available',
-            '.promotions-other__list': 'collection: $_other'
+            '.promotions__other': 'toggle: length($_other)',
+            '.promotions__available-text': 'toggle: not(length($_available))',
+            '.promotions__available-list': 'collection: $_available',
+            '.promotions__other-list': 'collection: $_other'
         },
         updateBindings: function() {
             this.getBinding('$_available').reset(this.collection.where({'is_applicable': true}));

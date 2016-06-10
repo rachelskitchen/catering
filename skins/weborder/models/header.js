@@ -29,7 +29,8 @@ define(["backbone"], function(Backbone) {
             img: App.Data.settings.get("img_path"),
             logo: "/_blank.png", // if server returns 'logo: null' need set fake image src that doens't exist (Bug #20916)
             business_name: "",
-            tab_index: 0
+            tab_index: 0,
+            promotions_available: false
         },
         initialize: function() {
             var settings = App.Data.settings.toJSON(),
