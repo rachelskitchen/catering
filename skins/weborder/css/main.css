@@ -110,6 +110,10 @@ select:focus,
     display: inline-block;
 }
 
+.overflow-hidden {
+    overflow: hidden;
+}
+
 .clear {
     clear: both;
 }
