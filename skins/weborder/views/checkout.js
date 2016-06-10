@@ -93,7 +93,7 @@ define(["checkout_view"], function(checkout_view) {
                 customer: this.options.customer,
                 rewardsCard: this.collection.rewardsCard,
                 mod: 'Main',
-                className: 'clear'
+                className: 'clear overflow-hidden' // add overflow:hidden to fix Bug 45243
             });
 
             this.subViews.push(order_type, pickup, main);
