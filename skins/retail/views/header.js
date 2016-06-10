@@ -27,8 +27,6 @@ define(["backbone", "factory"], function(Backbone) {
         name: 'header',
         mod: 'main',
         bindings: {
-            '.search-box': 'classes: {active: ui_showSearchInput, link: not(ui_showSearchInput)}',
-            'input[name=search]': 'value: ui_searchInput, events: ["input"], attr: {disabled: select(ui_isSearching, "disabled", false)}',
             '.shop': 'classes: {active: equal(menu_index, 0)}, attr: {tabindex: select(equal(menu_index, 0), -1, 0)}',
             '.about': 'classes: {active: equal(menu_index, 1)}, attr: {tabindex: select(equal(menu_index, 1), -1, 0)}',
             '.map': 'classes: {active: equal(menu_index, 2)}, attr: {tabindex: select(equal(menu_index, 2), -1, 0)}',
@@ -37,27 +35,31 @@ define(["backbone", "factory"], function(Backbone) {
         bindingSources: {
             ui: function() {
                 return new Backbone.Model({
-                    showSearchInput: false,
-                    searchInput: '',
-                    isSearching: false,
                     quantity: 0
                 });
             }
         },
         initialize: function() {
             this.listenTo(this.options.cart, 'add remove', this.update, this);
-            this.listenTo(this.options.search, 'onSearchComplete', this.searchComplete, this);
-            this.listenTo(this.options.search, 'onSearchStart', this.searchStart, this);
-            this.listenTo(this.options.search, 'onRestore', this.restoreState, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            var profilePanel = this.options.profilePanel;
-            var view = new App.Views.GeneratorView.create(profilePanel.modelName, _.extend(profilePanel, {
+            var profilePanel = this.options.profilePanel,
+                view;
+
+            view = new App.Views.GeneratorView.create(profilePanel.modelName, _.extend(profilePanel, {
                 el: this.$('.profile-panel-box')
             }));
             this.subViews.push(view);
+
+            view = new App.Views.GeneratorView.create('SearchLine', {
+                mod: 'Main',
+                el: this.$('.search-box'),
+                model: this.options.searchLine
+            });
+            this.subViews.push(view);
+
             loadSpinner(this.$('.img'));
             this.update();
             return this;
@@ -66,17 +68,13 @@ define(["backbone", "factory"], function(Backbone) {
             'click .shop': 'onMenu',
             'click .about': 'onAbout',
             'click .map': 'onMap',
-            'click .cart': 'onCart',
-            'click .search-label': 'showSearchInput',
-            'click .cancel-search': 'cancelSearch'
+            'click .cart': 'onCart'
         },
         onEnterListeners: {
             '.shop': 'onMenu',
             '.about': 'onAbout',
             '.map': 'onMap',
-            '.cart': 'onCart',
-            '.search-label': 'showSearchInput',
-            '.cancel-search': 'cancelSearch'
+            '.cart': 'onCart'
         },
         onMenu: function() {
             this.model.trigger('onShop');
@@ -90,33 +88,8 @@ define(["backbone", "factory"], function(Backbone) {
         onCart: function() {
             this.model.trigger('onCart');
         },
-        onSearch: function() {
-            var search = this.getBinding('ui_searchInput');
-            if (search.length > 0) {
-                this.searchStart();
-                this.model.trigger('onShop');
-                this.options.search.search(search);
-            }
-        },
-        searchComplete: function() {
-            this.setBinding('ui_searchInput', '');
-            this.setBinding('ui_isSearching', false);
-        },
-        searchStart: function() {
-            this.setBinding('ui_isSearching', true);
-        },
         update: function() {
             this.setBinding('ui_quantity', this.options.cart.get_only_product_quantity());
-        },
-        restoreState: function() {
-            this.setBinding('ui_searchInput', this.options.search.lastPattern || '');
-            this.onSearch();
-        },
-        showSearchInput: function() {
-            this.setBinding('ui_showSearchInput', true);
-        },
-        cancelSearch: function() {
-            this.setBinding('ui_showSearchInput', false);
         }
     });
 

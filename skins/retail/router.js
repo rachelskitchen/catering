@@ -97,7 +97,7 @@ define(["main_router"], function(main_router) {
                 });
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
-                App.Data.search = new App.Collections.Search();
+                App.Data.searchLine = new App.Models.SearchLine({search: new App.Collections.Search()});
                 App.Data.filter = new App.Models.Filter();
                 App.Data.cart = new Backbone.Model({visible: false});
                 App.Data.categorySelection = new App.Models.CategorySelection();
@@ -126,7 +126,7 @@ define(["main_router"], function(main_router) {
                     cartCollection: App.Data.myorder,
                     cartModel: App.Data.cart,
                     categories: App.Data.categories,
-                    search: App.Data.search
+                    searchLine: App.Data.searchLine
                 });
                 ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
@@ -189,9 +189,38 @@ define(["main_router"], function(main_router) {
         navigationControl: function() {
             // 'change:subCategory' event occurs when any subcategory is clicked
             this.listenTo(App.Data.categorySelection, 'change:subCategory', function(model, value) {
-                this.showProducts(value);
-                // App.Data.mainModel.trigger('loadCompleted');
-                // App.Data.search.clearLastPattern();
+                // don't call this.showProducts() for default value
+                if (value !== model.defaults.subCategory) {
+                    this.showProducts(value);
+                    App.Data.searchLine.empty_search_line();
+                }
+            });
+
+            // 'searchString' event occurs when a search text field is filled out
+            this.listenTo(App.Data.searchLine, 'change:searchString', function(model, value) {
+                model = model;
+
+                if (!value) {
+                    return;
+                }
+
+                // to go #index
+                App.Data.header.trigger('onShop');
+
+                var key = btoa(value),
+                    productSet = App.Data.productsSets.get(key),
+                    searchModel;
+
+                if (!productSet) {
+                    productSet = App.Data.productsSets.add({id: key});
+                    (searchModel = model.getSeachModel()) && searchModel.get('status').then(function() {
+                        productSet.get('products').reset(searchModel.get('products').toJSON());
+                        setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
+                    });
+                }
+
+                App.Data.curProductsSet.set('value', productSet);
+                App.Data.categorySelection.set('subCategory', App.Data.categorySelection.defaults.subCategory, {doNotUpdateState: true});
             });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
@@ -258,7 +287,7 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.trigger('loadCompleted');
             });
 
-            // onShop event occurs when 'Shop' item is clicked
+            // onShop event occurs when 'Shop' item is clicked or search line is filled out
             this.listenTo(App.Data.header, 'onShop', function() {
                 if (location.hash.indexOf("#index") == -1) {
                     this.navigate('index', true);
@@ -381,53 +410,52 @@ define(["main_router"], function(main_router) {
 
             var filter = App.Data.filter,
                 categorySelection = App.Data.categorySelection,
-                search = App.Data.search,
+                searchLine = App.Data.searchLine,
                 subCategoryIsNotSelected = true;
 
-            // listen to filter change
+            // listen to filter change to add new entry to browser history
             this.listenTo(filter, 'change', function(model, opts) {
-                updateState.call(this, filter, opts);
+console.log('updateState filter:change');
+                updateStateWithHash.call(this, opts);
             }, this);
 
-            // listen to subcategory change and add entry to browser history
-            this.listenTo(categorySelection, 'change:subCategory', function() {
-                updateState.call(this, categorySelection, {replaceState: subCategoryIsNotSelected});
-                // handle case when subcategory is selected at first time (hash changes on #index/<base64 string>)
-                subCategoryIsNotSelected = false;
+            // listen to subcategory change to add new entry to browser history
+            this.listenTo(categorySelection, 'change:subCategory', function(model, value, opts) {
+console.log('updateState change:subCategory');
+                updateStateWithHash.call(this, opts);
             }, this);
 
-            // listen to onSearchComplete and add entry to browser history
-            this.listenTo(search, 'onSearchComplete', function(result) {
-                // ingnore cases when no products found
-                if(!result.get('products') || result.get('products').length == 0)
-                    return;
-                updateState.call(this, search, {});
+            // listen to search line change to add new entry to browser history
+            this.listenTo(searchLine, 'change:searchString', function(model, value, opts) {
+console.log('updateState change:searchString');
+                updateStateWithHash.call(this, opts);
             }, this);
-            /**
-             * Push data changes to browser history entry.
-             * @param {Object} obj - Data object (categories, filter or search model).
-             * @param {Object} opts - Options object.
-             */
-            function updateState(obj, opts) {
-                // if obj is in restoring mode we shouldn't update state
-                if(obj.isRestoring || !(opts instanceof Object)) {
-                    return;
+
+            function updateStateWithHash(opts) {
+                if (!_.isObject(opts) || !opts.doNotUpdateState) {
+                    this.updateStateWithHash(opts.replaceState);
                 }
-                var encoded = this.encodeState(this.getState()),
-                    hashRE = /#.*$/,
-                    url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
-                this.updateState(Boolean(opts.replaceState), url);
             }
+
+            return true;
+        },
+        /**
+         * Push data changes to browser history entry adding current state to hash.
+         * @param {boolean} replaceState - If true, replace the current state, otherwise push a new state.
+         */
+        updateStateWithHash: function(replaceState) {
+            var encoded = this.encodeState(this.getState()),
+                hashRE = /#.*$/,
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+            this.updateState(replaceState, url);
+console.log('updateState', history.length, JSON.stringify(this.getState()));
         },
         /**
          * Restore state data from the history.
          * @param {Object} event - PopStateEvent.
          */
         restoreState: function(event) {
-            var filter = App.Data.filter,
-                search = App.Data.search,
-                categorySelection = App.Data.categorySelection,
-                est = App.Data.settings.get('establishment'),
+            var est = App.Data.settings.get('establishment'),
                 hashData = location.hash.match(/^#index\/(\w+)/), // parse decoded state string from hash
                 mainRouterData, isSearchPatternPresent, state, data;
 
@@ -445,45 +473,14 @@ define(["main_router"], function(main_router) {
 
             data = data || mainRouterData;
 
-            if(!(data instanceof Object) || est != data.establishment) {
+            if(!_.isObject(data) || est != data.establishment) {
                 return;
             }
-            // define pattern is present is data or not
-            isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
+console.log('restoreState', history.length, JSON.stringify(data));
 
-            // If data.filter is object resore App.Data.filter attributes and set restoring mode
-            if(data.filter instanceof Object) {
-                filter.isRestoring = true;
-                filter.set(data.filter);
-            };
-
-            // If data.categories is object restore 'selected', 'parent_selected' props of App.Data.categories and set restoring mode.
-            // If search pattern is present categories shouldn't be restored
-            if(_.isObject(data.categories)) {
-                categorySelection.isRestoring = true;  // ?
-                categorySelection.set(data.categories);
-                // remove restoring mode
-                delete categorySelection.isRestoring;  // ?
-                delete filter.isRestoring;      // ?
-            };
-
-            // If data.searchPattern is string restore last searched pattern and set restoring mode
-            if(isSearchPatternPresent) {
-                search.isRestoring = true;
-                search.lastPattern = data.searchPattern;
-                // set callback on event onSearchComplete (products received)
-                this.listenToOnce(search, 'onSearchComplete', function() {
-                    // remove restoring mode
-                    delete search.isRestoring;
-                    delete filter.isRestoring;
-                }, this);
-                search.trigger('onRestore');
-                // due to 'onRestore' handler in header view changes categories.selected, categories.parent_selected on 0
-                // need override this value to avoid a selection of first category and subcategory
-                // that is triggered in categories views after receiving data from server
-                categories.selected = -1;
-                categories.parent_selected = -1;
-            }
+            _.isObject(data.filter) && App.Data.filter.set(data.filter, {doNotUpdateState: true});
+            _.isObject(data.categories) && App.Data.categorySelection.set(data.categories, {doNotUpdateState: true});
+            _.isObject(data.searchLine) && App.Data.searchLine.set(data.searchLine, {doNotUpdateState: true});
         },
         /**
          * Returns the current state data.
@@ -492,28 +489,26 @@ define(["main_router"], function(main_router) {
         getState: function() {
             var filter = App.Data.filter,
                 categorySelection = App.Data.categorySelection,
-                search = App.Data.search,
+                searchLine = App.Data.searchLine,
                 data = {},
-                hash = location.hash,
-                searchPattern;
+                hash = location.hash;
 
             // if hash is present but isn't index, need to return default value
-            if(hash && !/^#index/i.test(hash) || !filter || !categorySelection || !search) {
+            if(hash && !/^#index/i.test(hash) || !filter || !categorySelection || !searchLine) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }
 
             data.filter = filter.toJSON();
-            searchPattern = search.lastPattern;
 
-            // search pattern and categories data cannot be in one state due to views implementation
-            if(searchPattern) {
-                data.searchPattern = searchPattern;
-            } else {
-                data.categories = {
-                    parentCategory: categorySelection.get('parentCategory'),
-                    subCategory: categorySelection.get('subCategory')
-                };
-            }
+            data.searchLine = {
+                searchString: searchLine.get('searchString'),
+                collapsed: searchLine.get('collapsed')
+            };
+
+            data.categories = {
+                parentCategory: categorySelection.get('parentCategory'),
+                subCategory: categorySelection.get('subCategory')
+            };
 
             return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
         },
@@ -531,7 +526,7 @@ define(["main_router"], function(main_router) {
         */
         resetEstablishmentData: function() {
             App.Routers.RevelOrderingRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            this.index.initState = null;
+            // this.index.initState = null;
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
@@ -543,16 +538,10 @@ define(["main_router"], function(main_router) {
         index: function(data) {
             this.prepare('index', function() {
                 var categories = App.Data.categories,
-                    restoreState = new Function,
                     dfd = $.Deferred(),
                     self = this;
 
-                // load content block for categories
-                // and restore state from hash
-                if (!categories.receiving) {
-                    categories.receiving = categories.get_categories();
-                    categories.receiving.then(this.restoreState.bind(this, {}));
-                }
+                this.createCategoriesTree();
 
                 categories.receiving.then(function() {
                     // After restoring state an establishment may be changed.
@@ -560,6 +549,7 @@ define(["main_router"], function(main_router) {
                     if(!Backbone.History.started) {
                         return;
                     }
+                    self.updateStateWithHash(this); // update hash
                     dfd.resolve();
                     self.restore = $.Deferred();
                 });
@@ -574,7 +564,7 @@ define(["main_router"], function(main_router) {
                     content: [
                         {
                             modelName: 'Tree',
-                            collection: this.getCategoriesTree(),
+                            collection: App.Data.categoriesTree,
                             mod: 'Categories',
                             className: 'categories-tree fl-left'
                         },
@@ -768,10 +758,16 @@ define(["main_router"], function(main_router) {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
         },
-        getCategoriesTree: function() {
-            var tree = new App.Collections.Tree(),
+        createCategoriesTree: function() {
+            if (App.Data.categoriesTree) {
+                return;
+            }
+
+            var tree = App.Data.categoriesTree = new App.Collections.Tree(),
                 categories = App.Data.categories,
                 categorySelection = App.Data.categorySelection,
+                searchLine = App.Data.searchLine,
+                self = this,
                 lastSelected;
 
             // remember last selected subcategory to deselect it after new selection
@@ -787,10 +783,15 @@ define(["main_router"], function(main_router) {
                 }
             });
 
-            // need to update tree when 'subCategory' updates
+            // Need to update tree when 'subCategory' updates.
             this.listenTo(categorySelection, 'change:subCategory', function(model, value) {
                 var item = tree.getItem('id', value, true);
                 item && item.set('selected', true);
+                // clear tree item selection
+                if (value === model.defaults.subCategory && lastSelected) {
+                    lastSelected.set('selected', false);
+                    lastSelected = undefined;
+                };
             });
 
             // need to update tree when 'parentCategory' updates
@@ -800,9 +801,8 @@ define(["main_router"], function(main_router) {
             });
 
             // once categories are loaded need to add them to tree collection
+            categories.receiving = categories.get_categories();
             categories.receiving.always(setCategoriesItems);
-
-            return tree;
 
             function setCategoriesItems() {
                 var selected, parent_selected, data;
@@ -832,38 +832,39 @@ define(["main_router"], function(main_router) {
 
                 // and reset 'tree' collection with adding new data
                 tree.reset(data);
+                // init state
+                initState();
+            }
 
-                // need to define selected subcategory in tree.
-                // 'isEqual' param is used in tree.getItem due to 'id' may be array of ids (View All category is selected)
-                if (selected = tree.getItem('id', categorySelection.get('subCategory'), true)) {
-                    selected.set('selected', true);
-                } else {
-                    categorySelection.set('subCategory', tree.at(0).get('items').at(0).get('id'));
-                }
-
-                // need to define expanded parent category in tree
-                if (parent_selected = tree.getItem('id', categorySelection.get('parentCategory'))) {
-                    parent_selected.set('collapsed', false);
-                } else {
-                    categorySelection.set('parentCategory', tree.at(0).get('id'));
+            function initState() {
+                // restore state if #index/<data> exists
+                self.restoreState({});
+                // if searchLine and categorySelection contain default attributes need to select first subcategory replacing state.
+                if (!searchLine.get('searchString') && categorySelection.areDefaultAttrs()) {
+                    categorySelection.set({
+                        parentCategory: tree.at(0).get('id'),
+                        subCategory: tree.at(0).get('items').at(0).get('id'),
+                    }, {
+                        replaceState: true
+                    });
                 }
             }
         },
         showProducts: function(ids) {
             var self = this,
                 isCached = false,
-                cachedSet, key;
+                productSet, key;
 
             ids = Array.isArray(ids) ? ids : [ids];
             key = ids.join();
 
-            if (cachedSet = App.Data.productsSets.get(key)) {
+            if (productSet = App.Data.productsSets.get(key)) {
                 isCached = true;
             } else {
-                cachedSet = App.Data.productsSets.add({id: key});
+                productSet = App.Data.productsSets.add({id: key});
             }
 
-            App.Data.curProductsSet.set('value', cachedSet);
+            App.Data.curProductsSet.set('value', productSet);
 
             // get items
             !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
@@ -885,8 +886,8 @@ define(["main_router"], function(main_router) {
                     });
                 });
 
-                cachedSet.get('products').reset(products);
-                setTimeout(cachedSet.set.bind(cachedSet, 'status', 'resolved'), 500);
+                productSet.get('products').reset(products);
+                setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
             });
         }
     });

@@ -54,13 +54,27 @@ define(['products'], function() {
             /**
              * Lookup string.
              * @type {?string}
+             * @default null
              */
             pattern: null,
             /**
              * Found products.
              * @type {?App.Collections.Products}
+             * @default null
              */
-            products: null
+            products: null,
+            /**
+             * Found products.
+             * @type {?Backbone.$.Deferred}
+             * @default null
+             */
+            status: null
+        },
+        /**
+         * Initializes `status` attribute as Backbone.$.Deferred object
+         */
+        initialize: function() {
+            this.set('status', Backbone.$.Deferred());
         },
         /**
          * Seeks products that match `pattern` attribute value.
@@ -68,7 +82,7 @@ define(['products'], function() {
          */
         get_products: function() {
             var self = this,
-                load = $.Deferred(),
+                load = this.get('status'),
                 pattern = this.get('pattern'),
                 results = new App.Collections.Products;
 
@@ -197,21 +211,25 @@ define(['products'], function() {
             /**
              * Search string.
              * @type {string}
+             * @default ''
              */
             searchString: '',
             /**
-             * Dummy string.
+             * Dummy string. It's used as 'empty' value for binding.
              * @type {string}
+             * @default ''
              */
             dummyString: '',
             /**
-             * Visibility.
+             * Indicates whether the search line is collapsed.
              * @type {boolean}
+             * @default true
              */
-            isShow: true,
+            collapsed: true,
             /**
              * Search collection.
              * @type {?App.Collections.Search}
+             * @default null
              */
             search: null
         },
@@ -227,16 +245,25 @@ define(['products'], function() {
         updateSearch: function() {
             if (this.get('searchString')) {
                 this.get('search').search(this.get('searchString'));
-            } else {
-                this.get('search').search(null);
             }
         },
         /**
          * Clears `searchString`, `dummyString` attributes.
          */
         empty_search_line: function() {
-            this.set("dummyString", "");
-            this.set("searchString", "", {silent: true});
+            this.set({
+                dummyString: '',
+                collapsed: true
+            });
+            this.set('searchString', '', {silent: true});
+        },
+        /**
+         * @returns {App.Models.Search} Search model.
+         */
+        getSeachModel: function() {
+            var searchCollection = this.get('search'),
+                searchString = this.get('searchString');
+            return searchCollection && searchString && searchCollection.findWhere({pattern: searchString});
         }
     });
 });

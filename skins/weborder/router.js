@@ -398,13 +398,6 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
                 App.Data.myorder.get_cart_totals();
             });
-
-            // when user clicks on any category need to hide search input
-            this.listenTo(App.Data.categories, 'show_subcategory', function() {
-                if (App.Data.searchLine) {
-                    App.Data.searchLine.set('collapsed', true);
-                }
-            });
         },
         /**
          * Enable browser history for navigation through categories, subcategories and search screens.

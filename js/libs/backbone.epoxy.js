@@ -80,6 +80,7 @@
       new_proto.events && typeof new_proto.events == 'object' && (new_class.prototype.events =  _.extend({}, this.prototype.events, new_proto.events));
       new_proto.bindings && typeof new_proto.bindings == 'object' && (new_class.prototype.bindings =  _.extend({}, this.prototype.bindings, new_proto.bindings));
       new_proto.computeds && typeof new_proto.computeds == 'object' && (new_class.prototype.computeds =  _.extend({}, this.prototype.computeds, new_proto.computeds));
+      new_proto.onEnterListeners && typeof new_proto.onEnterListeners == 'object' && (new_class.prototype.onEnterListeners =  _.extend({}, this.prototype.onEnterListeners, new_proto.onEnterListeners));
       new_class.mixed = mixins.mixed;
       return new_class;
   }
