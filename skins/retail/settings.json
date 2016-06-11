@@ -7,16 +7,16 @@
     "routing": {
         "main": {
             "css": ["main", "myorder", "products", "quantity", "categories", "profile", "header", "cart"],
-            "model": ["main", "header", "filter", "category_products"],
+            "model": ["main", "header", "filter", "category_products", "sort_items"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "stanfordcard", "profile", "search_line"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "stanfordcard", "search_line"],
             "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "stanfordcard", "customers", "profile_view", "payments", "giftcard", "rewards", "rewards_view", "categories"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
-            "css": ["categories", "filters"],
-            "views": ["products", "filters", "tree"],
-            "templates": ["products", "filters", "tree"],
+            "css": ["categories", "filters", "sort"],
+            "views": ["products", "filters", "tree", "sort"],
+            "templates": ["products", "filters", "tree", "sort"],
             "core": ["tree"]
         },
         "about": {

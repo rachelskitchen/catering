@@ -74,6 +74,31 @@ define(["backbone"], function(Backbone) {
                     item.set(self.criteriaAttr, model === item);
                 });
             }
+        },
+        /**
+         * @returns {Backbone.Model} Checked collection item.
+         */
+        getCheckedItem: function() {
+            var criteria = {};
+            criteria[this.criteriaAttr] = true;
+            return this.findWhere(criteria);
+        },
+        /**
+         * Checks first item that matches `attr`, `value` params.
+         *
+         * @param {string} attr - attribute's name
+         * @param {*} value - attribute's value
+         * @param {object} opts - options
+         */
+        checkItem: function(attr, value, opts) {
+            var criteria = {},
+                model;
+
+            criteria[attr] = value;
+
+            if (model = this.findWhere(criteria)) {
+                model.set(this.criteriaAttr, true, opts);
+            }
         }
     });
 });

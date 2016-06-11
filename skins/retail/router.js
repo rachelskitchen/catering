@@ -104,6 +104,9 @@ define(["main_router"], function(main_router) {
                 App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProducts()});
                 App.Data.productsSets = new App.Collections.ProductsSets();
 
+                // init App.Data.sortItems
+                this.initSortItems();
+
                 // sync sort saving and loading with myorder saving and loading
                 App.Data.myorder.saveOrders = function() {
                     this.constructor.prototype.saveOrders.apply(this, arguments);
@@ -209,13 +212,19 @@ define(["main_router"], function(main_router) {
 
                 var key = btoa(value),
                     productSet = App.Data.productsSets.get(key),
-                    searchModel;
+                    searchModel, productsAttr;
 
                 if (!productSet) {
-                    productSet = App.Data.productsSets.add({id: key});
+                    productSet = App.Data.productsSets.add({
+                        id: key,
+                        name: _loc.SEARCH_RESULTS.replace(/%s/g, value)
+                    });
+                    productsAttr = productSet.get('products');
                     (searchModel = model.getSeachModel()) && searchModel.get('status').then(function() {
-                        productSet.get('products').reset(searchModel.get('products').toJSON());
+                        productsAttr.reset(searchModel.get('products').toJSON());
                         setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
+                        // Apply a sort method specified by user and listen to its further changes
+                        App.Data.sortItems.sortCollection(productsAttr);
                     });
                 }
 
@@ -408,26 +417,22 @@ define(["main_router"], function(main_router) {
                 return;
             }
 
-            var filter = App.Data.filter,
-                categorySelection = App.Data.categorySelection,
-                searchLine = App.Data.searchLine,
-                subCategoryIsNotSelected = true;
-
             // listen to filter change to add new entry to browser history
-            this.listenTo(filter, 'change', function(model, opts) {
-console.log('updateState filter:change');
+            this.listenTo(App.Data.filter, 'change', function(model, opts) {
                 updateStateWithHash.call(this, opts);
             }, this);
 
+            this.listenTo(App.Data.sortItems, 'change:selected', function(model, value, opts) {
+                value && updateStateWithHash.call(this, opts);
+            });
+
             // listen to subcategory change to add new entry to browser history
-            this.listenTo(categorySelection, 'change:subCategory', function(model, value, opts) {
-console.log('updateState change:subCategory');
+            this.listenTo(App.Data.categorySelection, 'change:subCategory', function(model, value, opts) {
                 updateStateWithHash.call(this, opts);
             }, this);
 
             // listen to search line change to add new entry to browser history
-            this.listenTo(searchLine, 'change:searchString', function(model, value, opts) {
-console.log('updateState change:searchString');
+            this.listenTo(App.Data.searchLine, 'change:searchString', function(model, value, opts) {
                 updateStateWithHash.call(this, opts);
             }, this);
 
@@ -481,6 +486,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
             _.isObject(data.filter) && App.Data.filter.set(data.filter, {doNotUpdateState: true});
             _.isObject(data.categories) && App.Data.categorySelection.set(data.categories, {doNotUpdateState: true});
             _.isObject(data.searchLine) && App.Data.searchLine.set(data.searchLine, {doNotUpdateState: true});
+            data.sort && App.Data.sortItems.checkItem('id', data.sort, {doNotUpdateState: true});
         },
         /**
          * Returns the current state data.
@@ -490,6 +496,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
             var filter = App.Data.filter,
                 categorySelection = App.Data.categorySelection,
                 searchLine = App.Data.searchLine,
+                sortItem = App.Data.sortItems.getCheckedItem(),
                 data = {},
                 hash = location.hash;
 
@@ -499,6 +506,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
             }
 
             data.filter = filter.toJSON();
+            data.sort = sortItem.get('id');
 
             data.searchLine = {
                 searchString: searchLine.get('searchString'),
@@ -568,15 +576,12 @@ console.log('restoreState', history.length, JSON.stringify(data));
                             mod: 'Categories',
                             className: 'categories-tree fl-left'
                         },
-                        // {
-                        //     modelName: 'Filter',
-                        //     model: App.Data.filter,
-                        //     categories: categories,
-                        //     search: App.Data.search,
-                        //     products: App.Data.products,
-                        //     mod: 'Sort',
-                        //     className: 'filter sort select-wrapper'
-                        // },
+                        {
+                            modelName: 'Sort',
+                            collection: App.Data.sortItems,
+                            mod: 'Items',
+                            className: 'sort-menu fl-right'
+                        },
                         // {
                         //     modelName: 'Filter',
                         //     model: App.Data.filter,
@@ -816,7 +821,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
                 data = _.toArray(_.mapObject(categories.groupBy('parent_id'), function(value, key) {
                     var data = {
                         id: Number(key),
-                        name: value[0].get('name'),
+                        name: value[0].get('parent_name'),
                         sort: value[0].get('parent_sort'),
                         items: _.invoke(value, 'toJSON')
                     };
@@ -824,6 +829,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     value.length > 1 && data.items.unshift({
                         id: _.pluck(value, 'id'),
                         name: _loc.SUBCATEGORIES_VIEW_ALL,
+                        parent_name: value[0].get('parent_name'),
                         sort: 0,
                         parent_id: value[0].get('parent_id')
                     });
@@ -853,22 +859,30 @@ console.log('restoreState', history.length, JSON.stringify(data));
         showProducts: function(ids) {
             var self = this,
                 isCached = false,
+                treeItem = App.Data.categoriesTree.getItem('id', ids, true),
                 productSet, key;
 
             ids = Array.isArray(ids) ? ids : [ids];
             key = ids.join();
 
+            if (treeItem) {
+                name = Array.isArray(treeItem.get('id')) ? treeItem.get('parent_name') : treeItem.get('name');
+            }
+
             if (productSet = App.Data.productsSets.get(key)) {
                 isCached = true;
             } else {
                 productSet = App.Data.productsSets.add({id: key});
+                productSet.set('name', name);
             }
 
             App.Data.curProductsSet.set('value', productSet);
 
             // get items
             !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
-                var products = [];
+                var products = [],
+                    productsAttr = productSet.get('products');
+
                 ids.forEach(function(id) {
                     var items = App.Data.products[id],
                         last = Math.max.apply(Math, items.pluck('sort')),
@@ -886,9 +900,55 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     });
                 });
 
-                productSet.get('products').reset(products);
+                // set products and resolve status
+                productsAttr.reset(products);
                 setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
+
+                // Apply a sort method specified by user and listen to its further changes
+                App.Data.sortItems.sortCollection(productsAttr);
             });
+        },
+        /**
+         * Creates App.Data.sortItem collection.
+         */
+        initSortItems: function() {
+            var sortItems = [
+                // Sort by Default
+                {
+                    id: 1,
+                    name: _loc.SORT_BY_DEFAULT,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'sort',
+                    sortOrder: 'asc',
+                    selected: true
+                },
+                // Sort by New Arrivals
+                {
+                    id: 2,
+                    name: _loc.SORT_BY_NEW_ARRIVALS,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'created_date',
+                    sortOrder: 'desc'
+                },
+                // Sort by Price: Low to High
+                {
+                    id: 3,
+                    name: _loc.SORT_BY_LOW_TO_HIGH,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'price',
+                    sortOrder: 'asc'
+                },
+                // Sort by Price: High to Low
+                {
+                    id: 4,
+                    name: _loc.SORT_BY_HIGH_TO_LOW,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'price',
+                    sortOrder: 'desc'
+               }
+            ];
+
+            App.Data.sortItems = new App.Collections.SortItems(sortItems);
         }
     });
 

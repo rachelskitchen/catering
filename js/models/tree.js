@@ -58,6 +58,12 @@ define(["backbone"], function(Backbone) {
              */
             name: '',
             /**
+             * Parent item name.
+             * @type {string}
+             * @default ''
+             */
+            name: '',
+            /**
              * Sorting number.
              * @type {number}
              * @default 0
