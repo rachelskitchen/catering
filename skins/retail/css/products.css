@@ -2,6 +2,15 @@
     margin-left: 190px;
 }
 
+.products-view .products-set-title {
+    min-height: 16px;
+    padding: 12px 22px 11px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    font-size: inherit;
+    word-break: break-word;
+}
+
 .products-view .products {
     margin: 22px 0;
 }

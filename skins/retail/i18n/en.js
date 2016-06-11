@@ -41,10 +41,11 @@
         'CONFIRM_SUBMIT_CARD': 'Submit Card',
         'CONFIRM_SUBMIT_ORDER': 'Submit Order',
         'ENTER_NEW_ADDRESS': 'Enter New Address',
-        'FILTERS_DEFAULT_SORTING': 'Default Sorting',
-        'FILTERS_NEW_ARRIVALS': 'New Arrivals',
-        'FILTERS_LOW_TO_HIGH': 'Price: Low to High',
-        'FILTERS_HIGH_TO_LOW': 'Price: High to Low',
+        'SORT_BY_TITLE': 'Sort by',
+        'SORT_BY_DEFAULT': 'Default Sorting',
+        'SORT_BY_NEW_ARRIVALS': 'New Arrivals',
+        'SORT_BY_LOW_TO_HIGH': 'Price: Low to High',
+        'SORT_BY_HIGH_TO_LOW': 'Price: High to Low',
         'FILTERS_SHOW_ALL': 'Show All',
         'GIFTCARD_TITLE': 'Enter your Gift Card Information',
         'GIFTCARD_NUMBER': 'Card Number',
@@ -132,6 +133,7 @@
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
         'STANFORD_CARD_NUMBER': 'Stanford Card #',
-        'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan'
+        'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan',
+        'SEARCH_RESULTS': 'Search Results For: %s'
     } // end of locale
 }); // end of module

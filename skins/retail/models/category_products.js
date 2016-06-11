@@ -23,11 +23,44 @@
 define(['products'], function() {
     'use strict';
 
-    App.Models.CategorySelection = Backbone.Model.extend({
+    /**
+     * @class
+     * @classdesc Represents current category selection.
+     * @alias App.Models.CategorySelection
+     * @augments Backbone.Model
+     * @example
+     * // create a category selection model
+     * require(['models/category_products'], function() {
+     *     var categorySelection = new App.Models.CategorySelection();
+     * });
+     */
+    App.Models.CategorySelection = Backbone.Model.extend(
+    /**
+     * @lends Backbone.Model.prototype
+     */
+    {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
+            /**
+             * Current selected sub category.
+             * @type {number}
+             * @default -1
+             */
             subCategory: -1,
+            /**
+             * Current selected parent category.
+             * @type {number}
+             * @default -1
+             */
             parentCategory: -1,
         },
+        /**
+         * @returns {boolean} `true` is `subCategory` or `parentCategory` doesn't have default values.
+         */
         areDefaultAttrs: function() {
             return _.isMatch(this.toJSON(), this.defaults);
         }
@@ -36,7 +69,7 @@ define(['products'], function() {
     /**
      * @class
      * @classdesc Represents category's products set.
-     * @alias Backbone.Model
+     * @alias App.Models.CategoryProducts
      * @augments Backbone.Model
      * @example
      * // create a category's products model
@@ -72,7 +105,13 @@ define(['products'], function() {
              * @type {?App.Collections.Products}
              * @default null
              */
-            products: null
+            products: null,
+            /**
+             * Products set's name.
+             * @type {string}
+             * @default ''
+             */
+            name: ''
         },
         /**
          * Initializes `products` attribute as new instance of App.Collections.Products.
@@ -85,12 +124,12 @@ define(['products'], function() {
     /**
      * @class
      * @classdesc Represents products sets.
-     * @alias Backbone.Collection
+     * @alias App.Collections.ProductsSets
      * @augments Backbone.Collection
      * @example
      * // create a products sets
      * require(['models/category_products'], function() {
-     *     var productsSets = new App.Collections.ProductsSets([{id: '1,2,3,4'}, {id: '1'}]y);
+     *     var productsSets = new App.Collections.ProductsSets([{id: '1,2,3,4'}, {id: '1'}]);
      * });
      */
     App.Collections.ProductsSets = Backbone.Collection.extend(

@@ -53,6 +53,7 @@ define(["products_view"], function(products_view) {
         mod: 'list',
         itemView: ProductListItemView,
         bindings: {
+            '.products-set-title': 'text: name',
             '.products': 'collection: $collection, itemView: "itemView"',
             '.loading': 'toggle: equal(status, "pending")'
         }
