@@ -37,11 +37,14 @@ define(["search_line_view"], function(search_line_view) {
             }
         },
         events: {
-            'click .cancel-input': 'onDelete'
+            'click .cancel': 'onDelete'
         },
         collapse: function() {
             var $ui = this.getBinding('$ui');
             $ui.set('collapsed', !$ui.get('collapsed'));
+        },
+        onDelete: function() {
+            this.model.set('searchString', '');
         }
     });
 
