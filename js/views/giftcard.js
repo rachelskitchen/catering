@@ -32,8 +32,8 @@ define(["backbone", "factory"], function(Backbone) {
 
             var view = App.Views.GeneratorView.create('CoreRecaptcha', {
                     model: this.model,
-                    mod: 'Main'},
-                    'CoreRecaptcha' + this.name + this.mod);
+                    mod: 'Main'}/*,
+                    'CoreRecaptcha' + this.name + this.mod*/);
             this.$('.recaptcha_view').append(view.el);
             this.subViews.push(view);
         },

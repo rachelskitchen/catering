@@ -89,14 +89,11 @@
         initialize: function() {
             var self = this,
                 dfd = App.Data.settings.load_google_captcha();
-
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-
             if (dfd.state() != 'resolved') {
-                this.loadResourceSpinner();
+                this.$('.captcha_container').spinner({deferred: dfd});
             }
             dfd.done(function(){
-                self.removeResourceSpinner();
                 if (!self.widgetId) {
                     self.widgetId =  grecaptcha.render(self.$('.captcha_container')[0], {
                        'sitekey' : App.Settings.recaptcha_site_key,
@@ -107,27 +104,21 @@
                 }
                 self.updateCaptcha();
             });
-            this.listenTo(this.model, 'onResetData', this.updateCaptcha.bind(this, 'onResetData' ), this);
-            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha.bind(this, 'updateCaptcha'), this);
-        },
-        loadResourceSpinner: function() {
-            this.$('.spinner-container').spinner();
-            this.resourceSpinner = this.$('.ui-spinner');
-        },
-        removeResourceSpinner: function() {
-            this.resourceSpinner && this.resourceSpinner.remove();
-            delete this.resourceSpinner;
+            this.listenTo(this.model, 'onResetData', this.resetCaptcha, this);
+            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
         },
         sessionKeyCallback: function(response) {
             this.model.set('captchaValue', response);
         },
         sessionExpiresCallback: function() {
-            //trace("sessionExpires callback")
             this.model.set('captchaValue', '');
         },
         updateCaptcha: function(param) {
-            //trace("updateCaptcha =>", param);
             this.model.loadCaptcha();
+            grecaptcha.reset(this.widgetId);
+        },
+        resetCaptcha: function() {
+            this.model.set('captchaValue', '');
             grecaptcha.reset(this.widgetId);
         }
     });
