@@ -581,7 +581,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.initPayments();
                     this.getAddresses();
                     this.initGiftCards();
-                    this.getRewardCards();
+                    this.setRewardCards();
                     this.trigger('onLogin');
                 },
                 error: function(jqXHR) {
@@ -1749,6 +1749,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (!this.get('rewardCards')) {
                 return console.error("Rewards cards have not been initialized");
             }
+
             var self = this,
                 req = this.get('rewardCards').getCards(this.getAuthorizationHeader());
 
