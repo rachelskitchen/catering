@@ -99,34 +99,13 @@
     width: 175px;
 }
 
-.stanford-reload-item .captcha-wrapper {
-    display: inline-block;
-    width: 120px;
-    height: 48px;
-    vertical-align: middle;
+.stanford-reload-item .captcha_container {
+    margin-left: 157px;
+    margin-top: 4px;
 }
 
 .stanford-reload-item .cancel-input {
     position: static;
-}
-
-.stanford-reload-item .btn-reload {
-    display: inline-block;
-    vertical-align: middle;
-    margin-left: 10px;
-    cursor: pointer;
-    text-decoration: underline;
-}
-
-.stanford-reload-item .btn-reload.disabled {
-    cursor: default;
-    opacity: 0.5;
-    pointer-events: none;
-}
-
-.stanford-reload-item .captcha-spinner {
-    font-size: 8px;
-    height: 100%;
 }
 
 .stanford-reload-item .btn-popup.disabled {

@@ -1,17 +1,12 @@
+<script type="text/template" id="recaptcha_main-template">
+   <div class="captcha_container"></div>
+</script>
+
 <script type="text/template" id="rewards_card-template">
     <label class="required font-size2">
         <input type="text" placeholder="<%= _lp.REWARDS_NUMBER %>" class="rewards-input ios-safari-caret input-colors">
     </label>
-    <label class="required font-size2">
-        <input type="text" placeholder="<%= _lp.REWARDS_ENTER_CAPTCHA %>" class="ios-safari-caret rewards-captcha-input input-colors">
-    </label>
-    <div class="captcha">
-        <img src="" alt="" width="100%" height="100%" class="captcha-image">
-        <div class="captcha-spinner"></div>
-    </div>
-    <span class="rewards-card-btn update-captcha">
-        <span class="font-size2 link regular-text"><%= _lp.GIFTCARD_RELOAD %></span>
-    </span>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="rewards_info-template">

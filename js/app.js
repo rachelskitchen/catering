@@ -434,10 +434,18 @@
         }
 
         // jquery `spinner` plugin
-        $.fn.spinner = function() {
+        $.fn.spinner = function(options) {
+            var self = this;
             this.each(addSpinner);
             if (App.Data.is_stanford_mode) {
                 this.find(".ui-spinner").addClass("stanford");
+            }
+            if (options && options.deferred) {
+                this.resourceSpinner = this.find('.ui-spinner');
+                options.deferred.always(function() {
+                    self.resourceSpinner.remove();
+                    delete self.resourceSpinner;
+                })
             }
         };
 

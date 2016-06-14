@@ -527,3 +527,7 @@ select::-ms-expand { /*Removes default IE style*/
     position: absolute;
     padding: 0 0.6em;
 }
+
+.captcha_container {
+    min-height: 4em;
+}

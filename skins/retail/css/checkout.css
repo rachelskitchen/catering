@@ -254,35 +254,12 @@
 }
 
 .stanford-student-card .input_beauty {
-  left: 220px;
+    left: 220px;
 }
 
-.stanford-student-card .captcha_wrap {
-    display: inline-block;
-    vertical-align: top;
-    text-align: center;
-    margin-right: 5px;
-    margin-top: 4px;
-    margin-left: 116px;
-    width: 120px;
-    height: 48px;
-    font-size: 8px;
-    position: relative;
-}
-
-.stanford-student-card .captcha-spinner {
-    height: 100%;
-}
-
-.stanford-student-card .btn-reload {
-    display: inline-block;
-    max-width: 145px;
+.stanford-student-card .captcha_container {
+    margin-left: 127px;
     margin-top: 5px;
-    line-height: 48px;
-    line-height: 48px;
-    vertical-align: top;
-    text-decoration: underline;
-    cursor: pointer;
 }
 
 /* for tablets */
