@@ -1797,7 +1797,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         removeRewardCards: function() {
             this.rewardCardsRequest && this.rewardCardsRequest.abort();
             delete this.rewardCardsRequest;
-            this.get('rewardCards').reset();
+            if (this.get('rewardCards')) { // bug_44919
+                this.get('rewardCards').reset();
+            }
             App.Data.myorder.rewardsCard.resetData(); // bug_43982
         },
         /**
