@@ -58,7 +58,7 @@
 
 .modifier input {
     position: absolute;
-    top: -1000px;
+    left: -9999px;
 }
 
 .modifier .title,
