@@ -63,6 +63,15 @@
     padding: 0;
 }
 
+#profile-panel .simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#profile-panel .simlink:hover {
+    text-decoration: none;
+}
+
 #profile-panel .field-description {
     display: block;
     padding: 0px 14px 5px;

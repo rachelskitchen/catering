@@ -96,6 +96,26 @@
     margin-bottom: 15px;
 }
 
+#profile-panel .attention-text {
+    margin-top: -10px;
+    padding: 0 14px 15px;
+    text-align: left;
+    font-size: 12px;
+}
+
+#profile-panel .account-inactive {
+    white-space: nowrap;
+}
+
+#profile-panel .simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#profile-panel .simlink:hover {
+    text-decoration: none;
+}
+
 #profile-panel .forgot-password {
     padding: 0 20px;
     font-size: 12px;
@@ -118,6 +138,8 @@
     position: absolute;
     bottom: -5px;
     left: 14px;
+    margin: 0;
+    padding: 0;
     font-size: 12px;
 }
 
