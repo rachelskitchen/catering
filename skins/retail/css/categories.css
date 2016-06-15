@@ -35,6 +35,7 @@
 .categories-tree .tree-item {
     margin: 12px 0;
     border-color: transparent;
+    cursor: pointer;
 }
 
 .categories-tree .tree-item.no-subtree {
@@ -71,10 +72,17 @@
 }
 
 .categories-tree .name {
-    cursor: pointer;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    vertical-align: middle;
 }
 
 .categories-tree .name.active {
     color: red;
     cursor: default;
+}
+
+.categories-tree .checkbox {
+    margin-right: 6px;
+    vertical-align: middle;
 }

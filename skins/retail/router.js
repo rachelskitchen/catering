@@ -98,7 +98,6 @@ define(["main_router"], function(main_router) {
                 var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.searchLine = new App.Models.SearchLine({search: new App.Collections.Search()});
-                App.Data.filter = new App.Models.Filter();
                 App.Data.cart = new Backbone.Model({visible: false});
                 App.Data.categorySelection = new App.Models.CategorySelection();
                 App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProducts()});
@@ -110,12 +109,12 @@ define(["main_router"], function(main_router) {
                 // sync sort saving and loading with myorder saving and loading
                 App.Data.myorder.saveOrders = function() {
                     this.constructor.prototype.saveOrders.apply(this, arguments);
-                    App.Data.filter.saveSort();
+                    // App.Data.filter.saveSort();
                 }
 
                 App.Data.myorder.loadOrders = function() {
                     this.constructor.prototype.loadOrders.apply(this, arguments);
-                    App.Data.filter.loadSort();
+                    // App.Data.filter.loadSort();
                 }
 
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
@@ -417,11 +416,7 @@ define(["main_router"], function(main_router) {
                 return;
             }
 
-            // listen to filter change to add new entry to browser history
-            this.listenTo(App.Data.filter, 'change', function(model, opts) {
-                updateStateWithHash.call(this, opts);
-            }, this);
-
+            // listen to sorting method change to add new entry to browser history
             this.listenTo(App.Data.sortItems, 'change:selected', function(model, value, opts) {
                 value && updateStateWithHash.call(this, opts);
             });
@@ -483,7 +478,6 @@ console.log('updateState', history.length, JSON.stringify(this.getState()));
             }
 console.log('restoreState', history.length, JSON.stringify(data));
 
-            _.isObject(data.filter) && App.Data.filter.set(data.filter, {doNotUpdateState: true});
             _.isObject(data.categories) && App.Data.categorySelection.set(data.categories, {doNotUpdateState: true});
             _.isObject(data.searchLine) && App.Data.searchLine.set(data.searchLine, {doNotUpdateState: true});
             data.sort && App.Data.sortItems.checkItem('id', data.sort, {doNotUpdateState: true});
@@ -493,19 +487,17 @@ console.log('restoreState', history.length, JSON.stringify(data));
          * @return {Object} The object containing information about the current app state.
          */
         getState: function() {
-            var filter = App.Data.filter,
-                categorySelection = App.Data.categorySelection,
+            var categorySelection = App.Data.categorySelection,
                 searchLine = App.Data.searchLine,
                 sortItem = App.Data.sortItems.getCheckedItem(),
                 data = {},
                 hash = location.hash;
 
             // if hash is present but isn't index, need to return default value
-            if(hash && !/^#index/i.test(hash) || !filter || !categorySelection || !searchLine) {
+            if(hash && !/^#index/i.test(hash) || !categorySelection || !searchLine) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }
 
-            data.filter = filter.toJSON();
             data.sort = sortItem.get('id');
 
             data.searchLine = {
@@ -571,10 +563,11 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     cart: carts.main,
                     content: [
                         {
-                            modelName: 'Tree',
-                            collection: App.Data.categoriesTree,
-                            mod: 'Categories',
-                            className: 'categories-tree fl-left'
+                            modelName: 'Sidebar',
+                            mod: 'Main',
+                            categoriesTree: App.Data.categoriesTree,
+                            curProductsSet: App.Data.curProductsSet,
+                            className: 'fl-left'
                         },
                         {
                             modelName: 'Sort',
@@ -582,32 +575,9 @@ console.log('restoreState', history.length, JSON.stringify(data));
                             mod: 'Items',
                             className: 'sort-menu fl-right'
                         },
-                        // {
-                        //     modelName: 'Filter',
-                        //     model: App.Data.filter,
-                        //     categories: categories,
-                        //     search: App.Data.search,
-                        //     products: App.Data.products,
-                        //     attr: 2,
-                        //     mod: 'Attribute',
-                        //     className: 'filter attribute select-wrapper',
-                        //     uniqId: '2'
-                        // },
-                        // {
-                        //     modelName: 'Filter',
-                        //     model: App.Data.filter,
-                        //     categories: categories,
-                        //     search: App.Data.search,
-                        //     products: App.Data.products,
-                        //     attr: 1,
-                        //     mod: 'Attribute',
-                        //     className: 'filter attribute select-wrapper',
-                        //     uniqId: '1'
-                        // },
                         {
                             modelName: 'Product',
                             collection: App.Data.curProductsSet,
-                            filter: App.Data.filter,
                             mod: 'CategoryList',
                             className: 'products-view'
                         }
@@ -895,6 +865,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         }
                         // add product with new sort value
                         products.push(_.extend(product, {
+                            filterResult: true,
                             sort: Number(App.Data.categories.get(id).get('sort')) + product.sort / floatNumber
                         }));
                     });
