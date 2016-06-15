@@ -75,6 +75,19 @@
     text-align: left;
 }
 
+.account-inactive, .activation-sent {
+    margin-bottom: 1em;
+}
+
+.simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.simlink:hover {
+    text-decoration: none;
+}
+
 .passwords-mismatch {
     margin-top: 5px;
 }

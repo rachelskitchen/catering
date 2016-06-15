@@ -3,6 +3,8 @@
     <ul class="profile-form font-size2 text-center">
         <li class="required">
             <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" autocorrect="off" autocapitalize="none">
+            <div class="account-inactive field-description attention-text font-size6"><%= _lp.PRIFILE_ACCOUNT_INACTIVE %> <span class="resend-activation simlink"><%= _lp.PROFILE_RESEND_ACTIVATION %></span></div>
+            <div class="activation-sent field-description attention-text font-size6"><%= _lp.PROFILE_ACTIVATION_SENT %></div>
         </li>
         <li class="required">
             <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="pwd ios-safari-caret input-colors">
