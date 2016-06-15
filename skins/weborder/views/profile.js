@@ -120,7 +120,7 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
-   var ProfileEditView =  App.Views.CoreProfileView.CoreProfileEditView.extend({
+    var ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView.extend({
         bindings: {
             '.update-btn': 'classes: {disabled: updateBtn_disabled}, text: select(ui_show_response, _lp_PROFILE_UPDATE_SUCCESSFUL, _lp_UPDATE)'
         }

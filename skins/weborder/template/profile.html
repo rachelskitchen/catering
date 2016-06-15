@@ -16,6 +16,8 @@
         <li>
             <label for="profile-sign-in-email" class="label text-left optional-text required"><%= _lp.PROFILE_EMAIL_ADDRESS %></label>
             <input type="email" id="profile-sign-in-email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
+            <div class="account-inactive attention-text text-left"><%= _lp.PRIFILE_ACCOUNT_INACTIVE %> <span class="resend-activation simlink"><%= _lp.PROFILE_RESEND_ACTIVATION %></span></div>
+            <div class="activation-sent attention-text text-left"><%= _lp.PROFILE_ACTIVATION_SENT %></div>
         </li>
         <li>
             <label for="profile-sign-in-pwd" class="label text-left optional-text required"><%= _lp.PROFILE_PASSWORD %></label>
