@@ -27,7 +27,7 @@ define(["products_view"], function(products_view) {
         tagName: 'li',
         className: 'product-item',
         bindings: {
-            ':el': 'attr: {tabindex: 0}'
+            ':el': 'attr: {tabindex: 0}, classes: {hide: not(filterResult)}'
         }
         // showModifiers: function() {
         //     var myorder = new App.Models.Myorder(),

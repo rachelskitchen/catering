@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(['products'], function() {
+define(['products', 'filters'], function() {
     'use strict';
 
     /**
@@ -111,13 +111,77 @@ define(['products'], function() {
              * @type {string}
              * @default ''
              */
-            name: ''
+            name: '',
+            /**
+             * Attributes filters.
+             * @type {App.Collections.Filters}
+             * @default null
+             */
+            filters: null
         },
         /**
-         * Initializes `products` attribute as new instance of App.Collections.Products.
+         * Initializes `products` attribute as new instance of App.Collections.Products and `filters` attribute as new instance of App.Collections.Filters.
          */
         initialize: function() {
-            this.set('products', new App.Collections.Products());
+            var products = new App.Collections.Products(),
+                filters = new App.Collections.Filters();
+            this.set('products', products);
+            this.set('filters', filters);
+            this.listenTo(products, 'reset', this.updateFilters);
+        },
+        /**
+         * Updates `filters` collection depending on `attribute1`, `attribute2` values of products.
+         */
+        updateFilters: function() {
+            var products = this.get('products'),
+                attr1 = products.getAttributeValues(1),
+                attr2 = products.getAttributeValues(2),
+                filters = this.get('filters'),
+                filtersData = [],
+                prop, filterItem;
+
+            // process attribute1 values
+            for (prop in attr1) {
+                filtersData.push({
+                    title: prop,
+                    optional: true,
+                    filterItems: attr1[prop].map(mapFilterItem.bind(window, 'attribute1' + prop)),
+                    compare: function(prop, product, filterItem) {
+                        product = product.toJSON();
+                        return product.attribute_1_enable && product.attribute_1_name === prop
+                                && product.attribute_1_values.indexOf(filterItem.get('value')) > -1;
+                    }.bind(window, prop)
+                });
+            }
+
+            // process attribute2 values
+            for (prop in attr2) {
+                filtersData.push({
+                    title: prop,
+                    optional: true,
+                    filterItems: attr2[prop].map(mapFilterItem.bind(window, 'attribute1' + prop)),
+                    compare: function(prop, product, filterItem) {
+                        product = product.toJSON();
+                        return product.attribute_2_enable && product.attribute_2_name === prop
+                            && product.attribute_2_values.indexOf(filterItem.get('value')) > -1;
+                    }.bind(window, prop)
+                });
+            }
+
+            filters.reset();
+            filters.setData(filtersData);
+
+            filters.invalid = products.models;
+            filters.valid = [];
+            filters.applyFilters('invalid')
+
+            function mapFilterItem(uprefix, item) {
+                return {
+                    value: item,
+                    title: item,
+                    uid: btoa(uprefix + item)
+                };
+            }
         }
     });
 

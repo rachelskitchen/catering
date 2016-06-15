@@ -15,8 +15,8 @@
         },
         "index": {
             "css": ["categories", "filters", "sort"],
-            "views": ["products", "filters", "tree", "sort"],
-            "templates": ["products", "filters", "tree", "sort"],
+            "views": ["products", "sort", "sidebar"],
+            "templates": ["products", "filters", "tree", "sort", "sidebar"],
             "core": ["tree"]
         },
         "about": {
