@@ -1273,3 +1273,8 @@ span.cancel-input:before {
 #popup_message[id] {
     padding: 0;
 }
+
+.captcha_container {
+    min-height: 60px;
+    margin-bottom: 10px;
+}

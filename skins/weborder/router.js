@@ -427,11 +427,12 @@ define(["main_router"], function(main_router) {
                     mod: 'Card',
                     model: rewardsCard,
                     customer: customer,
-                    className: 'rewards-info text-left'
+                    className: 'rewards-info text-left',
+                    cache_id: true
                 });
             });
 
-            // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
+           // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
             this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
                 App.Data.mainModel.trigger('loadStarted');
                 App.Data.myorder.rewardsCard.getRewards();
@@ -611,8 +612,6 @@ define(["main_router"], function(main_router) {
                 var categories = App.Data.categories,
                     dfd = $.Deferred(),
                     self = this;
-
-                App.Views.TotalView.TotalMainView.prototype.integrity_test();
 
                 // load content block for categories
                 if (!categories.receiving) {

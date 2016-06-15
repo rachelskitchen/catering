@@ -72,11 +72,8 @@ define(["backbone"], function(Backbone) {
          * It updates `captchaImage`, `captchaKey` attributes.
          */
         loadCaptcha: function() {
-            var self = this;
-            Backbone.$.getJSON('/weborders/captcha/?establishment=' + App.Data.settings.get('establishment'), {}, function(json) {
-                self.set('captchaImage', json.captcha_image);
-                self.set('captchaKey', json.captcha_key);
-            });
+            this.set('captchaKey', App.Settings.recaptcha_site_key);
+            this.set('captchaValue', '');
         }
     });
 });

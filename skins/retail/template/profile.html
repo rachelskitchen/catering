@@ -252,17 +252,7 @@
     <div>
         <input type="text" id="cardNumber" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input" value="<%= cardNumber %>" min="0">
     </div>
-    <div>
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret input-colors">
-    </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="flat-btn btn-reload" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
-    </div>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_reward_card_selection-template">
@@ -295,17 +285,7 @@
     <div>
         <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input rewards-input">
     </div>
-    <div>
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input rewards-captcha-input ios-safari-caret input-colors">
-    </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img src="" alt="" width="100%" height="100%" class="captcha-image">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="flat-btn btn-reload update-captcha" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
-    </div>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_payment_cvv-template">

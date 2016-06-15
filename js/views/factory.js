@@ -88,9 +88,14 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
             }
             this.render();
             this.applyBindings();
-            App.Data.devMode && this.$el.attr("data-tmpl", this.name + "_" + this.mod + "-template");
-            App.Data.devMode && this.$el.attr("data-view", this.options.dbgClassName);
+            App.Data.devMode && this.$el.attr("x-tmpl", this.name + "_" + this.mod + "-template");
+            App.Data.devMode && this.$el.attr("x-view", this.options.dbgClassName);
             App.Data.devMode && (this.dbgClassName = this.options.dbgClassName);
+            if (App.Data.devMode) {
+                var time = (new Date).getTime();
+                this.$el.attr("x-time", time);
+                App.dbgView[time] = this;
+            }
         },
         render: function() {
             this.$el.html(this.template(this.model ? (this.model.toJSON ? this.model.toJSON() : this.model) : undefined));

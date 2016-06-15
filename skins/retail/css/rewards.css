@@ -29,6 +29,11 @@
     vertical-align: middle;
 }
 
+.rewards-info .captcha_container {
+    margin-left: 40px;
+    margin-top: 10px;
+}
+
 .rewards-info .input_beauty {
     position: relative;
     top: 0;
@@ -48,14 +53,6 @@
     margin: 24px 0 12px 111px;
     font-size: 8px;
     position: relative;
-}
-
-.rewards-info .captcha-spinner {
-    width: 100%;
-    height: 100%;
-    position: absolute !important;
-    top: 0;
-    left: 0;
 }
 
 .submit-card, .apply-reward {
