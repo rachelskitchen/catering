@@ -450,7 +450,8 @@ define(["backbone", "async"], function(Backbone) {
                         "stanford":false,
                         "braintree":false,
                         "globalcollect":false
-                    }
+                    },
+                    recaptcha_site_key: '6LcTkCETAAAAAO-aSGuRIl6Habqu3f0s8WeAvV5R'
                 },
                 load = $.Deferred();
 
@@ -525,6 +526,7 @@ define(["backbone", "async"], function(Backbone) {
                             // add the delta in ms. between server and client times set:
                             settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
+                            settings_system.recaptcha_load = $.Deferred();
 
                             // fix for bug 7233
                             if(settings_system.delivery_for_online_orders) {
@@ -731,6 +733,22 @@ define(["backbone", "async"], function(Backbone) {
                         }
                     });
                 });
+        },
+        load_google_captcha: function() {
+            var set_sys = this.get("settings_system");
+            if (set_sys.recaptcha_load.state() == 'resolved') {
+                return set_sys.recaptcha_load;
+            }
+            if (!window.onloadCaptchaLibrary) {
+                window.onloadCaptchaLibrary = function() {
+                    set_sys.recaptcha_load.resolve();
+                }
+            }
+            require(["https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadCaptchaLibrary&hl=" + App.Data.curLocale], function() {
+                return;
+            });
+
+            return set_sys.recaptcha_load;
         },
         /**
          * Gets payment processor config for current skin.

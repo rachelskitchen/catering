@@ -93,6 +93,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 if (needGoogleMaps)
                     settings.load_geoloc();
 
+                settings.load_google_captcha();
+
                 // update session history state-object
                 this.updateState(true);
             });

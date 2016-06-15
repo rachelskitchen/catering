@@ -8,7 +8,7 @@
         "main": {
             "css": [ "main", "header", "footer", "jquery.smartbanner", "profile", "card"],
             "model": ["main", "header", "footer"],
-            "templates": ["main", "header", "footer", "profile"],
+            "templates": ["main", "header", "footer", "profile", "rewards"],
             "views": ["main", "header", "products", "footer", "profile"],
             "core": ["geopoint", "stanfordcard", "giftcard", "customers", "payments", "rewards", "rewards_view", "payment_methods"],
             "js" : ["jquery.smartbanner"]

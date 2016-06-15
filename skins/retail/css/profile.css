@@ -209,37 +209,10 @@
     text-align: left;
 }
 
-.profile-edit .gift-cards-box .captcha_wrap ,
-.profile-edit .reward-cards-box .captcha_wrap{
-    display: inline-block;
-    vertical-align: middle;
-    width: 110px;
-    height: 50px;
-}
-.profile-edit .gift-cards-box .captcha-spinner {
-    top: 37px;
-    left: 10px;
-}
-.profile-edit .gift-cards-box .ui-spinner,
-.profile-edit .reward-cards-box .ui-spinner {
-    width: 50px;
-    height: 50px;
-}
-.profile-edit .reward-cards-box .ui-spinner {
-    top: -15px;
-}
-
 .profile-edit .gift-cards-box .new_gift_card,
 .profile-edit .reward-cards-box .new_reward_card {
     text-align: left;
     margin-bottom: 10px;
-}
-
-.profile-edit .flat-btn.btn-reload {
-    font-size: 12px;
-    padding: 5px 15px;
-    text-align: center;
-    margin-left: 5px;
 }
 
 .profile-edit .select-wrapper {

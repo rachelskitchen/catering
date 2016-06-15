@@ -30,20 +30,11 @@ define(["factory", "giftcard_view"], function(factory) {
         mod: 'main',
         bindings: _.extend({}, App.Views.CoreGiftCardView.CoreGiftCardMainView.prototype.bindings, {
             '.number-input': 'value: number, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, restrictInput: "0123456789", kbdSwitcher: "numeric", pattern: /^(\\d{0,15})$/',
-            '.captcha-input': 'value: captchaValue, events:["keyup", "blur", "touchend"], attr: {readonly: validated}, pattern: /^\\w{0,4}$/',
-            '.btn-reload': 'classes: {disabled: validated}',
             '.cancel-input': 'toggle: validated',
-            '.captcha_input_line': 'classes: {hide: validated}',
             '.captcha_container': 'classes: {hide: validated}',
             '.card_title': 'text:select(validated, _lp_STANFORDCARD_TITLE_INFO, _lp_STANFORDCARD_TITLE)'
         }),
         events: {
-            'click .btn-reload': 'updateCaptcha',
-            'keydown .btn-reload': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.updateCaptcha();
-                }
-            },
             'click .cancel-input': 'reset'
         },
         initialize: function() {
@@ -53,7 +44,7 @@ define(["factory", "giftcard_view"], function(factory) {
         },
         reset: function() {
             this.model.reset();
-            this.updateCaptcha();
+            this.model.trigger("updateCaptcha");
         },
         removeFromDOMTree: function() {
             this.updateCartTotals();
@@ -139,7 +130,7 @@ define(["factory", "giftcard_view"], function(factory) {
         mod: 'reload',
         initialize: function() {
             var model = this.model.toJSON();
-            this.ignoreUpdateCaptcha = model.captchaImage && model.captchaKey && model.captchaValue;
+            this.ignoreUpdateCaptcha = model.captchaKey && model.captchaValue;
             App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
             delete this.ignoreUpdateCaptcha;
         },

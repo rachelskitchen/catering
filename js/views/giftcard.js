@@ -24,48 +24,25 @@ define(["backbone", "factory"], function(Backbone) {
     'use strict';
 
     App.Views.CoreGiftCardView = {};
-
     App.Views.CoreGiftCardView.CoreGiftCardMainView = App.Views.FactoryView.extend({
         name: 'giftcard',
         mod: 'main',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'updateCaptcha', this.updateCaptcha, this);
-            this.updateCaptcha();
+
+            var view = App.Views.GeneratorView.create('CoreRecaptcha', {
+                    model: this.model,
+                    mod: 'Main'}/*,
+                    'CoreRecaptcha' + this.name + this.mod*/);
+            this.$('.recaptcha_view').append(view.el);
+            this.subViews.push(view);
         },
         bindings: {
             '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
-            '.captcha-input': 'value: captchaValue, events:["input"]',
-            'img.captcha': 'updateCaptcha: url',
-            '#id_captcha_key': 'value: captchaKey',
-            '#id_captcha_value': 'value: captchaValue, events: ["input"]'
         },
         events: {
-            'click .btn-reload': 'updateCaptcha',
-            'keydown .btn-reload': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.updateCaptcha();
-                }
-            }
         },
         computeds: {
-            url: {
-                deps: ['captchaImage', '_settings_host'],
-                get: function(captchaImage, _settings_host) {
-                    if(captchaImage) {
-                        return _settings_host + captchaImage;
-                    } else {
-                        return '';
-                    }
-                }
-            }
-        },
-        updateCaptcha: function() {
-            this.removeCaptchaSpinner();
-            this.createCaptchaSpinner();
-            this.model.set('captchaImage', '');
-            this.model.set('captchaValue', '');
-            this.model.loadCaptcha();
         },
         render: function() {
             var cardNumber, model = {}, self = this;
@@ -75,7 +52,7 @@ define(["backbone", "factory"], function(Backbone) {
 
             var captcha = this.$('#id_captcha_value');
             inputTypeMask(captcha, /^\w{0,4}$/, ''); //#14495 bug
-            cardNumber = this.$('.number');
+            cardNumber = this.$('.number-input');
             if (cssua.userAgent.mobile) {
                 var ios_version_old = false;
                 if (cssua.userAgent.ios && cssua.userAgent.ios.substr(0, 1) == 6) {
@@ -104,16 +81,6 @@ define(["backbone", "factory"], function(Backbone) {
                     }
                 }
             }
-        },
-        createCaptchaSpinner: function() {
-            this.$('.captcha').hide();
-            this.$('.captcha-spinner').spinner();
-            this.captchaSpinner = this.$('.ui-spinner');
-        },
-        removeCaptchaSpinner: function() {
-            this.$('.captcha').show();
-            this.captchaSpinner && this.captchaSpinner.remove();
-            delete this.captchaSpinner;
         }
     });
 

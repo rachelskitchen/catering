@@ -283,18 +283,7 @@
 <script type="text/template" id="profile_giftcard-template">
     <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
     <input type="text" id="cardNumber" class="number number-input input" min="0">
-    <div class="captcha_container text-center fl-left">
-        <div class="captcha_wrap">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="btn-reload primary-text link" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></div>
-    </div>
-    <div class="captcha-box">
-        <div class="label required optional-text"><%= _lp.GIFTCARD_CAPTCHA %></div>
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" class="captcha-input ios-safari-caret input">
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-    </div>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_reward_card_selection-template">
@@ -320,18 +309,7 @@
 <script type="text/template" id="profile_rewardcard-template">
     <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
     <input type="text" class="number number-input rewards-input input">
-    <div class="captcha_container text-center fl-left">
-        <div class="captcha_wrap">
-            <img src="" alt="" width="100%" height="100%" class="captcha-image">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="btn-reload update-captcha primary-text link" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></div>
-    </div>
-    <div class="captcha-box">
-        <div class="label required optional-text"><%= _lp.GIFTCARD_CAPTCHA %></div>
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" class="captcha-input rewards-captcha-input ios-safari-caret input">
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-    </div>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_payment_cvv-template">

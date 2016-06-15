@@ -272,36 +272,12 @@
     top: 2px;
 }
 
-.profile-edit .captcha_wrap {
-    width: 88px;
-    height: 38px;
-    font-size: 10px;
-    margin-bottom: 5px;
-    position: relative
-}
-
-.profile-edit .captcha-spinner {
-    position: absolute !important;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-}
-
-.profile-edit .btn-reload {
-    font-size: 13px;
-}
-
 .profile-edit .new-card {
     margin-top: 13px;
 }
 
 .profile-edit .captcha_container {
-    padding: 16px 0px 0 10px;
-}
-
-.profile-edit .captcha-box {
-    margin-left: 108px;
+    padding: 16px 0px 0 3px;
 }
 
 .profile-edit .rewards-title {

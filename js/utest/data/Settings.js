@@ -215,7 +215,8 @@ define([], function() {
                 "promo_message": null,
                 "show_modifiers_description": false,
                 "dining_options": [0, 1, 2, 7, 3, 4, 6],
-                "geolocation_load": {}
+                "geolocation_load": {},
+                "recaptcha_load": {}
             },
             "settings_directory": {
                 "delivery_filter":true,
