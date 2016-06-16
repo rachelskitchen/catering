@@ -44,6 +44,7 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
             this.model.getPlans().then(myorder.trigger.bind(myorder, 'hideSpinner'));
         },
         showErrorMsg: function(msg) {
+            this.model.trigger("onResetData");
             App.Data.errors.alert(msg);
         }
     });

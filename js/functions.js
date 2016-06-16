@@ -1433,6 +1433,12 @@ var PaymentProcessor = {
             processor.handlePaymentDataRequest(myorder, data);
         }
     },
+    handlePaymentRequestFailure: function(payment_type, data) {
+        var processor = this.getPaymentProcessor(payment_type, data);
+        if (processor.handlePaymentRequestFailure) {
+            processor.handlePaymentRequestFailure(data);
+        }
+    },
     // Bug #25585
     setPaymentData: function() {
         setData(App.Data.router.getUID() + '.paymentData', App.Data.get_parameters);
@@ -2177,11 +2183,15 @@ var GiftCardPaymentProcessor = {
         } else {
             payment_info.cardInfo = {
                 cardNumber: $.trim(giftcard.cardNumber),
-                captchaKey: giftcard.captchaKey,
                 captchaValue: giftcard.captchaValue
             };
         }
         return payment_info;
+    },
+    handlePaymentRequestFailure: function(data) {
+        if (data.errorMsg.indexOf("Invalid gift card") != -1) {
+            App.Data.giftcard.trigger("onResetData");
+        }
     }
 };
 
