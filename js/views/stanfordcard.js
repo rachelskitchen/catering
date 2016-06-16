@@ -128,15 +128,6 @@ define(["factory", "giftcard_view"], function(factory) {
     App.Views.CoreStanfordCardView.CoreStanfordCardReloadView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView.extend({
         name: 'stanfordcard',
         mod: 'reload',
-        initialize: function() {
-            var model = this.model.toJSON();
-            this.ignoreUpdateCaptcha = model.captchaKey && model.captchaValue;
-            App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.initialize.apply(this, arguments);
-            delete this.ignoreUpdateCaptcha;
-        },
-        updateCaptcha: function() {
-            !this.ignoreUpdateCaptcha && App.Views.CoreStanfordCardView.CoreStanfordCardMainView.prototype.updateCaptcha.apply(this, arguments);
-        },
         updateCartTotals: new Function() // override parent's method to avoid myorder.update_cart_total() calling
     });
 

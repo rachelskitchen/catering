@@ -975,11 +975,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         onUpdate: function() {
             // Saving Gift Cards data
-            var clone;
+            var clone, req, reqRewards, self = this;
             this.resetUpdateStatus();
             if (this.newGiftCard.get('cardNumber')) {
                 clone = this.newGiftCard.clone();
-                this.addCardToServer(clone);
+                req = this.addCardToServer(clone);
+                if (req) {
+                    req.always(function(){
+                        self.newGiftCard.trigger("onResetData");
+                    });
+                }
             }
 
             // Saving Credit Cards data
@@ -988,7 +993,12 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             // Saving Reward Cards data
             if (this.newRewardCard.get('number')) {
                 clone = this.newRewardCard.clone();
-                this.saveRewardCard(clone);
+                reqRewards = this.saveRewardCard(clone);
+                if (reqRewards) {
+                    reqRewards.always(function(){
+                        self.newRewardCard.trigger("onResetData");
+                    });
+                }
             }
         },
         saveCreditCard: function()
@@ -1029,6 +1039,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                     }
 
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                return req;
             }
         },
         saveRewardCard: function(rewardcard) {
@@ -1050,6 +1061,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 }).error(function(){
                     onError();
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                return req;
             }
 
             function onError(errorMsg) {

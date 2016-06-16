@@ -193,6 +193,7 @@ define(["backbone", "captcha"], function(Backbone) {
                             break;
                         default:
                             self.trigger('onLinkError', data.errorMsg || 'Gift Card error');
+                            self.trigger("onResetData");
                     }
                 },
                 error: new Function()           // to override global ajax error handler

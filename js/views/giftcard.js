@@ -32,17 +32,12 @@ define(["backbone", "factory"], function(Backbone) {
 
             var view = App.Views.GeneratorView.create('CoreRecaptcha', {
                     model: this.model,
-                    mod: 'Main'}/*,
-                    'CoreRecaptcha' + this.name + this.mod*/);
+                    mod: 'Main'});
             this.$('.recaptcha_view').append(view.el);
             this.subViews.push(view);
         },
         bindings: {
             '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
-        },
-        events: {
-        },
-        computeds: {
         },
         render: function() {
             var cardNumber, model = {}, self = this;
