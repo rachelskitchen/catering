@@ -357,8 +357,8 @@ define(["backbone", "factory"], function(Backbone) {
                 App.Data.errors.alert(_loc.PROFILE_LOGIN_ERROR);
             });
 
-            this.listenTo(customer, 'onNotActivatedUser', function() {
-                App.Data.errors.alert(_loc.PROFILE_USER_NOT_ACTIVATED);
+            this.listenTo(customer, 'onResendActivationError', function(msg) {
+                App.Data.errors.alert(_loc.PROFILE_RESEND_ACTIVATION_ERROR);
             });
 
             this.listenTo(customer, 'onLoginError', function(msg) {
@@ -382,22 +382,7 @@ define(["backbone", "factory"], function(Backbone) {
             });
 
             this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
-                if (_.isObject(msg)) {
-                    var messages = [];
-
-                    _.each(msg, function(message) {
-                        if (_.isObject(message)) {
-                            for (var i in message) {
-                                messages.push( message[i] );
-                            }
-                        }
-                        else {
-                            messages.push( message.toString() );
-                        }
-                    });
-
-                    App.Data.errors.alert(messages.length ? messages.join(' ') : null);
-                }
+                App.Data.errors.alert(prepareMessage(msg));
             });
 
             this.listenTo(customer, 'onPasswordInvalid', function() {
@@ -458,6 +443,25 @@ define(["backbone", "factory"], function(Backbone) {
                         }
                     });
                 });
+            }
+
+            function prepareMessage(msg) {
+                var messages = [];
+
+                if (_.isObject(msg)) {
+                    _.each(msg, function(message) {
+                        if (_.isObject(message)) {
+                            for (var i in message) {
+                                messages.push( message[i] );
+                            }
+                        }
+                        else {
+                            messages.push( message.toString() );
+                        }
+                    });
+                }
+
+                return messages.length ? messages.join(' ') : null;
             }
         },
         /**
@@ -855,6 +859,7 @@ define(["backbone", "factory"], function(Backbone) {
                     loginAction: login,
                     signupAction: register,
                     resetAction: resetPWD,
+                    resendAction: resendActivation,
                     logout_link: logout,
                     settings_link: new Function,
                     payments_link: profilePayments,
@@ -893,6 +898,11 @@ define(["backbone", "factory"], function(Backbone) {
                 customer.resetPassword()
                         .done(customer.trigger.bind(customer, 'hidePanel'))
                         .always(hideSpinner);
+            }
+
+            function resendActivation() {
+                showSpinner();
+                customer.resendActivation().always(hideSpinner);
             }
 
             function profileEdit() {
@@ -1162,13 +1172,16 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         loginContent: function() {
-            var self = this;
+            var self = this,
+                mainModel = App.Data.mainModel,
+                customer = App.Data.customer;
 
             return {
                 modelName: 'Profile',
                 mod: 'LogIn',
                 model: App.Data.customer,
                 loginAction: loginAction,
+                resendAction: resendActivation,
                 createAccount: this.navigate.bind(this, 'signup', true),
                 guestCb: this.navigate.bind(this, 'index', true),
                 forgotPasswordAction: this.navigate.bind(this, 'profile_forgot_password', true),
@@ -1176,12 +1189,16 @@ define(["backbone", "factory"], function(Backbone) {
             };
 
             function loginAction() {
-                var mainModel = App.Data.mainModel,
-                    customer = App.Data.customer;
                 mainModel.trigger('loadStarted');
                 customer.login()
                         .done(self.navigate.bind(self, 'index', true))
                         .fail(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+
+            function resendActivation() {
+                mainModel.trigger('loadStarted');
+                customer.resendActivation()
+                        .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         },
         signupContent: function() {

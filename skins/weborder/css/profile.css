@@ -82,6 +82,21 @@
     line-height: normal;
 }
 
+#profile-panel .attention-text {
+    padding: 2px 14px 0;
+    text-align: left;
+    font-size: 12px;
+}
+
+#profile-panel .simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#profile-panel .simlink:hover {
+    text-decoration: none;
+}
+
 #profile-panel .forgot-password {
     margin: 0 15px 10px;
     font-size: 14px;

@@ -1464,6 +1464,83 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             });
         },
         /**
+         * Sends activation link to a customer's email
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/resend-activation-customer/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     data: {
+         *         "email": <email address>
+         *         "password": <password>
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful reset:
+         * ```
+         * Status: 200
+         * ```
+         * The model emits `onResendActivationSuccess` event in this case.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["This field is required."]
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["Enter a valid email address."]
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["Ensure this field has no more than 254 characters."]
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * ```
+         * Status: 404
+         * {
+         *     "detail": "Customer object with such email and password does not exist."
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        resendActivation: function() {
+            var attrs = this.toJSON();
+
+            return Backbone.$.ajax({
+                url: attrs.serverURL + "/customers/resend-activation-customer/",
+                method: "POST",
+                context: this,
+                data: {
+                    email: attrs.email,
+                    password: attrs.password
+                },
+                success: function(data) {
+                    this.trigger('onResendActivationSuccess');
+                },
+                error: function(jqXHR) {
+                    this.trigger('onResendActivationError', getResponse());
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
          * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
          * `country` -> `country_code`, `state`/`province` -> `region`.
          *
