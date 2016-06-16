@@ -195,7 +195,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
 
             if (this.model.get('selected') == false) {
-                this.model.unset('free_amount');
+                this.model.set('free_amount', undefined);
                 this.model.unset('max_price_amount');
             }
         },

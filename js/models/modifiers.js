@@ -222,7 +222,7 @@ define(["backbone"], function(Backbone) {
          * Unsets `free_amount` attribute.
          */
         removeFreeModifier: function() {
-            this.unset('free_amount');
+            this.set('free_amount', undefined);
         },
         /**
          * @returns {number} If `qty_type` is `0` (full) returns `1`. Otherwise, returns `0.5`.
@@ -595,7 +595,7 @@ define(["backbone"], function(Backbone) {
             // remove modifier from free selected
             if(!needAdd && index > -1) {
                 selected.splice(index, 1);
-                model.unset('free_amount');
+                model.set('free_amount', undefined);
                 changed = true;
             }
 
@@ -653,7 +653,7 @@ define(["backbone"], function(Backbone) {
                         model.set('free_amount', round_monetary_currency(delta * model.get('price'))*1 );
                     }
                     else {
-                        model.unset('free_amount');
+                        model.set('free_amount', undefined);
                     }
                 }
             });
@@ -671,7 +671,7 @@ define(["backbone"], function(Backbone) {
                     mdf_price_sum = model.getSum();
 
                 if(amount == 0)
-                    return model.unset('free_amount');
+                    return model.set('free_amount', undefined);
 
                 if(amount < mdf_price_sum) {
                     model.set('free_amount', round_monetary_currency(mdf_price_sum - amount)*1);
