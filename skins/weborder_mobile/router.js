@@ -80,6 +80,7 @@ define(["main_router"], function(main_router) {
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
+        use_google_captcha: true, //force to load google captcha library on startup
         lastHash: null,
         rewardsPageReferrerHash: null,
         initialize: function() {
