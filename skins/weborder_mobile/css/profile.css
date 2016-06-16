@@ -54,6 +54,26 @@
     margin-top: -0.7em;
 }
 
+.field-description {
+    display: block;
+    padding: 0 2%;
+    margin-top: -1em;
+    text-align: left;
+}
+
+.account-inactive, .activation-sent {
+    margin-bottom: 1em;
+}
+
+.simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.simlink:hover {
+    text-decoration: none;
+}
+
 .passwords-mismatch {
     padding: 0 2%;
     margin-top: -1em;

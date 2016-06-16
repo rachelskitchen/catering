@@ -63,6 +63,21 @@
     padding: 0;
 }
 
+#profile-panel .simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#profile-panel .simlink:hover {
+    text-decoration: none;
+}
+
+#profile-panel .field-description {
+    display: block;
+    padding: 2px 14px 0;
+    font-size: 10px;
+}
+
 #profile-panel .phone-privacy,
 #profile-panel .passwords-mismatch {
     display: block;

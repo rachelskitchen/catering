@@ -87,10 +87,33 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileLogInView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'log_in',
+        initialize: function() {
+            this.listenTo(this.model, 'onNotActivatedUser', function() {
+                this.setBinding('ui_showAccountInactive', true);
+                this.setBinding('ui_showActivationSent', false);
+            });
+
+            this.listenTo(this.model, 'onResendActivationSuccess', function() {
+                this.setBinding('ui_showAccountInactive', false);
+                this.setBinding('ui_showActivationSent', true);
+            });
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
             '.email': 'value: email, events: ["input"]',
             '.pwd': 'value: password, events: ["input"]',
-            '.login-btn': 'classes: {disabled: not(allFilled)}'
+            '.login-btn': 'classes: {disabled: not(allFilled)}',
+            '.account-inactive': 'css: { display: select(ui_showAccountInactive, "", "none") }',
+            '.activation-sent': 'css: { display: select(ui_showActivationSent, "", "none") }'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    showAccountInactive: false,
+                    showActivationSent: false
+                });
+            }
         },
         computeds: {
             allFilled: {
@@ -104,7 +127,8 @@ define(["factory"], function() {
             'click .login-btn:not(.disabled)': setCallback('loginAction'),
             'click .create-btn': setCallback('createAccount'),
             'click .guest-btn': setCallback('guestCb'),
-            'click .forgot-password': setCallback('forgotPasswordAction')
+            'click .forgot-password': setCallback('forgotPasswordAction'),
+            'click .resend-activation': setCallback('resendAction')
         },
         onEnterListeners: {
             ':el': 'onEnter'
