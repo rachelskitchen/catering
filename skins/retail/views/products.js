@@ -113,7 +113,7 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'gift_card_reload',
         bindings: {
-            '.amount': 'value: monetaryFormat(price), events: ["input"], trackCaretPosition: price, restrictInput: "0123456789.,", kbdSwitcher: "float", pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
+            '.amount': 'value: monetaryFormat(price), events: ["change"], trackCaretPosition: price, restrictInput: "0123456789.,", kbdSwitcher: "float", pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
             '.card-number': 'value: gift_card_number, events: ["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
             '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}'
         },
