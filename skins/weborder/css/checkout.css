@@ -134,25 +134,7 @@
     font-size: 13px;
 }
 
-.checkout-order-details .captcha_wrap {
-    width: 88px;
-    height: 38px;
-    padding-top: 33px;
-    font-size: 10px;
-}
-
 .checkout-order-details .img {
     width: 100%;
     height: 100%;
-}
-
-.checkout-order-details .captcha-spinner {
-    top: 50%;
-}
-
-.checkout-order-details .btn-reload {
-    display: inline-block;
-    padding-top: 35px;
-    font-size: 13px;
-    vertical-align: middle;
 }

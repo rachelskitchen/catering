@@ -96,6 +96,26 @@
     margin-bottom: 15px;
 }
 
+#profile-panel .attention-text {
+    margin-top: -10px;
+    padding: 0 14px 15px;
+    text-align: left;
+    font-size: 12px;
+}
+
+#profile-panel .account-inactive {
+    white-space: nowrap;
+}
+
+#profile-panel .simlink {
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+#profile-panel .simlink:hover {
+    text-decoration: none;
+}
+
 #profile-panel .forgot-password {
     padding: 0 20px;
     font-size: 12px;
@@ -118,6 +138,8 @@
     position: absolute;
     bottom: -5px;
     left: 14px;
+    margin: 0;
+    padding: 0;
     font-size: 12px;
 }
 
@@ -272,36 +294,12 @@
     top: 2px;
 }
 
-.profile-edit .captcha_wrap {
-    width: 88px;
-    height: 38px;
-    font-size: 10px;
-    margin-bottom: 5px;
-    position: relative
-}
-
-.profile-edit .captcha-spinner {
-    position: absolute !important;
-    left: 0;
-    top: 0;
-    height: 100%;
-    width: 100%;
-}
-
-.profile-edit .btn-reload {
-    font-size: 13px;
-}
-
 .profile-edit .new-card {
     margin-top: 13px;
 }
 
 .profile-edit .captcha_container {
-    padding: 16px 0px 0 10px;
-}
-
-.profile-edit .captcha-box {
-    margin-left: 108px;
+    padding: 16px 0px 0 3px;
 }
 
 .profile-edit .rewards-title {

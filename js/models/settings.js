@@ -289,7 +289,7 @@ define(["backbone", "async"], function(Backbone) {
                 skin = params.skin || params.rvarSkin,
                 settings = this.get('settings_system'),
                 isUnknownSkin = !(skin && this.get('supported_skins').indexOf(skin) > -1),
-                defaultSkin = (settings.type_of_service == ServiceType.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
+                defaultSkin = (settings.layout_style == LayoutStyle.RETAIL) ? App.Skins.RETAIL : App.Skins.DEFAULT;
 
             // set alias to current skin
             App.skin = isUnknownSkin ? defaultSkin : skin;
@@ -350,8 +350,8 @@ define(["backbone", "async"], function(Backbone) {
                     settings_skin.img_default = (data.img_default) ? init_img(data.img_default) : "";
                     settings_skin.styles = data instanceof Object && data.styles instanceof Array ? data.styles : [];
                     settings_skin.scripts = data instanceof Object && data.scripts instanceof Array ? data.scripts : [];
-                    settings_skin.routing = data.routing;
-                    Backbone.$.extend(settings_skin.routing, self.defaults.settings_skin.routing);
+                    settings_skin.routing = self.defaults.settings_skin.routing;
+                    Backbone.$.extend(settings_skin.routing, data.routing);
                     settings_skin.color_schemes = data.color_schemes instanceof Array ? data.color_schemes : [];
                     self.set("settings_skin", settings_skin);
                     self.trigger('changeSettingsSkin');
@@ -413,13 +413,14 @@ define(["backbone", "async"], function(Backbone) {
                     order_notes_allow: true,
                     min_items: 1,
                     hide_products_description: false,
-                    color_scheme: saved_color_scheme instanceof Object ? saved_color_scheme.color_scheme : 'default',
+                    color_scheme: saved_color_scheme instanceof Object ? saved_color_scheme.color_scheme : 'Default',
                     scales: {
                         default_weighing_unit: "",
                         label_for_manual_weights: "",
                         number_of_digits_to_right_of_decimal: 0
                     },
                     type_of_service: ServiceType.TABLE_SERVICE,
+                    layout_style: LayoutStyle.RESTAURANT,
                     default_dining_option: 'DINING_OPTION_TOGO',
                     accept_discount_code: true,
                     enable_quantity_modifiers: true,
@@ -449,7 +450,8 @@ define(["backbone", "async"], function(Backbone) {
                         "stanford":false,
                         "braintree":false,
                         "globalcollect":false
-                    }
+                    },
+                    recaptcha_site_key: '6LcTkCETAAAAAO-aSGuRIl6Habqu3f0s8WeAvV5R'
                 },
                 load = $.Deferred();
 
@@ -524,6 +526,7 @@ define(["backbone", "async"], function(Backbone) {
                             // add the delta in ms. between server and client times set:
                             settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
+                            settings_system.recaptcha_load = $.Deferred();
 
                             // fix for bug 7233
                             if(settings_system.delivery_for_online_orders) {
@@ -730,6 +733,22 @@ define(["backbone", "async"], function(Backbone) {
                         }
                     });
                 });
+        },
+        load_google_captcha: function() {
+            var set_sys = this.get("settings_system");
+            if (set_sys.recaptcha_load.state() == 'resolved') {
+                return set_sys.recaptcha_load;
+            }
+            if (!window.onloadCaptchaLibrary) {
+                window.onloadCaptchaLibrary = function() {
+                    set_sys.recaptcha_load.resolve();
+                }
+            }
+            require(["https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadCaptchaLibrary&hl=" + App.Data.curLocale], function() {
+                return;
+            });
+
+            return set_sys.recaptcha_load;
         },
         /**
          * Gets payment processor config for current skin.

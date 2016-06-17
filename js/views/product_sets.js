@@ -45,7 +45,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         events: {
             'click .customize': 'customize',
             'click .checkbox': 'change',
-            'click .title': 'change'
+            'click .title_wrapper': 'change'
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity)',

@@ -17,6 +17,8 @@
         <li>
             <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
             <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
+            <div class="account-inactive field-description attention-text text-left"><%= _lp.PRIFILE_ACCOUNT_INACTIVE %> <span class="resend-activation simlink"><%= _lp.PROFILE_RESEND_ACTIVATION %></span></div>
+            <div class="activation-sent field-description attention-text text-left"><%= _lp.PROFILE_ACTIVATION_SENT %></div>
         </li>
         <li>
             <div class="label required"><%= _lp.PROFILE_PASSWORD %></div>
@@ -143,7 +145,7 @@
             <input type="text" class="zipcode ios-safari-caret input-colors">
         </li>
         <li class="default-row">
-            <label class="profile-checkbox">
+            <label class="address__default-checkbox profile-checkbox">
                 <input type="checkbox" class="address__default"><i class="input checkbox"></i> <%= _lp.PROFILE_DEFAULT_ADDRESS %>
             </label>
         </li>
@@ -262,17 +264,7 @@
     <div>
         <input type="text" id="cardNumber" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input" value="<%= cardNumber %>" min="0">
     </div>
-    <div>
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input ios-safari-caret input-colors">
-    </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img class="captcha" width="100%" height="100%">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="flat-btn btn-reload" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
-    </div>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_reward_card_selection-template">
@@ -305,17 +297,7 @@
     <div>
         <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input rewards-input">
     </div>
-    <div>
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" placeholder="<%= _lp.GIFTCARD_CAPTCHA %>" class="captcha-input rewards-captcha-input ios-safari-caret input-colors">
-    </div>
-    <div class="captcha_container">
-        <div class="captcha_wrap">
-            <img src="" alt="" width="100%" height="100%" class="captcha-image">
-            <div class="captcha-spinner"></div>
-        </div>
-        <div class="flat-btn btn-reload update-captcha" tabindex="0"> <span> <%= _lp.GIFTCARD_RELOAD %> </span> </div>
-    </div>
+    <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_payment_cvv-template">

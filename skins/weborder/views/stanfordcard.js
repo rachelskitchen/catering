@@ -25,8 +25,7 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
 
     var CoreStanfordCardMainView = App.Views.CoreStanfordCardView.CoreStanfordCardMainView.extend({
         bindings: {
-            '.btn-submit': 'classes: {disabled: any(not(number), not(captchaKey), not(captchaValue)), hide: validated}',
-            '.btn-reload': 'classes: {hide: validated}',
+            '.btn-submit': 'classes: {disabled: any(not(number), not(captchaValue)), hide: validated}',
             '.ctrl-wrapper': 'toggle: validated'
         },
         events: {
@@ -45,6 +44,7 @@ define(["factory", "stanfordcard_view"], function(factory, stanfordcard_view) {
             this.model.getPlans().then(myorder.trigger.bind(myorder, 'hideSpinner'));
         },
         showErrorMsg: function(msg) {
+            this.model.trigger("onResetData");
             App.Data.errors.alert(msg);
         }
     });

@@ -2482,6 +2482,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     case "CVV_REQUIRED_CANCELED":
                         break;
                     default:
+                        PaymentProcessor.handlePaymentRequestFailure(payment_type, data);
                         data.errorMsg = MSG.ERROR_OCCURRED + ' ' + data.errorMsg;
                         reportErrorFrm(data.errorMsg);
                 }//end of switch

@@ -20,26 +20,27 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["backbone"], function(Backbone) {
+define(["establishments_view"], function() {
     'use strict';
 
-    App.Models.HeaderModel = Backbone.Model.extend({
-        defaults: {
-            page_title: "",
-            img: App.Data.settings.get("img_path"),
-            logo: "/_blank.png", // if server returns 'logo: null' need set fake image src that doens't exist (Bug #20916)
-            business_name: "",
-            tab_index: 0,
-            promotions_available: false
+    var EstablishmentsMainView = App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView.extend({
+        events: {
+            'click .btn[name=back]': 'back',
+            'click .btn[name=proceed]': 'proceed',
+            'click .establishments': 'back',
+            'click .wnd-wrapper': 'on_wnd_wrapper_click'
         },
-        initialize: function() {
-            var settings = App.Data.settings.toJSON(),
-                settings_system = settings.settings_system;
-
-            if(settings_system instanceof Object) {
-                typeof settings_system.logo_img == 'string' && this.set('logo', addHost(settings_system.logo_img, settings.host));
-                typeof settings_system.business_name == 'string' && this.set('business_name', settings_system.business_name);
-            }
+        /**
+        * Prevent the click event pass to the .establishments div dedicated for cancel.
+        */
+        on_wnd_wrapper_click: function(event) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
         }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.EstablishmentsView = {};
+        App.Views.EstablishmentsView.EstablishmentsMainView = EstablishmentsMainView;
     });
 });

@@ -134,6 +134,10 @@
      */
     App.Settings = {};
 
+    if (App.Data.devMode) {
+        App.dbgView = {};
+    }
+
     /**
      * A simple object factory for App.Models objects
      * @param {string} type_name - the subname of the object constructor to be used
@@ -226,7 +230,7 @@
             app.get['srv'] == 'mk-dev' && (app.REVEL_HOST = 'https://mkhazov-dev.revelup.com');
             app.get['srv'] == 'as3-test' && (app.REVEL_HOST = 'https://amazon-s3-test.revelup.com');
             app.get['srv'] == '2-16' && (app.REVEL_HOST = 'https://2-16.revelup.com');
-            app.get['srv'] == '2-17' && (app.REVEL_HOST = 'https://2-17.revelup.com');
+            app.get['srv'] == '2-18' && (app.REVEL_HOST = 'https://2-18.revelup.com');
 
             // Add 'no-focus-css' class to [tabindex] element when user clicks on it.
             // This class is used for :focus CSS disabling.
@@ -434,10 +438,18 @@
         }
 
         // jquery `spinner` plugin
-        $.fn.spinner = function() {
+        $.fn.spinner = function(options) {
+            var self = this;
             this.each(addSpinner);
             if (App.Data.is_stanford_mode) {
                 this.find(".ui-spinner").addClass("stanford");
+            }
+            if (options && options.deferred) {
+                this.resourceSpinner = this.find('.ui-spinner');
+                options.deferred.always(function() {
+                    self.resourceSpinner.remove();
+                    delete self.resourceSpinner;
+                })
             }
         };
 

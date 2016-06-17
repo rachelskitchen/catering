@@ -47,12 +47,11 @@ define(["main_router"], function(main_router) {
             "confirm": "confirm",
             "maintenance": "maintenance",
             "profile_edit": "profile_edit",
-            "promotions": "promotions_list",
-            "my_promotions": "promotions_my",
             "profile_payments": "profile_payments",
             "*other": "index"
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
+        use_google_captcha: true, //force to load google captcha library on startup
         initialize: function() {
             App.Data.get_parameters = parse_get_params(); // get GET-parameters from address line
             this.bodyElement = Backbone.$('body');
@@ -319,6 +318,51 @@ define(["main_router"], function(main_router) {
             // onMap event occurs when 'Map' tab is clicked
             this.listenTo(App.Data.header, 'onMap', this.navigate.bind(this, 'map', true));
 
+            // onPromotions event occurs when 'See all Promotions' link is clicked
+            this.listenTo(App.Data.header, 'onPromotions', function() {
+                var promotions = App.Data.promotions,
+                    items,
+                    self = this;
+
+                App.Data.mainModel.trigger('loadStarted');
+
+                if (!promotions) { // promotions are not initialized if App.Settings.has_campaigns == true
+                    this.prepare('promotions', function() {
+                        promotions = self.initPromotions();
+                        openPromotions();
+                    });
+                }
+
+                else {
+                    openPromotions();
+                }
+
+                function openPromotions() {
+                    promotions.fetching.always(function() {
+                        App.Data.mainModel.trigger('loadCompleted');
+
+                        if (promotions.needToUpdate) {
+                            App.Data.mainModel.trigger('loadStarted');
+
+                            // get the order items for submitting to server
+                            items = App.Data.myorder.map(function(order) {
+                                return order.item_submit();
+                            });
+
+                            promotions
+                                .update(items, App.Data.myorder.checkout.get('discount_code'), App.Data.customer.getAuthorizationHeader())
+                                .always(App.Data.mainModel.trigger.bind(App.Data.mainModel, 'loadCompleted'));
+                        }
+
+                        App.Data.mainModel.set('popup', {
+                            modelName: 'Promotions',
+                            mod: 'List',
+                            collection: promotions
+                        });
+                    });
+                }
+            });
+
             //onBack event occurs when 'Back' buttons is clicked
             this.listenTo(App.Data.header, 'onBack', function() {
                 switch (App.Data.header.get('tab_index')) {
@@ -384,11 +428,12 @@ define(["main_router"], function(main_router) {
                     mod: 'Card',
                     model: rewardsCard,
                     customer: customer,
-                    className: 'rewards-info text-left'
+                    className: 'rewards-info text-left',
+                    cache_id: true
                 });
             });
 
-            // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
+           // onGetRewards event occurs when Rewards Card's 'Submit' button is clicked on 'Rewards Card Info' popup
             this.listenTo(App.Data.myorder.rewardsCard, 'onGetRewards', function() {
                 App.Data.mainModel.trigger('loadStarted');
                 App.Data.myorder.rewardsCard.getRewards();
@@ -539,13 +584,28 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.removeHTMLandCSS.apply(this, arguments);
             this.bodyElement.children('.main-container').remove();
         },
+        /**
+         * Prepares promotions assets and initializes the promotions collection if needed.
+         */
+        preparePromotions: function() {
+            if (App.Settings.has_campaigns) {
+                App.Data.header.set('promotions_available', true);
+            }
+            else if (!App.Data.promotions) {
+                this.prepare('promotions', function() {
+                    var promotions = App.Data.promotions || this.initPromotions();
+
+                    this.listenTo(promotions, 'add remove reset', function() {
+                        App.Data.header.set('promotions_available', !!promotions.length);
+                    });
+                });
+            }
+        },
         index: function() {
             this.prepare('index', function() {
                 var categories = App.Data.categories,
                     dfd = $.Deferred(),
                     self = this;
-
-                App.Views.TotalView.TotalMainView.prototype.integrity_test();
 
                 // load content block for categories
                 if (!categories.receiving) {
@@ -593,6 +653,8 @@ define(["main_router"], function(main_router) {
                         }
                     ]
                 });
+
+                this.preparePromotions();
 
                 dfd.then(function() {
                     self.change_page(function() {
@@ -697,6 +759,8 @@ define(["main_router"], function(main_router) {
                 });
 
                 this.change_page();
+
+                this.preparePromotions();
             });
         },
         /**
@@ -774,16 +838,6 @@ define(["main_router"], function(main_router) {
             } else {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
-        },
-        promotions_list: function() {
-            // @TODO
-
-            this.change_page();
-        },
-        promotions_my: function() {
-            // @TODO
-
-            this.change_page();
         },
         profile_payments: function() {
             App.Data.header.set('tab_index', null);

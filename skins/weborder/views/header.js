@@ -36,7 +36,8 @@ define(["backbone", "factory"], function() {
             '.menu': 'classes: {active: strictEqual(tab_index, 0)}',
             '.about': 'classes: {active: strictEqual(tab_index, 1)}',
             '.map': 'classes: {active: strictEqual(tab_index, 2)}',
-            '.title': 'text: business_name'
+            '.title': 'text: business_name',
+            '.promotions-link': 'toggle: promotions_available'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -53,7 +54,8 @@ define(["backbone", "factory"], function() {
         events: {
             'click .menu': onClick('onMenu'),
             'click .about': onClick('onAbout'),
-            'click .map': onClick('onMap')
+            'click .map': onClick('onMap'),
+            'click .promotions-link': onClick('onPromotions')
         }
     });
 

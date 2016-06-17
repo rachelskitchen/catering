@@ -2,7 +2,8 @@ define([], function() {
     return {
         "DINING_OPTION_NAME": {
             "DINING_OPTION_TOGO": "Atsiimti parduotuvėje",
-            "DINING_OPTION_SHIPPING": "Užsakymo siuntimas"
+            "DINING_OPTION_SHIPPING": "Užsakymo siuntimas",
+            "DINING_OPTION_OTHER": "Kita"
         },
         "CARD_TITLE": "Įveskite savo kortelės informaciją",
         "CARD_FIRST_NAME": "Vardas",

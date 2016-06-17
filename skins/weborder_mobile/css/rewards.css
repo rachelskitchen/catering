@@ -7,26 +7,6 @@
     width: 100%;
 }
 
-.rewards-info .captcha {
-    display: inline-block;
-    width: 30em;
-    height: 12em;
-    vertical-align: middle;
-    position: relative;
-}
-
-.rewards-info .captcha-image {
-    max-width: 100%;
-    max-height: 100%;
-}
-
-.rewards-info .captcha-spinner {
-    height: 100%;
-    position: absolute !important;
-    top: 0;
-    left: 50%;
-}
-
 .rewards-info .rewards-card-btn {
     display: inline-block;
     padding-left: 4em;

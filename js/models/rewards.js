@@ -365,7 +365,6 @@ define(['backbone', 'captcha'], function(Backbone) {
                             number: number
                         }
                     },
-                    captchaKey: captchaKey,
                     captchaValue: captchaValue
                 }),
                 dataType: 'json',
@@ -546,7 +545,6 @@ define(['backbone', 'captcha'], function(Backbone) {
                 headers: authorizationHeader,
                 data: {
                     captchaValue: captchaValue,
-                    captchaKey: captchaKey
                 },
                 success: function(data) {
                     if (!_.isObject(data)) {
