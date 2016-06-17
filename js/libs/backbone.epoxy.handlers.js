@@ -331,7 +331,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             this.listenToPositionChange();
 
             function getPosition() {
-                try {console.log(el, el.selectionStart, el.selectionEnd);
+                try {
                     self.startPos = el.selectionStart;
                     self.endPos = el.selectionEnd;
                 } catch(e) {
@@ -349,7 +349,6 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 range = Math.abs(this.startPos - this.endPos),
                 diff = valueLength - prevLength,
                 pos = this.startPos + range + diff;
-console.log($el.get(0), 'set position', pos);
             this.setPosition(pos);
             this.startPos = this.endPos = pos;
             this.prevValue = value;
@@ -372,22 +371,30 @@ console.log($el.get(0), 'set position', pos);
                 return;
             }
 
-            var subViews = this.view.subViews,
-                view = App.Views.GeneratorView.create(value.name, value, value.viewId),
-                removeMethod = value.viewId ? 'removeFromDOMTree' : 'remove',
-                existingView = subViews[value.subViewIndex];
+            var subViews = this.view.subViews;
 
-            // remove view if it exists
-            existingView && existingView[removeMethod]();
+            // If binding handler creates new view inherited from EpoxyView it changes objects set that the current EpoxyBinding instance listens to.
+            // This is feature of Epoxy lib implementation.
+            // Just look at how native 'collection' handler removes and restores 'viewMap' variable.
+            //
+            // Need to create new view after the current EpoxyBinding is initialized.
+            setTimeout(function() {
+                var view = App.Views.GeneratorView.create(value.name, value, value.viewId),
+                    removeMethod = value.viewId ? 'removeFromDOMTree' : 'remove',
+                    existingView = subViews[value.subViewIndex];
 
-            // add new view to `subViews` array
-            if (typeof value.subViewIndex == 'number' && value.subViewIndex > -1) {
-                subViews[value.subViewIndex] = view;
-            } else {
-                subViews.push(view);
-            }
+                // remove view if it exists
+                existingView && existingView[removeMethod]();
 
-            $el.append(view.el);
+                // add new view to `subViews` array
+                if (typeof value.subViewIndex == 'number' && value.subViewIndex > -1) {
+                    subViews[value.subViewIndex] = view;
+                } else {
+                    subViews.push(view);
+                }
+
+                $el.append(view.el);
+            }, 0)
         }
     });
 });
