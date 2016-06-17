@@ -177,7 +177,6 @@ define(["backbone", "captcha"], function(Backbone) {
                 headers: authorizationHeader,
                 data: {
                     captchaValue: captchaValue,
-                    captchaKey: captchaKey
                 },
                 success: function(data) {
                     if (!_.isObject(data)) {
@@ -194,6 +193,7 @@ define(["backbone", "captcha"], function(Backbone) {
                             break;
                         default:
                             self.trigger('onLinkError', data.errorMsg || 'Gift Card error');
+                            self.trigger("onResetData");
                     }
                 },
                 error: new Function()           // to override global ajax error handler

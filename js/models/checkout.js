@@ -119,11 +119,10 @@ define(["backbone"], function(Backbone) {
              */
             dining_option: '',
             /**
-             * It changes when `dining_option` has changed on DINING_OPTION_ONLINE and is a dining option that was before DINING_OPTION_ONLINE.
-             * It is used for recovery user selection of Order Type.
+             * Stores the value that `dining_option` attribute had before 'DINING_OPTION_ONLINE'. It gets changed when `dining_option` gets changed to 'DINING_OPTION_ONLINE'.
              * @type {string}
              */
-            selected_dining_option: '', // It set when dining_option has changed on DINING_OPTION_ONLINE. It is used for recovery user selection of Order Type
+            selected_dining_option: '',
             /**
              * Order notes.
              * @type {string}
@@ -156,7 +155,7 @@ define(["backbone"], function(Backbone) {
             this.listenTo(this, 'change:dining_option', function(model, value) {
                 var prev = model.previousAttributes().dining_option;
                 // condifion prev != value is needed to handle cases of forced change:dining_option emissions
-                if(value === 'DINING_OPTION_ONLINE' && prev !== value) {
+                if (value === 'DINING_OPTION_ONLINE' && prev !== value) {
                     this.set('selected_dining_option', prev);
                 }
             }, this);
@@ -345,7 +344,7 @@ define(["backbone"], function(Backbone) {
                 value: ''
             },
             /**
-             * Splits `choices` on array (',' separator is used) if it is a string.
+             * Splits `choices` into an array (',' separator is used) if it is a string.
              */
             initialize: function() {
                 if (typeof this.get('choices') == 'string') {

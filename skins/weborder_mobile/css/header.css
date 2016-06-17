@@ -78,7 +78,7 @@
 }
 
 #header .btn-back-title,
-#header .btn-promotions-title {
+#header .btn-promotions__title {
     display: inline-block;
     font-weight: 200;
     vertical-align: middle;

@@ -10,7 +10,7 @@
 
 .product_set_list .combo_item .title {
     vertical-align: middle;
-    margin-bottom: 1em;
+    line-height: 1em;
 }
 
 .product_set_list .combo_item .modifier__label {
@@ -30,7 +30,7 @@
     margin-right: 0.3em;
 }
 
-.product_set_list .combo_item .input::before {
+.product_set_list .combo_item .input[checked=checked]::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;

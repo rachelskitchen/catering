@@ -2,7 +2,8 @@ define([], function() {
     return {
         "DINING_OPTION_NAME": {
             "DINING_OPTION_TOGO": "Retrait en magasin",
-            "DINING_OPTION_SHIPPING": "Envoi"
+            "DINING_OPTION_SHIPPING": "Envoi",
+            "DINING_OPTION_OTHER": "Autre"
         },
         "CARD_TITLE": "Saisir les informations de votre carte",
         "CARD_FIRST_NAME": "Prénom",

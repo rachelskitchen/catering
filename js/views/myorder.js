@@ -727,15 +727,17 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this;
         },
         next: function() {
-            var self = this,
+            var self = this, stanfordCard,
                 mainModel = App.Data.mainModel;
 
             if(this.hasPlans()) {
                 self.setBinding('state_showPlans', true);
             } else {
                 mainModel && mainModel.trigger('loadStarted');
-                this.getBinding('$stanford').getPlans(true).then(function() {
+                stanfordCard = this.getBinding('$stanford');
+                stanfordCard.getPlans(true).then(function() {
                     self.setBinding('state_showPlans', self.hasPlans());
+                    stanfordCard.trigger("onResetData");
                     mainModel && mainModel.trigger('loadCompleted');
                 });
             }

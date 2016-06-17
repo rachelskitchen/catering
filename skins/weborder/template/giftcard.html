@@ -3,14 +3,5 @@
         <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
         <input type="text" class="number number-input input size2" min="0">
     </div>
-    <div class="item">
-        <div class="label required optional-text"><%= _lp.GIFTCARD_CAPTCHA %></div>
-        <input autocomplete="off" id="id_captcha_key" name="captcha_key" type="hidden">
-        <input autocomplete="off" id="id_captcha_value" name="captcha_value" type="text" class="captcha-input input size3">
-    </div>
-    <div class="item captcha_wrap">
-        <img class="captcha img">
-        <div class="captcha-spinner"></div>
-    </div>
-    <span class="btn-reload link primary-text" tabindex="0"><%= _lp.GIFTCARD_RELOAD %></span>
+    <div class="recaptcha_view item"></div>
 </script>

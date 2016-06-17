@@ -93,6 +93,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 if (needGoogleMaps)
                     settings.load_geoloc();
 
+                if (this.use_google_captcha)
+                    settings.load_google_captcha();
+
                 // update session history state-object
                 this.updateState(true);
             });
@@ -373,8 +376,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 App.Data.errors.alert(_loc.PROFILE_LOGIN_ERROR);
             });
 
-            this.listenTo(customer, 'onNotActivatedUser', function() {
-                App.Data.errors.alert(_loc.PROFILE_USER_NOT_ACTIVATED);
+            this.listenTo(customer, 'onResendActivationError', function(msg) {
+                App.Data.errors.alert(_loc.PROFILE_RESEND_ACTIVATION_ERROR);
             });
 
             this.listenTo(customer, 'onLoginError', function(msg) {
@@ -398,22 +401,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             });
 
             this.listenTo(customer, 'onUserValidationError onUserAPIError', function(msg) {
-                if (_.isObject(msg)) {
-                    var messages = [];
-
-                    _.each(msg, function(message) {
-                        if (_.isObject(message)) {
-                            for (var i in message) {
-                                messages.push( message[i] );
-                            }
-                        }
-                        else {
-                            messages.push( message.toString() );
-                        }
-                    });
-
-                    App.Data.errors.alert(messages.length ? messages.join(' ') : null);
-                }
+                App.Data.errors.alert(prepareMessage(msg));
             });
 
             this.listenTo(customer, 'onPasswordInvalid', function() {
@@ -474,6 +462,25 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         }
                     });
                 });
+            }
+
+            function prepareMessage(msg) {
+                var messages = [];
+
+                if (_.isObject(msg)) {
+                    _.each(msg, function(message) {
+                        if (_.isObject(message)) {
+                            for (var i in message) {
+                                messages.push( message[i] );
+                            }
+                        }
+                        else {
+                            messages.push( message.toString() );
+                        }
+                    });
+                }
+
+                return messages.length ? messages.join(' ') : null;
             }
         },
         /**
@@ -545,18 +552,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             });
 
             this.listenTo(App.Data.customer, 'change:access_token', function(customer, access_token) {
-                if (access_token) {
-                    promotions.needToUpdate = true; // logged in user can have some unique promotions
-                }
-                else {
-                    // need to update promotions on logout
-                    // obsolete ones will be removed
-                    items = App.Data.myorder.map(function(order) {
-                        return order.item_submit();
-                    });
-                    discount_code = checkout.get('discount_code');
-                    promotions.update(items, discount_code);
-                }
+                items = App.Data.myorder.map(function(order) {
+                    return order.item_submit();
+                });
+                discount_code = checkout.get('discount_code');
+                promotions.update(items, discount_code, App.Data.customer.getAuthorizationHeader());
             });
 
             return promotions;
@@ -629,11 +629,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         loadViewEstablishments: function() {
             var ests = App.Data.establishments,
                 modelForView = ests.getModelForView(),// get a model for the stores list view
-                settings = App.Data.settings,
-                cssCore = settings.get('settings_skin').routing.establishments.cssCore;
+                settings = App.Data.settings;
 
             if (modelForView.get('isMobileVersion')) {
-                cssCore.indexOf('establishments_mobile') && cssCore.push('establishments_mobile');
                 (!App.skin) && settings.set('skin', App.Skins.WEBORDER_MOBILE);
             } else {
                 (!App.skin) && settings.set('skin', App.Skins.WEBORDER);
@@ -642,7 +640,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             App.Routers.MainRouter.prototype.prepare('establishments', function() {
                 var locale = App.Data.locale;
                 locale.dfd_load.done(function() {
-                    var view = App.Views.GeneratorView.create('CoreEstablishments', {
+                    var view = App.Views.GeneratorView.create('Establishments', {
                         mod: 'Main',
                         className: 'establishments_view',
                         collection: ests,
@@ -944,6 +942,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     loginAction: login,
                     signupAction: register,
                     resetAction: resetPWD,
+                    resendAction: resendActivation,
                     logout_link: logout,
                     settings_link: new Function,
                     payments_link: profilePayments,
@@ -961,8 +960,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             function logout() {
-                customer.logout();
                 customer.trigger('hidePanel');
+                customer.logout();
             }
 
             function register() {
@@ -982,6 +981,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 customer.resetPassword()
                         .done(customer.trigger.bind(customer, 'hidePanel'))
                         .always(hideSpinner);
+            }
+
+            function resendActivation() {
+                showSpinner();
+                customer.resendActivation().always(hideSpinner);
             }
 
             function profileEdit() {
@@ -1007,15 +1011,114 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         setProfileEditContent: function(doNotChangeMod) {
-            var promises = this.getProfileAddressesPromises(),
+            this.profileEditData = this.profileEditData || {};
+
+            var self = this,
+                promises = this.getProfileAddressesPromises(),
                 customer = App.Data.customer,
                 addresses = customer.get('addresses'),
-                updatedAddresses = new Backbone.Collection(),
-                ui = new Backbone.Model({show_response: false}),
                 updateBasicDetails = false,
                 updatePassword = false,
-                updateBtn = new Backbone.Model({disabled: true}),
-                self = this;
+                updateBtn = this.profileEditData.updateBtn || new Backbone.Model({disabled: true}),
+                ui = this.profileEditData.ui || new Backbone.Model({show_response: false}),
+                updatedAddresses = this.profileEditData.updatedAddresses || new Backbone.Collection(),
+
+                basicDetailsChanged = this.profileEditData.basicDetailsChanged || function() {
+                    updateBasicDetails = true;
+                    updateBtn.set('disabled', false);
+                    ui.set('show_response', false);
+                },
+
+                accountPasswordChanged = this.profileEditData.accountPasswordChanged || function() {
+                    updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
+                    updateBtn.set('disabled', updateBtn.get('disabled') && !updatePassword);
+                    ui.set('show_response', false);
+                },
+
+                addressChanged = this.profileEditData.addressChanged || function(address) {
+                    if (address.get('country')) { // country is the only required field
+                        updatedAddresses.add(address);
+                        updateBtn.set('disabled', false);
+                        ui.set('show_response', false);
+                    }
+                },
+
+                update = this.profileEditData.update || function() {
+                    var mainModel = App.Data.mainModel,
+                        requests = updateBasicDetails + updatePassword + !!updatedAddresses.length,
+                        basicXHR, passwordXHR, addressXHRs = [], check_customer, errorFields = [],
+                        error = App.Data.errors.alert.bind(App.Data.errors);
+
+                    // show spinner
+                    requests > 0 && mainModel.trigger('loadStarted');
+
+                    // update basic details
+                    if (updateBasicDetails) {
+                        check_customer = customer.check();
+                        if (check_customer.status === 'OK') {
+                            basicXHR = customer.updateCustomer();
+                            basicXHR.done(function() {
+                                updateBasicDetails = false;
+                            });
+                            basicXHR.always(hideSpinner);
+                        }
+                        else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
+                            if (App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
+                                errorFields.splice.apply(errorFields, [0, 0].concat(check_customer.errorList));
+                            } else {
+                                errorFields = errorFields.concat(check_customer.errorList);
+                            }
+                        }
+                        if (errorFields.length) {
+                            error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, errorFields.join(', '))); // user notification
+                            hideSpinner();
+                        }
+                    }
+
+                    // update password
+                    if (updatePassword) {
+                        passwordXHR = customer.changePassword();
+                        passwordXHR.done(function() {
+                            updatePassword = false;
+                        });
+                        passwordXHR.always(hideSpinner);
+                    }
+
+                    // update address
+                    if (updatedAddresses.length) {
+                        updatedAddresses.each(function(addr) {
+                            addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
+                        });
+                        Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
+                            updatedAddresses.reset();
+                        });
+                        Backbone.$.when.apply(Backbone.$, addressXHRs).always(hideSpinner);
+                    }
+
+                    // hide spinner once all requests are completed
+                    function hideSpinner() {
+                        if(--requests <= 0) {
+                            mainModel.trigger('loadCompleted');
+                            updateBtn.set('disabled', true);
+                            ui.set('show_response', true);
+                        }
+                    }
+                }
+
+            if (_.isEmpty(this.profileEditData)) {
+                this.profileEditData = {
+                    updateBtn: updateBtn,
+                    ui: ui,
+                    updatedAddresses: updatedAddresses,
+                    basicDetailsChanged: basicDetailsChanged,
+                    accountPasswordChanged: accountPasswordChanged,
+                    addressChanged: addressChanged,
+                    update: update
+                };
+            }
+            else {
+                this.profileEditData.ui.set('show_response', false);
+            }
 
             if (promises.length) {
                 if (doNotChangeMod) {
@@ -1053,106 +1156,18 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                     self.listenTo(customer, passwordEvents, accountPasswordChanged);
                     self.listenTo(addresses, 'addressFieldsChanged', addressChanged);
-                    self.listenTo(customer, 'onCookieChange', updateAddressAttributes);
                     self.listenTo(customer, 'onLogout', logout);
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, basicDetailsEvents, basicDetailsChanged));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, addresses, 'addressFieldsChanged', addressChanged));
-                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onCookieChange', updateAddressAttributes));
                     self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
                 }, 0);
             }
 
             return promises;
 
-            function updateAddressAttributes() {
-                address.set(customer.getProfileAddress());
-            }
-
             function logout() {
                 self.navigate('index', true);
-            }
-
-            function basicDetailsChanged() {
-                updateBasicDetails = true;
-                updateBtn.set('disabled', false);
-                ui.set('show_response', false);
-            }
-
-            function accountPasswordChanged() {
-                updatePassword = Boolean(customer.get('password')) && Boolean(customer.get('confirm_password'));
-                updateBtn.set('disabled', updateBtn.get('disabled') && !updatePassword);
-                ui.set('show_response', false);
-            }
-
-            function addressChanged(address) {
-                if (address.get('country')) { // country is the only required field
-                    updatedAddresses.add(address);
-                    updateBtn.set('disabled', false);
-                    ui.set('show_response', false);
-                }
-            }
-
-            function update() {
-                var mainModel = App.Data.mainModel,
-                    requests = updateBasicDetails + updatePassword + !!updatedAddresses.length,
-                    basicXHR, passwordXHR, addressXHRs = [], check_customer, errorFields = [],
-                    error = App.Data.errors.alert.bind(App.Data.errors);
-
-                // show spinner
-                requests > 0 && mainModel.trigger('loadStarted');
-
-                // update basic details
-                if (updateBasicDetails) {
-                    check_customer = customer.check();
-                    if (check_customer.status === 'OK') {
-                        basicXHR = customer.updateCustomer();
-                        basicXHR.done(function() {
-                            updateBasicDetails = false;
-                        });
-                        basicXHR.always(hideSpinner);
-                    }
-                    else if (check_customer.status === 'ERROR_EMPTY_FIELDS') {
-                        if (App.Skins.WEBORDER == App.skin || App.Skins.WEBORDER_MOBILE == App.skin) {
-                            errorFields.splice.apply(errorFields, [0, 0].concat(check_customer.errorList));
-                        } else {
-                            errorFields = errorFields.concat(check_customer.errorList);
-                        }
-                    }
-                    if (errorFields.length) {
-                        error(MSG.ERROR_EMPTY_NOT_VALID_DATA.replace(/%s/, errorFields.join(', '))); // user notification
-                        hideSpinner();
-                    }
-                }
-
-                // update password
-                if (updatePassword) {
-                    passwordXHR = customer.changePassword();
-                    passwordXHR.done(function() {
-                        updatePassword = false;
-                    });
-                    passwordXHR.always(hideSpinner);
-                }
-
-                // update address
-                if (updatedAddresses.length) {
-                    updatedAddresses.each(function(addr) {
-                        addressXHRs.push(addr.isProfileAddress() ? customer.updateAddress(addr.toJSON()) : customer.createAddress(addr));
-                    });
-                    Backbone.$.when.apply(Backbone.$, addressXHRs).done(function() {
-                        updatedAddresses.reset();
-                    });
-                    Backbone.$.when.apply(Backbone.$, addressXHRs).always(hideSpinner);
-                }
-
-                // hide spinner once all requests are completed
-                function hideSpinner() {
-                    if(--requests <= 0) {
-                        mainModel.trigger('loadCompleted');
-                        updateBtn.set('disabled', true);
-                        ui.set('show_response', true);
-                    }
-                }
             }
         },
         setProfilePaymentsContent: function(doNotChangeMod) {
@@ -1305,13 +1320,16 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         loginContent: function() {
-            var self = this;
+            var self = this,
+                mainModel = App.Data.mainModel,
+                customer = App.Data.customer;
 
             return {
                 modelName: 'Profile',
                 mod: 'LogIn',
                 model: App.Data.customer,
                 loginAction: loginAction,
+                resendAction: resendActivation,
                 createAccount: this.navigate.bind(this, 'signup', true),
                 guestCb: this.navigate.bind(this, 'index', true),
                 forgotPasswordAction: this.navigate.bind(this, 'profile_forgot_password', true),
@@ -1319,12 +1337,16 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             };
 
             function loginAction() {
-                var mainModel = App.Data.mainModel,
-                    customer = App.Data.customer;
                 mainModel.trigger('loadStarted');
                 customer.login()
                         .done(self.navigate.bind(self, 'index', true))
                         .fail(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+
+            function resendActivation() {
+                mainModel.trigger('loadStarted');
+                customer.resendActivation()
+                        .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
         },
         signupContent: function() {

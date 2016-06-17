@@ -1,4 +1,4 @@
-.promotions-title {
+.promotions__title {
     font-weight: 300;
     padding: 2em 1.8em;
     margin: 0 -1.8em;
@@ -13,40 +13,36 @@
 }
 .all-promotions__text {
     font-size: 2.5em;
-    padding-right: 2.5em;
-    position: relative;
+    vertical-align: middle;
 }
-.all-promotions__text:after {
-    display: block;
-    content: "";
-    position: absolute;
-    top: -0.5em;
-    right: 0;
-    width: 2em;
-    height: 2em;
-    background-position: center;
-    background-repeat: no-repeat;
-    background-size: 1.7em 1.7em;
+.all-promotions__icon {
+    font-size: 4.5em;
+    margin-left: 14px;
+    vertical-align: middle;
+}
+.all-promotions__icon:after {
+    font-family: FontAwesome;
+    content: '\f02b';
 }
 
 /* Promotions List */
-.promotions-list li {
+.promotions__list li {
     padding: 1.5em 0;
 }
-.promotions-list > li * {
+.promotions__list > li * {
     pointer-events: initial;
 }
-.promotions-list li:after {
+.promotions__list li:after {
     display: none;
     content: "";
 }
-.promotions-list > li .promotion div {
+.promotions__list > li .promotions__item div {
     display: block;
 }
-.promotions-list__title-description {
+.promotions__title-description {
     padding: 0.3em 0;
 }
-.promotions-available__text {
+.promotions__available-text {
     padding: 0.5em 0;
 }
 
@@ -54,30 +50,30 @@
     clear: both;
     position: relative;
 }
-.promotion__left {
+.promotions__item-left {
     max-width: 70%;
 }
-.promotion__name {
+.promotions__item-name {
     margin-bottom: 0.2em;
 }
-.promotion__link {
+.promotions__item-link {
     font-size: 2.5em;
     font-style: italic;
     text-decoration: underline;
 }
-.promotion__apply {
+.promotions__item-apply {
     font-weight: 300;
     position: absolute;
     right: 0;
     top: 50%;
     transform: translateY(-50%);
 }
-.promotion__apply.added {
+.promotions__item-applied {
     display: flex !important;
     align-items: center;
     justify-content: center;
 }
-.promotion__apply.added:after {
+.promotions__item-applied:after {
     content: "\f00c";
     font-family: "FontAwesome";
     display: inline-block;

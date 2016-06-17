@@ -87,10 +87,33 @@ define(["factory"], function() {
     App.Views.CoreProfileView.CoreProfileLogInView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'log_in',
+        initialize: function() {
+            this.listenTo(this.model, 'onNotActivatedUser', function() {
+                this.setBinding('ui_showAccountInactive', true);
+                this.setBinding('ui_showActivationSent', false);
+            });
+
+            this.listenTo(this.model, 'onResendActivationSuccess', function() {
+                this.setBinding('ui_showAccountInactive', false);
+                this.setBinding('ui_showActivationSent', true);
+            });
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
             '.email': 'value: email, events: ["input"]',
             '.pwd': 'value: password, events: ["input"]',
-            '.login-btn': 'classes: {disabled: not(allFilled)}'
+            '.login-btn': 'classes: {disabled: not(allFilled)}',
+            '.account-inactive': 'css: { display: select(ui_showAccountInactive, "", "none") }',
+            '.activation-sent': 'css: { display: select(ui_showActivationSent, "", "none") }'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    showAccountInactive: false,
+                    showActivationSent: false
+                });
+            }
         },
         computeds: {
             allFilled: {
@@ -104,7 +127,8 @@ define(["factory"], function() {
             'click .login-btn:not(.disabled)': setCallback('loginAction'),
             'click .create-btn': setCallback('createAccount'),
             'click .guest-btn': setCallback('guestCb'),
-            'click .forgot-password': setCallback('forgotPasswordAction')
+            'click .forgot-password': setCallback('forgotPasswordAction'),
+            'click .resend-activation': setCallback('resendAction')
         },
         onEnterListeners: {
             ':el': 'onEnter'
@@ -183,15 +207,17 @@ define(["factory"], function() {
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
 
-            if (this.getBinding('modelIndex') === 1) {
+            if (this.getBinding('modelIndex') === 1 || this.model.get('id') === null) {
                 this.setBinding('ui_collapsed', false);
+                this.model.collection.trigger('toggleFolding', this.model, false);
             }
         },
         bindings: {
-            '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), "New Address")',
+            '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), _loc.PROFILE_NEW_ADDRESS)',
             '.expand': 'toggle: id, classes: {folded: ui_collapsed, expanded: not(ui_collapsed)}',
             '.address__header': 'classes: {collapsed: ui_collapsed}',
-            '.address__fields': 'css: {display: select(any(not(id), not(ui_collapsed)), "", "none")}',
+            '.address__fields': 'css: {display: select(not(ui_collapsed), "", "none")}',
+            '.address__default-checkbox': 'css: {display: select(id, "", "none")}',
             '.address__default': 'checked: is_primary',
             '.checkbox': 'attr: {checked: select(is_primary, "checked", false)}',
             '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
@@ -949,11 +975,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         onUpdate: function() {
             // Saving Gift Cards data
-            var clone;
+            var clone, req, reqRewards, self = this;
             this.resetUpdateStatus();
             if (this.newGiftCard.get('cardNumber')) {
                 clone = this.newGiftCard.clone();
-                this.addCardToServer(clone);
+                req = this.addCardToServer(clone);
+                if (req) {
+                    req.always(function(){
+                        self.newGiftCard.trigger("onResetData");
+                    });
+                }
             }
 
             // Saving Credit Cards data
@@ -962,7 +993,12 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             // Saving Reward Cards data
             if (this.newRewardCard.get('number')) {
                 clone = this.newRewardCard.clone();
-                this.saveRewardCard(clone);
+                reqRewards = this.saveRewardCard(clone);
+                if (reqRewards) {
+                    reqRewards.always(function(){
+                        self.newRewardCard.trigger("onResetData");
+                    });
+                }
             }
         },
         saveCreditCard: function()
@@ -1003,6 +1039,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                     }
 
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                return req;
             }
         },
         saveRewardCard: function(rewardcard) {
@@ -1024,6 +1061,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 }).error(function(){
                     onError();
                 }).always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                return req;
             }
 
             function onError(errorMsg) {

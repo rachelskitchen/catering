@@ -2,7 +2,8 @@
     return {
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO': 'Pick up in store',
-            'DINING_OPTION_SHIPPING': 'Shipping'
+            'DINING_OPTION_SHIPPING': 'Shipping',
+            'DINING_OPTION_OTHER': 'Other'
         },
         'CARD_TITLE': 'Enter your Card Information',
         'CARD_FIRST_NAME': 'First Name',

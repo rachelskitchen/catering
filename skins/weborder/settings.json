@@ -8,13 +8,13 @@
         "main": {
             "css": ["main", "cart", "jquery.contentarrow", "products", "myorder", "modifiers", "instructions", "quantity", "product_sets", "profile", "header", "footer", "stanford"],
             "model": ["main", "header", "categories"],
-            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "product_sets", "instructions", "quantity", "stanfordcard", "profile"],
+            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "product_sets", "instructions", "quantity", "stanfordcard", "profile", "rewards"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "profile"],
             "core": ["generator", "total_view", "products", "search", "product_sets", "product_sets_view", "modifiers", "jquery_numbermask", "stanfordcard", "customers", "payments", "giftcard", "rewards", "rewards_view",  "instructions_view", "payment_methods"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
-            "css": ["categories", "subcategories", "search_line"],
+            "css": ["categories", "subcategories", "search_line", "promotions"],
             "views": ["categories", "subcategories", "stanfordcard", "search_line"],
             "templates": ["categories", "subcategories", "search_line"],
             "core": ["categories", "search"]
@@ -46,6 +46,16 @@
         },
         "pay": {
             "core": ["card", "giftcard", "customers"]
+        },
+        "establishments": {
+            "views": ["establishments"],
+            "cssCore": ["establishments"],
+            "templatesCore": ["establishments"]
+        },
+        "promotions": {
+            "core": ["promotions", "promotions_view"],
+            "css": ["promotions"],
+            "templates": ["promotions"]
         }
     }
 }

@@ -581,7 +581,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     this.initPayments();
                     this.getAddresses();
                     this.initGiftCards();
-                    this.getRewardCards();
+                    this.setRewardCards();
                     this.trigger('onLogin');
                 },
                 error: function(jqXHR) {
@@ -1327,6 +1327,83 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             });
         },
         /**
+         * Sends activation link to a customer's email
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/customers/resend-activation-customer/",
+         *     method: "POST",
+         *     contentType: "application/json",
+         *     data: {
+         *         "email": <email address>
+         *         "password": <password>
+         *     }
+         * }
+         * ```
+         * Server may return the following response:
+         * - Successful reset:
+         * ```
+         * Status: 200
+         * ```
+         * The model emits `onResendActivationSuccess` event in this case.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["This field is required."]
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["Enter a valid email address."]
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "email": ["Ensure this field has no more than 254 characters."]
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * ```
+         * Status: 404
+         * {
+         *     "detail": "Customer object with such email and password does not exist."
+         * }
+         * ```
+         * The model emits `onResendActivationError` event in this case.
+         *
+         * @returns {Object} jqXHR object.
+         */
+        resendActivation: function() {
+            var attrs = this.toJSON();
+
+            return Backbone.$.ajax({
+                url: attrs.serverURL + "/customers/resend-activation-customer/",
+                method: "POST",
+                context: this,
+                data: {
+                    email: attrs.email,
+                    password: attrs.password
+                },
+                success: function(data) {
+                    this.trigger('onResendActivationSuccess');
+                },
+                error: function(jqXHR) {
+                    this.trigger('onResendActivationError', getResponse());
+
+                    function getResponse() {
+                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+                    }
+                }
+            });
+        },
+        /**
          * Converts address to 'customers/addresses/' API format. Changes `zipcode` property to `postal_code`,
          * `country` -> `country_code`, `state`/`province` -> `region`.
          *
@@ -1749,6 +1826,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             if (!this.get('rewardCards')) {
                 return console.error("Rewards cards have not been initialized");
             }
+
             var self = this,
                 req = this.get('rewardCards').getCards(this.getAuthorizationHeader());
 
@@ -1797,7 +1875,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         removeRewardCards: function() {
             this.rewardCardsRequest && this.rewardCardsRequest.abort();
             delete this.rewardCardsRequest;
-            this.get('rewardCards').reset();
+            if (this.get('rewardCards')) { // bug_44919
+                this.get('rewardCards').reset();
+            }
             App.Data.myorder.rewardsCard.resetData(); // bug_43982
         },
         /**
@@ -2154,7 +2234,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.listenTo(this, 'change:selected', this.radioSelection.bind(this, 'selected'));
             this.listenTo(this, 'change:is_primary', this.radioSelection.bind(this, 'is_primary'));
             this.listenTo(this, 'change', this.onModelChange);
-            this.listenTo(this, 'change reset add remove', function() {
+            this.listenTo(this, 'reset add remove', function() {
                 this.trigger('update');
             });
             // handle the case when the collection doesn't contain any profile address after the address removal
@@ -2194,14 +2274,18 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @param {array} addresses - array of addresses if API format.
          */
         updateFromAPI: function(addresses) {
-            var self = this;
+            var self = this,
+                modelsToRemove = [];
+
             // remove from collection addresses not presented in api response
             this.each(function(model) {
                 if (!isNaN(model.get('id')) && !_.findWhere(addresses, {id: model.id})) {
-                    self.remove(model);
+                    modelsToRemove.push(model);
                 }
             });
-            // add all addreesses
+            self.remove(modelsToRemove);
+
+            // add all addresses
             _.each(addresses, function(address) {
                 self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
             });

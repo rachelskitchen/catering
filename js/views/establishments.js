@@ -140,4 +140,9 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
         name: 'establishments',
         mod: 'select_item'
     });
+
+    return new (require('factory'))(function() {
+        App.Views.EstablishmentsView = {};
+        App.Views.EstablishmentsView.EstablishmentsMainView = App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView;
+    });
 });

@@ -199,7 +199,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         mod: 'order_type',
         bindings: {
             ':el': 'toggle: not(equal(dining_option, "DINING_OPTION_ONLINE"))',
-            '.order-type-select': 'value: dining_option, options: dining_options'
+            '.order-type-select': 'value: diningOption, options: dining_options'
         },
         computeds: {
             dining_options: function() {
@@ -210,6 +210,18 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     });
                 }
                 return opts;
+            },
+            /**
+             * Need to use the computed value because 'DINING_OPTION_ONLINE' is not presented in 'dining_options' computed array. Bug #44273
+             */
+            diningOption: {
+                deps: ['dining_option', 'selected_dining_option'],
+                get: function(dining_option, selected_dining_option) {
+                    return dining_option == 'DINING_OPTION_ONLINE' ? selected_dining_option : dining_option;
+                },
+                set: function(value) {
+                    this.model.set('dining_option', value);
+                }
             }
         }
     });
@@ -228,9 +240,16 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
         name: 'checkout',
         mod: 'other_item',
         bindings: {
-            'input': 'valueTrim: value, events:["blur","change"]',
-            'select': 'value: value, options:choices, optionsDefault:{label:name, value:""}',
-            '[data-isrequired]': 'classes:{required:required}'
+            'input': 'valueTrim: value, events: ["blur", "change"]',
+            'select': 'value: value, options: choices',
+            '[data-isrequired]': 'classes: {required: required}'
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+
+            var choices = this.model.get('choices');
+            // select the first option by default
+            Array.isArray(choices) && choices[0] && this.model.set('value', choices[0]);
         }
     });
 
@@ -255,8 +274,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
 
             this.listenTo(this.model, 'change:dining_option', this.listenOrderType, this);
 
-            this.listenTo(this.model, 'hide:datepicker', function()
-            {
+            this.listenTo(this.model, 'hide:datepicker', function() {
                 self.picker.hide();
             }, this);
 

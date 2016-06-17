@@ -39,7 +39,8 @@ define(["checkout_view"], function(checkout_view) {
         name: 'checkout',
         mod: 'page',
         bindings: {
-            '.notes': 'value: checkout_notes, events: ["input"], toggle: _system_settings_order_notes_allow',
+            '.order-notes': 'toggle: _system_settings_order_notes_allow',
+            '.notes': 'value: checkout_notes, events: ["input"]',
             '.cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}',
             '.choose-cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)))}',
             '.gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false))}',
@@ -92,7 +93,7 @@ define(["checkout_view"], function(checkout_view) {
                 customer: this.options.customer,
                 rewardsCard: this.collection.rewardsCard,
                 mod: 'Main',
-                className: 'clear'
+                className: 'clear overflow-hidden' // add overflow:hidden to fix Bug 45243
             });
 
             this.subViews.push(order_type, pickup, main);
@@ -103,7 +104,8 @@ define(["checkout_view"], function(checkout_view) {
 
             paymentMethods = App.Views.GeneratorView.create('PaymentMethods', {
                 mod: 'Main',
-                model: this.options.paymentMethods
+                model: this.options.paymentMethods,
+                checkout: this.collection.checkout
             });
 
             this.subViews.push(paymentMethods);
