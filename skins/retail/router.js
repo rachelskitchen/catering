@@ -41,6 +41,7 @@ define(["main_router"], function(main_router) {
         routes: {
             "": "index",
             "index(/:data)": "index",
+            "modifiers/:id_category(/:id_product)": "modifiers",
             "about": "about",
             "map": "map",
             "checkout": "checkout",
@@ -593,6 +594,57 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     App.Data.settings.load_geoloc();
                 });
             });
+        },
+        modifiers: function(category_id, product_id) {
+            var order = new App.Models.Myorder(),
+                dfd = order.add_empty(product_id * 1, category_id * 1),
+                self = this;
+
+            this.prepare('modifiers', function() {
+                App.Data.header.set('menu_index', 0);
+                App.Data.mainModel.set('mod', 'Main');
+                App.Data.cart.set('visible', false);
+                dfd.then(showProductModifiers);
+
+                function showProductModifiers() {
+                    var _order = order.clone(),
+                        content;
+
+                    content = /*self.getStanfordReloadItem(order) || */{
+                        modelName: 'MyOrder',
+                        model: _order,
+                        ui: new Backbone.Model({isAddMode: true}),
+                        mod: 'ItemCustomization',
+                        className: 'myorder-item-customization',
+                        doNotCache: true
+                    };
+
+                    App.Data.mainModel.set({
+                        header: headers.main,
+                        cart: carts.main,
+                        content: content
+                    });
+
+                    self.change_page();
+                }
+            });
+            // showModifiers: function() {
+            //     var myorder = new App.Models.Myorder(),
+            //         isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
+            //         def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
+
+            //     $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+            //     def.then(function() {
+            //         $('#main-spinner').removeClass('ui-visible');
+            //         App.Data.mainModel.set('popup', {
+            //             modelName: 'MyOrder',
+            //             mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+            //             className: isStanfordItem ? 'stanford-reload-item' : '',
+            //             model: myorder.clone(),
+            //             action: 'add'
+            //         });
+            //     });
+            // },
         },
         about: function() {
             this.prepare('about', function() {

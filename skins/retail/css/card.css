@@ -1,0 +1,64 @@
+.gift-card-reload .col {
+    width: 40%;
+    margin-right: 10%;
+}
+
+.gift-card-reload .header-underline {
+    max-width: 100%;
+    width: 470px;
+    padding-top: 0;
+}
+
+.gift-card-reload .card-box {
+    width: 300px;
+    height: 160px;
+    margin-top: 20px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 6px;
+    position: relative;
+}
+
+.gift-card-reload .card-number-box {
+    padding-left: 11px;
+    position: absolute;
+    bottom: 17px;
+}
+
+.gift-card-reload .card-label {
+    padding-left: 20px;
+    font-size: 10px;
+}
+
+.gift-card-reload .card-number {
+    width: 240px;
+}
+
+.gift-card-reload .logo {
+    max-height: 70px;
+    margin: 15px 12px;
+    padding-left: 47px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 42px;
+    background-color: transparent;
+    overflow: hidden;
+    font-size: 16px;
+}
+
+.gift-card-reload .amount {
+    width: 136px;
+    border-radius: 50px;
+    margin-right: 20px;
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+.gift-card-reload .currency {
+    font-size: 24px;
+    vertical-align: middle;
+}
+
+.gift-card-reload .refill {
+    margin-bottom: 28px;
+}
