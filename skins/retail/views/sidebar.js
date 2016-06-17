@@ -30,18 +30,6 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
             '.categories': 'updateContent: categories',
             '.filters': 'updateContent: filtersSet'
         },
-        bindingHandlers: {
-            updateContent: {
-                set: function($el, value) {
-                    var subViews = this.view.subViews,
-                        view = App.Views.GeneratorView.create(value.name, value, value.viewId),
-                        existingView = subViews[value.index];
-                    existingView && existingView.removeFromDOMTree();
-                    subViews[value.index] = view;
-                    $el.append(view.el);
-                }
-            }
-        },
         computeds: {
             categories: {
                 deps: ['$categoriesTree'],
@@ -52,7 +40,7 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
                         className: 'categories-tree',
                         collection: categoriesTree,
                         viewId: 0,
-                        index: 0
+                        subViewIndex: 0
                     };
                 }
             },
@@ -65,7 +53,7 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
                         model: productsSet,
                         collection: productsSet.get('filters'),
                         viewId: productsSet.id,
-                        index: 1
+                        subViewIndex: 1
                     };
                 }
             }

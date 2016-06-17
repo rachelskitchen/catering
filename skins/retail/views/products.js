@@ -29,23 +29,6 @@ define(["products_view"], function(products_view) {
         bindings: {
             ':el': 'attr: {tabindex: 0}, classes: {hide: not(filterResult)}'
         }
-        // showModifiers: function() {
-        //     var myorder = new App.Models.Myorder(),
-        //         isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-        //         def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
-
-        //     $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-        //     def.then(function() {
-        //         $('#main-spinner').removeClass('ui-visible');
-        //         App.Data.mainModel.set('popup', {
-        //             modelName: 'MyOrder',
-        //             mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
-        //             className: isStanfordItem ? 'stanford-reload-item' : '',
-        //             model: myorder.clone(),
-        //             action: 'add'
-        //         });
-        //     });
-        // },
     });
 
     var ProductListView = App.Views.FactoryView.extend({
@@ -59,103 +42,49 @@ define(["products_view"], function(products_view) {
         }
     });
 
-    //var ProductListView = _ProductListView( App.Views.CoreProductView.CoreProductListView );
-    function _ProductListView( _base ) {
-      return _base.extend({
-        initialize: function() {
-            this.listenTo(this.options.filter, 'change', this.sortItems, this);
-            this.listenTo(this.options.filter, 'change', this.filterItems, this);
-            _base.prototype.initialize.apply(this, arguments);
-        },
-        render: function() {
-            _base.prototype.render.apply(this, arguments);
-            this.sortItems(this.options.filter, 1);
-            this.filterItems(this.options.filter);
-            return this;
-        },
-        addItem: function(model) {
-            if ( model.get('is_combo') ||  model.get('has_upsell') ) //hide combo products for paypal skin
-                return;
-            else
-               _base.prototype.addItem.apply(this, arguments);
-        },
-        sortItems: function(model, force) {
-            var filter = this.options.filter,
-                attr = filter.get('sort'),
-                order = filter.get('order'),
-                changed = model.changed;
-            if('sort' in changed || 'order' in changed || force)
-                _base.prototype.sortItems.call(this, attr, order);
-        },
-        filterItems: function(model) {
-            var attribute1 = model.get('attribute1'),
-                attribute2 = model.get('attribute2'),
-                changed = model.changed;
-            if(!attribute1 || !attribute2 || !('attribute1' in changed || 'attribute2' in changed)) {
-                return;
-            }
-            this.subViews.forEach(function(view) {
-                var values1 = view.model.get('attribute_1_values'),
-                    values2 = view.model.get('attribute_2_values');
-                if(needToHide(values1, attribute1) || needToHide(values2, attribute2))
-                    view.$el.hide();
-                else
-                    view.$el.removeAttr('style'); // instead of show() because show adds display:list-item
-            });
-            function needToHide(values, value) {1
-                return value == 1 ? false : !Array.isArray(values) || values.indexOf(value) == -1;
-            }
-        }
-      });
-    }
-
     var ProductCategoryListView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'category_list',
         bindings: {
-            ':el': 'updateContent: value'
+            ':el': 'updateContent: productSet'
         },
-        bindingHandlers: {
-            updateContent: {
-                set: function($el, value) {
-                    var subViews = this.view.subViews,
-                        view;
-
-                    // clear content
-                    while (subViews.length) {
-                        subViews.shift().removeFromDOMTree();
-                    }
-
-                    view = App.Views.GeneratorView.create('Product', {
+        computeds: {
+            productSet: {
+                deps: ['value'],
+                get: function(value) {
+                    return {
+                        name: 'Product',
                         mod: 'List',
                         model: value,
-                        collection: value.get('products')
-                    }, value.id);
-
-                    subViews.push(view);
-                    $el.append(view.el);
+                        collection: value.get('products'),
+                        viewId: value.id,
+                        subViewIndex: 0
+                    };
                 }
             }
         }
     });
 
-    var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
+    var ProductImagesView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'images',
+        events: {
+            'click .thumbnail': 'showImage'
+        },
+        onEnterListeners: {
+            '.thumbnail': 'showImage'
+        },
         render: function() {
-            App.Views.CoreProductView.CoreProductModifiersView.prototype.render.apply(this, arguments);
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            loadSpinner(this.$('.img'));
             this.showImage({
                 currentTarget: this.$('.images > li:first')
             });
+
             return this;
         },
-        events: function() {
-            var parent = App.Views.CoreProductView.CoreProductModifiersView.prototype.events;
-            return $.extend(parent, {
-                'click li[data-index]': 'showImage',
-                'keyup .gift_card_price': 'keyup'
-            });
-        },
         showImage: function(event) {
-            var images = this.model.get_product().get('images'),
+            var images = this.model.get('images'),
                 li = $(event.currentTarget),
                 index = li.attr('data-index'),
                 image = this.$('.large');
@@ -163,18 +92,37 @@ define(["products_view"], function(products_view) {
             loadSpinner(image);
             this.$('.images > li').removeClass('active');
             li.addClass('active');
+        }
+    });
+
+    var ProductTitleView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'title',
+        bindings: {
+            '.price': 'text: select(product_sold_by_weight, weightFormat(initial_price), currencyFormat(initial_price))',
+            '.name': 'text: product_name'
+        }
+    });
+
+    var ProductDescriptionView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'description'
+    });
+
+    var ProductGiftCardReloadView = App.Views.FactoryView.extend({
+        name: 'product',
+        mod: 'gift_card_reload',
+        bindings: {
+            '.amount': 'value: monetaryFormat(price), events: ["input"], trackCaretPosition: price, restrictInput: "0123456789.,", kbdSwitcher: "float", pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
+            '.card-number': 'value: gift_card_number, events: ["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
+            '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}'
         },
-        update_price: function() {
-            var initial_price = round_monetary_currency(this.model.get('initial_price'));
-            this.$('.price').text(initial_price);
-        },
-        keyup: function(e) {
-            var initial_price = round_monetary_currency(this.model.get('initial_price')),
-                formatPrice = round_monetary_currency(e.target.value),
-                floatValue = parseFloat(e.target.value);
-            if(formatPrice != initial_price && !isNaN(floatValue)) {
-                this.model.set('initial_price', floatValue);
-                this.product.set('price', floatValue);
+        bindingFilters: {
+            showLogo: function(url) {
+                if (typeof url != 'string') {
+                    return '';
+                }
+                return 'background-image: url(%s);'.replace('%s', url);
             }
         }
     });
@@ -182,7 +130,10 @@ define(["products_view"], function(products_view) {
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductListItemView = ProductListItemView;
         App.Views.ProductView.ProductListView = ProductListView;
-        App.Views.ProductView.ProductModifiersView = ProductModifiersView;
         App.Views.ProductView.ProductCategoryListView = ProductCategoryListView;
+        App.Views.ProductView.ProductImagesView = ProductImagesView;
+        App.Views.ProductView.ProductTitleView = ProductTitleView;
+        App.Views.ProductView.ProductDescriptionView = ProductDescriptionView;
+        App.Views.ProductView.ProductGiftCardReloadView = ProductGiftCardReloadView;
     });
 });

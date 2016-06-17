@@ -45,6 +45,7 @@ define(['backbone'], function(Backbone) {
                 if(App.Views.Generator.enableCache && id)
                     cache[id] = view;
             }
+
             return view;
         },
         /**

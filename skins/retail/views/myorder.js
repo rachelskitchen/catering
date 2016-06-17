@@ -23,49 +23,98 @@
 define(["myorder_view"], function(myorder_view) {
     'use strict';
 
-    var MyOrderMatrixView = App.Views.CoreMyOrderView.CoreMyOrderMatrixView.extend({
-        initialize: function() {
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.attributes_update);
+    var MyOrderMatrixView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'matrix',
+        bindings: {
+            '.action_button': 'classes: {disabled: not(attributesSelected)}, text: select(ui_isAddMode, _lp_MYORDER_ADD_TO_BAG, _lp_MYORDER_UPDATE_ITEM)',
+            '.right-side': 'classes: {"no-images": _system_settings_hide_images}',
+            '.product_attribute_info': 'updateContent: attrsViewData',
+            '.product_images': 'updateContent: imagesViewData',
+            '.product_title': 'updateContent: titleViewData',
+            '.product_desc': 'updateContent: descViewData',
+            '.quantity_info': 'updateContent: qtyViewData',
         },
-        render: function() {
-            App.Views.CoreMyOrderView.CoreMyOrderMatrixView.prototype.render.apply(this, arguments);
-            if (this.options.action === 'add') {
-                this.$('.action_button > span').html(_loc['MYORDER_ADD_TO_BAG']);
-            } else {
-                this.$('.action_button > span').html(_loc['MYORDER_UPDATE_ITEM']);
-            }
-            var model = this.model,
-                view;
-
-            var sold_by_weight = this.model.get_product().get("sold_by_weight"),
-                mod = sold_by_weight ? 'Weight' : 'Main';
-
-            view = App.Views.GeneratorView.create('Quantity', {
-                el: this.$('.quantity_info'),
-                model: model,
-                mod: mod
-            });
-            this.subViews.push(view);
-
-            this.attributes_update();
-            return this;
-        },
-        events: {
-            'click .action_button:not(.disabled)': 'action',
-            'keydown .action_button:not(.disabled)': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.action();
+        computeds: {
+            'attributesSelected': {
+                deps: ['product_attribute_1_selected', 'product_attribute_2_selected'],
+                get: function() {
+                    return this.getBinding('$product').check_selected();
+                }
+            },
+            imagesViewData: {
+                deps: ['_system_settings_hide_images', 'attributesSelected'],
+                get: function(hide_images) {
+                    if (!hide_images) {
+                        return {
+                            name: 'Product',
+                            mod: 'Images',
+                            model: this.model.get_product(),
+                            subViewIndex: 0
+                        };
+                    }
+                }
+            },
+            titleViewData: {
+                deps: ['attributesSelected'],
+                get: function() {
+                    return {
+                        name: 'Product',
+                        mod: 'Title',
+                        model: this.model,
+                        product: this.model.get_product(),
+                        subViewIndex: 1
+                    };
+                }
+            },
+            attrsViewData: {
+                get: function() {
+                    var product = this.model.get('product');
+                    if(product && product.isParent()) {
+                        return {
+                            name: 'ModifiersClasses',
+                            mod: 'Matrixes',
+                            model: this.model,
+                            subViewIndex: 2,
+                            modifiersEl: this.$('.modifiers_info')
+                        };
+                    }
+                }
+            },
+            qtyViewData: {
+                deps: ['attributesSelected'],
+                get: function() {
+                    return {
+                        name: 'Quantity',
+                        mod: this.model.get_product().get("sold_by_weight") ? 'Weight' : 'Main',
+                        model: this.model,
+                        subViewIndex: 3
+                    };
+                }
+            },
+            descViewData: {
+                deps: ['_system_settings_hide_products_description', 'attributesSelected'],
+                get: function(hide_products_description) {
+                    var product = this.model.get_product(),
+                        index = 4;
+                    if (!hide_products_description && product.get('description')) {
+                        return {
+                            name: 'Product',
+                            mod: 'Description',
+                            model: product,
+                            subViewIndex: index
+                        };
+                    } else if (this.subViews[index]) {
+                        this.subViews[index].remove();
+                    }
                 }
             }
         },
-        attributes_update: function() {
-            if (this.model.get('product').check_selected()) {
-                this.$('.action_button').removeClass('disabled');
-            }
-            else {
-                this.$('.action_button').addClass('disabled');
-            }
+        events: {
+            'click .action_button:not(.disabled)': 'action'
+        },
+        onEnterListeners: {
+            '.action_button:not(.disabled)': 'action'
         },
         action: function (event) {
             var check = this.model.check_order(),
@@ -87,21 +136,6 @@ define(["myorder_view"], function(myorder_view) {
                 });
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
-            }
-        },
-        renderModifiers: function() {
-            var model = this.model,
-                product = model.get('product'),
-                viewModifiers;
-
-            if(product && product.isParent()) {
-                viewModifiers =  App.Views.GeneratorView.create('ModifiersClasses', {
-                        el: this.$('.product_attribute_info'),
-                        model: model,
-                        mod: 'Matrixes',
-                        modifiersEl: this.$('.modifiers_info')
-                    });
-                this.subViews.push(viewModifiers);
             }
         }
     });
@@ -136,8 +170,44 @@ define(["myorder_view"], function(myorder_view) {
         }*/
     });
 
+    var MyOrderItemCustomizationView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'item_customization',
+        bindings: {
+            ':el': 'updateContent: viewData'
+        },
+        computeds: {
+            viewData: {
+                get: function() {
+                    var product = this.model.get_product(),
+                        data = {
+                            ui: this.options.ui,
+                            subViewIndex: 0
+                        };
+
+                    if (product.get('is_gift')) {
+                        return _.extend(data, {
+                            name: 'Product',
+                            mod: 'GiftCardReload',
+                            model: product,
+                            className: 'gift-card-reload'
+                        });
+                    } else {
+                        return _.extend(data, {
+                            name: 'MyOrder',
+                            mod: 'Matrix',
+                            model: this.model,
+                            product: this.model.get('product')
+                        });
+                    }
+                }
+            }
+        }
+    });
+
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
+        App.Views.MyOrderView.MyOrderItemCustomizationView = MyOrderItemCustomizationView;
     });
 });

@@ -158,8 +158,6 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 inputTypeMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', 'float');
             }
 
-            if (App.skin == App.Skins.RETAIL)
-                this.$('.img').attr('data-default-index', 2);
             this.loadImage(this.$('.img'));
 
             return this;

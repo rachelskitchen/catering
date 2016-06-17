@@ -24,52 +24,50 @@
 <script type="text/template" id="product_category_list-template">
 </script>
 
-<script type="text/template" id="product_modifiers-template">
-    <% if(!hide_images) { %>
-        <div class='img_wrapper'>
-            <img class="block_img img large" src="<%= images[0] %>" alt="<%= name %> <%= id %>" />
-        </div>
-    <% } %>
-    <dl class="vertical-scrollbar">
-        <dt class='title'>
-            <span class="name"><%= name %></span>
-            <span class="cost">
-                <span class="currency_symbol"><%= currency_symbol %></span><span class="price"><%= price %></span>
-                <% if(sold_by_weight && uom) { %>
-                <span class="uom">/ <%= uom %></span>
-                <% } %>
-            </span>
-        </dt>
-        <dd class="vertical-scrollbar"><%= description %></dd>
-        <dd class="size_chart_wrapper"><a href="#" target="_blank" class="link1 size_chart"><%= _lp.PRODUCTS_SIZE_CHART %></a></dd>
-    </dl>
-
-    <% if (is_gift && _settings.online_orders) { %>
-    <div class='gift_card'>
-        <span class="message"> <%= _lp.PRODUCTS_ENTER_GIFT_CARD %>. </span>
-        <span class="clip"> <%= _lp.PRODUCTS_GIFT_CARD_NUMBER %>: </span>
-        <div class="input_beauty">
-            <input type="text" name="gift_card_number" value='<%= gift_card_number %>' class="gift_card_number" />
-        </div>
+<script type="text/template" id="product_images-template">
+    <div class='img_wrapper text-center fl-left'>
+        <img class="img large" src="<%= images[0] %>" alt="<%= name %> <%= id %>" data-default-index="2">
     </div>
-    <% } %>
-    <% if (is_gift && not_size && _settings.online_orders) { %>
-    <div class='gift_card'>
-        <span class="clip"> <%= _lp.PRODUCTS_AMOUNT %>: </span>
-        <div class="input_beauty">
-            <input type="text" id="price" name="gift_card_price" value='<%= price %>' class="gift_card_price price" />
-        </div>
-    </div>
-    <% } %>
-    <div class='clear'></div>
-    <% if(!hide_images) { %>
-    <ul class="images horizontal-scrollbar">
-    <% if (images.length > 1) _.each(images, function(image, i) {%>
-        <li data-index="<%= i %>"><img class="block_img img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>"></li>
-    <% });
-       else { %>
-        <div class='space'></div>
-    <% } %>
+    <% if (images.length > 1) { %>
+    <ul class="images fl-left">
+    <% _.each(images, function(image, i) {%>
+        <li data-index="<%= i %>" class="thumbnail" tabindex="0">
+            <img class="img block_img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>" data-default-index="2">
+        </li>
+    <% });%>
     </ul>
     <% } %>
+</script>
+
+<script type="text/template" id="product_title-template">
+    <span class="price fl-right"></span>
+    <h3 class="name"></h3>
+    <a href="#" target="_blank" class="link size_chart" tabindex="0"><%= _lp.PRODUCTS_SIZE_CHART %></a>
+</script>
+
+<script type="text/template" id="product_description-template">
+    <h4 class="desc-title"><%= _lp.DESCRIPTION_TITLE %></h4>
+    <p class="desc"><%= description %></p>
+</script>
+
+<script type="text/template" id="product_gift_card_reload-template">
+    <div class="col fl-left">
+        <h3 class="header-underline"><%= _lp.GIFT_CARD_RELOAD_TITLE %></h3>
+        <div class="card-box">
+            <div class="logo">
+                <div><%= _settings.business_name %></div>
+                <div><%= _lp.CHECKOUT_GIFT_CARD %></div>
+            </div>
+            <div class="card-number-box">
+                <div class="card-label"><%= _lp.GIFT_CARD_RELOAD_ENTER_NUMBER %></div>
+                <input type="text" class="card-number input">
+            </div>
+        </div>
+    </div>
+    <div class="col fl-left">
+        <h3 class="header-underline refill"><%= _lp.GIFT_CARD_RELOAD_REFILL %></h3>
+        <span class="currency"><%= _settings.currency_symbol %></span>
+        <input type="text" class="amount input">
+        <span class="inline-block"><%= _lp.GIFT_CARD_RELOAD_ENTER_AMOUNT %></span>
+    </div>
 </script>

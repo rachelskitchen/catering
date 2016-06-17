@@ -331,7 +331,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             this.listenToPositionChange();
 
             function getPosition() {
-                try {
+                try {console.log(el, el.selectionStart, el.selectionEnd);
                     self.startPos = el.selectionStart;
                     self.endPos = el.selectionEnd;
                 } catch(e) {
@@ -349,12 +349,45 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 range = Math.abs(this.startPos - this.endPos),
                 diff = valueLength - prevLength,
                 pos = this.startPos + range + diff;
+console.log($el.get(0), 'set position', pos);
             this.setPosition(pos);
             this.startPos = this.endPos = pos;
             this.prevValue = value;
         },
         clean: function() {
             this.stopListening();
+        }
+    });
+
+    // Adds new view to bound html element.
+    // `value` is an object that is passed to App.Views.GeneratorView.create(value.name, value, value.viewId).
+    // `value` has special properties:
+    //     `value.name`         [mandatory] - name of view class
+    //     `value.mod`          [mandatory] - name of view class mode
+    //     `value.viewId`       [optional]  - unique id of view (if it exists a new view is cached)
+    //     `value.subViewIndex` [optional]  - index of `subView` which a new view should be inserted to (if another view is occupied this index it is removed)
+    Backbone.Epoxy.binding.addHandler('updateContent', {
+        set: function($el, value) {
+            if (!_.isObject(value) || !value.name || !value.mod) {
+                return;
+            }
+
+            var subViews = this.view.subViews,
+                view = App.Views.GeneratorView.create(value.name, value, value.viewId),
+                removeMethod = value.viewId ? 'removeFromDOMTree' : 'remove',
+                existingView = subViews[value.subViewIndex];
+
+            // remove view if it exists
+            existingView && existingView[removeMethod]();
+
+            // add new view to `subViews` array
+            if (typeof value.subViewIndex == 'number' && value.subViewIndex > -1) {
+                subViews[value.subViewIndex] = view;
+            } else {
+                subViews.push(view);
+            }
+
+            $el.append(view.el);
         }
     });
 });

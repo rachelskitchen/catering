@@ -84,7 +84,7 @@
         'MAIN_STANFORD_CARD_BALANCE': 'balance',
         'MAIN_STANFORD_CARD_BALANCE_MEAL': 'Meal',
         'MAIN_STANFORD_CARD_BALANCE_MEALS': 'Meals',
-        'MODIFIERS_PLEASE_SELECT': 'Please select a',
+        'MODIFIERS_PLEASE_SELECT': 'Please select',
         'MYORDER_ADD_AMOUNT_TO': 'Add amount to',
         'MYORDER_EDIT': 'Edit',
         'MYORDER_REMOVE': 'Remove',
@@ -97,8 +97,13 @@
         'PRODUCTS_GIFT_CARD_NUMBER': 'Gift Card Number',
         'PRODUCTS_AMOUNT': 'Amount',
         'PRODUCTS_SIZE_CHART': 'Size Chart',
+        'GIFT_CARD_RELOAD_TITLE': 'Card Info',
+        'GIFT_CARD_RELOAD_REFILL': 'Refill your card',
+        'GIFT_CARD_RELOAD_ENTER_NUMBER': 'Please enter your Gift Card Number',
+        'GIFT_CARD_RELOAD_ENTER_AMOUNT': 'Please Enter the Amount You Wish to Add',
+        'QUANTITY_TITLE': 'Qty',
         'QUANTITY_HOW_MANY': 'How many?',
-        'QUANTITY_ENTER_WEIGHT': 'Enter weight',
+        'QUANTITY_WEIGHT': 'Weight',
         'STORE_INFO_VIEW': 'View',
         'STORE_INFO_IN_LARGER_MAP': 'in a larger map',
         'STORE_INFO_ADDRESS': 'Address',
@@ -134,6 +139,7 @@
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
         'STANFORD_CARD_NUMBER': 'Stanford Card #',
         'STANFORD_CARD_CHOOSE_PLAN': 'Stanford Card: Choose Plan',
-        'SEARCH_RESULTS': 'Search Results For: %s'
+        'SEARCH_RESULTS': 'Search Results For: %s',
+        'DESCRIPTION_TITLE': 'Description'
     } // end of locale
 }); // end of module

@@ -19,6 +19,12 @@
             "templates": ["products", "filters", "tree", "sort", "sidebar"],
             "core": ["tree"]
         },
+        "modifiers": {
+            "css": ["products", "quantity", "myorder", "card", "modifiers"],
+            "views": ["products", "quantity", "myorder", "stanfordcard", "modifiers"],
+            "templates": ["modifiers", "products", "quantity", "myorder", "stanfordcard"],
+            "core": ["categories", "products", "modifiers"]
+        },
         "about": {
             "views": ["store_info"],
             "templates": ["store_info"],

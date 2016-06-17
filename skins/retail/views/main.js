@@ -139,7 +139,7 @@ define(["done_view", "generator"], function(done_view) {
             if (removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data, id);
+            var subView = App.Views.GeneratorView.create(data.modelName, data, data.doNotCache ? undefined : id);
             this.subViews.push(subView); // subViews length always > 2
 
             return subView.el;

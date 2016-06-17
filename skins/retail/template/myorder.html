@@ -74,17 +74,24 @@
     <span class="name"> <%= _lp.MYORDER_WEIGHT %> <%= name %> </span>
 </script>
 
+<script type="text/template" id="myorder_item_customization-template">
+</script>
+
 <script type="text/template" id="myorder_matrix-template">
-    <div id='modifiers_popup'>
-        <div class="info">
-            <div class='product product_info'></div>
-            <div class='product_attribute_info'></div>
-        </div>
-        <% if(_settings.online_orders) { %>
-        <div class='quantity quantity_info'></div>
-        <div class="action_button" tabindex="0"> <span> <%= _lp.MYORDER_ADD_TO_BAG %> </span> </div>
+    <div class="product_info product_images"></div>
+    <div class="product_info product_title right-side"></div>
+    <div class="attr-line right-side">
+        <div class="product_attribute_info fl-left"></div>
+        <% if (_settings.online_orders) { %>
+        <div class="quantity_info fl-left"></div>
         <% } %>
     </div>
+    <div class="product_info product_desc right-side"></div>
+    <% if (_settings.online_orders) { %>
+    <div class="right-side">
+        <div class="action_button btn text-center" tabindex="0"><%= _lp.MYORDER_ADD_TO_BAG %></div>
+    </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="myorder_stanford_item-template">
