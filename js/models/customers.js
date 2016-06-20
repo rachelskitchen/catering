@@ -124,6 +124,18 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             show_password: false,
             /**
+             * Email notifications
+             * @type {boolean}
+             * @default true
+             */
+            email_notifications: true,
+            /**
+             * Push notifications
+             * @type {boolean}
+             * @default true
+             */
+            push_notifications: true,
+            /**
              * Customer's id.
              * @type {?number}
              * @default null
@@ -252,6 +264,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             !this.get('last_name') && err.push(_loc.PROFILE_LAST_NAME);
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
             !this.get('phone') && err.push(_loc.PROFILE_PHONE);
+            !_.isBoolean(this.get('email_notifications')) && err.push(_loc.PROFILE_EMAIL_NOTIFICATIONS);
+            !_.isBoolean(this.get('push_notifications')) && err.push(_loc.PROFILE_PUSH_NOTIFICATIONS);
 
             if (this.isNewAddressSelected(dining_option)) {
                 err = err.concat(this.get('addresses')._check_delivery_fields());
@@ -413,6 +427,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
             !this.get('phone') && err.push(_loc.PROFILE_PHONE);
             !this.get('password') && err.push(_loc.PROFILE_PASSWORD);
+            !_.isBoolean(this.get('email_notifications')) && err.push(_loc.PROFILE_EMAIL_NOTIFICATIONS);
+            !_.isBoolean(this.get('push_notifications')) && err.push(_loc.PROFILE_PUSH_NOTIFICATIONS);
 
             if (err.length) {
                 return {
@@ -705,6 +721,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     last_name: attrs.last_name,
                     phone_number: attrs.phone,
                     address: _.isObject(address) ? address : undefined,
+                    email_notifications: attrs.email_notifications,
+                    push_notifications: attrs.push_notifications,
                     instance: getInstanceName()
                 }),
                 success: function(data) {
@@ -817,7 +835,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     email: attrs.email,
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
-                    phone_number: attrs.phone
+                    phone_number: attrs.phone,
+                    email_notifications: attrs.email_notifications,
+                    push_notifications: attrs.push_notifications
                 }),
                 success: function(data) {
                     this.updateCookie(this.getCustomerInAPIFormat());
@@ -1459,6 +1479,8 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 first_name: data.customer.first_name,
                 last_name: data.customer.last_name,
                 phone: data.customer.phone_number,
+                email_notifications: data.customer.email_notifications,
+                push_notifications: data.customer.push_notifications,
                 user_id: data.token.user_id,
                 access_token: data.token.access_token,
                 token_type: data.token.token_type,
@@ -1517,7 +1539,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     email: attrs.email,
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
-                    phone_number: attrs.phone
+                    phone_number: attrs.phone,
+                    email_notifications: attrs.email_notifications,
+                    push_notifications: attrs.push_notifications
                 },
                 token: {
                     user_id: attrs.user_id,
