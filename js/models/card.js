@@ -241,7 +241,7 @@ define(["backbone"], function(Backbone) {
 
             !billing_address.street_1 && err.push(_loc.PROFILE_ADDRESS_LINE1);
             !billing_address.city && err.push(_loc.PROFILE_CITY);
-            !billing_address.state && err.push(_loc.PROFILE_STATE);
+            !billing_address.state && billing_address.country_code == 'US' && err.push(_loc.PROFILE_STATE);
             !billing_address.zipcode && err.push(billing_address.country_code == "US" ? _loc.PROFILE_ZIP_CODE : _loc.PROFILE_POSTAL_CODE);
             !billing_address.country_code && err.push(_loc.PROFILE_COUNTRY);
 
