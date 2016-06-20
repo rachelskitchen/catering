@@ -62,6 +62,11 @@
     margin-bottom: 0.7em;
 }
 
+.profile-info.account-notifications {
+    padding: 0 2%;
+    margin-bottom: 1em;
+}
+
 .profile-complete {
     display: block;
     margin-bottom: 1.4em;
@@ -281,6 +286,7 @@
     right: 2.5em;
 }
 
+.profile-form .profile-checkbox,
 .profile-edit .profile-checkbox {
     display: block;
     position: relative;
@@ -289,16 +295,24 @@
     text-align: left;
 }
 
+.profile-form .profile-checkbox {
+    margin-bottom: 1.4em;
+    padding: 0 0 0 1.8em;
+    line-height: 1.4em;
+}
+
 .profile-edit .payment-item .profile-checkbox {
     position: absolute;
     right: 5em;
     top: 0;
 }
 
+.profile-form .profile-checkbox input,
 .profile-edit .profile-checkbox input {
     display: none;
 }
 
+.profile-form .profile-checkbox .input,
 .profile-edit .profile-checkbox .input {
     display: block;
     -webkit-box-sizing: border-box;
@@ -318,10 +332,22 @@
     text-align: center;
 }
 
+.profile-form .profile-checkbox .input {
+    margin-top: 0;
+    top: 0;
+}
+
+.profile-form .profile-checkbox .input::before,
 .profile-edit .profile-checkbox .input::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.7em;
+}
+
+.profile-form .profile-checkbox .field-description {
+    margin: .5em 0 0;
+    padding: 0;
+    font-style: italic;
 }
 
 .profile-cvv-container .cvv-required-info {
