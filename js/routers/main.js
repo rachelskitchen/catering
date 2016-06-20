@@ -1151,7 +1151,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 }
 
                 window.setTimeout(function() {
-                    var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email',
+                    var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email change:email_notifications change:push_notifications',
                         passwordEvents = 'change:password change:confirm_password';
                     self.listenTo(customer, basicDetailsEvents, basicDetailsChanged);
                     self.listenTo(customer, passwordEvents, accountPasswordChanged);
@@ -1535,6 +1535,10 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         },
         profileSettingsContent: function() {
             var customer = App.Data.customer,
+                email_notifications_saved = false,
+                push_notifications_saved = false,
+                updatePassword = false,
+                updateNotifications = false,
                 self = this,
                 content = [];
 
@@ -1548,17 +1552,28 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // listen to any App.Data.customer change
             // to enable 'Save' link
-            preValidateData();
+            prepareInitialData();
+            accountPasswordChanged();
             window.setTimeout(function() {
-                var events = 'change:password change:confirm_password';
-                self.listenTo(customer, events, preValidateData);
-                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, events, preValidateData));
+                var passwordEvents = 'change:password change:confirm_password',
+                    notificationEvents = 'change:email_notifications change:push_notifications';
+
+                self.listenTo(customer, passwordEvents, accountPasswordChanged);
+                self.listenTo(customer, notificationEvents, accountNotificationsChanged);
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, passwordEvents, accountPasswordChanged));
+                self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, notificationEvents, accountNotificationsChanged));
                 self.listenToOnce(self, 'route', App.Data.header.set.bind(App.Data.header, 'enableLink', true));
             }, 0);
 
             content.push({
                 modelName: 'Profile',
                 mod: 'AccountPassword',
+                model: customer,
+                changeAction: save,
+                cacheId: true
+            }, {
+                modelName: 'Profile',
+                mod: 'AccountNotifications',
                 model: customer,
                 changeAction: save,
                 cacheId: true
@@ -1571,20 +1586,58 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             return content;
 
-            function preValidateData() {
+            function prepareInitialData() {
+                email_notifications_saved = customer.get('email_notifications');
+                push_notifications_saved = customer.get('push_notifications');
+            }
+
+            function accountPasswordChanged() {
                 var attrs = customer.toJSON();
-                App.Data.header.set('enableLink', Boolean(attrs.password) && Boolean(attrs.confirm_password));
+                updatePassword = Boolean(attrs.password) && Boolean(attrs.confirm_password);
+                App.Data.header.set('enableLink', updatePassword);
+            }
+
+            function accountNotificationsChanged() {
+                var email_notifications_check = customer.get('email_notifications') !== email_notifications_saved,
+                    push_notifications_check = customer.get('push_notifications') !== push_notifications_saved;
+
+                updateNotifications = email_notifications_check || push_notifications_check;
+
+                App.Data.header.set('enableLink', updateNotifications);
             }
 
             function save() {
                 var mainModel = App.Data.mainModel,
                     req;
-                if(customer.get('password') && customer.get('confirm_password')) {
+
+                // Update password
+                if (updatePassword) {
                     mainModel.trigger('loadStarted');
                     req = customer.changePassword();
+
                     req.done(function() {
+                        updatePassword = false;
+                        App.Data.header.set('enableLink', updatePassword);
                         App.Data.errors.alert(_loc.PROFILE_PASSWORD_CHANGED);
                     });
+
+                    req.always(function() {
+                        mainModel.trigger('loadCompleted');
+                    });
+                }
+
+                // Update notifications options
+                if (updateNotifications) {
+                    mainModel.trigger('loadStarted');
+                    req = customer.updateCustomer();
+
+                    req.done(function() {
+                        prepareInitialData();
+                        updateNotifications = false;
+                        App.Data.header.set('enableLink', updateNotifications);
+                        App.Data.errors.alert(_loc.PROFILE_NOTIFICATIONS_CHANGED);
+                    });
+
                     req.always(function() {
                         mainModel.trigger('loadCompleted');
                     });
