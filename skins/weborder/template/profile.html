@@ -57,6 +57,21 @@
             <span class="passwords-mismatch text-left attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
             <span class="phone-privacy text-left optional-text"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
+        <li>
+            <label class="profile-checkbox text-left">
+                <input type="checkbox" class="email-notifications">
+                <span class="checkbox-email-notifications checkbox primary-border"></span>
+                <span class="checkbox-text"><%= _lp.PROFILE_EMAIL_NOTIFICATIONS %></span>
+            </label>
+        </li>
+        <li>
+            <label class="profile-checkbox text-left">
+                <input type="checkbox" class="push-notifications">
+                <span class="checkbox-push-notifications checkbox primary-border"></span>
+                <span class="checkbox-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS %></span>
+                <div class="field-description optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+            </label>
+        </li>
     </ul>
     <div class="btn signup-btn"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
 </script>
@@ -77,6 +92,8 @@
             <div class="basic-details-box"></div>
             <h3 class="header-underline"><%= _lp.PROFILE_CHANGE_PASSWORD %></h3>
             <div class="account-password-box"></div>
+            <h3 class="header-underline"><%= _lp.PROFILE_NOTIFICATIONS %></h3>
+            <div class="account-notifications-box"></div>
         </div>
         <div class="col-right border-box fl-left">
             <h3 class="header-underline"><%= _lp.PROFILE_ADDRESSES %></h3>
@@ -176,6 +193,26 @@
             <div class="label account-password-field optional-text"><%= _lp.PROFILE_ENTER_NEW_PASSWORD %></div>
             <input type="password" class="new-password input ios-safari-caret">
             <span class="show-password primary-text link"><%= _lp.PROFILE_SHOW_PASSWORD %></span>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="profile_account_notifications-template">
+    <ul>
+        <li class="checkbox-item">
+            <label class="profile-checkbox">
+                <input type="checkbox" class="email-notifications">
+                <span class="checkbox-email-notifications checkbox primary-border"></span>
+                <span><%= _lp.PROFILE_EMAIL_NOTIFICATIONS %></span>
+            </label>
+        </li>
+        <li class="checkbox-item">
+            <label class="profile-checkbox">
+                <input type="checkbox" class="push-notifications">
+                <span class="checkbox-push-notifications checkbox primary-border"></span>
+                <span><%= _lp.PROFILE_PUSH_NOTIFICATIONS %> <%= _lp.PROFILE_PUSH_NOTIFICATIONS_EXTRA %></span>
+                <div class="field-description optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+            </label>
         </li>
     </ul>
 </script>

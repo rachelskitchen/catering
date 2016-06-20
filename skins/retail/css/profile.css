@@ -162,6 +162,7 @@
     margin-bottom: 12px;
     text-align: center;
     opacity: 0;
+    clear: both;
     filter: alpha(opacity=0);
 }
 
@@ -286,6 +287,17 @@
     border-radius: 4px;
 }
 
+.profile-edit .checkbox-item .profile-checkbox {
+    line-height: 22px;
+    font-size: 14px;
+}
+
+.profile-edit .checkbox-item .field-description {
+    margin-top: 4px;
+    line-height: normal;
+    font-size: 10px;
+}
+
 .profile-edit .payments-list,
 .profile-edit .gift-cards-list,
 .profile-edit .reward-cards-list {
@@ -334,6 +346,18 @@
 .profile-form .placeholder::before {
     padding: 4px 8px;
     font-size: 14px;
+}
+
+.profile-form .profile-checkbox {
+    font-size: 14px;
+}
+
+.profile-form .profile-checkbox input {
+    width: auto;
+}
+
+#profile-panel .profile-checkbox .field-description {
+    padding: 4px 14px 0;
 }
 
 .profile-form .account-password-field {
