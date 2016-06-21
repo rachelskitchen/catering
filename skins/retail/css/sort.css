@@ -41,11 +41,3 @@
     white-space: nowrap;
     cursor: pointer;
 }
-
-.sort-menu .sort-item:first-child {
-    margin-top: 6px;
-}
-
-.sort-menu .sort-item:last-child {
-    margin-bottom: 6px;
-}

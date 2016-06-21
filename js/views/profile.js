@@ -553,7 +553,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.log-in-box': 'toggle: ui_showLogIn',
             '.menu-items': 'toggle: ui_showMenu',
             '.logged-as': 'text: first_name, toggle: access_token',
-            '.reset-password-box': 'toggle: ui_showPWDReset'
+            '.reset-password-box': 'toggle: ui_showPWDReset',
+            '.links': 'classes: {logged: access_token}'
         },
         events: {
             'click .signup-link': controlLinks(true, false, false, false),

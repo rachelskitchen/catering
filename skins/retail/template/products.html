@@ -1,7 +1,7 @@
 <script type="text/template" id="product_list-template">
-    <h2 class="products-set-title"></h2>
+    <h2 class="products-set-title header-text primary-border"></h2>
     <ul class="products"></ul>
-    <div class="loading">
+    <div class="loading shadow-bg">
         <div class="ui-spinner animate-spin"></div>
     </div>
 </script>
@@ -28,46 +28,49 @@
     <div class='img_wrapper text-center fl-left'>
         <img class="img large" src="<%= images[0] %>" alt="<%= name %> <%= id %>" data-default-index="2">
     </div>
-    <% if (images.length > 1) { %>
     <ul class="images fl-left">
-    <% _.each(images, function(image, i) {%>
+    <% if (images.length > 1) _.each(images, function(image, i) {%>
         <li data-index="<%= i %>" class="thumbnail" tabindex="0">
             <img class="img block_img" src="<%= images[i] %>" alt="<% print('[' + i + ']' + name + ' ' + id); %>" data-default-index="2">
         </li>
     <% });%>
     </ul>
-    <% } %>
 </script>
 
 <script type="text/template" id="product_title-template">
     <span class="price fl-right"></span>
-    <h3 class="name"></h3>
-    <a href="#" target="_blank" class="link size_chart" tabindex="0"><%= _lp.PRODUCTS_SIZE_CHART %></a>
+    <h3 class="name header-text"></h3>
+    <a href="#" target="_blank" class="link size_chart regular-text" tabindex="0"><%= _lp.PRODUCTS_SIZE_CHART %></a>
 </script>
 
 <script type="text/template" id="product_description-template">
-    <h4 class="desc-title"><%= _lp.DESCRIPTION_TITLE %></h4>
+    <h4 class="desc-title header-text bold secondary-border"><%= _lp.DESCRIPTION_TITLE %></h4>
     <p class="desc"><%= description %></p>
 </script>
 
 <script type="text/template" id="product_gift_card_reload-template">
     <div class="col fl-left">
         <h3 class="header-underline"><%= _lp.GIFT_CARD_RELOAD_TITLE %></h3>
-        <div class="card-box">
+        <div class="card-box primary-border">
             <div class="logo">
                 <div><%= _settings.business_name %></div>
                 <div><%= _lp.CHECKOUT_GIFT_CARD %></div>
             </div>
             <div class="card-number-box">
-                <div class="card-label"><%= _lp.GIFT_CARD_RELOAD_ENTER_NUMBER %></div>
+                <div class="card-label optional-text"><%= _lp.GIFT_CARD_RELOAD_ENTER_NUMBER %></div>
                 <input type="text" class="card-number input">
             </div>
         </div>
     </div>
     <div class="col fl-left">
         <h3 class="header-underline refill"><%= _lp.GIFT_CARD_RELOAD_REFILL %></h3>
-        <span class="currency"><%= _settings.currency_symbol %></span>
-        <input type="text" class="amount input">
-        <span class="inline-block"><%= _lp.GIFT_CARD_RELOAD_ENTER_AMOUNT %></span>
+        <div class="amount-box">
+            <span class="currency optional-text"><%= _settings.currency_symbol %></span>
+            <input type="text" class="amount input">
+            <span class="inline-block optional-text"><%= _lp.GIFT_CARD_RELOAD_ENTER_AMOUNT %></span>
+        </div>
+        <% if (_settings.online_orders) { %>
+        <div class="action_button btn text-center border-box" tabindex="0"><%= _lp.MYORDER_ADD_TO_BAG %></div>
+        <% } %>
     </div>
 </script>

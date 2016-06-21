@@ -40,12 +40,24 @@
     padding: 0 3px;
 }
 
-.profile-panel-box .links {
+.profile-panel-box .logged .slash {
+    display: none;
+}
+
+.profile-panel-box .signup-link,
+.profile-panel-box .login-link,
+.profile-panel-box .logged-as {
     font-size: 12px;
     letter-spacing: 1px;
 }
 
-.profile-panel-box .links .primary-text {
+.profile-panel-box .links {
+    position: relative;
+    z-index: 201;
+}
+
+.profile-panel-box .links .primary-text,
+.profile-panel-box .links .regular-text {
     color: inherit;
 }
 

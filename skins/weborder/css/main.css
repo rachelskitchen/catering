@@ -263,7 +263,6 @@ input[type="radio"]:checked + .radio::before,
 .select-wrapper[class] select {
     width: auto;
     padding-right: 27px;
-    background: inherit;
 }
 
 .placeholder::before {

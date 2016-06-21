@@ -37,7 +37,7 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
                     return {
                         name: 'Tree',
                         mod: 'Categories',
-                        className: 'categories-tree',
+                        className: 'categories-tree primary-border',
                         collection: categoriesTree,
                         viewId: 0,
                         subViewIndex: 0

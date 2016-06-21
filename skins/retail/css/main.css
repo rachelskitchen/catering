@@ -259,7 +259,6 @@ textarea:focus {
 .select-wrapper[class] select {
     width: auto;
     padding-right: 27px;
-    background: inherit;
 }
 
 .textarea {
@@ -330,6 +329,12 @@ background: red; /* remove */
     font-weight: 100;
     letter-spacing: 3.5px;
     text-transform: uppercase;
+}
+
+.establishments_view .establishments {
+    top: 0;
+    left: 0;
+    z-index: 300;
 }
 
 #content {

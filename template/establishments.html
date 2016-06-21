@@ -1,14 +1,14 @@
 <script type='text/template' id='establishments_main-template'>
-    <div class='establishments'>
+    <div class='establishments back-bg'>
        <div>
           <div class="wnd-wrapper">
             <div class="choose_brand_title"> <%= CHOOSE_BRAND %> </div>
                 <div class='establishments_select select-wrapper'> </div>
                 <div></div>
                 <% if (storeDefined) { %>
-                    <div class="btn btn-half border-box fl-left btn-secondary" name="back"> <span class="clip"> <%= BACK_BUTTON %> </span> </div>
+                    <div class="btn btn-half border-box fl-left btn-secondary back_btn"> <span class="clip"> <%= BACK_BUTTON %> </span> </div>
                 <% } %>
-                    <div class="btn btn-half border-box fl-left" name="proceed"> <span class="clip"> <%= PROCEED_BUTTON %> </span> </div>
+                    <div class="btn btn-half border-box fl-left proceed_btn"> <span class="clip"> <%= PROCEED_BUTTON %> </span> </div>
           </div>
         </div>
         <% if (showFooter) { %>

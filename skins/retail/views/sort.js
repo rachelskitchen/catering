@@ -27,6 +27,7 @@ define(["factory"], function() {
         name: 'sort',
         mod: 'item',
         className: 'sort-item',
+        tagName: 'li',
         bindings: {
             ':el': 'classes: {active: selected}, attr: {tabindex: 0}'
         },

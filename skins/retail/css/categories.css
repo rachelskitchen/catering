@@ -78,7 +78,6 @@
 }
 
 .categories-tree .name.active {
-    color: red;
     cursor: default;
 }
 

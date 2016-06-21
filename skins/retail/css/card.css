@@ -3,6 +3,11 @@
     margin-right: 10%;
 }
 
+.gift-card-reload .action_button {
+    max-width: 100%;
+    width: 470px;
+}
+
 .gift-card-reload .header-underline {
     max-width: 100%;
     width: 470px;
@@ -61,4 +66,8 @@
 
 .gift-card-reload .refill {
     margin-bottom: 28px;
+}
+
+.gift-card-reload .amount-box {
+    min-height: 89px;
 }
