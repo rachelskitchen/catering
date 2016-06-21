@@ -31,7 +31,7 @@ define(["myorder_view"], function(myorder_view) {
                                                     .mixed( DynamicHeightHelper_Modifiers );
     function _MyOrderMatrixView(_base){ return _base.extend({
         bindings: {
-            '.popup__title': 'text: select(isGiftCard, select(App.Data.is_stanford_mode, _lp_STANFORD_CARD_RELOAD, _lp_GIFT_CARD_RELOAD), _lp_CUSTOMIZE)'
+            '.popup__title': 'text: select(isGiftCard, _lp_GIFT_CARD_RELOAD, _lp_CUSTOMIZE)'
         },
         computeds: {
             isGiftCard: {
@@ -74,10 +74,11 @@ define(["myorder_view"], function(myorder_view) {
                 var el = this.$('.modifiers_table'),
                     product = this.$('.product_info').outerHeight(true),
                     footer = this.$('.product_info_footer').outerHeight(true),
+                    title = this.$('.popup__title').outerHeight(true),
                     prev_el_scroll = el.get(0).scrollTop,
                     el_paddings = parseInt(el.css('padding-top')) + parseInt(el.css('padding-bottom')); // Bug 44157
 
-                el.css('max-height', (popup_height - product - footer - el_paddings) + 'px');
+                el.css('max-height', (popup_height - title - product - footer - el_paddings) + 'px');
 
                 // Bug 37299. Handle scrollTop update here instead of inside $.contentarrow
                 if (prev_el_scroll > 0) {
