@@ -2041,6 +2041,15 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             this.trigger('onUserSessionExpired');
             this.logout(); // need to reset current account to allow to re-log in
         },
+        /**
+         * The wrapper for addresses.getCheckoutAddress() method.
+         * @param {string} [dining_option] - dining option.
+         * @param {boolean} [fromProfile] - indicates whether to use fields from profile address
+         * @returns App.Models.Customer.addresses.getCheckoutAddress()
+         */
+        getCheckoutAddress: function(dining_option, fromProfile) {
+            return this.get('addresses').getCheckoutAddress(dining_option, fromProfile);
+        },
     });
 
     /**
