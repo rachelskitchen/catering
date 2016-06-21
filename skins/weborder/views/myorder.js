@@ -30,6 +30,17 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrixView = _MyOrderMatrixView( CoreViews.CoreMyOrderMatrixView )
                                                     .mixed( DynamicHeightHelper_Modifiers );
     function _MyOrderMatrixView(_base){ return _base.extend({
+        bindings: {
+            '.popup__title': 'text: select(isGiftCard, select(App.Data.is_stanford_mode, _lp_STANFORD_CARD_RELOAD, _lp_GIFT_CARD_RELOAD), _lp_CUSTOMIZE)'
+        },
+        computeds: {
+            isGiftCard: {
+                deps: ['$model'],
+                get: function(model) {
+                    return model.get_product().get('is_gift');
+                }
+            }
+        },
         render: function() {
             _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();
