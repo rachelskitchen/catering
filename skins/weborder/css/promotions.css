@@ -29,17 +29,8 @@
     overflow-y: auto;
 }
 
-.promotions__title,
 .promotions__group {
     padding: 0 24px;
-}
-
-.promotions__title {
-    text-transform: uppercase;
-    font-weight: 200;
-    font-size: 14px;
-    letter-spacing: 3px;
-    padding: 1.5em 24px;
 }
 
 .promotions__group-title {
