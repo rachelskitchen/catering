@@ -1,15 +1,15 @@
 <script type="text/template" id="main_main-template">
     <header id="header"></header>
-    <section id="content"></section>
+    <section id="content" class="primary-border"></section>
     <aside id="cart" class="animation"> </aside>
-    <footer id="footer">
+    <footer id="footer" class="primary-border">
         <div class="store_choice fl-left">
             <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
-            <a class="change_establishment link" href="javascript: void(0);" tabindex="0"><%= _lp.MAIN_CHANGE %></a>
+            <a class="change_establishment link primary-text" href="javascript: void(0);" tabindex="0"><%= _lp.MAIN_CHANGE %></a>
         </div>
         <a class="powered-by link fl-right" target='_blank' tabindex="0" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
     </footer>
-    <div id="main-spinner"></div>
+    <div id="main-spinner" class="shadow-bg"></div>
 </script>
 
 <script type="text/template" id="main_maintenance-template">

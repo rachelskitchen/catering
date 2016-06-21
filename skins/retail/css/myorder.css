@@ -7,8 +7,9 @@
     margin-left: 631px;
 }
 
-.myorder-item-customization .attr-line {
-    overflow: hidden;
+.myorder-item-customization .attr-line:not(.no-images) {
+    padding-left: 25px;
+    margin-left: 0;
 }
 
 .myorder-item-customization .modifier_class_wrapper,
@@ -23,7 +24,6 @@
 
 .myorder-item-customization .modifier_class_wrapper .title,
 .myorder-item-customization .quantity_info .title {
-    font-weight: 500;
     letter-spacing: 1px;
     text-transform: uppercase;
     vertical-align: bottom;

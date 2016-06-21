@@ -45,7 +45,7 @@ define(["./tree"], function(tree_view) {
         name: 'filter',
         mod: 'items',
         itemView: FilterItemView,
-        className: 'categories-tree',
+        className: 'categories-tree primary-border',
         initialize: function() {
             this.collection = this.model.get('filterItems');
             App.Views.TreeView.TreeCategoriesView.prototype.initialize.apply(this, arguments);

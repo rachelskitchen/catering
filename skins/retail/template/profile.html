@@ -1,69 +1,69 @@
 <script type="text/template" id="profile_panel-template">
-    <div class="close"></div>
+    <div class="close shadow-profile-bg"></div>
     <div class="links">
         <span class="signup-link link pos-relative" tabindex="0"><%= _lp.PROFILE_SIGN_UP_LINK %></span>
         <span class="slash">&frasl;</span>
         <span class="login-link link pos-relative" tabindex="0"><%= _lp.PROFILE_LOG_IN %></span>
         <span class="logged-as link" tabindex="0"></span>
     </div>
-    <div class="sign-up-box box"></div>
-    <div class="log-in-box box"></div>
-    <div class="menu-items box"></div>
-    <div class="reset-password-box box"></div>
+    <div class="sign-up-box box primary-border primary-bg"></div>
+    <div class="log-in-box box primary-border primary-bg"></div>
+    <div class="menu-items box primary-border primary-bg"></div>
+    <div class="reset-password-box box primary-border primary-bg"></div>
 </script>
 
 <script type="text/template" id="profile_log_in-template">
     <ul class="profile-form">
         <li>
-            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
             <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
             <div class="account-inactive field-description attention-text text-left"><%= _lp.PRIFILE_ACCOUNT_INACTIVE %> <span class="resend-activation simlink"><%= _lp.PROFILE_RESEND_ACTIVATION %></span></div>
             <div class="activation-sent field-description attention-text text-left"><%= _lp.PROFILE_ACTIVATION_SENT %></div>
         </li>
         <li>
-            <div class="label required"><%= _lp.PROFILE_PASSWORD %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_PASSWORD %></div>
             <input type="password" class="pwd ios-safari-caret input">
         </li>
     </ul>
-    <div class="forgot-password link text-right"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
+    <div class="forgot-password link text-right primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
     <div class="btn login-btn text-center"><%= _lp.PROFILE_LOG_IN %></div>
 </script>
 
 <script type="text/template" id="profile_sign_up-template">
     <ul class="profile-form">
         <li>
-            <div class="label required"><%= _lp.PROFILE_FIRST_NAME %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_FIRST_NAME %></div>
             <input type="text" class="first-name ios-safari-caret input">
         </li>
         <li>
-            <div class="label required"><%= _lp.PROFILE_LAST_NAME %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_LAST_NAME %></div>
             <input type="text" class="last-name ios-safari-caret input">
         </li>
         <li>
-            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
             <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
         </li>
         <li>
-            <div class="label required"><%= _lp.PROFILE_PHONE %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_PHONE %></div>
             <input type="tel" class="phone ios-safari-caret input">
-            <span class="phone-privacy"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+            <span class="phone-privacy optional-text"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
         <li>
-            <div class="label required"><%= _lp.PROFILE_PASSWORD %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_PASSWORD %></div>
             <input type="password" class="password ios-safari-caret input">
         </li>
         <li class="pos-relative">
-            <div class="label required"><%= _lp.PROFILE_REENTER_PASSWORD %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_REENTER_PASSWORD %></div>
             <input type="password" class="password-confirm ios-safari-caret input">
-            <span class="passwords-mismatch"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
-            <span class="phone-privacy"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
+            <span class="passwords-mismatch attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
+            <span class="phone-privacy optional-text"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
     </ul>
     <div class="btn signup-btn text-center"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
 </script>
 
 <script type="text/template" id="profile_menu-template">
-    <ul class="profile-items">
+    <ul class="profile-items regular-text">
         <li class="profile-link profile-item"><%= _lp.PROFILE_EDIT_TITLE %></li>
         <li class="payments-link profile-item"><%= _lp.PAYMENT_METHODS %></li>
         <li class="logout-link profile-item"><%= _lp.PROFILE_LOG_OUT %></li>

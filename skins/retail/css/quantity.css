@@ -16,9 +16,11 @@
     font-family: 'FontAwesome';
     font-size: 14px;
     display: block;
+    height: 16px;
+    padding-right: 5px;
     position: absolute;
     top: 0;
-    right: 5px;
+    right: 0;
     pointer-events: none;
     background: inherit;
 }

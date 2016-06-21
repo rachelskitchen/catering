@@ -1,0 +1,192 @@
+/* [regular_text] reqular text */
+body,
+.regular-text[class] {
+  color: #5F6266;
+}
+/* [alternate_text] primary button text */
+.alternate-text[class],
+.btn,
+.profile-panel-box .profile-item:hover,
+.sort-items .sort-item:hover,
+.sort-items .sort-item.active,
+#popup_ok[id],
+#popup_cancel[id] {
+  color: #FFFFFF;
+}
+/* [header_text] Catedory tree title, filter title */
+.header-text[class] {
+  color: #373B40;
+}
+/* [optional_text] optional text (additional info), input label */
+.optional-text[class],
+#alert .icon {
+  color: #9B9D9F;
+}
+/* [attention_text] attention text */
+.attention-text[class] {
+  color: #D0021B;
+}
+/* [primary_text] active category, links */
+.primary-text[class],
+.categories-tree .name.active {
+  color: #00A3E0;
+}
+.profile-panel-box .profile-item:hover,
+.sort-items .sort-item:hover,
+.sort-items .sort-item.active {
+  background: #00A3E0;
+}
+/* [primary_button] all primary buttons */
+.btn,
+.checkbox[checked="checked"]::before,
+.radio[checked="checked"]::before,
+.checkbox.checked::before,
+.radio.checked::before,
+#popup_ok[id],
+.about-box .image-point.selected {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #2EBBF1), color-stop(1, #00A3E0));
+  background: -o-linear-gradient(bottom, #2EBBF1 0%, #00A3E0 100%);
+  background: -moz-linear-gradient(bottom, #2EBBF1 0%, #00A3E0 100%);
+  background: -webkit-linear-gradient(bottom, #2EBBF1 0%, #00A3E0 100%);
+  background: -ms-linear-gradient(bottom, #2EBBF1 0%, #00A3E0 100%);
+  background: linear-gradient(to bottom, #2EBBF1 0%, #00A3E0 100%);
+}
+/* [primary_button_highlighted] */
+.btn:active,
+.btn:focus,
+#popup_ok[id]:active,
+#popup_ok[id]:focus {
+  background: #00A3E0;
+}
+/* [primary_background] main background ('body' tag) */
+body,
+.primary-bg[class],
+.order-items li,
+.alert_wrapper {
+  background: #FFFFFF;
+}
+/* [primary_border] primary border */
+.primary-border[class],
+.header-underline {
+  border-color: #D7D8D9;
+}
+/* [primary_icon] arrows icons */
+.primary-icon[class],
+.modifier_class_list.select-wrapper::after,
+.weight_edit_inner::after,
+.combobox::after {
+  color: #00A3E0;
+}
+/* [secondary_border] 'Shopping Cart' bottom line, dotted vertical line at item's image */
+.secondary-border[class],
+.modifier_class_wrapper {
+  border-color: #9B9D9F;
+}
+/* [footer_background] footer background */
+#footer {
+  background: #FBFBFB;
+}
+/* [cart_background] cart background */
+#cart {
+  background: #F4F4F4;
+}
+/* [category_background] categories tree header, filter header */
+.category-bg,
+.products .no-photo {
+  background: #F1F1F1;
+}
+/* [shadow_background] background behind popup window */
+.shadow-bg[class],
+#alert {
+  background: rgba(55, 59, 64, 0.6);
+}
+/* [shadow_profile_background] profile shadow  background */
+.shadow-profile-bg {
+  background: rgba(21, 75, 92, 0.1);
+}
+/* [popup_background] popup window background */
+.popup-bg[class],
+#popup_container[id] {
+  background: #FFFFFF;
+}
+/* [card_background_gradient] stanford card plan background, card balance background */
+.gift-card-reload .card-box {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.2)), color-stop(1, rgba(209, 229, 237, 0.2)));
+  background: -o-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
+  background: -moz-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
+  background: -webkit-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
+  background: -ms-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
+}
+/* [cancel_button] cancel button */
+.cancel {
+  color: #C2C6CE;
+}
+/* [input_border] input border color */
+.input-border[class],
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select,
+.selectbox {
+  border-color: #9B9D9F;
+}
+.select-wrapper::after {
+  color: #9B9D9F;
+}
+/* [input_background] input background */
+.input-bg[class],
+.textarea,
+.input,
+.select-wrapper::after,
+.select-wrapper select {
+  background: #F9F9F9;
+}
+/* [input_text] input text color */
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select {
+  color: #373B40;
+}
+/* [input_highlighted] input text color */
+.textarea:focus,
+.input:focus,
+.select-wrapper:focus,
+.select-wrapper select:focus {
+  box-shadow: 0 0 4px 0 #00A3E0;
+  border-color: #00A3E0;
+}
+/* [secondary_button] */
+.btn-secondary[class],
+#popup_cancel[id] {
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, #B5B5B5), color-stop(1, #989898));
+  background: -o-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: -moz-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: -webkit-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: -ms-linear-gradient(bottom, #B5B5B5 0%, #989898 100%);
+  background: linear-gradient(to bottom, #B5B5B5 0%, #989898 100%);
+}
+/* [secondary_button_highlighted] */
+.btn-secondary[class]:active,
+.btn-secondary[class]:focus,
+#popup_cancel[id]:active,
+#popup_cancel[id]:focus {
+  background: #989898;
+}
+/* [tab_active] active tab (Menu, About, Map) */
+.menu .menu-item.active,
+.menu .menu-item:hover {
+  color: #00A3E0;
+}
+.menu .menu-item.active::after {
+  border-top-color: #00A3E0;
+}
+/* [top_header_text] header text (business_name, search line, user, items in cart) */
+#header .top {
+  color: #FFFFFF;
+}
+/* [top_header_background] top header */
+#header .top {
+  background: #2DBAF0;
+}
