@@ -657,8 +657,8 @@ console.log('restoreState', history.length, JSON.stringify(data));
         },
         about: function() {
             this.prepare('about', function() {
-                if (!App.Data.AboutModel) {
-                    App.Data.AboutModel = new App.Models.AboutModel();
+                if (!App.Data.aboutModel) {
+                    App.Data.aboutModel = new App.Models.AboutModel();
                 }
                 App.Data.header.set('menu_index', 1);
                 App.Data.mainModel.set('mod', 'Main');
@@ -666,9 +666,10 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.AboutModel,
-                        mod: 'About',
-                        className: 'about'
+                        model: App.Data.timetables,
+                        mod: 'Main',
+                        about: App.Data.aboutModel,
+                        className: 'store-info about-box'
                     },
                     cart: carts.main
                 });
@@ -685,10 +686,9 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.timetables,
+                        mod: 'MapWithStores',
                         collection: stores,
-                        mod: 'Map',
-                        className: 'map'
+                        className: 'store-info map-box'
                     },
                     cart: carts.main
                 });

@@ -20,16 +20,15 @@
             "core": ["categories", "search"]
         },
         "about": {
-            "views": ["store_info"],
             "templates": ["store_info"],
             "css":  ["store_info"],
-            "core": ["jquery_gallery", "about"],
+            "core": ["jquery_gallery", "about", "store_info_view"],
             "cssCore": ["libs/jquery/jquery.gallery/jquery.gallery"]
         },
         "map": {
-            "views": ["store_info"],
             "templates": ["store_info"],
-            "css":  ["store_info"]
+            "css":  ["store_info"],
+            "core": ["store_info_view"]
         },
         "checkout": {
             "css": ["checkout", "card", "rewards", "pikaday"],

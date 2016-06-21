@@ -25,7 +25,58 @@ define(["backbone", "factory", "generator"], function(Backbone) {
 
     App.Views.CoreStoreInfoView = {};
 
-    App.Views.CoreStoreInfoView.CoreStoreInfoMainView = App.Views.FactoryView.extend({
+    var StoreInfoMainView = App.Views.CoreStoreInfoView.CoreStoreInfoMainView = App.Views.FactoryView.extend({
+        name: 'store_info',
+        mod: 'main',
+        bindings: {
+            '.desc': 'toggle: _system_settings_about_description, html: format("<p>$1</p>", handleDescriptions(_system_settings_about_description))',
+            '.business-name': 'text: _system_settings_business_name',
+            '.address-line1': 'text: line1',
+            '.address-line2': 'text: line2',
+            '.phone': 'toggle: _system_settings_phone',
+            '.phone-number': 'text: phoneFormat(_system_settings_phone), attr: {href: format("tel:$1", _system_settings_phone)}',
+            '.email-wrap': 'toggle: _system_settings_email',
+            '.email': 'text: _system_settings_email, attr: {href: format("mail:$1", _system_settings_email)}',
+            '.access': 'toggle: _system_settings_about_access_to_location',
+            '.access-info': 'text: _system_settings_about_access_to_location',
+            '.gallery': 'updateContent: galleryViewData'
+        },
+        bindingFilters: {
+            handleDescriptions: function(desc) {
+                return desc.replace(/[\n\r]+/g, '</p><p>');
+            }
+        },
+        computeds: {
+            line1: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    var line1 = address.line_1,
+                        line2 = address.line_2;
+                    return line2 ? line1 + ', ' + line2 : line1;
+                }
+            },
+            line2: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    return address.city + ', ' + address.getRegion() + ' ' + address.postal_code;
+                }
+            },
+            galleryViewData: {
+                deps: ['_system_settings_about_images'],
+                get: function(about_images) {
+                    if (about_images.length > 0) {
+                        return {
+                            name: 'StoreInfo',
+                            mod: 'Gallery',
+                            model: this.options.about
+                        };
+                    }
+                }
+            }
+        }
+    });
+
+    var StoreInfoMapView = App.Views.CoreStoreInfoView.CoreStoreInfoMapView = App.Views.FactoryView.extend({
         initialize: function() {
             this.listenTo(this.collection, 'change:selected', this.onStoreSelected);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
@@ -101,50 +152,6 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                 }, 50);
             });});
 
-        },
-        infoDetailed: function() {
-            var settings = App.Data.settings,
-                settings_system = settings.get('settings_system'),
-                address = settings_system.address,
-                address_line1 = [],
-                address_line2 = [],
-                region = address.getRegion(),
-                timetable = this.model.getHoursOnWeek();
-
-            if(address instanceof Object) {
-                address.line_1 && address_line1.push(address.line_1);
-                address.line_2 && address_line1.push(address.line_2);
-                address.city && address_line2.push(address.city);
-                region && address_line2.push(region);
-                address.postal_code && address_line2.push(address.postal_code);
-            }
-
-            if(address_line2.length > 1)
-                address_line2[0] += ',';
-
-            return {
-                logo: settings_system.logo_img ? settings.get('host') + settings_system.logo_img : null,
-                phone: settings_system.phone,
-                email: settings_system.email,
-                access_to_location: settings_system.about_access_to_location,
-                address: {
-                    business_name: settings_system.business_name,
-                    line1: address_line1.join(', '),
-                    line2: address_line2.join(' ')
-                },
-                timetable: timetable,
-                phoneFormat: function(phone) {
-                    if(phone.length < 10) {
-                        return phone;
-                    }
-                    var matches = phone.match(/^(\+?\d{1,3})?(\d{3})(\d{3})(\d{4})$/);
-                    if(matches !== null) {
-                        return matches.slice(1).join('.');
-                    } else {
-                        return phone;
-                    }
-                }
-            };
         },
         addMarkers: function() {
             var stores = this.collection,
@@ -270,5 +277,151 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         };
     }
 
-    return new (require('factory'))();
+    var StoreInfoImagePoint = App.Views.FactoryView.extend({
+        name: 'store_info',
+        mod: 'image_point',
+        tagName: 'li',
+        className: 'image-point primary-border',
+        bindings: {
+            ':el': 'classes: {selected: selected}'
+        },
+        events: {
+            'click': 'select'
+        },
+        select: function() {
+            this.model.set('selected', true);
+        }
+    });
+
+    var StoreInfoGalleryView = App.Views.CoreStoreInfoView.CoreStoreInfoGalleryView = App.Views.FactoryView.extend({
+        name: 'store_info',
+        mod: 'gallery',
+        bindings: {
+            '.points': 'collection: $points, itemView: "imagePoint"',
+            '.syncer': 'gallery: curIndex, galleryEl: ".images", events: ["onScroll"]'
+        },
+        imagePoint: StoreInfoImagePoint,
+        bindingHandlers: {
+            galleryEl: {},
+            gallery: {
+                init: function($el, value, bindings, context) {
+                    var $gallery = this.view.$(context.galleryEl),
+                        self = this;
+                    this.curIndex = value;
+                    $gallery.gallery({onScroll: function(curIndex) {
+                        self.curIndex = curIndex;
+                        $el.trigger('onScroll');
+                    }});
+                    this.scrollTo = function(value) {
+                        $gallery.gallery({scrollTo: value})
+                    }
+                },
+                get: function() {
+                    return this.curIndex;
+                },
+                set: function($el, value) {
+                    this.scrollTo(value);
+                }
+            }
+        },
+        bindingSources: {
+            points: function() {
+                var points = new Backbone.RadioCollection();
+                points.listenTo(points, 'change:selected', function() {
+                    points.trigger('update');
+                });
+                return points;
+            }
+        },
+        computeds: {
+            curIndex: {
+                deps: ['$points'],
+                get: function(points) {
+                    var selected = points.findWhere({selected: true});
+                    return selected ? selected.get('index') : 0;
+                },
+                set: function(value) {
+                    var model = this.getBinding('$points').findWhere({index: value});
+                    model && model.set('selected', true);
+                }
+            }
+        },
+        initialize:  function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.getBinding('$points').reset(this.model.get('images').map(function(image, index) {
+                return {
+                    selected: !index,
+                    index: index
+                }
+            }));
+        },
+        render: function() {
+            App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.$('.images').gallery({
+                images: this.model.get('images'),
+                animate: true,
+                circle: true
+            });
+            return this;
+        }
+    });
+
+    var StoreInfoStoreItemView = App.Views.FactoryView.extend({
+        name: 'store_info',
+        mod: 'store_item',
+        tagName: 'li',
+        className: 'store-item',
+        events: {
+            'click': 'select'
+        },
+        bindings: {
+            '.radio': 'classes: {checked: selected}',
+            '.line-1': 'text: line1',
+            '.line-2': 'text: line2',
+            '.name': 'text: name'
+        },
+        computeds: {
+            line1: {
+                deps: ['line_1', 'line_2'],
+                get: function(line_1, line_2) {
+                    return line_2 ? line_1 + ', ' + line_2 : line_1;
+                }
+            },
+            line2: {
+                deps: ['city', 'region', 'zipcode'],
+                get: function(city, region, zipcode) {
+                    return city + ', ' + region + ' ' + zipcode;
+                }
+            }
+        },
+        select: function() {
+            this.model.set('selected', true);
+        }
+    });
+
+    var StoreInfoMapWithStoresView = App.Views.CoreStoreInfoView.CoreStoreInfoMapWithStoresView = StoreInfoMapView.extend({
+        name: 'store_info',
+        mod: 'map',
+        storeView: StoreInfoStoreItemView,
+        bindings: {
+            '.stores-list': 'collection: $collection, itemView: "storeView"',
+            '.show-delivery-area': 'toggle: ui_isDeliveryAreaGeoJSON'
+        },
+        events: {
+            'click .show-delivery-area': 'focusOnDeliveryArea'
+        },
+        render: function() {
+            StoreInfoMapView.prototype.render.apply(this, arguments);
+            this.map(true, true, true);
+            return this;
+        }
+    });
+
+    return new (require('factory'))(function() {
+        App.Views.StoreInfoView = {};
+        App.Views.StoreInfoView.StoreInfoMainView = StoreInfoMainView;
+        App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
+        App.Views.StoreInfoView.StoreInfoGalleryView = StoreInfoGalleryView;
+        App.Views.StoreInfoView.StoreInfoMapWithStoresView = StoreInfoMapWithStoresView;
+    });
 });

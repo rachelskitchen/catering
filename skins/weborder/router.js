@@ -667,7 +667,7 @@ define(["main_router"], function(main_router) {
         },
         about: function() {
             this.prepare('about', function() {
-                if (!App.Data.AboutModel) {
+                if (!App.Data.aboutModel) {
                     App.Data.aboutModel = new App.Models.AboutModel();
                 }
                 App.Data.header.set('tab_index', 1);
@@ -696,7 +696,7 @@ define(["main_router"], function(main_router) {
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        mod: 'Map',
+                        mod: 'MapWithStores',
                         collection: stores,
                         className: 'store-info map-box'
                     },
