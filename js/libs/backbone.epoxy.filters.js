@@ -86,4 +86,16 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         var values = Array.prototype.slice.call(arguments, 1);
         return values.indexOf(value) > -1;
     });
+
+    Backbone.Epoxy.binding.addFilter('phoneFormat', function(phone) {
+        if(phone.length < 10) {
+            return phone;
+        }
+        var matches = phone.match(/^(\+?\d{1,3})?(\d{3})(\d{3})(\d{4})$/);
+        if(matches !== null) {
+            return matches.slice(1).join('.');
+        } else {
+            return phone;
+        }
+    });
 });
