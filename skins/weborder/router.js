@@ -759,6 +759,7 @@ define(["main_router"], function(main_router) {
                         enableRewardCard: settings.enable_reward_cards_collecting,
                         card: App.Data.card,
                         giftcard: App.Data.giftcard,
+                        giftCards: App.Data.customer.giftCards,
                         stanfordcard: App.Data.stanfordCard,
                         promises: this.getProfilePaymentsPromises.bind(this),
                         needShowBillingAddess: PaymentProcessor.isBillingAddressCard()

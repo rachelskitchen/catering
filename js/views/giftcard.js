@@ -37,7 +37,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.subViews.push(view);
         },
         bindings: {
-            '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
+            '.number-input': 'value: cardNumber, events:["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/'
         },
         render: function() {
             var cardNumber, model = {}, self = this;

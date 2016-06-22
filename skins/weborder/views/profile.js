@@ -101,7 +101,7 @@ define(["profile_view"], function(profile_view) {
                 deps: ['$collection'],
                 get: function(collection) {
                     var selected = collection.findWhere({selected: true});
-                    return selected ? selected.id : -1;
+                    return selected ? selected.get('cardNumber') : -1;
                 },
                 set: function(value) {
                     var model = this.collection.findWhere({cardNumber: value}),
