@@ -443,6 +443,15 @@ input[type="radio"]:checked + .radio::before,
     font-size: 22px;
 }
 
+.popup__title {
+    text-transform: uppercase;
+    font-weight: 200;
+    font-size: 14px;
+    letter-spacing: 3px;
+    padding: 21px 24px;
+    text-align: left;
+}
+
 #loader {
     z-index: 1001;
 }

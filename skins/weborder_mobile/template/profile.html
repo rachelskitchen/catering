@@ -66,6 +66,20 @@
         </li>
     </ul>
     <div class="field-description passwords-mismatch font-size2 attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></div>
+    <span class="profile-info account-notifications regular-text font-size3"><%= _lp.PROFILE_NOTIFICATIONS %></span>
+    <ul class="profile-form font-size2 text-left">
+        <li>
+            <label class="profile-checkbox">
+                <input type="checkbox" class="email-notifications"><i class="input checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+            </label>
+        </li>
+        <li>
+            <label class="profile-checkbox">
+                <input type="checkbox" class="push-notifications"><i class="input checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <div class="field-description"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+            </label>
+        </li>
+    </ul>
 </script>
 
 <script type="text/template" id="profile_create-template">
@@ -181,6 +195,23 @@
         <li class="required account-password-input">
             <input type="password" placeholder="<%= _lp.PROFILE_ENTER_NEW_PASSWORD %>" class="new-password ios-safari-caret input-colors">
             <span class="show-password primary-text"><%= _lp.PROFILE_SHOW_PASSWORD %></span>
+        </li>
+    </ul>
+</script>
+
+<script type="text/template" id="profile_account_notifications-template">
+    <span class="profile-info account-notifications regular-text font-size3"><%= _lp.PROFILE_NOTIFICATIONS %></span>
+    <ul class="profile-form text-left font-size2">
+        <li class="checkbox-item">
+            <label class="profile-checkbox">
+                <input type="checkbox" class="email-notifications"><i class="input checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+            </label>
+        </li>
+        <li class="checkbox-item">
+            <label class="profile-checkbox">
+                <input type="checkbox" class="push-notifications"><i class="input checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <div class="field-description regular-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+            </label>
         </li>
     </ul>
 </script>
