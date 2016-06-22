@@ -181,6 +181,11 @@ define(["main_router"], function(main_router) {
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
+        initCustomer: function() {
+            App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+            // Once the customer is initialized need to set profile panel
+            this.initProfilePanel();
+        },
         /**
          * Change page.
          */
@@ -702,7 +707,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
             });
         },
         checkout: function() {
-            App.Data.header.set('menu_index', NaN);
+            App.Data.header.set('menu_index', null);
             this.prepare('checkout', function() {
                 if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
@@ -777,7 +782,14 @@ console.log('restoreState', history.length, JSON.stringify(data));
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            var promises = this.setProfileEditContent();
+            App.Data.header.set('menu_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var promises = this.setProfileEditContent(true);
 
             if (!promises.length) {
                 return this.navigate('index', true);
@@ -786,7 +798,14 @@ console.log('restoreState', history.length, JSON.stringify(data));
             }
         },
         profile_payments: function() {
-            var promises = this.setProfilePaymentsContent();
+            App.Data.header.set('menu_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var promises = this.setProfilePaymentsContent(true);
 
             if (!promises.length) {
                 return this.navigate('index', true);
