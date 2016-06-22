@@ -217,6 +217,11 @@ textarea:focus {
     vertical-align: middle;
 }
 
+.cancel::before {
+    content: '\f057';
+    font-family: "FontAwesome";
+}
+
 .input, .select-wrapper select {
     width: 100%;
     padding: 8px 14px;
@@ -291,7 +296,6 @@ input[type="radio"]:checked + .radio::before,
     height: 8px;
     margin: 2px;
     border-radius: inherit;
-background: red; /* remove */
 }
 
 .radio {
@@ -335,6 +339,14 @@ background: red; /* remove */
     top: 0;
     left: 0;
     z-index: 300;
+}
+
+.category-title {
+    padding: 13px 25px;
+    border-width: 1px 0;
+    border-style: solid;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 #content {

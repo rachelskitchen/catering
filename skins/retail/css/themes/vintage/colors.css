@@ -110,7 +110,7 @@ body,
   background: #FFFFFF;
 }
 /* [card_background_gradient] stanford card plan background, card balance background */
-.gift-card-reload .card-box {
+.card-gradient-bg {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.2)), color-stop(1, rgba(209, 229, 237, 0.2)));
   background: -o-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
   background: -moz-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
