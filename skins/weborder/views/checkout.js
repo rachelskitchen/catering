@@ -51,14 +51,12 @@ define(["checkout_view"], function(checkout_view) {
         },
         initialize: function() {
             this.tokens = new Backbone.Collection();
-            this.giftCards = new Backbone.Collection();
             this.token = new Backbone.Model({selected: false, paymentsExist: false});
             this.giftCard = new Backbone.Model({selected: false});
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
                 tokens: this.tokens,         // tokens
                 giftCard: this.giftCard,     // indicated any saved gift card is selected or not
-                giftCards: this.giftCards    // saved gift cards
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.customer, 'onLogin', this.setProfileData);
@@ -151,7 +149,7 @@ define(["checkout_view"], function(checkout_view) {
             if (this.options.paymentMethods.get('gift_card')) {
                 chooseGiftCard = App.Views.GeneratorView.create('Profile', {
                     mod: 'GiftCardsSelection',
-                    collection: this.giftCards,
+                    collection: this.options.giftCards,
                     model: this.giftCard,
                     className: 'choose-gift-card-box item'
                 });
@@ -241,9 +239,8 @@ define(["checkout_view"], function(checkout_view) {
                         self.tokens.reset(customer.payments.models);
                     }
                     if (customer.giftCards) {
-                        customer.giftCards.selectFirstItem();
                         self.giftCard.set('selected', true);
-                        self.giftCards.reset(customer.giftCards.models);
+                        customer.giftCards.selectFirstItem();
                     }
                 });
             }
@@ -255,7 +252,6 @@ define(["checkout_view"], function(checkout_view) {
             });
             this.giftCard.set('selected', false);
             this.tokens.reset();
-            this.giftCards.reset();
         }
     });
 

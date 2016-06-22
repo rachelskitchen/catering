@@ -357,7 +357,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // set gift cards
             if (App.SettingsDirectory.saved_gift_cards) {
-                customer.setGiftCards(App.Collections.GiftCards);
+                customer.setGiftCards();
             }
 
             // set reward cards

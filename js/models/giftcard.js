@@ -355,6 +355,7 @@ define(["backbone", "captcha"], function(Backbone) {
         selectFirstItem: function() {
             if (!this.where({selected: true}).length && this.length) {
                 this.at(0).set('selected', true);
+                this.trigger('update');
             }
         },
         /**

@@ -186,6 +186,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
 
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
+            this.giftCards = new App.Collections.GiftCards;
         },
         /**
          * Trims value of attribute passed as parameter.
@@ -1855,17 +1856,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * @param {Function} constr - gift cards collection constructor
          */
         setGiftCards: function(constr) {
-            this._setGiftCards = function() {
-                if (typeof constr == 'function') {
-                    /**
-                     * Collection of gift cards.
-                     * @alias App.Models.Customer#giftCards
-                     * @type {Backbone.Collection}
-                     * @default undefined
-                     */
-                    this.giftCards = new constr();
-                }
-            };
             this.isAuthorized() && this.initGiftCards();
         },
         setRewardCards: function() {
@@ -1910,7 +1900,6 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Sets gift cards collection and receives data.
          */
         initGiftCards: function() {
-            typeof this._setGiftCards == 'function' && this._setGiftCards();
             this.giftCards && this.getGiftCards();
         },
         /**
@@ -1920,7 +1909,7 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
         removeGiftCards: function() {
             this.giftCardsRequest && this.giftCardsRequest.abort();
             delete this.giftCardsRequest;
-            delete this.giftCards;
+            this.giftCards.reset();
         },
         /**
          * Aborts reward cards request and deletes {@link App.Models.Customer#rewardCards rewardCards},
