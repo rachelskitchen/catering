@@ -51,7 +51,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 address;
 
             if (!customer.isAuthorized() || !addresses.isProfileAddressSelected()) { // do not touch profile addresses
-                address = customer.getCheckoutAddress(dining_option);
+                address = addresses.getCheckoutAddress(dining_option);
                 model = _.extend(model, customer.toJSON());
             }
             if (customer.isAuthorized()) {
@@ -63,7 +63,7 @@ define(['backbone', 'factory'], function(Backbone) {
                         && (addr.country == 'US' ? addr.state : true) && (addr.country == 'CA' ? addr.province : true);
                 });
                 if (!fullyFilledAddresses.length) {
-                    address = customer.getCheckoutAddress(dining_option, true);
+                    address = addresses.getCheckoutAddress(dining_option, true);
                     model = _.extend(model, customer.toJSON());
                 }
             }
@@ -294,7 +294,7 @@ define(['backbone', 'factory'], function(Backbone) {
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
             var dining_option = this.options.checkout.get('dining_option'),
-                model = this.options.customer.getCheckoutAddress(dining_option);
+                model = this.options.customer.get('addresses').getCheckoutAddress(dining_option);
             // need to reset shipping services before updating them
             // due to server needs a no shipping service specified to return a new set of shipping services.
             this.options.customer.resetShippingServices();
