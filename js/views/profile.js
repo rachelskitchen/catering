@@ -65,6 +65,10 @@ define(["factory"], function() {
             '.password': 'value: password, events:["input"]',
             '.password-confirm': 'value: confirm_password, events:["input"]',
             '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
+            '.email-notifications': 'checked: email_notifications',
+            '.checkbox-email-notifications': "attr: {checked: select(email_notifications, 'checked', false)}",
+            '.push-notifications': 'checked: push_notifications',
+            '.checkbox-push-notifications': "attr: {checked: select(push_notifications, 'checked', false)}",
             '.signup-btn': 'classes: {disabled: not(allFilled)}'
         },
         computeds: {
@@ -466,6 +470,12 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 model: this.model
             });
 
+            var accountNotifications = App.Views.GeneratorView.create('Profile', {
+                el: this.$('.account-notifications-box'),
+                mod: 'AccountNotifications',
+                model: this.model
+            });
+
             this.newAddress = new App.Models.CustomerAddress();
             var addresses = App.Views.GeneratorView.create('Profile', {
                 el: this.$('.addresses'),
@@ -534,6 +544,17 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         onEnter: function() {
             var action = setCallback('resetAction');
             this.model.get('email') && action.apply(this, arguments);
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileAccountNotificationsView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'account_notifications',
+        bindings: {
+            '.email-notifications': 'checked: email_notifications',
+            '.checkbox-email-notifications': "attr: {checked: select(email_notifications, 'checked', false)}",
+            '.push-notifications': 'checked: push_notifications',
+            '.checkbox-push-notifications': "attr: {checked: select(push_notifications, 'checked', false)}"
         }
     });
 
@@ -1125,6 +1146,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         App.Views.ProfileView.ProfileAddressCreateView = App.Views.CoreProfileView.CoreProfileAddressCreateView;
         App.Views.ProfileView.ProfileAccountPasswordView = App.Views.CoreProfileView.CoreProfileAccountPasswordView;
         App.Views.ProfileView.ProfilePWDResetView = App.Views.CoreProfileView.CoreProfilePWDResetView;
+        App.Views.ProfileView.ProfileAccountNotificationsView = App.Views.CoreProfileView.CoreProfileAccountNotificationsView;
         App.Views.ProfileView.ProfileMenuView = App.Views.CoreProfileView.CoreProfileMenuView;
         App.Views.ProfileView.ProfilePanelView = App.Views.CoreProfileView.CoreProfilePanelView;
         App.Views.ProfileView.ProfileOwnerContactsView = App.Views.CoreProfileView.CoreProfileOwnerContactsView;

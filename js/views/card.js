@@ -114,7 +114,7 @@ define(["backbone", "factory"], function(Backbone) {
                 defaultAddress = App.Settings.address,
                 address = this.options.customer.get('addresses').getCheckoutAddress();
             var country = address && address.country ? address.country : defaultAddress.country;
-            var state = country == 'US' ? (model.address ? address.state : defaultAddress.state) : null;
+            var state = country == 'US' ? (model.address ? address.state : defaultAddress.state) : undefined;
             if (!this.model.get('country_code')) {
                 this.options.address.set('country_code', country);
             }
@@ -202,6 +202,13 @@ define(["backbone", "factory"], function(Backbone) {
                 set: function(country) {
                     var key = _.findKey(_loc['COUNTRIES'], function(value) { return value == country; } );
                     this.options.address.set('country_code', key);
+                    if (key != "US") {
+                        !this.lastState && (this.lastState = this.options.address.get('state'));
+                        this.options.address.set('state', undefined);
+                    } else {
+                        this.options.address.set('state', this.lastState);
+                        this.lastState = null;
+                    }
                 },
                 get: function() {
                     var country_code = this.options.address.get("country_code");

@@ -96,6 +96,36 @@
     margin-bottom: 15px;
 }
 
+#profile-panel .profile-checkbox {
+    display: block;
+    padding: 8px 14px 0;
+    position: relative;
+    overflow: hidden;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#profile-panel .profile-checkbox .field-description {
+    margin: 4px 0 0 21px;
+}
+
+#profile-panel input[type="checkbox"] {
+    position: absolute;
+    left: -9999px;
+    margin: 0;
+}
+
+#profile-panel .checkbox {
+    position: relative;
+    top: 2px;
+}
+
+#profile-panel .checkbox-text {
+    position: relative;
+    left: 2px;
+    top: -1px;
+}
+
 #profile-panel .attention-text {
     margin-top: -10px;
     padding: 0 14px 15px;
@@ -216,6 +246,10 @@
     font-size: 13px;
 }
 
+.profile-edit .field-description {
+    font-size: 12px;
+}
+
 .profile-edit .select-wrapper {
     max-width: 308px;
     width: 100%;
@@ -274,6 +308,14 @@
 .profile-edit .card-details .input {
     max-width: 292px;
     width: 96%;
+}
+
+.profile-edit .checkbox-item {
+    margin: 15px 0;
+}
+
+.profile-edit .checkbox-item .field-description {
+    margin: 5px 0 0 20px;
 }
 
 .profile-edit .profile-checkbox {
