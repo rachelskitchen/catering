@@ -44,19 +44,32 @@ define(["card_view"], function(card_view) {
 
             // wait until customer addresses are loaded
             dfd.always(function() {
-                // set default country for new address
-                self.setDefaultCountry();
+                _.extend(self.bindingSources, {
+                    viewModel: new Backbone.Model({region: '', state: ''})
+                });
+
                 App.Views.FactoryView.prototype.initialize.apply(self, arguments);
+
+                // set default country for new address
+                self.setDefaultCountryState();
 
                 self.listenTo(self.options.customer.get('addresses'), 'change:selected', function() {
                     self.getBinding('$customerAddresses').trigger('change');
+                });
+
+                self.listenTo(self.options.customer.get('addresses'), "add remove reset", function() {
+                    self.options.customer.trigger('change:addresses'); //it's to trigger binding value customer_addresses
                 });
             });
         },
         bindings: {
             '.countries': 'value: country_code, options: countries',
-            '.states': 'value: state, options: states',
-            '.states-wrap': 'classes: {hide: not(equal(country_code, "US"))}',
+            '.states': 'value: state_val, options: states',
+            '.input.region': 'value: region_val, events: ["input", "blur"]',
+            '.label.region': 'classes: {required: equal(country_code, "US")}',
+            '.states-wrap .select-wrapper': 'classes: {hide: not(equal(country_code, "US"))}',
+            '.states-wrap .region-wrapper': 'classes: {hide: equal(country_code, "US")}',
+            '.states-wrap .label': 'text: region_label',
             '.addresses': 'value: selectedAddress, options: addresses',
             '.zip-code-label': 'text: select(equal(country_code, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)',
             '.new-address': 'classes: {hide: hideNewAddress}',
@@ -73,6 +86,42 @@ define(["card_view"], function(card_view) {
         computeds: {
             hideNewAddress: function() {
                 return this.getBinding('selectedAddress') != newAddress;
+            },
+            region_label: {
+                deps: ['country_code'],
+                get: function(country_code) {
+                    if (country_code && _loc.REGION_FIELD[country_code]) {
+                        return _loc.REGION_FIELD[country_code];
+                    } else {
+                        return _loc['REGION_FIELD_DEFAULT'];
+                    }
+                }
+            },
+            region_val: {
+                deps: ['country_code', 'viewModel_region'],
+                get: function(country_code, region) {
+                    if (country_code != "US") {
+                        this.model.set('state', this.getBinding('viewModel_region'));
+                    }
+                    return this.getBinding('viewModel_region');
+                },
+                set: function(value) {
+                    this.setBinding('viewModel_region', value);
+                    this.model.set('state', value);
+                }
+            },
+            state_val: {
+                deps: ['country_code', 'viewModel_state'],
+                get: function(country_code, state) {
+                    if (country_code == "US") {
+                        this.model.set('state', this.getBinding('viewModel_state'));
+                    }
+                    return this.getBinding('viewModel_state');
+                },
+                set: function(value) {
+                    this.setBinding('viewModel_state', value);
+                    this.model.set('state', value);
+                }
             },
             selectedAddress: {
                 get: function() {
@@ -138,14 +187,19 @@ define(["card_view"], function(card_view) {
                 return sortObj(_loc['STATES']);
             }
         },
-        setDefaultCountry: function() {
+        setDefaultCountryState: function() {
             var checkoutAddress = this.options.customer.get('addresses').getCheckoutAddress(),
                 storeAddress = App.Settings.address;
+
             if (_.isObject(checkoutAddress) && checkoutAddress.country) {
                 this.model.set('country_code', checkoutAddress.country);
+                this.model.set('state', checkoutAddress.state);
             } else if (_.isObject(storeAddress) && storeAddress.country) {
                 this.model.set('country_code', storeAddress.country);
+                this.model.set('state', storeAddress.state);
             }
+
+            this.setBinding("viewModel_state", this.model.get('state'));
         }
     });
 
