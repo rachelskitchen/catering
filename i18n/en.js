@@ -368,6 +368,12 @@
             'WI': 'Wisconsin',
             'WY': 'Wyoming'
         },
+        'REGION_FIELD': {
+           'US': 'State',
+           'AU': 'State/Territory',
+           'CA': 'Province'
+        },
+        'REGION_FIELD_DEFAULT': 'Region',
         'ERRORS': {
             'STORE_IS_CLOSED': 'Error: Store is closed',
             'BLOCK_STORE_IS_CLOSED': 'We\'re sorry, your order cannot be processed because the store is closed',
