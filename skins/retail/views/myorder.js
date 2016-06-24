@@ -111,63 +111,57 @@ define(["myorder_view"], function(myorder_view) {
             }
         },
         events: {
-            'click .action_button:not(.disabled)': 'action'
+            'click .action_button:not(.disabled)': addCb('action')
         },
         onEnterListeners: {
-            '.action_button:not(.disabled)': 'action'
-        },
-        action: function (event) {
-            var check = this.model.check_order(),
-                self = this;
-
-            if (check.status === 'OK') {
-                this.model.get_product().check_gift(function() {
-                    if (self.options.action === 'add') {
-                        App.Data.myorder.add(self.model);
-                    } else {
-                        var index = App.Data.myorder.indexOf(self.options.real) - 1;
-                        App.Data.myorder.add(self.model, {at: index});
-                        App.Data.myorder.remove(self.options.real);
-                    }
-
-                    $('#popup .cancel').trigger('click');
-                }, function(errorMsg) {
-                    App.Data.errors.alert(errorMsg); // user notification
-                });
-            } else {
-                App.Data.errors.alert(check.errorMsg); // user notification
-            }
+            '.action_button:not(.disabled)': addCb('action')
         }
     });
 
     var MyOrderItemView = App.Views.CoreMyOrderView.CoreMyOrderItemView.extend({
+        bindings: {
+            ':el': 'classes: {"order-item": not(isServiceFee), "service-fee-item": isServiceFee}',
+            '.sub-box': 'classes: {"left-offset": not(_system_settings_hide_images)}',
+            '.name': 'classes: {"left-offset": select(isServiceFee, false, not(_system_settings_hide_images))}'
+        },
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.render.apply(this, arguments);
-            App.Settings.hide_images === true && this.$el.addClass("no_image");
+
+            var product = this.model.get_product(),
+                view = App.Views.GeneratorView.create('Quantity', {
+                    el: this.$('.qty-box'),
+                    mod: product.get('sold_by_weight') ? 'Weight' : 'Main',
+                    model: this.model,
+                    className: 'inline-block'
+                });
+            this.subViews.push(view);
+
+            this.applyBindings();
             return this;
         },
-        editItem: function(e) {
-            e.preventDefault();
-            var model = this.model,
-                isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
+        editItem: function() {
+            this.model.trigger('onItemEdit', this.model);
+        }
+        // function(e) {
+        //     e.preventDefault();
+        //     var model = this.model,
+        //         isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
-            App.Data.mainModel.set('popup', {
-                modelName: 'MyOrder',
-                mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
-                className: isStanfordItem ? 'stanford-reload-item' : '',
-                model: model.clone(),
-                real: model,
-                action: 'update'
-            });
-        }/*,
-        getData: function() {
-            var data = App.Views.CoreMyOrderView.CoreMyOrderItemView.prototype.getData.apply(this, arguments),
-                attrs = this.model.get_attributes();
+        //     App.Data.mainModel.set('popup', {
+        //         modelName: 'MyOrder',
+        //         mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
+        //         className: isStanfordItem ? 'stanford-reload-item' : '',
+        //         model: model.clone(),
+        //         real: model,
+        //         action: 'update'
+        //     });
+        // }
+    });
 
-            return $.extend(data, {
-                attrs: attrs || []
-            });
-        }*/
+    var MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView.extend({
+        bindings: {
+            ':el': 'classes: {"discount-item": true}'
+        }
     });
 
     var MyOrderItemCustomizationView = App.Views.FactoryView.extend({
@@ -180,10 +174,9 @@ define(["myorder_view"], function(myorder_view) {
             viewData: {
                 get: function() {
                     var product = this.model.get_product(),
-                        data = {
-                            ui: this.options.ui,
+                        data = _.extend({
                             subViewIndex: 0
-                        };
+                        }, this.options);
 
                     if (product.get('is_gift')) {
                         return _.extend(data, {
@@ -202,12 +195,26 @@ define(["myorder_view"], function(myorder_view) {
                     }
                 }
             }
+        },
+        events: {
+            'click .cancel': addCb('back')
+        },
+        onEnterListeners: {
+            '.cancel': addCb('back')
         }
     });
+
+    function addCb(prop) {
+        return function() {
+            var cb = this.options[prop];
+            typeof cb == 'function' && cb();
+        };
+    }
 
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderItemCustomizationView = MyOrderItemCustomizationView;
+        App.Views.MyOrderView.MyOrderDiscountView = MyOrderDiscountView;
     });
 });

@@ -62,7 +62,9 @@ body,
 body,
 .primary-bg[class],
 .order-items li,
-.alert_wrapper {
+.alert_wrapper,
+.order-item .inputbox,
+.weight_edit_inner .weight_edit_input {
   background: #FFFFFF;
 }
 /* [primary_border] primary border */
@@ -73,7 +75,6 @@ body,
 /* [primary_icon] arrows icons */
 .primary-icon[class],
 .modifier_class_list.select-wrapper::after,
-.weight_edit_inner::after,
 .combobox::after {
   color: #5F6266;
 }
@@ -110,7 +111,7 @@ body,
   background: #FFFFFF;
 }
 /* [card_background_gradient] stanford card plan background, card balance background */
-.gift-card-reload .card-box {
+.card-gradient-bg {
   background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(255, 255, 255, 0.2)), color-stop(1, rgba(209, 229, 237, 0.2)));
   background: -o-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
   background: -moz-linear-gradient(bottom, rgba(255, 255, 255, 0.2) 0%, rgba(209, 229, 237, 0.2) 100%);
@@ -128,7 +129,9 @@ body,
 .input,
 .select-wrapper,
 .select-wrapper select,
-.selectbox {
+.selectbox,
+.order-item .inputbox,
+.weight_edit_inner .weight_edit_input {
   border-color: #9B9D9F;
 }
 .select-wrapper::after {
@@ -146,14 +149,18 @@ body,
 .textarea,
 .input,
 .select-wrapper,
-.select-wrapper select {
+.select-wrapper select,
+.order-item .inputbox,
+.weight_edit_inner .weight_edit_input {
   color: #373B40;
 }
 /* [input_highlighted] input text color */
 .textarea:focus,
 .input:focus,
 .select-wrapper:focus,
-.select-wrapper select:focus {
+.select-wrapper select:focus,
+.order-item .inputbox:focus,
+.weight_edit_inner .weight_edit_input:focus {
   box-shadow: 0 0 4px 0 #00A3E0;
   border-color: #00A3E0;
 }

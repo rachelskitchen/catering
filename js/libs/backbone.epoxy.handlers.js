@@ -394,7 +394,7 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
                 }
 
                 $el.append(view.el);
-            }, 0)
+            }, 0);
         }
     });
 });

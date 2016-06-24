@@ -42,8 +42,10 @@ define(['backbone'], function(Backbone) {
                     console.error("Can't find the view class: " + "App.Views." + ViewClass + 'View.' + options.dbgClassName);
                 }
                 view = new App.Views[ViewClass + 'View'][ViewClass + options.mod + 'View'](options);
-                if(App.Views.Generator.enableCache && id)
+                if(App.Views.Generator.enableCache && id) {
                     cache[id] = view;
+                    App.Data.devMode && view.$el.attr('x-cache-id', id);
+                }
             }
 
             return view;

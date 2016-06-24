@@ -74,7 +74,14 @@ define(["quantity_view"], function(quantity_view) {
         }
     });
 
+    var QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
+        bindings: {
+            '.weight_edit_inner': 'attr: {"data-weight": scalesFormat(weight)}'
+        }
+    });
+
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
         App.Views.QuantityView.QuantityMainView = QuantityMainView;
+        App.Views.QuantityView.QuantityWeightView = QuantityWeightView;
     });
 });
