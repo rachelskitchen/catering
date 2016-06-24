@@ -348,7 +348,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             customer.setAddresses();
 
             // change address selection according to selected dining option
-            this.listenTo(App.Data.myorder.checkout, 'change:dining_option', function(dining_option) {
+            this.listenTo(App.Data.myorder.checkout, 'change:dining_option', function(checkoutModel, dining_option) {
                 customer.get('addresses').changeSelection(dining_option);
             });
 
