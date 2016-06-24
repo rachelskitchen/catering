@@ -59,14 +59,14 @@
             <span class="phone-privacy optional-text"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
         <li class="text-left">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="email-notifications"><i class="input checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+            <label class="profile-checkbox regular-text">
+                <input type="checkbox" class="email-notifications"><i class="checkbox checkbox-email-notifications input-border"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
             </label>
         </li>
         <li class="text-left">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="push-notifications"><i class="input checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
-                <div class="field-description"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+            <label class="profile-checkbox regular-text">
+                <input type="checkbox" class="push-notifications"><i class="checkbox checkbox-push-notifications input-border"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <div class="phone-privacy optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
             </label>
         </li>
     </ul>
@@ -89,7 +89,7 @@
             <div class="basic-details-box"></div>
             <h3 class="header-underline"><%= _lp.PROFILE_CHANGE_PASSWORD %></h3>
             <div class="account-password-box"></div>
-            <h2 class="title"><%= _lp.PROFILE_NOTIFICATIONS %></h3>
+            <h2 class="header-underline"><%= _lp.PROFILE_NOTIFICATIONS %></h3>
             <div class="account-notifications-box"></div>
         </div>
         <div class="col-right border-box fl-left">
@@ -196,14 +196,14 @@
 <script type="text/template" id="profile_account_notifications-template">
     <ul class="profile-form text-left">
         <li class="checkbox-item">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="email-notifications"><i class="input checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+            <label class="profile-checkbox ">
+                <input type="checkbox" class="email-notifications"><i class="checkbox checkbox-email-notifications input-border"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
             </label>
         </li>
         <li class="checkbox-item">
             <label class="profile-checkbox">
-                <input type="checkbox" class="push-notifications"><i class="input checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
-                <div class="field-description"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+                <input type="checkbox" class="push-notifications"><i class="checkbox checkbox-push-notifications input-border"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <div class="phone-privacy optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
             </label>
         </li>
     </ul>
@@ -221,10 +221,10 @@
 </script>
 
 <script type="text/template" id="profile_reset_password-template">
-    <div class="reset-password-info text-center"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
+    <div class="reset-password-info text-center regular-text"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
     <ul class="profile-form">
         <li>
-            <div class="label required"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
             <input type="email" class="email ios-safari-caret input " autocorrect="off" autocapitalize="none">
         </li>
     </ul>
@@ -299,7 +299,7 @@
 <script type="text/template" id="profile_gift_card_edition-template">
     <span class="card-number"></span>
     <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
-    <div class="remove-btn"></div>
+    <div class="remove-btn cancel fl-right link"></div>
 </script>
 
 <script type="text/template" id="profile_gift_cards_edition-template">
@@ -325,7 +325,7 @@
 
 <script type="text/template" id="profile_reward_card_edition-template">
     <span class="card-number"></span>
-    <div class="remove-btn cancel fl-right"></div>
+    <div class="remove-btn cancel fl-right link"></div>
 </script>
 
 <script type="text/template" id="profile_reward_cards_edition-template">

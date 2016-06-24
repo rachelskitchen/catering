@@ -5,7 +5,7 @@
     border-left-style: solid;
     position: fixed;
     right: -418px;
-    top: 47px;
+    top: 46px;
     bottom: 51px;
     z-index: 100;
 }
@@ -28,7 +28,7 @@
     font-size: 24px;
 }
 
-#cart .btn.checkout-btn {
+#cart .btn.btn-checkout {
     position: absolute;
     bottom: 0;
     left: 0;
@@ -39,6 +39,7 @@
     position: absolute;
     left: 10px;
     right: 10px;
+    overflow: auto;
 }
 
 #cart .btn .animate-spin {

@@ -123,6 +123,31 @@
     padding-left: 4px;
 }
 
+.profile-panel-box .profile-checkbox {
+    display: block;
+    padding: 8px 14px 0;
+    position: relative;
+    overflow: hidden;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.profile-panel-box .profile-checkbox .phone-privacy {
+    margin-top: 5px;
+    padding: 0 0 15px 19px;
+}
+
+.profile-panel-box .profile-checkbox .checkbox {
+    position: relative;
+    top: 2px;
+}
+
+.profile-panel-box input[type="checkbox"] {
+    position: absolute;
+    left: -9999px;
+    margin: 0;
+}
+
 .profile-edit {
     width: 100%;
     height: 100%;
@@ -181,7 +206,7 @@
 
 .profile-edit .phone-privacy {
     display: block;
-    padding-left: 14px;
+    padding-left: 19px;
     font-size: 12px;
 }
 
@@ -260,6 +285,10 @@
 .profile-edit .address__header {
     max-width: 300px;
     width: 100%;
+}
+
+.profile-edit .checkbox-item {
+    margin: 15px 0;
 }
 
 .expand.expanded:before {

@@ -5,69 +5,51 @@
 </script>
 
 <script type="text/template" id="myorder_item-template">
-    <% if(!_settings.hide_images) { %>
-    <div class="image">
-        <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="logo" data-default-index="1">
+    <% if(!_settings.hide_images && !is_service_fee) { %>
+    <div class="image fl-left secondary-border text-center">
+        <img src=<%= image %> alt="<%= name %> logo<%= id %>" class="img" data-default-index="1">
     </div>
     <% } %>
-    <h3<% if(_settings.hide_images) {print(' class="noimage"');} %>>
-        <% if(sold_by_weight) { %>
-            <span class="name"><%= sizeModifier %> <%= name %></span>
-        <% } else { %>
-            <span class="name"><% if(!is_service_fee) { print("(" + quantity + ")") } %> <%= sizeModifier %> <%= name %></span>
-        <% } %>
-    </h3>
-    <ul class="modifier_place">
+    <span class="item-sum fl-right bold"><%= currency_symbol %><%= product_sum %></span>
+    <h3 class="name bold"><%= sizeModifier %> <%= name %></h3>
+    <ul class="modifier_place sub-box">
         <% if(sold_by_weight) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
-        <% } %>
-        <% if(is_gift) { %>
-            <% if(planId && stanford_card_number) { %>
-                <li class="special"> *** <%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %> </li>
-            <% } else { %>
-                <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT_TO %> <%= gift_card_number %> </li>
-            <% } %>
         <% } %>
         <% if(special) { %>
         <li class="special">*** <%= special %></li>
         <% } %>
     </ul>
+    <ul class="attrs sub-box">
     <% _.each(attrs, function(attr) { %>
-    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
-        <span><%= attr.name %></span>:
-        <span><%= attr.value %></span>
-    </div>
+        <li>
+            <span><%= attr.name %></span>:
+            <span><%= attr.value %></span>
+        </li>
     <% }); %>
-    <div class="cost <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="item-sum"><%= currency_symbol %><%= initial_price %></span>
-    </div>
-    <ul class="discount_place"></ul>
+    </ul>
+    <ul class="discount_place sub-box"></ul>
     <% if(id_product !== null) { %>
-    <div class="btns <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="edit"> <%= _lp.MYORDER_EDIT %> </span>
-        <span class="divider"></span>
-        <span class="remove"> <span> <%= _lp.MYORDER_REMOVE %> </span> </span>
+    <div class="qty-box text-right sub-box"></div>
+    <div class="btns sub-box">
+        <span class="edit btn"><%= _lp.MYORDER_EDIT %></span>
+        <span class="remove link fl-right"><%= _lp.MYORDER_REMOVE %></span>
     </div>
     <% } %>
-    <div style="clear:both;"></div>
 </script>
 
 <script type="text/template" id="myorder_product_discount-template">
-    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
-        <span><%= discount_name %>:</span>
-    </div>
-    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
+    <span class="fl-right">
         <span class="currency_symbol">&minus;<%= currency_symbol %></span><span><%= discount_sum %></span>
-    </div>
+    </span>
+    <span><%= discount_name %>:</span>
 </script>
 
 <script type="text/template" id="myorder_discount-template">
-    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="name discount"><%= discount_name %></span>
-    </div>
-    <div class="attrs <% if(_settings.hide_images) {print('noimage');} %>">
-        <span class="currency_symbol">&minus;<%= currency_symbol %></span><span><%= discount_sum %></span>
-    </div>
+    <span class="fl-right">
+        <span class="currency_symbol bold">&minus;<%= currency_symbol %></span><span class="bold"><%= discount_sum %></span>
+    </span>
+    <span class="name discount bold"><%= discount_name %></span>
 </script>
 
 <script type="text/template" id="myorder_modifier-template">
@@ -75,6 +57,7 @@
 </script>
 
 <script type="text/template" id="myorder_item_customization-template">
+    <div class="cancel link" tabindex="0"></div>
 </script>
 
 <script type="text/template" id="myorder_matrix-template">

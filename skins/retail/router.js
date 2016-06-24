@@ -332,8 +332,14 @@ define(["main_router"], function(main_router) {
             // onCart event occurs when 'cart' item is clicked
             this.listenTo(App.Data.header, 'onCart', function() {
                 if(App.Settings.online_orders) {
-                    App.Data.myorder.trigger('showCart');
+                    App.Data.cart.set('visible', true);
                 }
+            });
+
+            // onItemEdit event occurs when cart item's 'edit' button is clicked
+            this.listenTo(App.Data.myorder, 'onItemEdit', function(model) {
+                var index = App.Data.myorder.indexOf(model);
+                index > -1 && this.navigate('modifiers/' + index, true);
             });
 
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
@@ -610,12 +616,14 @@ console.log('restoreState', history.length, JSON.stringify(data));
             });
         },
         modifiers: function(category_id, product_id) {
-            var order = new App.Models.Myorder(),
+            var isEditMode = !product_id,
+                order = new App.Models.Myorder(),
                 dfd = order.add_empty(product_id * 1, category_id * 1),
+                ,
                 self = this;
 
             this.prepare('modifiers', function() {
-                App.Data.header.set('menu_index', 0);
+                App.Data.header.set('menu_index', null);
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.cart.set('visible', false);
                 dfd.then(showProductModifiers);
@@ -626,10 +634,12 @@ console.log('restoreState', history.length, JSON.stringify(data));
 
                     content = /*self.getStanfordReloadItem(order) || */{
                         modelName: 'MyOrder',
-                        model: _order,
-                        ui: new Backbone.Model({isAddMode: true}),
                         mod: 'ItemCustomization',
                         className: 'myorder-item-customization',
+                        model: _order,
+                        ui: new Backbone.Model({isAddMode: true}),
+                        action: action,
+                        back: cancel,
                         doNotCache: true
                     };
 
@@ -640,6 +650,25 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     });
 
                     self.change_page();
+
+                    function action() {
+                        var check = _order.check_order();
+
+                        if (check.status === 'OK') {
+                            _order.get_product().check_gift(function() {
+                                App.Data.myorder.add(_order);
+                                cancel();
+                            }, function(errorMsg) {
+                                App.Data.errors.alert(errorMsg); // user notification
+                            });
+                        } else {
+                            App.Data.errors.alert(check.errorMsg); // user notification
+                        }
+                    }
+
+                    function cancel() {
+                        window.history.back();
+                    }
                 }
             });
             // showModifiers: function() {
@@ -659,6 +688,28 @@ console.log('restoreState', history.length, JSON.stringify(data));
             //         });
             //     });
             // },
+            //     action: function (event) {
+            //         var check = this.model.check_order(),
+            //             self = this;
+
+            //         if (check.status === 'OK') {
+            //             this.model.get_product().check_gift(function() {
+            //                if (self.options.action === 'add') {
+            //                    App.Data.myorder.add(self.model);
+            //                } else {
+            //                    var index = App.Data.myorder.indexOf(self.options.real) - 1;
+            //                    App.Data.myorder.add(self.model, {at: index});
+            //                    App.Data.myorder.remove(self.options.real);
+            //                }
+
+            //                $('#popup .cancel').trigger('click');
+            //             }, function(errorMsg) {
+            //                 App.Data.errors.alert(errorMsg); // user notification
+            //             });
+            //         } else {
+            //             App.Data.errors.alert(check.errorMsg); // user notification
+            //         }
+            //    }
         },
         about: function() {
             this.prepare('about', function() {

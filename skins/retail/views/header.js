@@ -30,6 +30,7 @@ define(["backbone", "factory"], function(Backbone) {
             '.shop': 'classes: {active: equal(menu_index, 0)}, attr: {tabindex: select(equal(menu_index, 0), -1, 0)}',
             '.about': 'classes: {active: equal(menu_index, 1)}, attr: {tabindex: select(equal(menu_index, 1), -1, 0)}',
             '.map': 'classes: {active: equal(menu_index, 2)}, attr: {tabindex: select(equal(menu_index, 2), -1, 0)}',
+            '.cart-box': 'classes: {link: ui_quantity}',
             '.cart-qty': 'text: format("($1)", ui_quantity), toggle: ui_quantity'
         },
         bindingSources: {
@@ -68,13 +69,13 @@ define(["backbone", "factory"], function(Backbone) {
             'click .shop': 'onMenu',
             'click .about': 'onAbout',
             'click .map': 'onMap',
-            'click .cart': 'onCart'
+            'click .cart-box.link': 'onCart'
         },
         onEnterListeners: {
             '.shop': 'onMenu',
             '.about': 'onAbout',
             '.map': 'onMap',
-            '.cart': 'onCart'
+            '.cart-box.link': 'onCart'
         },
         onMenu: function() {
             this.model.trigger('onShop');

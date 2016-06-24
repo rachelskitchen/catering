@@ -1,4 +1,38 @@
-.quantity_info input {
+.combobox, .weight_edit_inner {
+    position: relative;
+    background: inherit;
+}
+
+.combobox::after {
+    content: '';
+    font-size: 14px;
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+    background: inherit;
+}
+
+.quantity_info .title {
+    font-weight: 600;
+}
+
+.quantity_info .combobox::after {
+    content: '\f078';
+    font-family: 'FontAwesome';
+    height: 16px;
+    padding-right: 5px;
+}
+
+.order-item .combobox::after {
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    width: 15px;
+}
+
+.quantity_info .inputbox {
     width: 110px;
     padding-left: 14px;
     border: none;
@@ -6,23 +40,53 @@
     font-size: inherit;
 }
 
-.combobox, .weight_edit_inner {
-    position: relative;
+.order-item .inputbox {
+    width: 40px;
+    padding: 3px 0 3px 12px;
+    border-width: 1px;
+    border-style: solid;
+    font-size: inherit;
+    text-align: center;
+}
+
+.weight_edit_inner {
+    height: 24px;
+    overflow: hidden;
+    vertical-align: middle;
+}
+
+.weight_edit_inner::after {
+    content: attr(data-weight);
+    display: block;
+    margin-top: 30px;
+}
+
+.weight_edit_input[class] {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.weight_edit_input,
+.weight_edit_inner::after {
+    border-width: 1px;
+    border-style: solid;
+    font-size: 14px;
+    text-align: center;
     background: inherit;
 }
 
-.combobox::after, .weight_edit_inner::after {
-    content: '\f078';
-    font-family: 'FontAwesome';
-    font-size: 14px;
-    display: block;
-    height: 16px;
-    padding-right: 5px;
-    position: absolute;
-    top: 0;
-    right: 0;
-    pointer-events: none;
-    background: inherit;
+.quantity_info .weight_edit_inner::after,
+.quantity_info .weight_edit_input {
+    padding: 3px 14px;
+    min-width: 82px;
+}
+
+.order-item .weight_edit_inner::after,
+.order-item .weight_edit_input {
+    padding: 3px 5px;
+    min-width: 54px;
 }
 
 .combobox .input-wrapper {
@@ -40,6 +104,10 @@
     top: 20px;
     z-index: 2;
     overflow: auto;
+}
+
+.order-item .selectbox {
+    top: 23px;
 }
 
 .selectbox li {

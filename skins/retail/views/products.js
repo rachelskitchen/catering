@@ -116,7 +116,7 @@ define(["products_view"], function(products_view) {
             '.amount': 'value: monetaryFormat(price), events: ["change"], trackCaretPosition: price, restrictInput: "0123456789.,", kbdSwitcher: "float", pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
             '.card-number': 'value: gift_card_number, events: ["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/',
             '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}',
-            '.action_button': 'classes: {disabled: any(not(decimal(price)), not(gift_card_number))}'
+            '.action_button': 'classes: {disabled: any(not(decimal(price)), not(gift_card_number))}, text: select(ui_isAddMode, _lp_MYORDER_ADD_TO_BAG, _lp_MYORDER_UPDATE_ITEM)'
         },
         bindingFilters: {
             showLogo: function(url) {
@@ -125,6 +125,16 @@ define(["products_view"], function(products_view) {
                 }
                 return 'background-image: url(%s);'.replace('%s', url);
             }
+        },
+        events: {
+            'click .action_button:not(.disabled)': 'action'
+        },
+        onEnterListeners: {
+            '.action_button:not(.disabled)': 'action'
+        },
+        action: function() {
+            var action = this.options.action;
+            typeof action == 'function' && action();
         }
     });
 

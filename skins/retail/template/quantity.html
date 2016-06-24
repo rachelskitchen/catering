@@ -1,13 +1,13 @@
 <script type="text/template" id="quantity_main-template">
-    <span class="title header-text bold"><%= _lp.QUANTITY_TITLE %>:</span>
+    <span class="title header-text"><%= _lp.QUANTITY_TITLE %>:</span>
     <div class="quantity_select combobox-wrapper inline-block primary-bg">
         <select tabindex="0"></select>
     </div>
 </script>
 
 <script type="text/template" id="quantity_weight-template">
-    <span class="title header-text bold"><%= _lp.QUANTITY_WEIGHT %>:</span>
+    <span class="title header-text"><%= _lp.QUANTITY_WEIGHT %>:</span>
     <div class="weight_edit_inner inline-block">
-        <input class="weight_edit_input">
+        <input class="weight_edit_input border-box" value="<%= weight %>">
     </div>
 </script>

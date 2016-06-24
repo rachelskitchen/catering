@@ -2,6 +2,13 @@
     padding: 60px 22px 0;
 }
 
+.myorder-item-customization .cancel {
+    position: absolute;
+    top: 15px;
+    right: 22px;
+    font-size: 26px;
+}
+
 .myorder-item-customization .right-side:not(.no-images) {
     padding-left: 15px;
     margin-left: 631px;
@@ -26,7 +33,7 @@
 .myorder-item-customization .quantity_info .title {
     letter-spacing: 1px;
     text-transform: uppercase;
-    vertical-align: bottom;
+    vertical-align: middle;
 }
 
 .myorder-item-customization .quantity_select,
@@ -37,4 +44,61 @@
 .myorder-item-customization .action_button {
     padding: 12px 10px;
     margin-top: 23px;
+}
+
+.order-items .order-item,
+.order-items .service-fee-item,
+.order-items .discount-item {
+    margin: 15px 0;
+    padding: 20px 11px;
+}
+
+.order-items .order-item {
+    min-height: 80px;
+}
+
+.order-items .service-fee-item .sub-box {
+    display: none;
+}
+
+.order-items .left-offset {
+    margin-left: 103px;
+}
+
+.order-items .image {
+    width: 81px;
+    height: 81px;
+    padding-right: 9px;
+    margin-right: 11px;
+    border-right-width: 2px;
+    border-right-style: dotted;
+}
+
+.order-items .item-sum {
+    padding-left: 5px;
+}
+
+.order-items .name {
+    font-size: inherit;
+}
+
+.order-items .btns,
+.order-items .attrs,
+.order-items .discount_place,
+.order-items .modifier_place,
+.order-items .qty-box {
+    margin-top: 7px;
+}
+
+.order-items .edit {
+    padding: 5px 8px;
+    border-radius: 2px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.order-items .remove {
+    font-size: 12px;
+    text-decoration: underline;
 }
