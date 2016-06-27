@@ -93,7 +93,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 if (needGoogleMaps)
                     settings.load_geoloc();
 
-                if (this.use_google_captcha)
+                if (this.use_google_captcha && !App.Data.settings.get('isMaintenance'))
                     settings.load_google_captcha();
 
                 // update session history state-object

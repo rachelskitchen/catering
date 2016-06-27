@@ -163,22 +163,20 @@ define(["done_view", "generator"], function(done_view) {
     var MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
+        bindings: {
+            '.store_choice': 'toggle:needShowStoreChoice'
+        },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.$('.store_choice').css({display: 'inline-block'});
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
-            if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             'click .reload': 'reload',
-            'keydown .reload': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.reload();
-                }
-            },
-            'click .go-to-directory': 'goToDirectory',
             'click .back': 'back',
             'click .change_establishment': 'change_establishment'
+        },
+        onEnterListeners: {
+            ':el': 'reload'
         },
         /**
          * Go to the previous establishment.

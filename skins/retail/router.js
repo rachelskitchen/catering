@@ -542,7 +542,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
         */
         getEstablishments: function() {
             this.getEstablishmentsCallback = function() {
-                if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
+                if (/^(index.*|maintenance.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
             App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
         },
@@ -840,14 +840,16 @@ console.log('restoreState', history.length, JSON.stringify(data));
             });
         },
         maintenance: function() {
-            var settings = App.Data.settings;
+            var settings = App.Data.settings,
+                mainModel = App.Data.mainModel;
             if (settings.get('isMaintenance')) {
                 App.Data.mainModel.set({
                     mod: 'Maintenance',
-                    errMsg: ERROR[settings.get('maintenanceMessage')]
+                    errMsg: ERROR[settings.get('maintenanceMessage')],
+                    className: 'maintenance'
                 });
             }
-            this.change_page();
+            this.change_page(mainModel.set.bind(mainModel, 'needShowStoreChoice', true));
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {

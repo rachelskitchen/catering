@@ -349,6 +349,25 @@ input[type="radio"]:checked + .radio::before,
     font-weight: 600;
 }
 
+.maintenance .back {
+    padding-left: 30px;
+    line-height: 30px;
+}
+
+.maintenance #content {
+    top: 30px;
+}
+
+.maintenance .msg {
+    font-size: 18px;
+}
+
+.maintenance .btn {
+    display: inline-block;
+    min-width: 200px;
+    margin-top: 50px;
+}
+
 #content {
     border-width: 1px 1px 0;
     border-style: solid;
