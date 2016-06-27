@@ -39,7 +39,13 @@ define(["factory"], function() {
             '.first-name': 'value: firstLetterToUpperCase(first_name), events:["input"], trackCaretPosition: first_name',
             '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
             '.email': 'value: email, events:["input"]',
-            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/'
+            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/',
+            '.profile-attention': 'css: { display: select(attentionTextVisibility(), "", "none") }'
+        },
+        bindingFilters: {
+            attentionTextVisibility: function() {
+                return App.Data.customer.isLocked();
+            }
         },
         computeds: {
             allFilled: {
@@ -102,6 +108,8 @@ define(["factory"], function() {
                 this.setBinding('ui_showActivationSent', true);
             });
 
+            this.listenTo(this.model, 'onLogin', setCallback('forceProfile'));
+
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
@@ -129,6 +137,7 @@ define(["factory"], function() {
         },
         events: {
             'click .login-btn:not(.disabled)': setCallback('loginAction'),
+            'click .login-fb-btn': setCallback('loginFbAction'),
             'click .create-btn': setCallback('createAccount'),
             'click .guest-btn': setCallback('guestCb'),
             'click .forgot-password': setCallback('forgotPasswordAction'),
@@ -450,7 +459,13 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'edit',
         bindings: {
             '.update-btn': 'classes: {disabled: updateBtn_disabled}',
-            '.successful-update': 'classes: {visible: ui_show_response}'
+            '.successful-update': 'classes: {visible: ui_show_response}',
+            '.profile-attention': 'css: { display: select(attentionTextVisibility(), "", "none") }'
+        },
+        bindingFilters: {
+            attentionTextVisibility: function() {
+                return App.Data.customer.isLocked();
+            }
         },
         events: {
             'click .update-btn:not(.disabled)': setCallback('updateAction')
@@ -567,6 +582,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         bindings: {
             ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)}',
+            '.links': 'classes: {"logged-links": access_token}',
             '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp, active: ui_showSignUp}',
             '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn, active: ui_showLogIn}',
             '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)',

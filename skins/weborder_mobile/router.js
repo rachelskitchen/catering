@@ -114,10 +114,11 @@ define(["main_router"], function(main_router) {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
                 });
 
-                new App.Views.MainView.MainMainView({
-                    model: mainModel,
-                    el: 'body'
+                var mainView = new App.Views.MainView.MainMainView({
+                    model: mainModel
                 });
+
+                Backbone.$('body').prepend(mainView.el);
 //common
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
 //common
