@@ -451,6 +451,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             'click .remove': "removeItem",
             'click .edit': "editItem"
         },
+        onEnterListeners: {
+            '.remove': "removeItem",
+            '.edit': "editItem"
+        },
         removeItem: function(e) {
             e.preventDefault();
             this.collection.remove(this.model);
@@ -587,8 +591,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
 
             this.collection.each(this.addItem.bind(this));
         },
+        resolveItemMod: function(model) {
+            if (model.isComboBased()) {
+                return model.isUpsellProduct() ? 'ItemUpsell' : 'ItemCombo';
+            } else {
+                return 'Item';
+            }
+        },
         addItem: function(model) {
-            var mod = model.isComboBased() ? (model.isUpsellProduct() ? 'ItemUpsell' : 'ItemCombo') : 'Item';
+            var mod = this.resolveItemMod(model);
             var view = App.Views.GeneratorView.create('MyOrder', {
                 mod: mod,
                 model: model,

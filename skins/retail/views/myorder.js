@@ -142,25 +142,60 @@ define(["myorder_view"], function(myorder_view) {
         editItem: function() {
             this.model.trigger('onItemEdit', this.model);
         }
-        // function(e) {
-        //     e.preventDefault();
-        //     var model = this.model,
-        //         isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
-
-        //     App.Data.mainModel.set('popup', {
-        //         modelName: 'MyOrder',
-        //         mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
-        //         className: isStanfordItem ? 'stanford-reload-item' : '',
-        //         model: model.clone(),
-        //         real: model,
-        //         action: 'update'
-        //     });
-        // }
     });
 
     var MyOrderDiscountView = App.Views.CoreMyOrderView.CoreMyOrderDiscountView.extend({
         bindings: {
             ':el': 'classes: {"discount-item": true}'
+        }
+    });
+
+    var MyOrderItemGiftCardView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'item_gift_card',
+        bindings: {
+            ':el': 'classes: {"order-item": true, "giftcard-item": true, "primary-border": true}',
+            '.item-sum': 'text: format("+$1", currencyFormat(initial_price))',
+            '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}',
+            '.card-number': 'text: product_gift_card_number'
+        },
+        bindingFilters: {
+            showLogo: function(url) {
+                if (typeof url != 'string') {
+                    return '';
+                }
+                return 'background-image: url(%s);'.replace('%s', url);
+            }
+        },
+        events: {
+            'click .remove': "removeItem",
+            'click .edit': "editItem"
+        },
+        onEnterListeners: {
+            '.remove': "removeItem",
+            '.edit': "editItem"
+        },
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                product: this.model.get_product()
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        editItem: function() {
+            this.model.trigger('onItemEdit', this.model);
+        },
+        removeItem: function() {
+            this.collection.remove(this.model);
+        }
+    });
+
+    var MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView.extend({
+        resolveItemMod: function(model) {
+            if (model.is_gift()) {
+                return 'ItemGiftCard';
+            } else {
+                return App.Views.CoreMyOrderView.CoreMyOrderListView.prototype.resolveItemMod.apply(this, arguments);
+            }
         }
     });
 
@@ -216,5 +251,7 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderItemView = MyOrderItemView;
         App.Views.MyOrderView.MyOrderItemCustomizationView = MyOrderItemCustomizationView;
         App.Views.MyOrderView.MyOrderDiscountView = MyOrderDiscountView;
+        App.Views.MyOrderView.MyOrderItemGiftCardView = MyOrderItemGiftCardView;
+        App.Views.MyOrderView.MyOrderListView = MyOrderListView;
     });
 });
