@@ -28,7 +28,7 @@
  * @requires module:page_visibility
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCookies, page_visibility) {
+define(["backbone", "facebook", "doc_cookies", "page_visibility"], function(Backbone, FB, docCookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -177,6 +177,9 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
          * Sets indexes of addresses used for "Delivery" and "Shipping" dinign options.
          */
         initialize: function() {
+            // Facebook SDK initialization
+            this.FB_init();
+
             // trim for `first_name`, `last_name`
             this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
             this.listenTo(this, 'change:last_name', this._trimValue.bind(this, 'last_name'));
@@ -187,6 +190,33 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
             this.giftCards = new App.Collections.GiftCards;
+        },
+        /**
+         * Facebook SDK initialization
+         * 
+         * ```
+         * FB.init() reference: https://developers.facebook.com/docs/javascript/reference/FB.init/
+         * ```
+         */
+        FB_init: function() {
+            FB.init({
+                appId   : '233118313739765',
+                version : 'v2.6'
+            });
+        },
+        /**
+         * Facebook login
+         * 
+         * ```
+         * FB.login() reference: https://developers.facebook.com/docs/reference/javascript/FB.login/
+         * ```
+         */
+        FB_login: function(cb) {
+            FB.login(function(response) {
+                if (typeof cb === 'function') {
+                    cb(response);
+                }
+            }, {scope: 'public_profile,email'});
         },
         /**
          * Trims value of attribute passed as parameter.
@@ -283,6 +313,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             return {
                 status: "OK"
             };
+        },
+        /**
+         * Checks an authorized user has filled in all required data
+         */
+        isLocked: function() {
+            return (this.isAuthorized() && this.check().status !== 'OK');
         },
         /**
          * Receives shipping_services.
@@ -617,43 +653,158 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                     grant_type: "password",
                     instance: getInstanceName()
                 },
-                success: function(data) {
-                    try {
-                        delete data.customer.payments;
-                        delete data.token.scope;
-                    } catch(e) {}
-
-                    this.updateCookie(data);
-                    this.setCustomerFromAPI(data);
-                    this.initPayments();
-                    this.getAddresses();
-                    this.initGiftCards();
-                    this.setRewardCards();
-                    this.trigger('onLogin');
-                },
-                error: function(jqXHR) {
-                    switch(jqXHR.status) {
-                        case 423:
-                            this.trigger('onNotActivatedUser', getResponse());
-                            break;
-                        default:
-                            emitDefaultEvent.call(this);
-                    }
-
-                    function emitDefaultEvent() {
-                        var resp = getResponse();
-                        if (resp.error == "invalid_scope" || resp.error == "invalid_grant") {
-                            this.trigger('onInvalidUser', resp);
-                        } else {
-                            this.trigger('onLoginError', resp);
-                        }
-                    }
-
-                    function getResponse() {
-                        return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
-                    }
-                }
+                success: this.loginSuccessCallback,
+                error: this.loginErrorCallback
             });
+        },
+        /**
+         * Gets authorization token of the customer using Facebook. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "https://identity-dev.revelup.com/customers-auth/v1/authorization/token-customer/facebook/",
+         *     method: "POST",
+         *     data: {
+         *         access_token: <access_token>,          // facebook access token
+         *         scope: "*",                            // constant value
+         *         grant_type: "password"                 // constant value
+         *     }
+         * }
+         * ```
+         * Server may return following response:
+         * - Successful authorization:
+         * ```
+         * Status: 200
+         * {
+         *     "token": {
+         *         "username": "johndoe@foobar.com",                                    // username
+         *         "user_id": 1,                                                        // user id
+         *         "access_token": "2YotnFZFEjr1zCsicMWpAA",                            // access token
+         *         "token_type": "Bearer",                                              // token type
+         *         "expires_in": 3600,                                                  // expiration time
+         *         "scope": "CUSTOMERS:customers.customer CUSTOMERS:customers.address"  // access scope
+         *     },
+         *     customer: {
+         *         "email": "johndoe@foobar.com",                                       // email
+         *         "first_name": "John",                                                // first name
+         *         "last_name": "Doe",                                                  // last name
+         *         "id": 1,                                                             // user id
+         *         "phone_number": "+123456789"                                         // phone
+         *         "addresses": [...]                                                   // array of addresses
+         *     }
+         * ```
+         * Emits 'onLogin' event.
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "error_description": "Invalid credentials given.",
+         *     "error": "invalid_grant"
+         * }
+         * ```
+         *
+         * ```
+         * Status: 422
+         * {
+         *     "error": "no_facebook_email"
+         * }
+         * ```
+         *
+         * ```
+         * Status: 403
+         * {
+         *     "error": "invalid_facebook_token"
+         * }
+         * ```
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "error": "invalid_scope"
+         * }
+         * ```
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "error": "unsupported_grant_type"
+         * }
+         * ```
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "error_description": "Request is missing grand_type parameter.",
+         *     "error": "invalid_request"
+         * }
+         * ```
+         *
+         * ```
+         * Status: 400
+         * {
+         *     "error_description": "Request is missing access_token parameter.",
+         *     "error": "invalid_request"
+         * }
+         * ```
+         *
+         * @returns {Object} jqXHR object.
+         */
+        loginFacebook: function(access_token) {
+            var attrs = this.toJSON();
+            return Backbone.$.ajax({
+                url: attrs.serverURL + "/authorization/token-customer/facebook/",
+                method: "POST",
+                context: this,
+                data: {
+                    access_token: access_token,
+                    grant_type: "password",
+                    scope: '*',
+                    instance: getInstanceName()
+                },
+                success: this.loginSuccessCallback,
+                error: this.loginErrorCallback
+            });
+        },
+        /**
+         * Authorization success callback
+         */
+        loginSuccessCallback: function(data) {
+            try {
+                delete data.customer.payments;
+                delete data.token.scope;
+            } catch(e) {}
+
+            this.updateCookie(data);
+            this.setCustomerFromAPI(data);
+            this.initPayments();
+            this.getAddresses();
+            this.initGiftCards();
+            this.setRewardCards();
+            this.trigger('onLogin');
+        },
+        /**
+         * Authorization error callback
+         */
+        loginErrorCallback: function(jqXHR) {
+            switch(jqXHR.status) {
+                case 423:
+                    this.trigger('onNotActivatedUser', getResponse());
+                    break;
+                default:
+                    emitDefaultEvent.call(this);
+            }
+
+            function emitDefaultEvent() {
+                var resp = getResponse();
+                if (resp.error == "invalid_scope" || resp.error == "invalid_grant") {
+                    this.trigger('onInvalidUser', resp);
+                } else {
+                    this.trigger('onLoginError', resp);
+                }
+            }
+
+            function getResponse() {
+                return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};
+            }
         },
         /**
          * Changes attributes values on default values. Emits `onLogout` event.

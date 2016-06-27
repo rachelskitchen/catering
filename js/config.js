@@ -44,6 +44,11 @@ define({
     paths: {
         /**
          * @type {string}
+         * @description The actual path of [app]{@link module:facebook} module.
+         */
+        facebook: "//connect.facebook.net/en_US/sdk",
+        /**
+         * @type {string}
          * @description The actual path of [app]{@link module:app} module.
          */
         app: "js/app",
@@ -455,6 +460,9 @@ define({
      * @see http://requirejs.org/docs/api.html#config-shim
      */
     shim: {
+        "facebook": {
+            exports: "FB"
+        },
         "jquery": {
             exports: "$"
         },
