@@ -43,6 +43,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             // link to raw: https://github.com/jashkenas/backbone/blob/master/backbone.js#L1575
             Backbone.history.loadUrl = function(fragment) {
                 fragment = this.getFragment(fragment);  // used Backbone.History.prototype.getFragment() method
+
+                var blocked = self.isBlocked();
+                if (blocked) {
+                    fragment = blocked;
+                }
+
                 // check if current route is locked and replace it on 'index' when it is true
                 if(self.lockedRoutes.indexOf(fragment) > -1) {
                     fragment = 'index';
@@ -72,12 +78,18 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // listen to hash changes
             this.listenTo(this, 'route', function(route, params) {
-                var settings = App.Data.settings;
+                var settings = App.Data.settings,
+                    customer = App.Data.customer;
 
                 if(settings.get('isMaintenance'))
                     if (location.hash.slice(1) !== 'maintenance') {
                         location.reload();
                     }
+
+                var blocked = self.isBlocked();
+                if (blocked) {
+                    location.hash = blocked;
+                }
 
                 var needGoogleMaps = false,
                     cur_hash = location.hash.slice(1);
@@ -121,6 +133,15 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             // set handler for window.unload event
             window.onunload = this.beforeUnloadApp.bind(this);
         },
+        isBlocked: function() {
+            var fragment = null;
+
+            if (App.Data.customer.isLocked()) {
+                fragment = 'profile_edit';
+            }
+
+            return fragment;
+        },
         setTabTitle: function() {
             var title = _loc.TAB_TITLE_ONLINE_ORDERING;
             if (App.Settings['business_name']) {
@@ -129,9 +150,15 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             pageTitle(title);
         },
         navigate: function() {
-            this.started && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
+            var blocked = this.isBlocked();
+            if (blocked) {
+                arguments[0] = blocked;
+            }
+
+            this.started && !blocked && arguments[0] != location.hash.slice(1) && App.Data.mainModel.trigger('loadStarted');
             if(App.Data.settings.get('isMaintenance') && arguments[0] != 'maintenance')
                 arguments[0] = 'maintenance';
+
             return Backbone.Router.prototype.navigate.apply(this, arguments); // TODO: can be useful {replace: true} 3rd argument
         },
         change_page: function(cb) {
@@ -325,7 +352,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             var paymentProcessor = _.isObject(App.Settings.payment_processor) && PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
                 customer = App.Data.customer = new App.Models.Customer({
                     keepCookie: App.SettingsDirectory.remember_me
-                });
+                }),
+                self = this;
 
             if (typeof App.SettingsDirectory.auth_url == 'string' && App.SettingsDirectory.auth_url) {
                 customer.set('serverURL', App.SettingsDirectory.auth_url.replace(/\/*$/, ''));
@@ -940,6 +968,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     mod: 'Panel',
                     model: customer,
                     loginAction: login,
+                    loginFbAction: login_facebook,
+                    forceProfile: force_profile,
                     signupAction: register,
                     resetAction: resetPWD,
                     resendAction: resendActivation,
@@ -957,6 +987,25 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 customer.login()
                         .done(customer.trigger.bind(customer, 'hidePanel'))
                         .always(hideSpinner);
+            }
+
+            function login_facebook() {
+                customer.FB_login(function(res) {
+                    if (res.authResponse) {
+                        var access_token = res.authResponse.accessToken;
+
+                        showSpinner();
+                        customer.loginFacebook(access_token)
+                                .done(customer.trigger.bind(customer, 'hidePanel'))
+                                .always(hideSpinner);
+                    }
+                });
+            }
+
+            function force_profile() {
+                if (customer.check()) {
+                    profileEdit();
+                }
             }
 
             function logout() {
@@ -1329,6 +1378,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 mod: 'LogIn',
                 model: App.Data.customer,
                 loginAction: loginAction,
+                loginFbAction: loginFbAction,
                 resendAction: resendActivation,
                 createAccount: this.navigate.bind(this, 'signup', true),
                 guestCb: this.navigate.bind(this, 'index', true),
@@ -1341,6 +1391,19 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 customer.login()
                         .done(self.navigate.bind(self, 'index', true))
                         .fail(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+            }
+
+            function loginFbAction() {
+                customer.FB_login(function(res) {
+                    if (res.authResponse) {
+                        var access_token = res.authResponse.accessToken;
+
+                        mainModel.trigger('loadStarted');
+                        customer.loginFacebook(access_token)
+                                .done(self.navigate.bind(self, 'index', true))
+                                .fail(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                    }
+                });
             }
 
             function resendActivation() {
