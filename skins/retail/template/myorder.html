@@ -32,10 +32,25 @@
     <% if(id_product !== null) { %>
     <div class="qty-box text-right sub-box"></div>
     <div class="btns sub-box">
-        <span class="edit btn"><%= _lp.MYORDER_EDIT %></span>
-        <span class="remove link fl-right"><%= _lp.MYORDER_REMOVE %></span>
+        <span class="edit btn" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
+        <span class="remove link fl-right" tabindex="0"><%= _lp.MYORDER_REMOVE %></span>
     </div>
     <% } %>
+</script>
+
+<script type="text/template" id="myorder_item_gift_card-template">
+    <div class="logo">
+        <span class="item-sum fl-right bold"></span>
+        <div class="name">
+            <div class="bold"><%= _settings.business_name %></div>
+            <div class="bold"><%= name %></div>
+        </div>
+        <div class="btns sub-box fl-right">
+            <span class="edit btn" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
+            <span class="remove link" tabindex="0"><%= _lp.MYORDER_REMOVE %></span>
+        </div>
+        <div class="card-number"></div>
+    </div>
 </script>
 
 <script type="text/template" id="myorder_product_discount-template">

@@ -235,7 +235,11 @@ define(["main_router"], function(main_router) {
                     });
                     productsAttr = productSet.get('products');
                     (searchModel = model.getSeachModel()) && searchModel.get('status').then(function() {
-                        productsAttr.reset(searchModel.get('products').toJSON());
+                        productsAttr.reset(searchModel.get('products').map(function(product) {
+                            return _.extend(product.toJSON(), {
+                                filterResult: true
+                            });
+                        }));
                         setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
                         // Apply a sort method specified by user and listen to its further changes
                         App.Data.sortItems.sortCollection(productsAttr);
@@ -617,10 +621,20 @@ console.log('restoreState', history.length, JSON.stringify(data));
         },
         modifiers: function(category_id, product_id) {
             var isEditMode = !product_id,
-                order = new App.Models.Myorder(),
-                dfd = order.add_empty(product_id * 1, category_id * 1),
-                ,
-                self = this;
+                order = isEditMode ? App.Data.myorder.at(category_id) : new App.Models.Myorder(),
+                self = this,
+                dfd;
+
+            if (!order) {
+                return this.navigate('index', true);
+            }
+
+            if (isEditMode) {
+                dfd = Backbone.$.Deferred();
+                dfd.resolve();
+            } else {
+                dfd = order.add_empty(product_id * 1, category_id * 1)
+            }
 
             this.prepare('modifiers', function() {
                 App.Data.header.set('menu_index', null);
@@ -637,7 +651,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         mod: 'ItemCustomization',
                         className: 'myorder-item-customization',
                         model: _order,
-                        ui: new Backbone.Model({isAddMode: true}),
+                        ui: new Backbone.Model({isAddMode: !isEditMode}),
                         action: action,
                         back: cancel,
                         doNotCache: true
@@ -656,7 +670,11 @@ console.log('restoreState', history.length, JSON.stringify(data));
 
                         if (check.status === 'OK') {
                             _order.get_product().check_gift(function() {
-                                App.Data.myorder.add(_order);
+                                if (isEditMode) {
+                                    order.update(_order);
+                                } else {
+                                    App.Data.myorder.add(_order);
+                                }
                                 cancel();
                             }, function(errorMsg) {
                                 App.Data.errors.alert(errorMsg); // user notification

@@ -102,3 +102,41 @@
     font-size: 12px;
     text-decoration: underline;
 }
+
+.giftcard-item {
+    position: relative;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 6px;
+    background-size: 26px 26px;
+}
+
+.giftcard-item::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
+}
+
+.giftcard-item .logo {
+    padding-left: 72px;
+    background-repeat: no-repeat;
+    background-position: 10px 0;
+    background-size: 42px;
+    background-color: transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.giftcard-item .card-number,
+.giftcard-item .btns {
+    margin-top: 30px;
+}
+
+.giftcard-item .remove,
+.giftcard-item .edit {
+    margin-left: 20px;
+}
