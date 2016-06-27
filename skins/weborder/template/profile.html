@@ -24,7 +24,11 @@
             <input type="password" id="profile-sign-in-pwd" class="pwd ios-safari-caret input">
         </li>
     </ul>
-    <div class="forgot-password text-right link primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
+    <div class="profile-separator optional-text">
+        <span><%= _lp.OR %></span>
+    </div>
+    <div class="btn login-fb-btn"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
+    <div class="forgot-password link primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
     <div class="btn login-btn"><%= _lp.PROFILE_LOG_IN %></div>
 </script>
 
@@ -87,6 +91,7 @@
 <script type="text/template" id="profile_edit-template">
     <h2 class="category-title primary-border category-bg"><%= _lp.PROFILE_EDIT_TITLE %></h2>
     <div class="cols">
+        <div class="category-title profile-attention attention-bg"><%= _lp.PROFILE_REGISTRATION_INCOMPLETE %></div>
         <div class="col-left border-box fl-left">
             <h3 class="header-underline"><%= _lp.PROFILE_BASIC_DETAILS %></h3>
             <div class="basic-details-box"></div>
@@ -115,7 +120,7 @@
         </li>
         <li>
             <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
-            <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none">
+            <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none" disabled>
         </li>
         <li>
             <div class="label required optional-text"><%= _lp.PROFILE_PHONE %></div>
