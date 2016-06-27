@@ -28,7 +28,7 @@
  * @requires module:page_visibility
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "facebook", "doc_cookies", "page_visibility"], function(Backbone, FB, docCookies, page_visibility) {
+define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], function(Backbone, FB, docCookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -193,7 +193,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility"], function(Back
         },
         /**
          * Facebook SDK initialization
-         * 
+         *
          * ```
          * FB.init() reference: https://developers.facebook.com/docs/javascript/reference/FB.init/
          * ```
@@ -206,7 +206,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility"], function(Back
         },
         /**
          * Facebook login
-         * 
+         *
          * ```
          * FB.login() reference: https://developers.facebook.com/docs/reference/javascript/FB.login/
          * ```
