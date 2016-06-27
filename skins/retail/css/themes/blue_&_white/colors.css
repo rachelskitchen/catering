@@ -342,6 +342,9 @@ aside:after, aside:before {
 .attention-text {
     color: #ff0000;
 }
+.attention-bg {
+    background-color: #ff0000;
+}
 #content > .checkout .discount .btn {
     color: #646464;
 }
