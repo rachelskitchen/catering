@@ -63,7 +63,7 @@
 </script>
 
 <script type="text/template" id="main_maintenance-template">
-    <div class="back primary-text link">&lang;&nbsp;<%= _lp.MAIN_BACK %></div>
+    <div class="back primary-text link" tabindex="0">&lang;&nbsp;<%= _lp.MAIN_BACK %></div>
     <div id="content" class="text-center primary-border vertical-align">
         <div class="box">
             <p class="msg"><%= errMsg %></p>
@@ -73,9 +73,9 @@
     <footer id="footer" class="primary-border">
         <div class="store_choice fl-left">
             <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
-            <a class="change_establishment link primary-text" href="javascript: void(0);"><%= _lp.MAIN_CHANGE %></a>
+            <a class="change_establishment link primary-text" href="javascript: void(0);" tabindex="0"><%= _lp.MAIN_CHANGE %></a>
         </div>
-        <a class="powered-by link primary-text fl-right" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+        <a class="powered-by link primary-text fl-right" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>" tabindex="0"></a>
     </footer>
 </script>
 

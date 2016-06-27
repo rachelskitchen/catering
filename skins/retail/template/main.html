@@ -13,23 +13,20 @@
 </script>
 
 <script type="text/template" id="main_maintenance-template">
-    <section class="maintenance">
-        <a href="javascript: void(0);" class="back"> <%= _lp.MAIN_BACK %> </a>
-        <div id="content" class="text-center">
-            <p> <%= errMsg %> </p>
-            <div class="btn reload" tabindex="0"><span><%= _lp.MAIN_RESTART %></span></div>
+    <div class="back primary-text link" tabindex="0">&lang;&nbsp;<%= _lp.MAIN_BACK %></div>
+    <div id="content" class="text-center primary-border vertical-align">
+        <div class="box">
+            <p class="msg"><%= errMsg %></p>
+            <div class="btn reload" tabindex="0"><%= _lp.MAIN_RESTART %></div>
         </div>
-    </section>
-<footer>
-    <span class="store_choice">
-        <a class="change_establishment link1" href="javascript: void(0);"><%= _lp.MAIN_CHANGE_ESTABLISHMENT %></a>
-        <% if(isDirMode) { %> <%= _lp.MAIN_OR %> <% } %>
-    </span>
-    <% if(isDirMode) { %>
-        <a class="go-to-directory link1" href="javascript: void(0);"> <%= _lp.MAIN_GOTO_DIRECTORY %> </a>
-    <% } %>
-    <a class="powered-by" target='_blank' href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
-</footer>
+    </div>
+    <footer id="footer" class="primary-border">
+        <div class="store_choice fl-left">
+            <%= _lp.MAIN_CURRENT_STORE %>: <%= _settings.business_name %>
+            <a class="change_establishment link primary-text" href="javascript: void(0);" tabindex="0"><%= _lp.MAIN_CHANGE %></a>
+        </div>
+        <a class="powered-by link fl-right" target='_blank' tabindex="0" href="https://revelsystems.com/?utm_source=RevelOnlineOrderApp&utm_medium=RevelOnlineOrderApp&utm_campaign=<%= clientName %>"></a>
+    </footer>
 </script>
 
 <script type="text/template" id="main_done-template">
