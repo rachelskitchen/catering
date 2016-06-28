@@ -32,7 +32,29 @@ define(["cart_view"], function(cart_view) {
         }
     });
 
+    var CartCheckoutView = App.Views.CoreCartView.CoreCartCoreView.extend({
+        name: 'cart',
+        mod: 'checkout',
+        bindings: {
+            '.total_block': 'updateContent: totalViewData'
+        },
+        computeds: {
+            totalViewData: function() {
+                setTimeout(this.resize.bind(this), 500);
+                return {
+                    el: this.$('.total_block'),
+                    name: 'Total',
+                    mod: 'Checkout',
+                    model: this.collection.total,
+                    collection: this.collection,
+                    checkout: this.collection.checkout
+                };
+            }
+        }
+    });
+
     return new (require('factory'))(cart_view.initViews.bind(cart_view), function() {
         App.Views.CartView.CartMainView = CartMainView;
+        App.Views.CartView.CartCheckoutView = CartCheckoutView;
     });
 });

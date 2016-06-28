@@ -201,3 +201,19 @@ body,
 #header .top {
   background: #5F6266;
 }
+/* [checkout_step_background] checkout step background */
+.checkout-page .step {
+  background: #F1F1F1;
+}
+/* [checkout_step_background_active] checkout active step background */
+.checkout-page .step.active {
+  background: #5F6266;
+}
+/* [checkout_step_text] checkout step text */
+.checkout-page .step {
+  color: #373B40;
+}
+/* [checkout_step_text] checkout active step text */
+.checkout-page .step.active {
+  color: #FFFFFF;
+}

@@ -213,3 +213,23 @@ body,
 #header .top {
     .resolve-background(@top_header_background);
 }
+
+/* [checkout_step_background] checkout step background */
+.checkout-page .step {
+    .resolve-background(@checkout_step_background);
+}
+
+/* [checkout_step_background_active] checkout active step background */
+.checkout-page .step.active {
+    .resolve-background(@checkout_step_background_active);
+}
+
+/* [checkout_step_text] checkout step text */
+.checkout-page .step {
+    .resolve-color(@checkout_step_text);
+}
+
+/* [checkout_step_text] checkout active step text */
+.checkout-page .step.active {
+    .resolve-color(@checkout_step_text_active);
+}
