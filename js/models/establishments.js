@@ -173,7 +173,9 @@ define(['backbone', 'collection_sort'], function(Backbone) {
                             changeEstablishment(self.models[0].get('id'));
                         } else {
                             self.meta('statusCode', 1); // get or set meta data of collection
-                            self.trigger('loadStoresList');
+                            //self.trigger('loadStoresList');
+                            App.Data.selectEstablishmentMode = true;
+                            App.Data.settings.trigger('change:establishment');
                         }
                     } else {
                         self.meta('statusCode', 2); // get or set meta data of collection

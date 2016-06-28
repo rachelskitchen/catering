@@ -51,6 +51,7 @@ var ERROR = {},
 ERROR.WEBSTORAGES_ARE_DISABLED = 'Web storages are disabled or not supported in your browser';
 ERROR.LOAD_LANGUAGE_PACK = 'Unable to load a language pack. Now the page is reloaded.';
 ERROR.CANT_GET_WEBORDER_SETTINGS = 'Can\'t load weborder settings from a backend server';
+MSG.ESTABLISHMENTS_ERROR_NOSTORE = 'No store is available for the specified brand';
 
 var PAYMENT_TYPE = {
     PAYPAL_MOBILE: 1,
@@ -534,29 +535,33 @@ function loadCSS(name, loadModelCSS) {
      */
     var resolve = function() {
         loadModelCSS.count--;
+        //trace("loadModelCSS.count =", loadModelCSS.count);
         if (loadModelCSS.count === 0) loadModelCSS.dfd.resolve();
     }
+    /**
+     * User notification.
+     */
+    var error = function() {
+        // Bug 25585.
+        // If network connection has been lost in capture phase, user will get the corresponding notification with reload button.
+        var errorMsg = App.Data.myorder.disconnected ? App.Data.myorder.paymentResponse.errorMsg : ERROR[RESOURCES.CSS];
+        App.Data.errors.alert(errorMsg, true, true); // user notification
+    };
     var cache = false,
         version = is_minimized_version ? '?ver=' + autoVersion : '';
 
     if(loadCSS.cache[id] instanceof $) {
+        //trace("name =", name, "was cached");
         cache = true;
         elem = loadCSS.cache[id];
     } else {
+        //trace("name =", name, "starting load...");
         elem = loadCSS.cache[id] = $('<link rel="stylesheet" href="' + name + '.css' + version + '" type="text/css" />');
         // bug #18285 - no timeout for app assets
-        /**
-         * User notification.
-         */
-        var error = function() {
-            // Bug 25585.
-            // If network connection has been lost in capture phase, user will get the corresponding notification with reload button.
-            var errorMsg = App.Data.myorder.disconnected ? App.Data.myorder.paymentResponse.errorMsg : ERROR[RESOURCES.CSS];
-            App.Data.errors.alert(errorMsg, true, true); // user notification
-        };
         var timer = window.setTimeout(error, App.Data.settings.get('timeout'));
 
         elem.on('load', function(event) {
+            //trace("name =", name, " loaded successfully");
             onCSSLoaded(true, resolve);
         });
         elem.on('error', function(event) {
@@ -568,11 +573,14 @@ function loadCSS(name, loadModelCSS) {
     if($('link[href="' + name + '.css"]').length === 0) {
         $('head').append(elem);
         if (cache) {
+            //trace(name, "got from cache, detecting... ");
             detectLinkLoadEvent(elem.get(0), loadCSS.linkLoadEventSupported); // detect when CSS is applied to DOM
         } else if(!loadCSS.linkLoadEventSupported) {
+            //trace(name, "load event not supported ");
             detectLinkLoadEvent(elem.get(0), false); // detect when CSS is applied to DOM
         }
     } else {
+        //trace(name, "resolving");
         resolve(); // resolve current CSS file
     }
 
@@ -589,20 +597,32 @@ function loadCSS(name, loadModelCSS) {
     //
     // Link href should be in the same domain as the page host. Otherwise Browser Security Policy disallows to check it and timeout will be running forever.
     // (This restriction is acceptable for CSS links passed to loadCSS())
-    function detectLinkLoadEvent(el, linkLoadEventSupported) {
+    function detectLinkLoadEvent(el, linkLoadEventSupported, entry) {
         // this method is discussed in http://stackoverflow.com/questions/2635814/javascript-capturing-load-event-on-link
         try {
-            var isLoaded = (el.sheet && el.sheet.cssRules.length > 0)
+            var isLoaded = (el.sheet) // && el.sheet.cssRules && el.sheet.cssRules.length > 0 - it doesn't work for weborder-desktop-colors.css
                 || (el.styleSheet && el.styleSheet.cssText.length > 0)
                 || (el.innerHTML && el.innerHTML.length > 0);
 
             // if loading CSS just been applied to DOM need to call a resolve() and stop detectLinkLoadEvent.timer
             if(isLoaded) {
+                //trace("file ", el.href, "loaded");
                 return onCSSLoaded(linkLoadEventSupported, resolve);
+            } else {
+                if (entry == 1) {
+                    //trace("file ", el.href, " delaying ...", (new Date).getTime());
+                    detectLinkLoadEvent.timer = setTimeout(detectLinkLoadEvent.bind(window, el, linkLoadEventSupported, 2), 2000); //for files like weborder-desktop-colors.css with delay > 100 ms
+                    return;
+                } else if (entry == 2) {
+                    console.error("Can't detect loaded: ", el.href);
+                    return onCSSLoaded(true, error);
+                }
             }
-        } catch(e) {}
-
-        detectLinkLoadEvent.timer = setTimeout(detectLinkLoadEvent.bind(window, el, linkLoadEventSupported), 100);
+        } catch(e) {
+            console.error("Can't detect loaded#2: ", el.href);
+            return onCSSLoaded(true, error);
+        }
+        detectLinkLoadEvent.timer = setTimeout(detectLinkLoadEvent.bind(window, el, linkLoadEventSupported, 1), 200);
     }
 
     function onCSSLoaded(linkLoadEventSupported, cb) {

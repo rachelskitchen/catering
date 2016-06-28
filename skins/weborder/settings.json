@@ -14,7 +14,7 @@
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
-            "css": ["categories", "subcategories", "search_line", "promotions"],
+            "css": ["categories", "search_line", "promotions"],
             "views": ["categories", "subcategories", "stanfordcard", "search_line"],
             "templates": ["categories", "subcategories", "search_line"],
             "core": ["categories", "search"]
