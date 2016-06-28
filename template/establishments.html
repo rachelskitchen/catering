@@ -7,8 +7,10 @@
                 <div></div>
                 <% if (storeDefined) { %>
                     <div class="btn btn-half border-box fl-left btn-secondary" name="back"> <span class="clip"> <%= BACK_BUTTON %> </span> </div>
-                <% } %>
                     <div class="btn btn-half border-box fl-left" name="proceed"> <span class="clip"> <%= PROCEED_BUTTON %> </span> </div>
+                <% } else { %>
+                    <div class="btn border-box" name="proceed"> <span class="clip"> <%= PROCEED_BUTTON %> </span> </div>
+                <% } %>
           </div>
         </div>
         <% if (showFooter) { %>

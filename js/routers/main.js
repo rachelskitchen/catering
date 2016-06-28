@@ -268,9 +268,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             for (i = 0, j = templatesCore.length; i < j; i++)
                 loadTemplate2(null, templatesCore[i], true, loadModelTemplate); // sync load template
 
-            //trace("this.skinCSS length = ", this.skinCSS.length);
+            //trace("this.skinCSS length = ", this.skinCSS.length, countCSS);
             //trace(css, cssCore, externCss);
-
 
             require(js, function() {
                 // init Views (#18015)
@@ -1893,6 +1892,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 if (!App.Data.customer.isAuthorized() && App.Data.settings.isMobileVersion()
                     && ['', '#index'].indexOf(location.hash) > -1) {
                     window.location.hash = '#login';
+                }
+                if (App.Data.selectEstablishmentMode) {
+                    window.location.hash = '#establishment';
                 }
                 // emit 'initialized' event
                 this.trigger('initialized');

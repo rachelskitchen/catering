@@ -48,6 +48,7 @@ define(["main_router"], function(main_router) {
             "maintenance": "maintenance",
             "profile_edit": "profile_edit",
             "profile_payments": "profile_payments",
+            "establishment": "establishment",
             "*other": "index"
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
@@ -862,6 +863,9 @@ define(["main_router"], function(main_router) {
             } else {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
+        },
+        establishment: function() {
+            App.Data.establishments.trigger('loadStoresList');
         }
     });
 

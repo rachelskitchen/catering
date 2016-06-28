@@ -299,7 +299,8 @@ define(["backbone", "async"], function(Backbone) {
 
             if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
 
-            this.set('skin', App.skin);
+            this.set('skin', App.skin, {silent: true});
+            this.trigger('change:skin');
             this.trigger('changeSkin');
         },
         /**
@@ -455,6 +456,12 @@ define(["backbone", "async"], function(Backbone) {
                 },
                 load = $.Deferred();
 
+            if (App.Data.selectEstablishmentMode) {
+                self.set({
+                    settings_system: settings_system, // default settings
+                    });
+                return load.resolve();
+            }
             $.ajax({
                 url: self.get("host") + "/weborders/system_settings/",
                 data: {
@@ -526,7 +533,6 @@ define(["backbone", "async"], function(Backbone) {
                             // add the delta in ms. between server and client times set:
                             settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
-                            settings_system.recaptcha_load = $.Deferred();
 
                             // fix for bug 7233
                             if(settings_system.delivery_for_online_orders) {
@@ -735,20 +741,22 @@ define(["backbone", "async"], function(Backbone) {
                 });
         },
         load_google_captcha: function() {
-            var set_sys = this.get("settings_system");
-            if (set_sys.recaptcha_load.state() == 'resolved') {
-                return set_sys.recaptcha_load;
+            if (!App.Data.dfd_recaptcha_load) {
+                App.Data.dfd_recaptcha_load = $.Deferred();
+            }
+            if (App.Data.dfd_recaptcha_load.state() == 'resolved') {
+                return App.Data.dfd_recaptcha_load;
             }
             if (!window.onloadCaptchaLibrary) {
                 window.onloadCaptchaLibrary = function() {
-                    set_sys.recaptcha_load.resolve();
+                    App.Data.dfd_recaptcha_load.resolve();
                 }
             }
             require(["https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadCaptchaLibrary&hl=" + App.Data.curLocale], function() {
                 return;
             });
 
-            return set_sys.recaptcha_load;
+            return App.Data.dfd_recaptcha_load;
         },
         /**
          * Gets payment processor config for current skin.
