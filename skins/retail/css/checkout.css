@@ -1,0 +1,25 @@
+.checkout-page {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 385px;
+    overflow: auto;
+}
+
+.checkout-page .steps {
+    display: inline-block;
+    width: 100%;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.checkout-page .step {
+    width: 33%;
+    text-transform: uppercase;
+    padding: 12px 0;
+}
+
+.checkout-page .step-2 {
+    width: 34%;
+}

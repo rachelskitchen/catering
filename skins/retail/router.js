@@ -32,7 +32,6 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headers.main = {mod: 'Main', className: 'main'};
         headers.confirm = {mod: 'Confirm', className: 'confirm'};
-        headers.checkout = {mod: 'Checkout', className: 'checkout main'};
         carts.main = {mod: 'Main', className: 'main animation'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
     }
@@ -102,16 +101,23 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
-                var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd
-                });
-                var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.searchLine = new App.Models.SearchLine({search: new App.Collections.Search()});
                 App.Data.cart = new Backbone.Model({visible: false});
                 App.Data.categorySelection = new App.Models.CategorySelection();
                 App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProducts()});
                 App.Data.productsSets = new App.Collections.ProductsSets();
+                App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
+
+                var mainModel = App.Data.mainModel = new App.Models.MainModel({
+                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
+                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
+                    headerModel: App.Data.header,
+                    cartCollection: App.Data.myorder,
+                    cartModel: App.Data.cart,
+                    categories: App.Data.categories,
+                    searchLine: App.Data.searchLine
+                });
 
                 // init App.Data.sortItems
                 this.initSortItems();
@@ -127,48 +133,16 @@ define(["main_router"], function(main_router) {
                     // App.Data.filter.loadSort();
                 }
 
+                mainModel.set('model', mainModel);
+
+                // set clientName
+                App.Data.establishments.getModelForView().set('clientName', mainModel.get('clientName'));
+
+                // track main UI change
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
-                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
 
-                mainModel.set({
-                    clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
-                    model: mainModel,
-                    headerModel: App.Data.header,
-                    cartCollection: App.Data.myorder,
-                    cartModel: App.Data.cart,
-                    categories: App.Data.categories,
-                    searchLine: App.Data.searchLine
-                });
-                ests.getModelForView().set('clientName', mainModel.get('clientName'));
-
-                // Once the route is initialized need to set profile panel
-                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
-
-                // init Stanford Card model if it's turned on
-                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
-                    App.Data.stanfordCard = new App.Models.StanfordCard();
-                }
-
-                // listen to navigation control
-                this.navigationControl();
-
-                // run history tracking
-                this.triggerInitializedEvent();
+                this.onInitialized();
             });
-
-            this.listenTo(App.Data.myorder, "paymentInProcess", function() {
-                App.Data.mainModel.trigger('loadStarted');
-            }, this);
-
-            this.listenTo(App.Data.myorder, "paymentInProcessValid", function() {
-                App.Data.mainModel.trigger('loadCompleted');
-            }, this);
-
-            this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
-                App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message); // user notification
-            }, this);
 
             var checkout = App.Data.myorder.checkout;
             checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
@@ -778,15 +752,19 @@ console.log('restoreState', history.length, JSON.stringify(data));
         checkout: function() {
             App.Data.header.set('menu_index', null);
             this.prepare('checkout', function() {
+                this.listenTo(App.Data.customer, 'change:access_token', function() {
+                    // update shipping address on login/logout
+                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
+                });
+
                 if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
 
-                this.initGiftCard();
+                var settings = App.Data.settings.get('settings_system'),
+                    addresses = App.Data.customer.get('addresses');
 
-                if (!App.Data.customer) {
-                    App.Data.customer = new App.Models.Customer();
-                }
+                this.initGiftCard();
 
                 var settings = App.Data.settings.get('settings_system'),
                     addresses = App.Data.customer.get('addresses');
@@ -798,14 +776,14 @@ console.log('restoreState', history.length, JSON.stringify(data));
 
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
-                    header: headers.checkout,
+                    header: headers.main,
                     cart: carts.checkout,
                     content: {
                         isCartLeftPanel: true,
                         modelName: 'Checkout',
                         collection: App.Data.myorder,
                         mod: 'Page',
-                        className: 'checkout',
+                        className: 'checkout-page',
                         DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
@@ -814,6 +792,9 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         discountAvailable: settings.accept_discount_code
                     }
                 });
+
+                App.Data.cart.set('visible', true);
+
                 this.change_page();
             });
         },
@@ -833,8 +814,32 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     this.loadCustomer();
                 }
 
+                var other_dining_options = App.Data.myorder.checkout.get('other_dining_options'),
+                    cartData = carts.checkout;
+
+                if (this.recentOrder) {
+                    cartData = _.extend({
+                        collection: this.recentOrder,
+                        checkout: this.recentOrder.checkout,
+                    }, carts.checkout);
+                }
+
+                App.Views.GeneratorView.cacheRemoveView('Main', 'Done', 'content_Main_Done');
+
+                App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
-                    mod: 'Done'
+                    mod: 'Main',
+                    header: headers.main,
+                    cart: cartData,
+                    content: {
+                        modelName: 'Main',
+                        mod: 'Done',
+                        model: App.Data.mainModel,
+                        customer: App.Data.customer,
+                        checkout: App.Data.myorder.checkout,
+                        other_options: other_dining_options || new Backbone.Collection(),
+                        className: 'main-done'
+                    }
                 });
                 this.change_page();
             });

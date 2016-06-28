@@ -233,15 +233,21 @@
 </script>
 
 <script type="text/template" id="checkout_page-template">
-    <div class="data ios-safari-caret-fix vertical-scrollbar">
-        <div class="specials row">
-            <% if(noteAllow) {%>
-                <label> <span class="bold"> <%= _lp.CHECKOUT_ORDER_NOTES %>: </span> </label>
-            <div class="input_beauty special">
-                    <textarea class="vertical-scrollbar ios-safari-caret"><%=note%></textarea>
-            </div>
-            <% } %>
-        </div>
+    <ul class="steps primary-border">
+        <li class="step step-1 text-center fl-left">Order Information</li>
+        <li class="step step-2 text-center fl-left">Billing Information</li>
+        <li class="step step-3 text-center fl-left">Review & Confirm</li>
+    </ul>
+    <div class="view1"></div>
+    <div class="view2"></div>
+    <div class="view3"></div>
+    <div class="specials row">
+    <% if(noteAllow) {%>
+    <label> <span class="bold"> <%= _lp.CHECKOUT_ORDER_NOTES %>: </span> </label>
+    <div class="input_beauty special">
+        <textarea class="vertical-scrollbar ios-safari-caret"><%=note%></textarea>
+    </div>
+    <% } %>
     </div>
 </script>
 
