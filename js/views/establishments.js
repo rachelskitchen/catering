@@ -76,6 +76,7 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
                     self.collection.trigger('changeEstablishment', selectedEstablishmentID);
                     self.removeFromDOMTree(); // remove a view from DOM
                 };
+            App.Data.selectEstablishmentMode = false;
             if (this.collection.getEstablishmentID()) { // get a establishment's ID
                 if (this.model.get('needShowAlert')) {
                     if (this.model.get('isMobileVersion')) {
