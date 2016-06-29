@@ -577,6 +577,41 @@ input[type="radio"]:checked + .radio::before,
     border-radius: 0;
 }
 
+/* Full height popup */
+.popup-full-height #popup_alert {
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.popup-full-height #popup_content,
+.popup-full-height #popup_message,
+.popup-full-height #popup_container {
+    position: relative;
+}
+
+.popup-full-height #popup_container {
+    height: 90%;
+}
+
+.popup-full-height #popup_content {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 100%;
+    padding-bottom: 50px;
+}
+
+.popup-full-height #popup_message {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.popup-full-height #popup_panel {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+}
+
 @media only screen and (max-width: 1100px) {
     /* cart width is decreased by 120px */
     #cart {

@@ -77,6 +77,8 @@ define(["main_router"], function(main_router) {
                 App.Data.search = new App.Collections.Search();
                 App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
+                App.Data.paymentMethods.set('acceptableCCTypes', ACCEPTABLE_CREDIT_CARD_TYPES);
+
                 this.listenTo(mainModel, 'change:mod', this.createMainView);
                 this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
                 this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);

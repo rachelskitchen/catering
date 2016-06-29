@@ -944,6 +944,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     mod: 'Panel',
                     model: customer,
                     loginAction: login,
+                    readTermsOfUse: readTermsOfUse,
                     signupAction: register,
                     resetAction: resetPWD,
                     resendAction: resendActivation,
@@ -955,6 +956,24 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     cacheId: true
                 }
             });
+
+            function readTermsOfUse() {
+                App.Data.errors.alert(_loc.PROFILE_TOU, false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.PROFILE_TOU_BTN_ACCEPT,
+                        cancel: _loc.PROFILE_TOU_BTN_CANCEL
+                    },
+                    customClass: 'popup-full-height',
+                    customView: new App.Views.ProfileView.ProfileTermsOfUseView({
+                        className: 'profile-terms-of-use text-left'
+                    }),
+                    callback: function(res) {
+                        customer.set('terms_accepted', res);
+                    }
+                });
+            }
 
             function login() {
                 showSpinner();
@@ -1334,7 +1353,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 model: App.Data.customer,
                 loginAction: loginAction,
                 resendAction: resendActivation,
-                createAccount: this.navigate.bind(this, 'signup', true),
+                createAccount: createAccountAction,
                 guestCb: this.navigate.bind(this, 'index', true),
                 forgotPasswordAction: this.navigate.bind(this, 'profile_forgot_password', true),
                 cacheId: true
@@ -1352,9 +1371,14 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 customer.resendActivation()
                         .always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
             }
+
+            function createAccountAction() {
+                customer.set('terms_accepted', false);
+                self.navigate('signup', true);
+            }
         },
         signupContent: function() {
-            var events = 'change:first_name change:last_name change:email change:phone change:password change:confirm_password',
+            var events = 'change:first_name change:last_name change:email change:phone change:password change:confirm_password change:terms_accepted',
                 customer = App.Data.customer
                 self = this;
 
@@ -1373,6 +1397,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 model: customer,
                 next: next,
                 signupAction: next,
+                readTermsOfUse: readTermsOfUse,
                 back: this.navigate.bind(this, 'login', true),
                 cacheId: true
             }
@@ -1389,11 +1414,33 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 self.navigate('profile_create', true);
             }
 
+            function readTermsOfUse() {
+                self.navigate('terms', true);
+            }
+
             function preValidateData() {
                 var attrs = customer.toJSON(),
-                    valid = attrs.first_name && attrs.last_name && attrs.email && attrs.phone && attrs.password
+                    valid = attrs.first_name && attrs.last_name && attrs.email && attrs.phone && attrs.password && attrs.terms_accepted
                         && customer.comparePasswords().status == 'OK';
                 App.Data.header.set('enableLink', valid);
+            }
+        },
+        termsContent: function() {
+            var customer = App.Data.customer,
+                self = this;
+
+            return {
+                modelName: 'Profile',
+                mod: 'TermsOfUse',
+                model: customer,
+                next: next,
+                back: this.navigate.bind(this, 'signup', true),
+                cacheId: true
+            }
+
+            function next() {
+                customer.set('terms_accepted', true);
+                self.navigate('signup', true);
             }
         },
         profileCreateContent: function() {

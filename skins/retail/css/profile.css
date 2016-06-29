@@ -363,6 +363,14 @@
     font-size: 14px;
 }
 
+.profile-form .profile-checkbox {
+    font-size: 14px;
+}
+
+.profile-form .profile-checkbox input {
+    width: auto;
+}
+
 .profile-form .account-password-field {
     position: relative;
 }
@@ -468,4 +476,54 @@
 .collapsed .expand:before {
     content: '\f196';
     font-family: "FontAwesome";
+}
+
+.profile-separator {
+    position: relative;
+    width: 84%;
+    height: 2px;
+    margin: 20px auto 10px;
+    background-color: #CCCCCC;
+    font-size: 0;
+}
+
+.profile-separator span {
+    display: inline-block;
+    position: relative;
+    top: -6px;
+    padding: 0 14px;
+    line-height: 16px;
+    background-color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 13px;
+    color: #9B9D9F;
+}
+
+.profile-attention {
+    margin: 0 15px 15px;
+    padding: 15px;
+    border-radius: 8px;
+    font-size: 16px;
+    color: #FFFFFF;
+}
+
+.profile-terms-of-use {
+    padding: 1em 1.75em 1.75em;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 1em;
+    font-size: 21px;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 1em;
+    font-size: 18px;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 1em;
 }

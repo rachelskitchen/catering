@@ -124,6 +124,12 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
              */
             show_password: false,
             /**
+             * Terms of Use
+             * @type {boolean}
+             * @default true
+             */
+            terms_accepted: false,
+            /**
              * Customer's id.
              * @type {?number}
              * @default null

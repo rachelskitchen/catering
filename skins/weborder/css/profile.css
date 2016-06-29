@@ -171,6 +171,36 @@
     cursor: pointer;
 }
 
+#profile-panel .profile-checkbox {
+    display: block;
+    padding: 8px 14px 0;
+    position: relative;
+    overflow: hidden;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+#profile-panel .profile-checkbox .field-description {
+    margin: 4px 0 0 21px;
+}
+
+#profile-panel input[type="checkbox"] {
+    position: absolute;
+    left: -9999px;
+    margin: 0;
+}
+
+#profile-panel .checkbox {
+    position: relative;
+    top: 2px;
+}
+
+#profile-panel .checkbox-text {
+    position: relative;
+    left: 2px;
+    top: -1px;
+}
+
 .profile-cvv-container {
     width: 300px;
     padding: 10px;
@@ -351,4 +381,51 @@
 .collapsed .expand:before {
     content: '\f196';
     font-family: "FontAwesome";
+}
+
+.profile-separator {
+    position: relative;
+    height: 2px;
+    margin: 10px 34px 25px;
+    background-color: #CCCCCC;
+    font-size: 0;
+}
+
+.profile-separator span {
+    display: inline-block;
+    position: relative;
+    top: -6px;
+    padding: 0 14px;
+    line-height: 16px;
+    background-color: white;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    font-size: 13px;
+}
+
+.profile-attention {
+    border: 0;
+    font-weight: normal;
+    font-size: 16px;
+    color: #FFFFFF;
+}
+
+.profile-terms-of-use {
+    padding: 30px 30px 15px;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 15px;
+    font-size: 21px;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 15px;
 }

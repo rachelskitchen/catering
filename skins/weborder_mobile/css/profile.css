@@ -62,6 +62,10 @@
     margin-bottom: 0.7em;
 }
 
+.profile-tou {
+    margin-top: 1.4em;
+}
+
 .profile-complete {
     display: block;
     margin-bottom: 1.4em;
@@ -281,6 +285,7 @@
     right: 2.5em;
 }
 
+.profile-form .profile-checkbox,
 .profile-edit .profile-checkbox {
     display: block;
     position: relative;
@@ -289,16 +294,24 @@
     text-align: left;
 }
 
+.profile-form .profile-checkbox {
+    margin-bottom: 1.4em;
+    padding: 0 0 0 1.8em;
+    line-height: 1.4em;
+}
+
 .profile-edit .payment-item .profile-checkbox {
     position: absolute;
     right: 5em;
     top: 0;
 }
 
+.profile-form .profile-checkbox input,
 .profile-edit .profile-checkbox input {
     display: none;
 }
 
+.profile-form .profile-checkbox .input,
 .profile-edit .profile-checkbox .input {
     display: block;
     -webkit-box-sizing: border-box;
@@ -318,10 +331,22 @@
     text-align: center;
 }
 
+.profile-form .profile-checkbox .input {
+    margin-top: 0;
+    top: 0;
+}
+
+.profile-form .profile-checkbox .input::before,
 .profile-edit .profile-checkbox .input::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.7em;
+}
+
+.profile-form .profile-checkbox .field-description {
+    margin: .5em 0 0;
+    padding: 0;
+    font-style: italic;
 }
 
 .profile-cvv-container .cvv-required-info {
@@ -390,6 +415,55 @@
 .profile-edit .reward-cards-box .ui-spinner {
     width: 16em;
     height: 16em;
+}
+
+#section .profile-terms-of-use {
+    padding: 1.5em 1.8em;
+    line-height: 1.5;
+    font-size: 2.1em;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 1em;
+    font-size: 1.45em;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 1em;
+    font-size: 1.25em;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 1em;
+}
+
+.profile-menu-links {
+    position: absolute;
+    left: 2.75em;
+    bottom: 1.75em;
+    line-height: 1;
+}
+
+.profile-menu-links a {
+    position: relative;
+    display: block;
+    float: left;
+    text-decoration: none;
+}
+
+.profile-menu-links a:not(:last-child) {
+    margin-right: 1.1rem;
+}
+
+.profile-menu-links a:not(:last-child)::after {
+    content: "";
+    display: block;
+    position: absolute;
+    right: -0.6rem;
+    top: -0.05rem;
+    width: 1px;
+    height: 1rem;
+    background-color: #CECECE;
 }
 
 /* landscape */

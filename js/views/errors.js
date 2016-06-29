@@ -82,6 +82,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 customAlertMessage.call(this); // custom alert message
             }
 
+            if (options.customClass) {
+                this.$el.addClass(options.customClass);
+            }
+
             /**
              * Custom alert message.
              */

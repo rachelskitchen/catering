@@ -69,6 +69,7 @@ define(["main_router"], function(main_router) {
             "rewards": "rewards",
             "login": "login",
             "signup": "signup",
+            "terms": "terms",
             "profile_create": "profile_create",
             "profile_edit": "profile_edit",
             "profile_settings": "profile_settings",
@@ -1952,6 +1953,26 @@ define(["main_router"], function(main_router) {
                 header: headerModes.Modifiers,
                 footer: footerModes.None,
                 contentClass: 'primary-bg',
+                content: content
+            });
+
+            this.change_page();
+        },
+        terms: function() {
+            var content = this.termsContent();
+
+            App.Data.header.set({
+                page_title: _loc.PROFILE_TOU,
+                back_title: _loc.BACK,
+                back: content.back,
+                link: content.next,
+                link_title: _loc.PROFILE_TOU_BTN_ACCEPT_2
+            });
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg regular-text profile-terms-of-use',
                 content: content
             });
 
