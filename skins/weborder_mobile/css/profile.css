@@ -73,9 +73,13 @@
     margin-bottom: 0.7em;
 }
 
+.profile-tou {
+    margin-top: 1.4em;
+}
+
 .profile-info.account-notifications {
     padding: 0 2%;
-    margin-bottom: 1em;
+    margin: 1em 0;
 }
 
 .profile-complete {
@@ -431,6 +435,55 @@
     padding: .8em;
     line-height: 1.25;
     color: #FFFFFF;
+}
+
+#section .profile-terms-of-use {
+    padding: 1.5em 1.8em;
+    line-height: 1.5;
+    font-size: 2.1em;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 1em;
+    font-size: 1.45em;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 1em;
+    font-size: 1.25em;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 1em;
+}
+
+.profile-menu-links {
+    position: absolute;
+    left: 2.75em;
+    bottom: 1.75em;
+    line-height: 1;
+}
+
+.profile-menu-links a {
+    position: relative;
+    display: block;
+    float: left;
+    text-decoration: none;
+}
+
+.profile-menu-links a:not(:last-child) {
+    margin-right: 1.1rem;
+}
+
+.profile-menu-links a:not(:last-child)::after {
+    content: "";
+    display: block;
+    position: absolute;
+    right: -0.6rem;
+    top: -0.05rem;
+    width: 1px;
+    height: 1rem;
+    background-color: #CECECE;
 }
 
 /* landscape */
