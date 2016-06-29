@@ -124,6 +124,12 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
              */
             show_password: false,
             /**
+             * Terms of Use
+             * @type {boolean}
+             * @default true
+             */
+            terms_accepted: false,
+            /**
              * Email notifications
              * @type {boolean}
              * @default true

@@ -71,6 +71,13 @@
         </li>
     </ul>
     <div class="field-description passwords-mismatch font-size2 attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></div>
+    <ul class="profile-tou profile-form font-size2 text-left">
+        <li>
+            <label class="profile-checkbox">
+                <input type="checkbox" class="accept-tou"><i class="input checkbox checkbox-accept-tou"></i> <%= _lp.PROFILE_TOU_ACCEPT %> <span class="read-tou link primary-text"><%= _lp.READ_MORE %></span>
+            </label>
+        </li>
+    </ul>
     <span class="profile-info account-notifications regular-text font-size3"><%= _lp.PROFILE_NOTIFICATIONS %></span>
     <ul class="profile-form font-size2 text-left">
         <li>
@@ -110,6 +117,10 @@
             </li>
         </ul>
         <span class="logged-as primary-text font-size2"></span>
+        <div class="profile-menu-links font-size2">
+            <a class="primary-text" href="http://revelsystems.com/terms/" target="_blank"><%= _lp.FOOTER_TERMS_OF_SERVICE %></a>
+            <a class="primary-text" href="http://revelsystems.com/privacy/" target="_blank"><%= _lp.FOOTER_PRIVACY_POLICY %></a>
+        </div>
     </div>
 </script>
 
@@ -351,4 +362,50 @@
     <h2 class="title primary-text font-size1"><%= _lp.CVV_REQUIRED %></h2>
     <span class="cvv-required-info font-size3"><%= _lp.CVV_REQUIRED_INFO %></span>
     <input type="text" class="cvv ios-safari-caret input-colors font-size2">
+</script>
+
+<script type="text/template" id="profile_terms_of_use-template">
+    <h2>Revel Systems, Inc. Terms of Service</h2>
+    <p>These terms of use apply to all products and services offered by Revel Systems, Inc., and its affiliates (collectively “Revel”, “we”, “us” or “our”), including our websites, products, services, mobile and software applications we own or control (the “Services”).</p>
+    <p>By accessing or using our Services, you are agreeing to these terms of use (“Terms”) and our Privacy Policy (available at <a href="http://revelsystems.com/privacy/" target="_blank" class="link primary-text">http://revelsystems.com/privacy/</a>) which are incorporated by reference. Please read them carefully.</p>
+    <p>Our Services are very diverse, so sometimes additional terms or product requirements may apply. Additional terms will be available with the relevant Services, and those additional terms become part of your agreement with us if you use those Services.</p>
+    <h3>Using our Services</h3>
+    <p>You must follow any policies made available to you within the Services.</p>
+    <p>Don’t misuse our Services. For example, don’t interfere with our Services or try to access them using a method other than the interface and the instructions that we provide. You may use our Services only as permitted by law, including applicable export and re-export control laws and regulations. We may suspend or stop providing our Services to you if you do not comply with our terms or policies or if we are investigating suspected misconduct.</p>
+    <p>Using our Services does not give you ownership of any intellectual property rights in our Services or the content you access. You may not use content from our Services unless you obtain permission from its owner or are otherwise permitted by law. These terms do not grant you the right to use any branding or logos used in our Services. Don’t remove, obscure, or alter any legal notices displayed in or along with our Services.</p>
+    <p>Our Services display some content that is not Revel’s. This content is the sole responsibility of the entity that makes it available. We may review content to determine whether it is illegal or violates our policies, and we may remove or refuse to display content that we reasonably believe violates our policies or the law. But this is not a warranty that we review content, so please don’t assume that we do.</p>
+    <p>In connection with your use of the Services, we may send you service announcements, administrative messages, and other information. You may opt out of some of those communications.</p>
+    <p>Some of our Services are available on mobile devices. Do not use such Services in a way that distracts you and prevents you from obeying traffic or safety laws.</p>
+    <h3>Privacy Protection</h3>
+    <p>Our Privacy Policy explains how we treat your personal information and protect your privacy when you use our Services. By using our Services, you agree that Revel can use such information in accordance with our Privacy Policy.</p>
+    <h3>Your Content in our Services</h3>
+    <p>Some of our Services allow you to upload, submit, store, send or receive content. You retain ownership of any intellectual property rights that you hold in that content. In short, what belongs to you stays yours.</p>
+    <p>When you upload, submit, store, send or receive content to or through our Services, you give Revel (and those we work with) a worldwide license to use, host, store, reproduce, modify, create derivative works (such as those resulting from translations, adaptations or other changes we make so that your content works better with our Services), communicate, publish, publicly perform, publicly display and distribute such content. The rights you grant in this license are for the limited purpose of operating, promoting, and improving our Services, and to develop new ones. This license continues even if you stop using our Services. Some Services may offer you ways to access and remove content that has been provided to that Service. Also, in some of our Services, there are terms or settings that narrow the scope of our use of the content submitted in those Services. Make sure you have the necessary rights to grant us this license for any content that you submit to our Services.</p>
+    <p>Our Services may analyze your content to provide you targeted or relevant product features.</p>
+    <p>You can find more information about how Revel uses and stores content in our Privacy Policy or additional terms for particular Services. If you submit feedback or suggestions about our Services, we may use your feedback or suggestions without obligation to you.</p>
+    <h3>About Software in our Services</h3>
+    <p>When a Service requires or includes downloadable software, this software may update automatically on your device once a new version or feature is available. Some Services may let you adjust your automatic update settings.</p>
+    <p>You may not copy, modify, distribute, sell, or lease any part of our Services or included software, nor may you reverse engineer or attempt to extract the source code of that software, unless laws prohibit those restrictions or you have our written permission.</p>
+    <h3>Modifying and Terminating our Services</h3>
+    <p>We are constantly changing and improving our Services. We may add or remove functionalities or features, and we may suspend or stop a Service altogether.</p>
+    <p>Revel may also stop providing Services to you, or add or create new limits to our Services at any time.</p>
+    <h3>Our Warranties and Disclaimers</h3>
+    <p>We provide our Services using a commercially reasonable level of skill and care and we hope that you will enjoy using them. But there are certain things that we don’t promise about our Services.</p>
+    <p>OTHER THAN AS EXPRESSLY SET OUT IN THESE TERMS OR ADDITIONAL TERMS, REVEL DOES NOT MAKE ANY SPECIFIC PROMISES ABOUT THE SERVICES. FOR EXAMPLE, WE DON’T MAKE ANY COMMITMENTS ABOUT THE CONTENT WITHIN THE SERVICES, THE SPECIFIC FUNCTIONS OF THE SERVICES, OR THEIR RELIABILITY, AVAILABILITY, OR ABILITY TO MEET YOUR NEEDS. WE PROVIDE THE SERVICES “AS IS”.</p>
+    <p>SOME JURISDICTIONS PROVIDE FOR CERTAIN WARRANTIES, LIKE THE IMPLIED WARRANTY OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. TO THE EXTENT PERMITTED BY LAW, WE EXCLUDE ALL WARRANTIES.</p>
+    <h3>Liability for our Services</h3>
+    <p>WHEN PERMITTED BY LAW, REVEL WILL NOT BE RESPONSIBLE FOR LOST PROFITS, REVENUES, OR DATA, FINANCIAL LOSSES OR INDIRECT, SPECIAL, CONSEQUENTIAL, EXEMPLARY, OR PUNITIVE DAMAGES.</p>
+    <p>TO THE EXTENT PERMITTED BY LAW, THE TOTAL LIABILITY OF REVEL FOR ANY CLAIMS UNDER THESE TERMS, INCLUDING FOR ANY IMPLIED WARRANTIES, IS LIMITED TO THE FEES YOU PAID US, IF ANY, TO USE THE SERVICES (OR, IF WE CHOOSE, TO SUPPLYING YOU THE SERVICES AGAIN) WITHIN THE LAST TWELVE (12) MONTHS.</p>
+    <p>IN ALL CASES, REVEL WILL NOT BE LIABLE FOR ANY LOSS OR DAMAGE THAT IS NOT REASONABLY FORESEEABLE.</p>
+    <h3>Business uses of our Services</h3>
+    <p>If you are using our Services on behalf of a business, that business accepts these terms. It will hold harmless and indemnify Revel and its affiliates, officers, agents, and employees from any claim, suit or action arising from or related to the use of the Services or violation of these terms, including any liability or expense arising from claims, losses, damages, suits, judgments, litigation costs and attorneys’ fees.</p>
+    <h3>About these Terms</h3>
+    <p>We may modify these terms or any additional terms that apply to a Service to, for example, reflect changes to the law or changes to our Services. You should look at the terms regularly. If we make changes, we will notify you by posting the updated terms on this page and revising the "Last Updated" date above. If you do not agree to the modified terms for a Service, you should discontinue your use of that Service.</p>
+    <p>If there is a conflict between these terms and the additional terms, the additional terms will control for that conflict.</p>
+    <p>These terms do not create any third party beneficiary rights.</p>
+    <p>These terms are in addition to, and shall not negate or invalidate any formal agreements between Revel and any other party that have been agreed to in writing by Revel and any other party.</p>
+    <p>If you do not comply with these terms, and we don’t take action right away, this doesn’t mean that we are giving up any rights that we may have (such as taking action in the future).</p>
+    <p>If it turns out that a particular term is not enforceable, this will not affect any other terms.</p>
+    <p>The laws of California, U.S.A., excluding California’s conflict of laws rules, will apply to any disputes arising out of or relating to these terms or the Services. All claims arising out of or relating to these terms or the Services will be litigated exclusively in the federal or state courts of San Francisco County, California, USA, and you and Revel consent to personal jurisdiction in those courts.</p>
+    <p>Any questions regarding these terms should be directed to the following:<br>Revel Systems, Inc., 170 Columbus Ave., 4th Floor, San Francisco, CA 94133</p>
 </script>

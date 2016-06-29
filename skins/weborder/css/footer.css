@@ -12,17 +12,6 @@
     padding: 18px 0 18px 30px;
 }
 
-#footer .card-logo {
-    display: inline-block;
-    height: 15px;
-    padding-top: 18px;
-    margin-left: 5px;
-}
-
-#footer .imgCardLogo {
-    height: 100%;
-}
-
 #footer .powered-by {
     display: inline-block;
     width: 115px;
@@ -30,4 +19,28 @@
     margin: 18px 15px 0;
     background: url('img/poweredBy.png') no-repeat 0 0 transparent;
     background-size: 115px 20px;
+}
+
+#footer .footer-menu {
+    margin-top: 18px;
+    line-height: 1;
+    font-size: 0;
+}
+
+#footer .footer-menu a {
+    position: relative;
+    display: inline-block;
+    margin: 0 8px;
+    font-size: 12px;
+}
+
+#footer .footer-menu a:not(:last-child)::after {
+    content: "";
+    display: block;
+    position: absolute;
+    right: -9px;
+    top: -1px;
+    width: 1px;
+    height: 14px;
+    background-color: #5F6266;
 }
