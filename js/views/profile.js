@@ -65,18 +65,26 @@ define(["factory"], function() {
             '.password': 'value: password, events:["input"]',
             '.password-confirm': 'value: confirm_password, events:["input"]',
             '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
+            '.accept-tou': 'checked: terms_accepted',
+            '.checkbox-accept-tou': "attr: {checked: select(terms_accepted, 'checked', false)}",
             '.signup-btn': 'classes: {disabled: not(allFilled)}'
         },
         computeds: {
             allFilled: {
-                deps: ['first_name', 'last_name', 'email', 'phone', 'password', 'confirm_password'],
-                get: function(first_name, last_name, email, phone, password, confirm_password) {
-                    return Boolean(first_name && last_name && email && phone && password && confirm_password && (password === confirm_password));
+                deps: ['first_name', 'last_name', 'email', 'phone', 'password', 'confirm_password', 'terms_accepted'],
+                get: function(first_name, last_name, email, phone, password, confirm_password, terms_accepted) {
+                    return Boolean(first_name && last_name && email && phone && password && confirm_password && (password === confirm_password) && terms_accepted);
                 }
             }
         },
         events: {
-            'click .signup-btn:not(.disabled)': setCallback('signupAction')
+            'click .signup-btn:not(.disabled)': setCallback('signupAction'),
+            'click .read-tou': 'readTermsOfUse'
+        },
+        readTermsOfUse: function(e) {
+            e.preventDefault();
+            var action = setCallback('readTermsOfUse');
+            action.apply(this, arguments);
         },
         onEnter: function() {
             var action = setCallback('signupAction');
@@ -558,6 +566,11 @@ define(["factory"], function() {
         }
     });
 
+    App.Views.CoreProfileView.CoreProfileTermsOfUseView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'terms_of_use'
+    });
+
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({
@@ -566,6 +579,10 @@ define(["factory"], function() {
                 showMenu: showMenu,
                 showPWDReset: showPWDReset
             });
+
+            if (showSignUp) {
+                this.model.set('terms_accepted', false);
+            }
         };
     }
 
@@ -597,5 +614,6 @@ define(["factory"], function() {
         App.Views.ProfileView.ProfileGiftCardEditionView = App.Views.CoreProfileView.CoreProfileGiftCardEditionView;
         App.Views.ProfileView.ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView;
         App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView
+        App.Views.ProfileView.ProfileTermsOfUseView = App.Views.CoreProfileView.CoreProfileTermsOfUseView;
     });
 });

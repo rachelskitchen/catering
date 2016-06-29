@@ -228,7 +228,6 @@
             app.get['srv'] == '2-16' && (app.REVEL_HOST = 'https://2-16.revelup.com');
             app.get['srv'] == 'rde' && (app.REVEL_HOST = 'https://rde.revelup.com');
 
-
             App.Data.is_stanford_mode = false;
             if (app.get['stanford'] == 'true') {
                 App.Data.is_stanford_mode = true;

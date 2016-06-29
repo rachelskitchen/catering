@@ -258,6 +258,33 @@
     font-size: 14px;
 }
 
+.profile-form .profile-checkbox {
+    font-size: 14px;
+}
+
+.profile-form .profile-checkbox input {
+    width: auto;
+}
+
+#profile-panel .profile-checkbox .field-description {
+    padding: 4px 14px 0;
+}
+
+.profile-form .account-password-field {
+    position: relative;
+}
+
+.profile-form .show-password {
+    display: block;
+    position: absolute;
+    right: 10px;
+    top: 0;
+    line-height: 26px;
+    padding: 0 8px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
 .reset-password-info {
     font-size: 14px;
     padding-bottom: 15px;
@@ -313,4 +340,24 @@
     position: relative;
     top: initial;
     bottom: initial;
+}
+
+.profile-terms-of-use {
+    padding: 1em 1.75em 1.75em;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 1em;
+    font-size: 21px;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 1em;
+    font-size: 18px;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 1em;
 }

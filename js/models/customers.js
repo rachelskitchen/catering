@@ -155,6 +155,18 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
              */
             confirm_password: "",
             /**
+             * User's password visibility
+             * @type {boolean}
+             * @default false
+             */
+            show_password: false,
+            /**
+             * Terms of Use
+             * @type {boolean}
+             * @default false
+             */
+            terms_accepted: false,
+            /**
              * Customer's id.
              * @type {?number}
              * @default null

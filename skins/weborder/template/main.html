@@ -26,6 +26,10 @@
             </div>
         </div>
         <div class="footer__right">
+            <div class="footer-menu fl-left">
+                <a class="link primary-text" href="http://revelsystems.com/terms/" target="_blank"><%= _lp.FOOTER_TERMS_OF_SERVICE %></a>
+                <a class="link primary-text" href="http://revelsystems.com/privacy/" target="_blank"><%= _lp.FOOTER_PRIVACY_POLICY %></a>
+            </div>
             <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
             <ul class="mercury-accepted-credit-cards">
                 <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.VISA.toString()) > -1) { %>
