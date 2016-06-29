@@ -406,13 +406,40 @@ footer {
 /* Mercury accepted credit card */
 .mercury-accepted-credit-cards {
     float: left;
+    margin-right: 16px;
+    font-size: 0;
 }
 .card-logo {
     display: inline-block;
-    margin-left: 0px;
+    margin-left: 8px;
 }
 .imgCardLogo {
+    display: block;
     height: 20px;
+}
+
+.footer-menu {
+    margin-top: 4px;
+    line-height: 1;
+    font-size: 0;
+}
+
+.footer-menu a {
+    position: relative;
+    display: inline-block;
+    margin: 0 8px;
+    font-size: 12px;
+}
+
+.footer-menu a:not(:last-child)::after {
+    content: "";
+    display: block;
+    position: absolute;
+    right: -9px;
+    top: -1px;
+    width: 1px;
+    height: 14px;
+    background-color: #5F6266;
 }
 
 .powered-by {
@@ -420,6 +447,7 @@ footer {
     width: 141px;
     height: 27px;
     float: right;
+    margin-right: 16px;
 }
 #cart .main {
     position: absolute;
@@ -1277,4 +1305,40 @@ span.cancel-input:before {
 .captcha_container {
     min-height: 60px;
     margin-bottom: 10px;
+}
+
+/* Full height popup */
+.popup-full-height #popup_alert {
+    background-color: rgba(0, 0, 0, .5);
+}
+
+.popup-full-height #popup_content,
+.popup-full-height #popup_message,
+.popup-full-height #popup_container {
+    position: relative;
+}
+
+.popup-full-height #popup_container {
+    height: 90%;
+    margin-top: 0;
+}
+
+.popup-full-height #popup_content {
+    -moz-box-sizing: border-box;
+    -webkit-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 100%;
+    padding: 1em 0 5em;
+}
+
+.popup-full-height #popup_message {
+    height: 100%;
+    overflow-y: auto;
+}
+
+.popup-full-height #popup_panel {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
 }

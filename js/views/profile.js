@@ -71,6 +71,8 @@ define(["factory"], function() {
             '.password': 'value: password, events:["input"]',
             '.password-confirm': 'value: confirm_password, events:["input"]',
             '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
+            '.accept-tou': 'checked: terms_accepted',
+            '.checkbox-accept-tou': "attr: {checked: select(terms_accepted, 'checked', false)}",
             '.email-notifications': 'checked: email_notifications',
             '.checkbox-email-notifications': "attr: {checked: select(email_notifications, 'checked', false)}",
             '.push-notifications': 'checked: push_notifications',
@@ -79,14 +81,20 @@ define(["factory"], function() {
         },
         computeds: {
             allFilled: {
-                deps: ['first_name', 'last_name', 'email', 'phone', 'password', 'confirm_password'],
-                get: function(first_name, last_name, email, phone, password, confirm_password) {
-                    return Boolean(first_name && last_name && email && phone && password && confirm_password && (password === confirm_password));
+                deps: ['first_name', 'last_name', 'email', 'phone', 'password', 'confirm_password', 'terms_accepted'],
+                get: function(first_name, last_name, email, phone, password, confirm_password, terms_accepted) {
+                    return Boolean(first_name && last_name && email && phone && password && confirm_password && (password === confirm_password) && terms_accepted);
                 }
             }
         },
         events: {
-            'click .signup-btn:not(.disabled)': setCallback('signupAction')
+            'click .signup-btn:not(.disabled)': setCallback('signupAction'),
+            'click .read-tou': 'readTermsOfUse'
+        },
+        readTermsOfUse: function(e) {
+            e.preventDefault();
+            var action = setCallback('readTermsOfUse');
+            action.apply(this, arguments);
         },
         onEnter: function() {
             var action = setCallback('signupAction');
@@ -642,6 +650,9 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             this.subViews.push(loginView, signupView, menuView, resetPWD);
 
             return this;
+        },
+        clickSignupLink: function() {
+            controlLinks(true, false, false, false);
         }
     });
 
@@ -1133,6 +1144,11 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         }
     });
 
+    App.Views.CoreProfileView.CoreProfileTermsOfUseView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'terms_of_use'
+    });
+
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({
@@ -1141,6 +1157,10 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 showMenu: showMenu,
                 showPWDReset: showPWDReset
             });
+
+            if (showSignUp) {
+                this.model.set('terms_accepted', false);
+            }
         };
     }
 
@@ -1178,5 +1198,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         App.Views.ProfileView.ProfileRewardCardsSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardsSelectionView;
         App.Views.ProfileView.ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView;
         App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView;
+        App.Views.ProfileView.ProfileTermsOfUseView = App.Views.CoreProfileView.CoreProfileTermsOfUseView;
     });
 });

@@ -511,3 +511,23 @@
     font-size: 16px;
     color: #FFFFFF;
 }
+
+.profile-terms-of-use {
+    padding: 1em 1.75em 1.75em;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 1em;
+    font-size: 21px;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 1em;
+    font-size: 18px;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 1em;
+}

@@ -22,5 +22,46 @@
             <%= _lp.CHECKOUT_PAYMENT_METHOD_STANFORD_CARD %>
         </li>
         <% } %>
+        <li class="payment-systems item">
+            <% if (_settings.payment_processor.credit_card_button && Array.isArray(_settings.online_credit_card_types)) { %>
+                <ul class="fl-left">
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.VISA.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/visa.png">
+                    </li>
+                    <% } %>
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MASTERCARD.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/mastercard.png">
+                    </li>
+                    <% } %>
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.MAESTRO.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/maestro.png">
+                    </li>
+                    <% } %>
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.AMERICANEXPRESS.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/amex.png">
+                    </li>
+                    <% } %>
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DISCOVER.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/discover.png">
+                    </li>
+                    <% } %>
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.DINERS.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/dinersclub.png">
+                    </li>
+                    <% } %>
+                    <% if (_settings.online_credit_card_types.indexOf(acceptableCCTypes.JCB.toString()) > -1) { %>
+                    <li class="card-logo">
+                        <img src="img/jcb.png">
+                    </li>
+                    <% } %>
+                </ul>
+            <% } %>
+        </li>
     </ul>
 </script>

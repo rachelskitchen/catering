@@ -30,6 +30,23 @@
     vertical-align: middle;
 }
 
+.checkout-order-details .payment-systems {
+    float: right;
+    padding-top: 9px;
+    font-size: 0;
+}
+
+.checkout-order-details .payment-systems .card-logo {
+    display: inline-block;
+    height: 22px;
+    margin-left: 8px;
+}
+
+.checkout-order-details .payment-systems .card-logo img {
+    display: block;
+    height: 100%;
+}
+
 .checkout-order-details .size1[class] {
     width: 144px;
 }
