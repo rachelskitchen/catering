@@ -492,7 +492,7 @@ define({
             deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
-            deps: ["backbone", "doc_cookies", "page_visibility", "giftcard"]
+            deps: ["backbone", "doc_cookies", "page_visibility"]
         },
         "errors" : {
             deps: ["backbone"]
