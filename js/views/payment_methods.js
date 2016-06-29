@@ -34,6 +34,7 @@ define(["factory"], function(factory) {
         },
         bindings: {
             '.cash': 'text: cash',
+            '.payment-systems': 'css: { display: select(equal(selected, "credit_card_button"), "", "none") }',
             '[data-payment="cash"]': 'classes: {"primary-button": equal(selected, "cash"), "regular-button": not(equal(selected, "cash"))}',
             '[data-payment="credit_card_button"]': 'classes: {"primary-button": equal(selected, "credit_card_button"), "regular-button": not(equal(selected, "credit_card_button"))}',
             '[data-payment="gift_card"]': 'classes: {"primary-button": equal(selected, "gift_card"), "regular-button": not(equal(selected, "gift_card"))}',
