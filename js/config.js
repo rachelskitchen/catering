@@ -500,7 +500,7 @@ define({
             deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
-            deps: ["backbone", "doc_cookies", "page_visibility"]
+            deps: ["backbone", "doc_cookies", "page_visibility", "giftcard"]
         },
         "errors" : {
             deps: ["backbone"]
