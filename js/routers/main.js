@@ -274,11 +274,13 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     local_theme = app.get['local_theme'] == "true" ? true : false;
                 if (App.skin != App.Skins.WEBORDER_MOBILE
                     && App.skin != App.Skins.DIRECTORY_MOBILE
-                    && App.skin != App.Skins.WEBORDER) {
+                    && App.skin != App.Skins.WEBORDER
+                    && App.skin != App.Skins.RETAIL) {
                     local_theme = true;
                 }
                 var server_color_schemes = {};
                 server_color_schemes[ App.Skins.WEBORDER ] = 'weborder-desktop-colors';
+                server_color_schemes[ App.Skins.RETAIL ] = 'retail-desktop-colors';
                 server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
                 server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
 

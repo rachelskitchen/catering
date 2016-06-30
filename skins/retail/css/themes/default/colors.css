@@ -31,7 +31,9 @@ body,
 }
 /* [primary_text] active category, links */
 .primary-text[class],
-.categories-tree .name.active {
+.categories-tree .name.active,
+.payment-method.primary-button,
+.payment-method:hover {
   color: #00A3E0;
 }
 .profile-panel-box .profile-item:hover,
@@ -67,7 +69,8 @@ body,
 .order-items li,
 .alert_wrapper,
 .order-item .inputbox,
-.weight_edit_inner .weight_edit_input {
+.weight_edit_inner .weight_edit_input,
+#popup_container[id] {
   background: #FFFFFF;
 }
 /* [primary_border] primary border */
@@ -101,7 +104,8 @@ body,
 }
 /* [shadow_background] background behind popup window */
 .shadow-bg[class],
-#alert {
+#alert,
+#popup_overlay[id] {
   background: rgba(55, 59, 64, 0.6);
 }
 /* [shadow_profile_background] profile shadow  background */
@@ -112,6 +116,11 @@ body,
 .popup-bg[class],
 #popup_container[id] {
   background: #FFFFFF;
+}
+/* [card_background] stanford card plan background, card balance background */
+.card-bg[class],
+.stanford-plans-box .stanford-plan {
+  background: rgba(209, 229, 237, 0.2);
 }
 /* [card_background_gradient] stanford card plan background, card balance background */
 .card-gradient-bg,
@@ -164,7 +173,11 @@ body,
 .select-wrapper:focus,
 .select-wrapper select:focus,
 .order-item .inputbox:focus,
-.weight_edit_inner .weight_edit_input:focus {
+.weight_edit_inner .weight_edit_input:focus,
+.payment-method.primary-button,
+.payment-method:hover,
+.stanford-plans-box .stanford-plan.active,
+.stanford-plans-box .stanford-plan:hover {
   box-shadow: 0 0 4px 0 #00A3E0;
   border-color: #00A3E0;
 }

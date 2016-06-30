@@ -200,9 +200,84 @@ define(["done_view", "generator"], function(done_view) {
     });
 
     var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
-        getPickupTime: function() {
-            return {};
-        }
+        bindings: {
+            '.thanks': 'text: insertPlaceholder(_lp_DONE_THANK_YOU, customer_first_name)',
+            '.submitted': 'html: insertPlaceholder(_lp_DONE_ORDER_SUBMITTED, format(boldTmp, _system_settings_business_name))',
+            '.pickup-time': 'classes: {hide: inList(checkout_dining_option, "DINING_OPTION_ONLINE", "DINING_OPTION_SHIPPING")}, html: insertPlaceholder(select(isDelivery, _lp_DONE_ARRIVE_TIME, _lp_DONE_PICKUP_TIME), format(boldTmp, checkout_pickupTime))',
+            '.email-sent-to': 'text: customer_email',
+            '.other-options-line': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_OTHER"))}',
+            '.other-options': 'text: joinOtherDiningOptions($other_options)',
+            '.address-box': 'classes: {hide: equal(checkout_dining_option, "DINING_OPTION_OTHER")}',
+            '.address-label': 'text: addressLabel(checkout_dining_option)',
+            '.contact-person': 'text: select(isDelivery, format("$1 $2", customer_first_name, customer_last_name), _system_settings_business_name)',
+            '.phone': 'toggle: isDelivery, text: customer_phone',
+            '.address-line': 'text: getAddressLine($customer, checkout_dining_option, isDelivery)'
+        },
+        bindingFilters: {
+            insertPlaceholder: function(pattern, value) {
+                return pattern.replace('%s', value);
+            },
+            joinOtherDiningOptions: function(options) {
+                if (options instanceof Backbone.Collection) {
+                    return options.map(function(option) {
+                        option = option.toJSON();
+                        return option.name + ' ' + option.value;
+                    }).join(', ');
+                } else {
+                    return '';
+                }
+            },
+            addressLabel: function(dining_option) {
+                var label = '';
+                switch (dining_option) {
+                    case 'DINING_OPTION_DELIVERY':
+                        label = _loc.CARD_DELIVERY_ADDRESS;
+                        break;
+                    case 'DINING_OPTION_SHIPPING':
+                        label = _loc.CARD_SHIPPING_ADDRESS;
+                        break;
+                    case 'DINING_OPTION_CATERING':
+                        label = _loc.CARD_CATERING_ADDRESS;
+                        break;
+                    default:
+                        label = _loc.DONE_STORE_ADDRESS;
+                }
+                return label;
+            },
+            getAddressLine: function(customer, dining_option, isDelivery) {
+                var address = isDelivery ? customer.get('addresses').getCheckoutAddress() : App.Settings.address,
+                    line = [],
+                    street_1, street_2, zipcode, region;
+
+                if (address) {
+                    street_1 = address.street_1 || address.line_1;
+                    street_2 = address.street_2 || address.line_2;
+                    zipcode = address.zipcode || address.postal_code;
+                    street_1 && line.push(street_1);
+                    street_2 && line.push(street_2);
+                    address.city && line.push(address.city);
+                    region = App.Data.settings.getRegion(address),
+                    (region || zipcode) && line.push((region ? region + ' ' : '') + (zipcode ? zipcode : ''));
+                    address.country && dining_option == 'DINING_OPTION_SHIPPING' && line.push(address.country);
+                }
+
+                return line.join(', ');
+            }
+        },
+        computeds: {
+            isDelivery: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    return dining_option == 'DINING_OPTION_DELIVERY'
+                        || dining_option == 'DINING_OPTION_SHIPPING'
+                        || dining_option == 'DINING_OPTION_CATERING';
+                }
+            },
+            boldTmp: function() {
+                return '<span class="bold">$1</span>';
+            }
+        },
+        getPickupTime: new Function()
     });
 
     var MainProfileView = App.Views.CoreMainView.CoreMainProfileView.extend({

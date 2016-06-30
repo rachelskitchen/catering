@@ -116,3 +116,13 @@
     white-space: nowrap;
     cursor: pointer;
 }
+
+.confirm .order-item .title:after {
+    content: attr(data-qty);
+    padding-left: 5px;
+}
+
+.confirm .order-item .quantity_select,
+.confirm .order-item .weight_edit_inner {
+    display: none;
+}

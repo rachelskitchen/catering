@@ -90,6 +90,11 @@
     margin-top: 7px;
 }
 
+.confirm .order-items .edit,
+.confirm .order-items .remove {
+    display: none;
+}
+
 .order-items .edit {
     padding: 5px 8px;
     border-radius: 2px;

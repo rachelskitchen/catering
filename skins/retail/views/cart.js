@@ -53,8 +53,11 @@ define(["cart_view"], function(cart_view) {
         }
     });
 
+    var CartConfirmationView = CartCheckoutView.extend({});
+
     return new (require('factory'))(cart_view.initViews.bind(cart_view), function() {
         App.Views.CartView.CartMainView = CartMainView;
         App.Views.CartView.CartCheckoutView = CartCheckoutView;
+        App.Views.CartView.CartConfirmationView = CartConfirmationView;
     });
 });

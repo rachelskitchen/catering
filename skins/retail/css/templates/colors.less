@@ -37,13 +37,15 @@ body,
 
 /* [primary_text] active category, links */
 .primary-text[class],
-.categories-tree .name.active {
+.categories-tree .name.active,
+.payment-method.primary-button,
+.payment-method:hover {
     .resolve-color(@primary_text);
 }
 
 .profile-panel-box .profile-item:hover,
 .sort-items .sort-item:hover,
-.sort-items .sort-item.active, {
+.sort-items .sort-item.active {
     .resolve-background(@primary_text);
 }
 
@@ -70,7 +72,8 @@ body,
 .order-items li,
 .alert_wrapper,
 .order-item .inputbox,
-.weight_edit_inner .weight_edit_input {
+.weight_edit_inner .weight_edit_input,
+#popup_container[id] {
     .resolve-background(@primary_background);
 }
 
@@ -111,7 +114,8 @@ body,
 
 /* [shadow_background] background behind popup window */
 .shadow-bg[class],
-#alert {
+#alert,
+#popup_overlay[id] {
     .resolve-background-alpha(@shadow_background, 60%);
 }
 
@@ -124,6 +128,12 @@ body,
 .popup-bg[class],
 #popup_container[id] {
     .resolve-background(@popup_background);
+}
+
+/* [card_background] stanford card plan background, card balance background */
+.card-bg[class],
+.stanford-plans-box .stanford-plan {
+    .resolve-background-alpha(@card_background, 20%);
 }
 
 /* [card_background_gradient] stanford card plan background, card balance background */
@@ -178,7 +188,11 @@ body,
 .select-wrapper:focus,
 .select-wrapper select:focus,
 .order-item .inputbox:focus,
-.weight_edit_inner .weight_edit_input:focus {
+.weight_edit_inner .weight_edit_input:focus,
+.payment-method.primary-button,
+.payment-method:hover,
+.stanford-plans-box .stanford-plan.active,
+.stanford-plans-box .stanford-plan:hover {
     box-shadow: 0 0 4px 0 @input_highlighted;
     .resolve-border-color(@input_highlighted);
 }

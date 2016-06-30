@@ -300,3 +300,16 @@
     content: '\f196';
     font-family: "FontAwesome";
 }
+
+.profile-cvv-container,
+.profile-cvv-container .title {
+    padding: 20px;
+}
+
+.profile-cvv-container .cvv-required-info {
+    padding-left: 20px;
+}
+
+.profile-cvv-container .cvv {
+    width: 300px;
+}

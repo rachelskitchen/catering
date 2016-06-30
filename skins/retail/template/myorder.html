@@ -43,7 +43,7 @@
         <span class="item-sum fl-right bold"></span>
         <div class="name">
             <div class="bold"><%= _settings.business_name %></div>
-            <div class="bold"><%= name %></div>
+            <div class="bold card-type"><%= name %></div>
         </div>
         <div class="btns sub-box fl-right">
             <span class="edit btn" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
@@ -72,7 +72,7 @@
 </script>
 
 <script type="text/template" id="myorder_item_customization-template">
-    <div class="cancel link" tabindex="0"></div>
+    <div class="cancel cancel-customization link" tabindex="0"></div>
 </script>
 
 <script type="text/template" id="myorder_matrix-template">
@@ -92,32 +92,19 @@
     <% } %>
 </script>
 
-<script type="text/template" id="myorder_stanford_item-template">
-    <div class="view view-1">
-        <h3 class="name text-left"><%= name %></h3>
-        <span class="info"><%= _lp.STANFORD_RELOAD_INFO1 %></span>
-        <div class="row">
-            <label for="stanford-card-amount"><%= _lp.AMOUNT %>:</label>
-            <div class="input_beauty">
-                <input id="stanford-card-amount" class="initial-price ios-safari-caret">
-            </div>
-        </div>
-        <div class="card-wrapper"></div>
-        <div class="btn next btn-popup fl-right"><%= _lp.NEXT %></div>
+<script type="text/template" id="myorder_stanford_reload-template">
+    <div class="col card-view fl-left">
+        <h3 class="header-underline"><%= _lp.GIFT_CARD_RELOAD_TITLE %></h3>
     </div>
-    <div class="view view-2">
-        <h3 class="name text-left"><%= _lp.STANFORD_CARD_CHOOSE_PLAN %></h3>
-        <span class="info"><%= _lp.STANFORD_RELOAD_INFO2 %></span>
-        <div class="plans-row">
-            <span class="label"><%= _lp.STANFORD_CARD_NUMBER %>:</span>
-            <span class="stanford-number"></span>
+    <div class="col fl-left">
+        <h3 class="header-underline refill"><%= _lp.GIFT_CARD_RELOAD_REFILL %></h3>
+        <div class="amount-box">
+            <span class="currency optional-text"><%= _settings.currency_symbol %></span>
+            <input type="text" class="amount initial-price input">
+            <span class="inline-block optional-text"><%= _lp.GIFT_CARD_RELOAD_ENTER_AMOUNT %></span>
         </div>
-        <div class="plans-row">
-            <span class="label"><%= _lp.AMOUNT %>:</span>
-            <span class="amount"></span>
-        </div>
-        <div class="plans"></div>
-        <div class="btn add-item btn-popup fl-right"><%= _lp.MYORDER_ADD_ITEM %></div>
-        <div class="btn back btn-popup fl-left"><%= _lp.BACK %></div>
+        <div class="stanford-plans-box"></div>
+        <% if (_settings.online_orders) { %>
+        <div class="action_button btn text-center border-box" tabindex="0"><%= _lp.MYORDER_ADD_TO_BAG %></div>
+        <% } %>
     </div>
-</script>
