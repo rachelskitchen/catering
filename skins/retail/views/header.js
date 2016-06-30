@@ -41,7 +41,7 @@ define(["backbone", "factory"], function(Backbone) {
             }
         },
         initialize: function() {
-            this.listenTo(this.options.cart, 'add remove', this.update, this);
+            this.listenTo(this.options.cart, 'add remove change', this.update, this);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         render: function() {

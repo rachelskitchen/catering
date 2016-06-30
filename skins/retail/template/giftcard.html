@@ -1,10 +1,7 @@
 <script type="text/template" id="giftcard_main-template">
-    <div class="card_title"> <%= _lp.GIFTCARD_TITLE %> </div>
-    <div>
-        <label for="cardNumber"> <span class="bold required clip"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="cardNumber" class="number number-input" value="<%= cardNumber %>" min="0">
-        </div>
+    <div class="inline-block">
+        <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+        <input type="text" class="number number-input input size3" min="0">
     </div>
-    <div class="recaptcha_view"></div>
+    <div class="recaptcha_view inline-block"></div>
 </script>

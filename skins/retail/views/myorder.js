@@ -189,14 +189,77 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var MyOrderItemStanfordCardView = MyOrderItemGiftCardView.extend({
+        name: 'myorder',
+        mod: 'item_gift_card',
+        bindings: {
+            '.logo': 'classes: {"stanford-item": true}',
+            '.card-number': 'text: stanford_number'
+        },
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                stanford: this.model.get('stanfordCard')
+            });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
     var MyOrderListView = App.Views.CoreMyOrderView.CoreMyOrderListView.extend({
         resolveItemMod: function(model) {
             if (model.is_gift()) {
-                return 'ItemGiftCard';
+                return App.Data.is_stanford_mode ? 'ItemStanfordCard' : 'ItemGiftCard';
             } else {
                 return App.Views.CoreMyOrderView.CoreMyOrderListView.prototype.resolveItemMod.apply(this, arguments);
             }
         }
+    });
+
+    var MyOrderStanfordReloadView = App.Views.FactoryView.extend({
+        name: 'myorder',
+        mod: 'stanford_reload',
+        bindings: {
+            '.card-view': 'updateContent: cardView',
+            '.stanford-plans-box': 'updateContent: plansView',
+            // initial_price can be only integer according Stanford card reload service limitation (Bug 30983)
+            '.initial-price': 'value: integer(int_price), events: ["input"], restrictInput: "0123456789.,", kbdSwitcher: "numeric", pattern: /^\\d*$/',
+            '.action_button': 'classes: {disabled: any(not(planId), not(int_price))}, text: select(ui_isAddMode, _lp_MYORDER_ADD_ITEM, _lp_MYORDER_UPDATE_ITEM)'
+        },
+        computeds: {
+            cardView: function() {
+                return {
+                    name: 'StanfordCard',
+                    mod: 'Reload',
+                    model: this.options.stanford,
+                    myorder: this.options.myorder
+                };
+            },
+            plansView: function() {
+                return {
+                    name: 'StanfordCard',
+                    mod: 'Plans',
+                    collection: this.options.plans
+                };
+            },
+            // used in an input element because we need to change price in product to keep a correct item restoring from a storage during payment process
+            int_price: {
+                deps: ['product_price'],
+                get: function(price) {
+                    return price;
+                },
+                set: function(value) {
+                    value = parseInt(value) || 0;
+                    this.setBinding('product_price', value);
+                }
+            }
+        },
+        events: {
+            'click .action_button:not(.disabled)': addCb('action')
+        },
+        onEnterListeners: {
+            '.action_button:not(.disabled)': addCb('action')
+        },
+        // override parent's update method to avoid re-rendering
+        update: new Function()
     });
 
     var MyOrderItemCustomizationView = App.Views.FactoryView.extend({
@@ -214,12 +277,25 @@ define(["myorder_view"], function(myorder_view) {
                         }, this.options);
 
                     if (product.get('is_gift')) {
-                        return _.extend(data, {
-                            name: 'Product',
-                            mod: 'GiftCardReload',
-                            model: product,
-                            className: 'gift-card-reload'
-                        });
+                        if (App.Data.is_stanford_mode) {
+                            var stanford = this.model.get('stanfordCard');
+                            return _.extend(data, {
+                                name: 'MyOrder',
+                                mod: 'StanfordReload',
+                                model: this.model,
+                                stanford: stanford,
+                                plans: stanford.get('plans'),
+                                product: this.model.get_product(),
+                                className: 'stanford-reload-item gift-card-reload'
+                            });
+                        } else {
+                            return _.extend(data, {
+                                name: 'Product',
+                                mod: 'GiftCardReload',
+                                model: product,
+                                className: 'gift-card-reload'
+                            });
+                        }
                     } else {
                         return _.extend(data, {
                             name: 'MyOrder',
@@ -232,10 +308,10 @@ define(["myorder_view"], function(myorder_view) {
             }
         },
         events: {
-            'click .cancel': addCb('back')
+            'click .cancel-customization': addCb('back')
         },
         onEnterListeners: {
-            '.cancel': addCb('back')
+            '.cancel-customization': addCb('back')
         }
     });
 
@@ -252,6 +328,8 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderItemCustomizationView = MyOrderItemCustomizationView;
         App.Views.MyOrderView.MyOrderDiscountView = MyOrderDiscountView;
         App.Views.MyOrderView.MyOrderItemGiftCardView = MyOrderItemGiftCardView;
+        App.Views.MyOrderView.MyOrderItemStanfordCardView = MyOrderItemStanfordCardView;
         App.Views.MyOrderView.MyOrderListView = MyOrderListView;
+        App.Views.MyOrderView.MyOrderStanfordReloadView = MyOrderStanfordReloadView;
     });
 });

@@ -4,7 +4,7 @@
     bottom: 0;
     left: 0;
     right: 385px;
-    overflow: auto;
+    overflow: hidden;
 }
 
 .checkout-page .steps {
@@ -16,10 +16,165 @@
 
 .checkout-page .step {
     width: 33%;
-    text-transform: uppercase;
     padding: 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
 }
 
 .checkout-page .step-2 {
     width: 34%;
+}
+
+.checkout-page .view {
+    padding: 15px;
+    position: absolute;
+    top: 42px;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+}
+
+.checkout-page .view {
+    padding: 15px;
+    position: absolute;
+    top: 42px;
+    bottom: 70px;
+    left: 0;
+    right: 0;
+    overflow: auto;
+}
+
+.checkout-page .btns {
+    padding: 15px;
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+}
+
+.checkout-page .label {
+    margin-left: 15px;
+    font-size: 12px;
+}
+
+.checkout-page .size1 {
+    width: 300px !important;
+}
+
+.checkout-page .size2 {
+    width: 140px !important;
+}
+
+.checkout-page .size3 {
+    width: 200px !important;
+}
+
+.checkout-page .size4 {
+    width: 87px !important;
+}
+
+.checkout-page .input {
+    margin-bottom: 15px;
+    margin-right: 16px;
+}
+
+.checkout-page .select-wrapper {
+    margin-bottom: 11px;
+    margin-right: 16px;
+}
+
+.checkout-page .inline-block {
+    vertical-align: middle;
+}
+
+.checkout-page .shipping-status {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    font-size: 10px;
+}
+
+.checkout-page .btn {
+    display: inline-block;
+    min-width: 230px;
+    margin-top: 50px;
+    padding: 12px 15px;
+    font-size: 14px;
+}
+
+.checkout-page .payment-methods-box {
+    padding-bottom: 16px;
+}
+
+.checkout-page .payment-method {
+    display: inline-block;
+    min-width: 116px;
+    padding: 11px;
+    margin: 15px 16px 15px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    cursor: pointer;
+}
+
+.checkout-page .ctrl-box {
+    margin-right: 12px;
+    position: relative;
+}
+
+.checkout-page .ctrl-input {
+    margin-right: 4px;
+    padding-right: 30px;
+}
+
+.checkout-page .cancel::before {
+    display: block;
+    padding: 12px 14px 11px 4px;
+    font-size: 21px;
+}
+
+.checkout-page .stanford-verify {
+    min-width: 90px;
+    margin-top: 0;
+    margin-left: 16px;
+    padding: 12px 15px;
+    font-size: 14px;
+}
+
+.checkout-page .stanford-plans-box {
+    padding-top: 15px;
+}
+
+.cc-box .checkbox-outer {
+    padding-top: 5px;
+    cursor: pointer;
+}
+
+.cc-box .checkbox-outer > * {
+    vertical-align: middle;
+}
+
+.checkout-page .discounts-box .input {
+    margin-bottom: 0;
+}
+
+.checkout-page .discounts-box .cancel::before {
+    padding: 12px 6px 11px 4px;
+}
+
+.checkout-page .discount-code-box,
+.checkout-page .rewards-box {
+    padding-top: 16px;
+}
+
+.checkout-page .btnApply,
+.checkout-page .rewards-card-apply,
+.checkout-page .see-rewards {
+    display: inline-block;
+    padding: 10px 15px 10px 0;
+    margin-left: -5px;
+    font-size: 13px;
+    position: relative;
+    top: 3px;
 }

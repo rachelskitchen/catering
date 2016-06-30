@@ -1,0 +1,81 @@
+.stanford-plans-box .stanford-plan {
+    display: inline-block;
+    min-width: 140px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+    padding: 12px 11px;
+    margin: 15px 10px;
+    cursor: pointer;
+}
+
+.stanford-plans-box .name[class] {
+    font-size: 12px;
+}
+
+.stanford-plans-box .balance {
+    display: block;
+    margin-top: 4px;
+    font-size: 18px;
+}
+
+.stanford-reload-item .logo,
+.logo.stanford-item {
+    background-image: url('data:image/jpeg;base64,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');
+    background-size: contain !important;
+    background-position: 8px 0 !important;
+}
+
+.logo.stanford-item {
+    background-size: 28px 42px !important;
+    padding-left: 45px;
+}
+
+.stanford-reload-item .card-box,
+.stanford-reload-item .recaptcha_view {
+    margin-bottom: 15px
+}
+
+.stanford-reload-item .stanford-verify {
+    width: 300px;
+    padding: 12px 0px;
+}
+
+.stanford-reload-item .cancel {
+    top: 0px;
+    right: 0;
+    padding: 19px 6px 11px;
+}
+
+.stanford-student-status {
+    width: 500px;
+    min-height: 60px;
+    max-height: 80%;
+    padding: 20px 25px;
+}
+
+.stanford-student-status .student-status-question {
+    margin: 68px 10px 17px;
+    font-size: 24px;
+    letter-spacing: 1px;
+}
+
+.stanford-student-status .stanford-student-instructions {
+    margin: 0 10px 88px;
+    font-size: 16px;
+}
+
+.stanford-student-card {
+    width: 320px;
+    min-height: 60px;
+    max-height: 80%;
+    padding: 20px 25px;
+}
+
+.stanford-student-card .input {
+    margin-bottom: 15px;
+}
+
+.stanford-student-card .recaptcha_view {
+    padding-left: 13px;
+}

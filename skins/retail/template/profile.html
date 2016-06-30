@@ -127,6 +127,7 @@
 
     <div class="addresses__add primary-text link"><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
 </script>
+
 <script type="text/template" id="profile_address-template">
     <div class="address__header">
         <span class="address__title">
@@ -236,7 +237,10 @@
 </script>
 
 <script type="text/template" id="profile_payments_selection-template">
-    <ul class="payments-list"></ul>
+    <div class="label required optional-text"><%= _lp.CHECKOUT_CHOOSE_CARD %></div>
+    <div class="select-wrapper">
+        <select class="payments-list"></select>
+    </div>
 </script>
 
 <script type="text/template" id="profile_payments-template">
@@ -342,6 +346,6 @@
 
 <script type="text/template" id="profile_payment_cvv-template">
     <h2 class="title primary-text"><%= _lp.CVV_REQUIRED %></h2>
-    <span class="cvv-required-info"><%= _lp.CVV_REQUIRED_INFO %></span>
-    <input type="text" class="cvv ios-safari-caret input text-center">
+    <div class="cvv-required-info text-left"><%= _lp.CVV_REQUIRED_INFO %></div>
+    <input type="text" class="cvv ios-safari-caret input text-left">
 </script>

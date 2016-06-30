@@ -34,6 +34,7 @@ define(["main_router"], function(main_router) {
         headers.confirm = {mod: 'Confirm', className: 'confirm'};
         carts.main = {mod: 'Main', className: 'main animation'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
+        carts.confirm = {mod: 'Confirmation', className: 'confirm'};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
@@ -121,17 +122,6 @@ define(["main_router"], function(main_router) {
 
                 // init App.Data.sortItems
                 this.initSortItems();
-
-                // sync sort saving and loading with myorder saving and loading
-                App.Data.myorder.saveOrders = function() {
-                    this.constructor.prototype.saveOrders.apply(this, arguments);
-                    // App.Data.filter.saveSort();
-                }
-
-                App.Data.myorder.loadOrders = function() {
-                    this.constructor.prototype.loadOrders.apply(this, arguments);
-                    // App.Data.filter.loadSort();
-                }
 
                 mainModel.set('model', mainModel);
 
@@ -227,55 +217,94 @@ define(["main_router"], function(main_router) {
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
 
-            // show payment processors list
-            function showPaymentProcessors() {
-                delete showPaymentProcessors.pending;
-                App.Data.mainModel.set('popup', {
-                    modelName: 'Checkout',
-                    mod: 'Pay',
-                    collection: App.Data.myorder
-                });
+            var askStanfordStudent = {
+                pending: false,
+                proceed: null
+            };
+
+            function completeAsking() {
+                askStanfordStudent.pending = false;
+                askStanfordStudent.proceed = null;
+                App.Data.mainModel.unset('popup');
             }
 
             // onPay event occurs when 'Pay' button is clicked
-            this.listenTo(App.Data.myorder, 'onPay', function() {
+            this.listenTo(App.Data.myorder, 'onPay', function(cb) {
                 var stanfordCard = App.Data.stanfordCard;
 
                 // need to check if Stanford Card is turned on and ask a customer about student status
                 if(stanfordCard && stanfordCard.get('needToAskStudentStatus') && !App.Data.myorder.checkout.isDiningOptionOnline()) {
-                    showPaymentProcessors.pending = true; // assing 'pending' status to showPaymentProcessors() function
-                    App.Data.mainModel.set('popup', {
-                        modelName: 'StanfordCard',
+                    askStanfordStudent.pending = true;
+                    askStanfordStudent.proceed = cb;
+
+                    var view = new App.Views.GeneratorView.create('StanfordCard', {
                         mod: 'StudentStatus',
                         model: stanfordCard,
                         className: 'stanford-student-status'
                     });
+
+                    App.Data.errors.alert('', false, false, {
+                        isConfirm: true,
+                        typeIcon: '',
+                        confirm: {
+                            ok: _loc.YES,
+                            cancel: _loc.NO
+                        },
+                        customView: view,
+                        callback: function(res) {
+                            if (res) {
+                                view.yes();
+                            } else {
+                                view.no();
+                            }
+                        }
+                    });
                 } else {
-                    showPaymentProcessors();
+                    cb();
                 }
             });
 
             // onNotStudent event occurs when a customer answers 'No' on student status question.
-            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', showPaymentProcessors);
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', function() {
+                askStanfordStudent.pending && typeof askStanfordStudent.proceed == 'function' && askStanfordStudent.proceed();
+                completeAsking();
+            });
 
             // onCancelStudentVerification event occurs when a customer cancels student verification.
-            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', App.Data.mainModel.unset.bind(App.Data.mainModel, 'popup'));
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', completeAsking);
 
             // onStudent event occurs when a customer answers 'Yes' on student status question.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onStudent', function() {
-                App.Data.mainModel.set('popup', {
-                    modelName: 'StanfordCard',
+                var view = new App.Views.GeneratorView.create('StanfordCard', {
                     mod: 'Popup',
                     model: App.Data.stanfordCard,
                     myorder: App.Data.myorder,
-                    className: 'stanford-student-card'
+                    className: 'stanford-student-card text-left'
+                });
+
+                App.Data.errors.alert('', false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.YES,
+                        cancel: _loc.CANCEL
+                    },
+                    customView: view,
+                    callback: function(res) {
+                        if (res) {
+                            view.submit();
+                        } else {
+                            view.cancel();
+                        }
+                    }
                 });
             });
 
             // 'change:validated' event occurs after Stanford Card validation on backend.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:validated', function() {
-                // if showPaymentProcessors() function is waiting for stanfordCard resolution need to invoke it.
-                showPaymentProcessors.pending && showPaymentProcessors();
+                // if askStanfordStudent.pending is waiting for stanfordCard resolution need to invoke it.
+                askStanfordStudent.pending && typeof askStanfordStudent.proceed == 'function' && askStanfordStudent.proceed();
+                completeAsking();
             });
 
             // showSpinner event
@@ -342,17 +371,28 @@ define(["main_router"], function(main_router) {
                 if (!rewardsCard.get('rewards').length) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
-                    var clone = rewardsCard.clone();
+                    var clone = rewardsCard.clone(),
+                        view = new App.Views.GeneratorView.create('Rewards', {
+                            mod: 'Info',
+                            model: clone,
+                            collection: App.Data.myorder,
+                            balance: clone.get('balance'),
+                            rewards: clone.get('rewards'),
+                            discounts: clone.get('discounts'),
+                            className: 'rewards-info'
+                        });
 
-                    App.Data.mainModel.set('popup', {
-                        modelName: 'Rewards',
-                        mod: 'Info',
-                        model: clone,
-                        className: 'rewards-info',
-                        collection: App.Data.myorder,
-                        balance: clone.get('balance'),
-                        rewards: clone.get('rewards'),
-                        discounts: clone.get('discounts')
+                    App.Data.errors.alert('', false, false, {
+                        isConfirm: true,
+                        typeIcon: '',
+                        confirm: {
+                            ok: _loc.REWARDS_APPLY,
+                            cancel: _loc.CANCEL
+                        },
+                        customView: view,
+                        callback: function(res) {
+                            res && view.apply();
+                        }
                     });
                 }
 
@@ -362,16 +402,31 @@ define(["main_router"], function(main_router) {
             // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
             this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', function() {
                 var rewardsCard = App.Data.myorder.rewardsCard,
-                    customer = App.Data.customer;
+                    customer = App.Data.customer,
+                    view;
+
                 if (!rewardsCard.get('number') && customer.isAuthorized() && customer.get('rewardCards').length) {
                     rewardsCard.set('number', customer.get('rewardCards').at(0).get('number'));
                 }
-                App.Data.mainModel.set('popup', {
-                    modelName: 'Rewards',
+
+                view = new App.Views.GeneratorView.create('Rewards', {
                     mod: 'Card',
                     model: rewardsCard,
-                    className: 'rewards-info',
-                    customer: customer
+                    customer: customer,
+                    className: 'rewards-info'
+                });
+
+                App.Data.errors.alert('', false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.CONTINUE,
+                        cancel: _loc.CANCEL
+                    },
+                    customView: view,
+                    callback: function(res) {
+                        res && view.submit();
+                    }
                 });
             });
 
@@ -447,7 +502,6 @@ define(["main_router"], function(main_router) {
                 hashRE = /#.*$/,
                 url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
             this.updateState(replaceState, url);
-console.log('updateState', history.length, JSON.stringify(this.getState()));
         },
         /**
          * Restore state data from the history.
@@ -475,7 +529,6 @@ console.log('updateState', history.length, JSON.stringify(this.getState()));
             if(!_.isObject(data) || est != data.establishment) {
                 return;
             }
-console.log('restoreState', history.length, JSON.stringify(data));
 
             _.isObject(data.categories) && App.Data.categorySelection.set(data.categories, {doNotUpdateState: true});
             _.isObject(data.searchLine) && App.Data.searchLine.set(data.searchLine, {doNotUpdateState: true});
@@ -519,13 +572,6 @@ console.log('restoreState', history.length, JSON.stringify(data));
                 if (/^(index.*|maintenance.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
             App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
-        },
-        /**
-        * Remove establishment data in case if establishment ID will change.
-        */
-        resetEstablishmentData: function() {
-            App.Routers.RevelOrderingRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            // this.index.initState = null;
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
@@ -626,6 +672,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         className: 'myorder-item-customization',
                         model: _order,
                         ui: new Backbone.Model({isAddMode: !isEditMode}),
+                        myorder: App.Data.myorder,
                         action: action,
                         back: cancel,
                         doNotCache: true
@@ -643,16 +690,13 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         var check = _order.check_order();
 
                         if (check.status === 'OK') {
-                            _order.get_product().check_gift(function() {
-                                if (isEditMode) {
-                                    order.update(_order);
-                                } else {
-                                    App.Data.myorder.add(_order);
-                                }
-                                cancel();
-                            }, function(errorMsg) {
-                                App.Data.errors.alert(errorMsg); // user notification
-                            });
+                            if (App.Data.is_stanford_mode) {
+                                successfulValidation();
+                            } else {
+                                _order.get_product().check_gift(successfulValidation, function(errorMsg) {
+                                    App.Data.errors.alert(errorMsg); // user notification
+                                });
+                            }
                         } else {
                             App.Data.errors.alert(check.errorMsg); // user notification
                         }
@@ -661,47 +705,17 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     function cancel() {
                         window.history.back();
                     }
+
+                    function successfulValidation() {
+                        if (isEditMode) {
+                            order.update(_order);
+                        } else {
+                            App.Data.myorder.add(_order);
+                        }
+                        cancel();
+                    }
                 }
             });
-            // showModifiers: function() {
-            //     var myorder = new App.Models.Myorder(),
-            //         isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-            //         def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
-
-            //     $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
-            //     def.then(function() {
-            //         $('#main-spinner').removeClass('ui-visible');
-            //         App.Data.mainModel.set('popup', {
-            //             modelName: 'MyOrder',
-            //             mod: isStanfordItem ? 'StanfordItem' : 'Matrix',
-            //             className: isStanfordItem ? 'stanford-reload-item' : '',
-            //             model: myorder.clone(),
-            //             action: 'add'
-            //         });
-            //     });
-            // },
-            //     action: function (event) {
-            //         var check = this.model.check_order(),
-            //             self = this;
-
-            //         if (check.status === 'OK') {
-            //             this.model.get_product().check_gift(function() {
-            //                if (self.options.action === 'add') {
-            //                    App.Data.myorder.add(self.model);
-            //                } else {
-            //                    var index = App.Data.myorder.indexOf(self.options.real) - 1;
-            //                    App.Data.myorder.add(self.model, {at: index});
-            //                    App.Data.myorder.remove(self.options.real);
-            //                }
-
-            //                $('#popup .cancel').trigger('click');
-            //             }, function(errorMsg) {
-            //                 App.Data.errors.alert(errorMsg); // user notification
-            //             });
-            //         } else {
-            //             App.Data.errors.alert(check.errorMsg); // user notification
-            //         }
-            //    }
         },
         about: function() {
             this.prepare('about', function() {
@@ -764,8 +778,6 @@ console.log('restoreState', history.length, JSON.stringify(data));
                 var settings = App.Data.settings.get('settings_system'),
                     addresses = App.Data.customer.get('addresses');
 
-                this.initGiftCard();
-
                 var settings = App.Data.settings.get('settings_system'),
                     addresses = App.Data.customer.get('addresses');
 
@@ -779,7 +791,6 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     header: headers.main,
                     cart: carts.checkout,
                     content: {
-                        isCartLeftPanel: true,
                         modelName: 'Checkout',
                         collection: App.Data.myorder,
                         mod: 'Page',
@@ -788,8 +799,16 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
-                        noteAllow: settings.order_notes_allow,
-                        discountAvailable: settings.accept_discount_code
+                        noteAllow:  settings.order_notes_allow,
+                        discountAvailable: settings.accept_discount_code,
+                        checkout: App.Data.myorder.checkout,
+                        paymentMethods: App.Data.paymentMethods,
+                        enableRewardCard: settings.enable_reward_cards_collecting,
+                        card: App.Data.card,
+                        giftcard: App.Data.giftcard,
+                        stanfordcard: App.Data.stanfordCard,
+                        promises: this.getProfilePaymentsPromises.bind(this),
+                        needShowBillingAddess: PaymentProcessor.isBillingAddressCard()
                     }
                 });
 
@@ -807,6 +826,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
             if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
             }
+            App.Data.header.set('menu_index', null);
             this.prepare('confirm', function() {
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
                 // need to init it.
@@ -821,12 +841,11 @@ console.log('restoreState', history.length, JSON.stringify(data));
                     cartData = _.extend({
                         collection: this.recentOrder,
                         checkout: this.recentOrder.checkout,
-                    }, carts.checkout);
+                    }, carts.confirm);
                 }
 
                 App.Views.GeneratorView.cacheRemoveView('Main', 'Done', 'content_Main_Done');
 
-                App.Data.header.set('tab_index', null);
                 App.Data.mainModel.set({
                     mod: 'Main',
                     header: headers.main,
@@ -841,6 +860,7 @@ console.log('restoreState', history.length, JSON.stringify(data));
                         className: 'main-done'
                     }
                 });
+                App.Data.cart.set('visible', true);
                 this.change_page();
             });
         },

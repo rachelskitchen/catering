@@ -1,0 +1,77 @@
+.rewards-info {
+    width: 450px;
+    min-height: 220px;
+    max-height: 80%;
+    padding: 40px 25px;
+}
+
+.rewards-info .label {
+    padding-left: 14px;
+}
+
+.rewards-info .rewards-input {
+    margin-bottom: 15px;
+}
+
+.rewards-info .recaptcha_view {
+    padding-left: 75px;
+}
+
+.rewards-info .header {
+    width: 100%;
+    min-height: 50px;
+    padding-bottom: 8px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.rewards-info .title {
+    padding-bottom: 3px;
+    font-size: 16px;
+}
+
+.rewards-info .total-row {
+    margin: 6px 0;
+}
+
+.rewards-info .total-redemption {
+    padding-left: 3px;
+}
+
+.rewards-info .value {
+    padding-left: 30px;
+}
+
+.rewards-info .rewards-box {
+    max-height: 520px;
+    overflow-y: auto;
+}
+
+.rewards-info .box {
+    padding: 19px 0 5px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.rewards-info .rewards-group {
+    padding-bottom: 5px;
+    font-size: 12px;
+    text-transform: uppercase;
+}
+
+.rewards-info .reward-selection__item {
+    margin: 10px;
+    cursor: pointer;
+}
+
+.rewards-info .checkbox {
+    margin-right: 10px;
+}
+
+.rewards-info .reward-selection__item > * {
+    vertical-align: middle;
+}
+
+.rewards-info .points {
+    padding-left: 10px;
+}
