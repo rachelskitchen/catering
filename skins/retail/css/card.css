@@ -1,124 +1,73 @@
-/* styles for Card elements */
-.card-block label {
-    display: inline-block;
-    width: 200px;
-    margin: 10px 0;
-    padding-left: 30px;
-    font-weight: bold;
+.gift-card-reload .col {
+    width: 40%;
+    margin-right: 10%;
 }
 
-.card-block .recaptcha_view.stanford {
-    margin-right: 10px;
-}
-.card-block label > span {
-    padding-right: 8px;
-    padding-left: 5px;
-    float: left;
+.gift-card-reload .action_button {
+    max-width: 100%;
+    width: 470px;
 }
 
-.card-block > div,
-.card-block .address > div {
+.gift-card-reload .header-underline {
+    max-width: 100%;
+    width: 470px;
+    padding-top: 0;
+}
+
+.gift-card-reload .card-box {
+    width: 300px;
+    height: 160px;
+    margin-top: 20px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 6px;
     position: relative;
-    margin-bottom: 5px;
 }
 
-.card-block.no_top_margin > div,
-.card-block.no_top_address .address > div {
-    position: relative;
-    margin-bottom: 2px;
-}
-.card-block.no_top_margin > div.card_title {
-    margin-bottom: 7px;
-}
-.card-block .inactive {
-    opacity: 0.5;
-}
-
-.card-block div.input_beauty {
+.gift-card-reload .card-number-box {
+    padding-left: 11px;
     position: absolute;
-    top: 6px;
-    bottom: 6px;
-    left: 225px;
-    right: 30px;
-}
-.card-block div.select {
-    display: inline-block;
-    width: 78px;
-    position: relative;
-    left: -12px;
-}
-.card-block div.select {
-    position: relative;
-    top: 6px;
-    vertical-align: top;
+    bottom: 17px;
 }
 
-.card-block .address .select-wrapper {
-    width: 200px;
-    height: 24px;
+.gift-card-reload .card-label {
+    padding-left: 20px;
+    font-size: 10px;
 }
 
-.card-block div.select[disabled="disabled"] {
-    opacity: .5;
-    opacity: filter(50);
-}
-.card-block ul.card.firefox label {
-    line-height: 2.4em;
-}
-.card-block ul.card.firefox label:before {
-    top: 0;
+.gift-card-reload .card-number {
+    width: 240px;
 }
 
-.card-block .select-wrapper {
-    margin-right: 10px;
+.gift-card-reload .logo {
+    max-height: 70px;
+    margin: 15px 12px;
+    padding-left: 47px;
+    background-repeat: no-repeat;
+    background-position: 0 0;
+    background-size: 42px;
+    background-color: transparent;
+    overflow: hidden;
+    font-size: 16px;
 }
-.card-block  select {
-    font-size: 15px;
+
+.gift-card-reload .amount {
+    width: 136px;
+    border-radius: 50px;
+    margin-right: 20px;
+    font-size: 24px;
+    vertical-align: middle;
 }
-#exp-year {
-    padding-right: 22px;
+
+.gift-card-reload .currency {
+    font-size: 24px;
+    vertical-align: middle;
 }
-.card-block .card__remember {
-    width: 60%;
+
+.gift-card-reload .refill {
+    margin-bottom: 28px;
 }
-.card-block .card__remember label{
-    margin-top: 0.1em;
-    margin-bottom: 0.1em;
-}
-#rememberCard {
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    font-size: 2em;
-    top: 0.2em;
-}
-#use_profile_address {
-    margin: 0px 30px 3px 30px;
-}
-.input.checkbox {
-    height: 21px;
-    width: 21px;
-    border-radius: 4px;
-}
-#use_profile_address .checkbox {
-    display: inline-block;
-    float: left;
-    margin-right: 12px;
-}
-.card-block .select-wrapper select[disabled=disabled] {
-    color: rgba(0, 0, 0, 0.7);
-}
-/* for tablets */
-@media only screen and (max-device-width: 949px) {
-    .card-block label {
-        width: 140px !important;
-    }
-    .card-block  div.select {
-        left: 4px !important;
-        margin-right: 10px !important;
-    }
-    .card-block div.input_beauty,
-    .card-block div.tips {
-        left: 180px !important;
-    }
+
+.gift-card-reload .amount-box {
+    min-height: 89px;
 }

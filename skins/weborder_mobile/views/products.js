@@ -26,7 +26,7 @@ define(["products_view"], function(products_view) {
     var ProductModifiersView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'modifiers',
-        bindings: _.extend({}, App.Views.CoreProductView.CoreProductModifiersView.prototype.bindings, {
+        bindings: {
             '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
             '.product-price': 'value: monetaryFormat(product_price)',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
@@ -38,7 +38,7 @@ define(["products_view"], function(products_view) {
             '.timetable span': 'text: _product_timetables',
             '.gift-card': 'classes: {hidden: not(all(_product_is_gift, _system_settings_online_orders))}',
             '.gift-card-number': 'value: _product_gift_card_number, events: ["input"], restrictInput: "0123456789-", kbdSwitcher: "cardNumber", pattern: /^[\\d|-]{0,19}$/'
-        }),
+        },
         computeds: {
             giftMode: {
                 deps: ['_product_is_gift', '_system_settings_online_orders'],

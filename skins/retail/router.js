@@ -32,15 +32,16 @@ define(["main_router"], function(main_router) {
     function defaultRouterData() {
         headers.main = {mod: 'Main', className: 'main'};
         headers.confirm = {mod: 'Confirm', className: 'confirm'};
-        headers.checkout = {mod: 'Checkout', className: 'checkout main'};
         carts.main = {mod: 'Main', className: 'main animation'};
         carts.checkout = {mod: 'Checkout', className: 'checkout'};
+        carts.confirm = {mod: 'Confirmation', className: 'confirm'};
     }
 
     var Router = App.Routers.RevelOrderingRouter.extend({
         routes: {
             "": "index",
             "index(/:data)": "index",
+            "modifiers/:id_category(/:id_product)": "modifiers",
             "about": "about",
             "map": "map",
             "checkout": "checkout",
@@ -101,80 +102,40 @@ define(["main_router"], function(main_router) {
                 App.Views.Generator.enableCache = true;
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
-                var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    goToDirectory: App.Data.dirMode ? this.navigateDirectory.bind(this) : new Function,
-                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
-                    acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES
-                });
-                var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
-                App.Data.subCategories = new App.Collections.SubCategories();
-                App.Data.search = new App.Collections.Search();
-                App.Data.filter = new App.Models.Filter();
+                App.Data.searchLine = new App.Models.SearchLine({search: new App.Collections.Search()});
+                App.Data.cart = new Backbone.Model({visible: false});
+                App.Data.categorySelection = new App.Models.CategorySelection();
+                App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProducts()});
+                App.Data.productsSets = new App.Collections.ProductsSets();
+                App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
-                // sync sort saving and loading with myorder saving and loading
-                App.Data.myorder.saveOrders = function() {
-                    this.constructor.prototype.saveOrders.apply(this, arguments);
-                    App.Data.filter.saveSort();
-                }
-
-                App.Data.myorder.loadOrders = function() {
-                    this.constructor.prototype.loadOrders.apply(this, arguments);
-                    App.Data.filter.loadSort();
-                }
-
-//common
-                this.listenTo(mainModel, 'change:mod', this.createMainView);
-//common
-                this.listenTo(this, 'showPromoMessage', this.showPromoMessage, this);
-//common
-                this.listenTo(this, 'hidePromoMessage', this.hidePromoMessage, this);
-//common
-                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-//common
-                this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
-
-                mainModel.set({
+                var mainModel = App.Data.mainModel = new App.Models.MainModel({
+                    isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
-                    model: mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder,
+                    cartModel: App.Data.cart,
                     categories: App.Data.categories,
-                    search: App.Data.search
+                    searchLine: App.Data.searchLine
                 });
-                ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
-                // Once the route is initialized need to set profile panel
-                this.listenToOnce(this, 'initialized', this.initProfilePanel.bind(this));
+                // init App.Data.sortItems
+                this.initSortItems();
 
-                // init Stanford Card model if it's turned on
-                if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
-                    App.Data.stanfordCard = new App.Models.StanfordCard();
-                }
+                mainModel.set('model', mainModel);
 
-                // listen to navigation control
-                this.navigationControl();
+                // set clientName
+                App.Data.establishments.getModelForView().set('clientName', mainModel.get('clientName'));
 
-                // run history tracking
-                this.triggerInitializedEvent();
+                // track main UI change
+                this.listenTo(mainModel, 'change:mod', this.createMainView);
+
+                this.onInitialized();
             });
 
-            this.listenTo(App.Data.myorder, "paymentInProcess", function() {
-                App.Data.mainModel.trigger('loadStarted');
-            }, this);
-
-            this.listenTo(App.Data.myorder, "paymentInProcessValid", function() {
-                App.Data.mainModel.trigger('loadCompleted');
-            }, this);
-
-            this.listenTo(App.Data.myorder, "paymentFailed cancelPayment", function(message) {
-                App.Data.mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message); // user notification
-            }, this);
-
             var checkout = App.Data.myorder.checkout;
-                checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
+            checkout.trigger("change:dining_option", checkout, checkout.get("dining_option"));
 
             this.on('route', function() {
                 // can be called when App.Data.mainModel is not initializd yet ('back' btn in browser history control)
@@ -183,6 +144,11 @@ define(["main_router"], function(main_router) {
             });
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
+        },
+        initCustomer: function() {
+            App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+            // Once the customer is initialized need to set profile panel
+            this.initProfilePanel();
         },
         /**
          * Change page.
@@ -202,80 +168,143 @@ define(["main_router"], function(main_router) {
             this.mainView = mainView;
         },
         navigationControl: function() {
-            // change:parent_selected event occurs when any category tab is clicked
-            this.listenTo(App.Data.categories, 'change:parent_selected', function() {
-                var categories = App.Data.categories,
-                    subCategories = App.Data.subCategories,
-                    parent = App.Data.categories.parent_selected,
-                    subs = categories.where({parent_name: parent});
-                if(!subCategories.get(parent)) {
-                    subCategories.add({
-                        id: parent,
-                        subs: subs
-                    });
-                    subs.length > 1 && subCategories.get(parent).addAllSubs();
+            // 'change:subCategory' event occurs when any subcategory is clicked
+            this.listenTo(App.Data.categorySelection, 'change:subCategory', function(model, value) {
+                // don't call this.showProducts() for default value
+                if (value !== model.defaults.subCategory) {
+                    this.showProducts(value);
+                    App.Data.searchLine.empty_search_line();
                 }
-                App.Data.categories.trigger('onSubs', subCategories.getSubs(parent));
-            }, this);
+            });
 
-            // change:selected event occurs when any subcategory is clicked
-            this.listenTo(App.Data.categories, 'change:selected', function() {
-                App.Data.mainModel.trigger('loadCompleted');
-                App.Data.search.clearLastPattern();
-            }, this);
+            // 'searchString' event occurs when a search text field is filled out
+            this.listenTo(App.Data.searchLine, 'change:searchString', function(model, value) {
+                model = model;
+
+                if (!value) {
+                    return;
+                }
+
+                // to go #index
+                App.Data.header.trigger('onShop');
+
+                var key = btoa(value),
+                    productSet = App.Data.productsSets.get(key),
+                    searchModel, productsAttr;
+
+                if (!productSet) {
+                    productSet = App.Data.productsSets.add({
+                        id: key,
+                        name: _loc.SEARCH_RESULTS.replace(/%s/g, value)
+                    });
+                    productsAttr = productSet.get('products');
+                    (searchModel = model.getSeachModel()) && searchModel.get('status').then(function() {
+                        productsAttr.reset(searchModel.get('products').map(function(product) {
+                            return _.extend(product.toJSON(), {
+                                filterResult: true
+                            });
+                        }));
+                        setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
+                        // Apply a sort method specified by user and listen to its further changes
+                        App.Data.sortItems.sortCollection(productsAttr);
+                    });
+                }
+
+                App.Data.curProductsSet.set('value', productSet);
+                App.Data.categorySelection.set('subCategory', App.Data.categorySelection.defaults.subCategory, {doNotUpdateState: true});
+            });
 
             // onCheckoutClick event occurs when 'checkout' button is clicked
             this.listenTo(App.Data.myorder, 'onCheckoutClick', this.navigate.bind(this, 'checkout', true));
 
-            // show payment processors list
-            function showPaymentProcessors() {
-                delete showPaymentProcessors.pending;
-                App.Data.mainModel.set('popup', {
-                    modelName: 'Checkout',
-                    mod: 'Pay',
-                    collection: App.Data.myorder
-                });
+            var askStanfordStudent = {
+                pending: false,
+                proceed: null
+            };
+
+            function completeAsking() {
+                askStanfordStudent.pending = false;
+                askStanfordStudent.proceed = null;
+                App.Data.mainModel.unset('popup');
             }
 
             // onPay event occurs when 'Pay' button is clicked
-            this.listenTo(App.Data.myorder, 'onPay', function() {
+            this.listenTo(App.Data.myorder, 'onPay', function(cb) {
                 var stanfordCard = App.Data.stanfordCard;
 
                 // need to check if Stanford Card is turned on and ask a customer about student status
                 if(stanfordCard && stanfordCard.get('needToAskStudentStatus') && !App.Data.myorder.checkout.isDiningOptionOnline()) {
-                    showPaymentProcessors.pending = true; // assing 'pending' status to showPaymentProcessors() function
-                    App.Data.mainModel.set('popup', {
-                        modelName: 'StanfordCard',
+                    askStanfordStudent.pending = true;
+                    askStanfordStudent.proceed = cb;
+
+                    var view = new App.Views.GeneratorView.create('StanfordCard', {
                         mod: 'StudentStatus',
                         model: stanfordCard,
                         className: 'stanford-student-status'
                     });
+
+                    App.Data.errors.alert('', false, false, {
+                        isConfirm: true,
+                        typeIcon: '',
+                        confirm: {
+                            ok: _loc.YES,
+                            cancel: _loc.NO
+                        },
+                        customView: view,
+                        callback: function(res) {
+                            if (res) {
+                                view.yes();
+                            } else {
+                                view.no();
+                            }
+                        }
+                    });
                 } else {
-                    showPaymentProcessors();
+                    cb();
                 }
             });
 
             // onNotStudent event occurs when a customer answers 'No' on student status question.
-            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', showPaymentProcessors);
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onNotStudent', function() {
+                askStanfordStudent.pending && typeof askStanfordStudent.proceed == 'function' && askStanfordStudent.proceed();
+                completeAsking();
+            });
 
             // onCancelStudentVerification event occurs when a customer cancels student verification.
-            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', App.Data.mainModel.unset.bind(App.Data.mainModel, 'popup'));
+            App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onCancelStudentVerification', completeAsking);
 
             // onStudent event occurs when a customer answers 'Yes' on student status question.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onStudent', function() {
-                App.Data.mainModel.set('popup', {
-                    modelName: 'StanfordCard',
+                var view = new App.Views.GeneratorView.create('StanfordCard', {
                     mod: 'Popup',
                     model: App.Data.stanfordCard,
                     myorder: App.Data.myorder,
-                    className: 'stanford-student-card'
+                    className: 'stanford-student-card text-left'
+                });
+
+                App.Data.errors.alert('', false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.YES,
+                        cancel: _loc.CANCEL
+                    },
+                    customView: view,
+                    callback: function(res) {
+                        if (res) {
+                            view.submit();
+                        } else {
+                            view.cancel();
+                        }
+                    }
                 });
             });
 
             // 'change:validated' event occurs after Stanford Card validation on backend.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'change:validated', function() {
-                // if showPaymentProcessors() function is waiting for stanfordCard resolution need to invoke it.
-                showPaymentProcessors.pending && showPaymentProcessors();
+                // if askStanfordStudent.pending is waiting for stanfordCard resolution need to invoke it.
+                askStanfordStudent.pending && typeof askStanfordStudent.proceed == 'function' && askStanfordStudent.proceed();
+                completeAsking();
             });
 
             // showSpinner event
@@ -288,8 +317,12 @@ define(["main_router"], function(main_router) {
                 App.Data.mainModel.trigger('loadCompleted');
             });
 
-            // onShop event occurs when 'Shop' item is clicked
-            this.listenTo(App.Data.header, 'onShop', this.navigate.bind(this, 'index', true));
+            // onShop event occurs when 'Shop' item is clicked or search line is filled out
+            this.listenTo(App.Data.header, 'onShop', function() {
+                if (location.hash.indexOf("#index") == -1) {
+                    this.navigate('index', true);
+                }
+            });
 
             // onMenu event occurs when 'Return to Menu'
             this.listenTo(App.Data.mainModel, 'onMenu', this.navigate.bind(this, 'index', true));
@@ -300,14 +333,20 @@ define(["main_router"], function(main_router) {
             // onAbout event occurs when 'About' item is clicked
             this.listenTo(App.Data.header, 'onAbout', this.navigate.bind(this, 'about', true));
 
-            // onLocations event occurs when 'Locations' item is clicked
-            this.listenTo(App.Data.header, 'onLocations', this.navigate.bind(this, 'map', true));
+            // onMap event occurs when 'Map' item is clicked
+            this.listenTo(App.Data.header, 'onMap', this.navigate.bind(this, 'map', true));
 
             // onCart event occurs when 'cart' item is clicked
             this.listenTo(App.Data.header, 'onCart', function() {
                 if(App.Settings.online_orders) {
-                    App.Data.myorder.trigger('showCart');
+                    App.Data.cart.set('visible', true);
                 }
+            });
+
+            // onItemEdit event occurs when cart item's 'edit' button is clicked
+            this.listenTo(App.Data.myorder, 'onItemEdit', function(model) {
+                var index = App.Data.myorder.indexOf(model);
+                index > -1 && this.navigate('modifiers/' + index, true);
             });
 
             // onRedemptionApplied event occurs when 'Apply Reward' btn is clicked
@@ -332,17 +371,28 @@ define(["main_router"], function(main_router) {
                 if (!rewardsCard.get('rewards').length) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
-                    var clone = rewardsCard.clone();
+                    var clone = rewardsCard.clone(),
+                        view = new App.Views.GeneratorView.create('Rewards', {
+                            mod: 'Info',
+                            model: clone,
+                            collection: App.Data.myorder,
+                            balance: clone.get('balance'),
+                            rewards: clone.get('rewards'),
+                            discounts: clone.get('discounts'),
+                            className: 'rewards-info'
+                        });
 
-                    App.Data.mainModel.set('popup', {
-                        modelName: 'Rewards',
-                        mod: 'Info',
-                        model: clone,
-                        className: 'rewards-info',
-                        collection: App.Data.myorder,
-                        balance: clone.get('balance'),
-                        rewards: clone.get('rewards'),
-                        discounts: clone.get('discounts')
+                    App.Data.errors.alert('', false, false, {
+                        isConfirm: true,
+                        typeIcon: '',
+                        confirm: {
+                            ok: _loc.REWARDS_APPLY,
+                            cancel: _loc.CANCEL
+                        },
+                        customView: view,
+                        callback: function(res) {
+                            res && view.apply();
+                        }
                     });
                 }
 
@@ -352,16 +402,31 @@ define(["main_router"], function(main_router) {
             // onApplyRewardsCard event occurs when Rewards Card's 'Apply' button is clicked on #checkout page
             this.listenTo(App.Data.myorder.rewardsCard, 'onApplyRewardsCard', function() {
                 var rewardsCard = App.Data.myorder.rewardsCard,
-                    customer = App.Data.customer;
+                    customer = App.Data.customer,
+                    view;
+
                 if (!rewardsCard.get('number') && customer.isAuthorized() && customer.get('rewardCards').length) {
                     rewardsCard.set('number', customer.get('rewardCards').at(0).get('number'));
                 }
-                App.Data.mainModel.set('popup', {
-                    modelName: 'Rewards',
+
+                view = new App.Views.GeneratorView.create('Rewards', {
                     mod: 'Card',
                     model: rewardsCard,
-                    className: 'rewards-info',
-                    customer: customer
+                    customer: customer,
+                    className: 'rewards-info'
+                });
+
+                App.Data.errors.alert('', false, false, {
+                    isConfirm: true,
+                    typeIcon: '',
+                    confirm: {
+                        ok: _loc.CONTINUE,
+                        cancel: _loc.CANCEL
+                    },
+                    customView: view,
+                    callback: function(res) {
+                        res && view.submit();
+                    }
                 });
             });
 
@@ -405,55 +470,45 @@ define(["main_router"], function(main_router) {
                 return;
             }
 
-            var filter = App.Data.filter,
-                categories = App.Data.categories,
-                search = App.Data.search,
-                subCategoryIsNotSelected = true;
+            // listen to sorting method change to add new entry to browser history
+            this.listenTo(App.Data.sortItems, 'change:selected', function(model, value, opts) {
+                value && updateStateWithHash.call(this, opts);
+            });
 
-            // listen to filter change
-            this.listenTo(filter, 'change', function(model, opts) {
-                updateState.call(this, filter, opts);
+            // listen to subcategory change to add new entry to browser history
+            this.listenTo(App.Data.categorySelection, 'change:subCategory', function(model, value, opts) {
+                updateStateWithHash.call(this, opts);
             }, this);
 
-            // listen to subcategory change and add entry to browser history
-            this.listenTo(categories, 'change:selected', function() {
-                updateState.call(this, categories, {replaceState: subCategoryIsNotSelected});
-                // handle case when subcategory is selected at first time (hash changes on #index/<base64 string>)
-                subCategoryIsNotSelected = false;
+            // listen to search line change to add new entry to browser history
+            this.listenTo(App.Data.searchLine, 'change:searchString', function(model, value, opts) {
+                updateStateWithHash.call(this, opts);
             }, this);
 
-            // listen to onSearchComplete and add entry to browser history
-            this.listenTo(search, 'onSearchComplete', function(result) {
-                // ingnore cases when no products found
-                if(!result.get('products') || result.get('products').length == 0)
-                    return;
-                updateState.call(this, search, {});
-            }, this);
-            /**
-             * Push data changes to browser history entry.
-             * @param {Object} obj - Data object (categories, filter or search model).
-             * @param {Object} opts - Options object.
-             */
-            function updateState(obj, opts) {
-                // if obj is in restoring mode we shouldn't update state
-                if(obj.isRestoring || !(opts instanceof Object)) {
-                    return;
+            function updateStateWithHash(opts) {
+                if (!_.isObject(opts) || !opts.doNotUpdateState) {
+                    this.updateStateWithHash(opts.replaceState);
                 }
-                var encoded = this.encodeState(this.getState()),
-                    hashRE = /#.*$/,
-                    url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
-                this.updateState(Boolean(opts.replaceState), url);
             }
+
+            return true;
+        },
+        /**
+         * Push data changes to browser history entry adding current state to hash.
+         * @param {boolean} replaceState - If true, replace the current state, otherwise push a new state.
+         */
+        updateStateWithHash: function(replaceState) {
+            var encoded = this.encodeState(this.getState()),
+                hashRE = /#.*$/,
+                url = hashRE.test(location.href) ? location.href.replace(hashRE, '#index/' + encoded) : location.href + '#index/' + encoded;
+            this.updateState(replaceState, url);
         },
         /**
          * Restore state data from the history.
          * @param {Object} event - PopStateEvent.
          */
         restoreState: function(event) {
-            var filter = App.Data.filter,
-                search = App.Data.search,
-                categories = App.Data.categories,
-                est = App.Data.settings.get('establishment'),
+            var est = App.Data.settings.get('establishment'),
                 hashData = location.hash.match(/^#index\/(\w+)/), // parse decoded state string from hash
                 mainRouterData, isSearchPatternPresent, state, data;
 
@@ -471,102 +526,52 @@ define(["main_router"], function(main_router) {
 
             data = data || mainRouterData;
 
-            if(!(data instanceof Object) || est != data.establishment) {
+            if(!_.isObject(data) || est != data.establishment) {
                 return;
             }
-            // define pattern is present is data or not
-            isSearchPatternPresent = typeof data.searchPattern == 'string' && data.searchPattern.length;
 
-            // If data.filter is object resore App.Data.filter attributes and set restoring mode
-            if(data.filter instanceof Object) {
-                filter.isRestoring = true;
-                filter.set(data.filter);
-            };
-
-            // If data.categories is object restore 'selected', 'parent_selected' props of App.Data.categories and set restoring mode.
-            // If search pattern is present categories shouldn't be restored
-            if(data.categories instanceof Object && !isSearchPatternPresent) {
-                categories.isRestoring = true;
-                categories.setParentSelected(data.categories.parent_selected);
-                categories.setSelected(data.categories.selected);
-                // remove restoring mode
-                delete categories.isRestoring;
-                delete filter.isRestoring;
-            };
-
-            // If data.searchPattern is string restore last searched pattern and set restoring mode
-            if(isSearchPatternPresent) {
-                search.isRestoring = true;
-                search.lastPattern = data.searchPattern;
-                // set callback on event onSearchComplete (products received)
-                this.listenToOnce(search, 'onSearchComplete', function() {
-                    // remove restoring mode
-                    delete search.isRestoring;
-                    delete filter.isRestoring;
-                }, this);
-                search.trigger('onRestore');
-                // due to 'onRestore' handler in header view changes categories.selected, categories.parent_selected on 0
-                // need override this value to avoid a selection of first category and subcategory
-                // that is triggered in categories views after receiving data from server
-                categories.selected = -1;
-                categories.parent_selected = -1;
-            }
+            _.isObject(data.categories) && App.Data.categorySelection.set(data.categories, {doNotUpdateState: true});
+            _.isObject(data.searchLine) && App.Data.searchLine.set(data.searchLine, {doNotUpdateState: true});
+            data.sort && App.Data.sortItems.checkItem('id', data.sort, {doNotUpdateState: true});
         },
         /**
          * Returns the current state data.
          * @return {Object} The object containing information about the current app state.
          */
         getState: function() {
-            var filter = App.Data.filter,
-                categories = App.Data.categories,
-                search = App.Data.search,
+            var categorySelection = App.Data.categorySelection,
+                searchLine = App.Data.searchLine,
+                sortItem = App.Data.sortItems.getCheckedItem(),
                 data = {},
-                hash = location.hash,
-                searchPattern;
+                hash = location.hash;
 
             // if hash is present but isn't index, need to return default value
-            if(hash && !/^#index/i.test(hash) || !filter || !categories || !search) {
+            if(hash && !/^#index/i.test(hash) || !categorySelection || !searchLine) {
                 return App.Routers.MobileRouter.prototype.getState.apply(this, arguments);
             }
 
-            data.filter = filter.toJSON();
-            searchPattern = search.lastPattern;
+            data.sort = sortItem.get('id');
 
-            // search pattern and categories data cannot be in one state due to views implementation
-            if(searchPattern) {
-                data.searchPattern = searchPattern;
-            } else {
-                data.categories = {
-                    parent_selected: categories.parent_selected,
-                    selected: categories.selected
-                };
-            }
+            data.searchLine = {
+                searchString: searchLine.get('searchString'),
+                collapsed: searchLine.get('collapsed')
+            };
+
+            data.categories = {
+                parentCategory: categorySelection.get('parentCategory'),
+                subCategory: categorySelection.get('subCategory')
+            };
 
             return _.extend(App.Routers.MobileRouter.prototype.getState.apply(this, arguments), data);
-        },
-        showPromoMessage: function() {
-            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
-            App.Data.header && App.Data.header.set('isShowPromoMessage', true);
-        },
-        hidePromoMessage: function() {
-            // can be called when App.Data.header is not initializd yet ('back' btn in browser history control)
-            App.Data.header && App.Data.header.set('isShowPromoMessage', false);
         },
         /**
         * Get a stores list.
         */
         getEstablishments: function() {
             this.getEstablishmentsCallback = function() {
-                if (/^(index.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
+                if (/^(index.*|maintenance.*)?$/i.test(Backbone.history.fragment)) App.Data.mainModel.set('needShowStoreChoice', true);
             };
             App.Routers.RevelOrderingRouter.prototype.getEstablishments.apply(this, arguments);
-        },
-        /**
-        * Remove establishment data in case if establishment ID will change.
-        */
-        resetEstablishmentData: function() {
-            App.Routers.RevelOrderingRouter.prototype.resetEstablishmentData.apply(this, arguments);
-            this.index.initState = null;
         },
         /**
         * Remove HTML and CSS of current establishment in case if establishment ID will change.
@@ -578,18 +583,10 @@ define(["main_router"], function(main_router) {
         index: function(data) {
             this.prepare('index', function() {
                 var categories = App.Data.categories,
-                    restoreState = new Function,
                     dfd = $.Deferred(),
                     self = this;
 
-                categories.selected = 0;
-
-                // load content block for categories
-                // and restore state from hash
-                if (!categories.receiving) {
-                    categories.receiving = categories.get_categories();
-                    categories.receiving.then(this.restoreState.bind(this, {}));
-                }
+                this.createCategoriesTree();
 
                 categories.receiving.then(function() {
                     // After restoring state an establishment may be changed.
@@ -597,63 +594,37 @@ define(["main_router"], function(main_router) {
                     if(!Backbone.History.started) {
                         return;
                     }
+                    self.updateStateWithHash(this); // update hash
                     dfd.resolve();
                     self.restore = $.Deferred();
                 });
 
                 App.Data.header.set('menu_index', 0);
                 App.Data.mainModel.set('mod', 'Main');
+                App.Data.cart.set('visible', false);
 
                 App.Data.mainModel.set({
                     header: headers.main,
                     cart: carts.main,
                     content: [
                         {
-                            modelName: 'Categories',
-                            collection: categories,
-                            model: App.Data.mainModel,
-                            search: App.Data.search,
-                            mod: 'SubList',
-                            className: 'subcategories'
+                            modelName: 'Sidebar',
+                            mod: 'Main',
+                            categoriesTree: App.Data.categoriesTree,
+                            curProductsSet: App.Data.curProductsSet,
+                            className: 'fl-left'
                         },
                         {
-                            modelName: 'Filter',
-                            model: App.Data.filter,
-                            categories: categories,
-                            search: App.Data.search,
-                            products: App.Data.products,
-                            mod: 'Sort',
-                            className: 'filter sort select-wrapper'
+                            modelName: 'Sort',
+                            collection: App.Data.sortItems,
+                            mod: 'Items',
+                            className: 'sort-menu fl-right'
                         },
                         {
-                            modelName: 'Filter',
-                            model: App.Data.filter,
-                            categories: categories,
-                            search: App.Data.search,
-                            products: App.Data.products,
-                            attr: 2,
-                            mod: 'Attribute',
-                            className: 'filter attribute select-wrapper',
-                            uniqId: '2'
-                        },
-                        {
-                            modelName: 'Filter',
-                            model: App.Data.filter,
-                            categories: categories,
-                            search: App.Data.search,
-                            products: App.Data.products,
-                            attr: 1,
-                            mod: 'Attribute',
-                            className: 'filter attribute select-wrapper',
-                            uniqId: '1'
-                        },
-                        {
-                            modelName: 'Categories',
-                            collection: categories,
-                            search: App.Data.search,
-                            filter: App.Data.filter,
-                            mod: 'MainProducts',
-                            className: 'content products'
+                            modelName: 'Product',
+                            collection: App.Data.curProductsSet,
+                            mod: 'CategoryList',
+                            className: 'products-view'
                         }
                     ]
                 });
@@ -668,10 +639,88 @@ define(["main_router"], function(main_router) {
                 });
             });
         },
+        modifiers: function(category_id, product_id) {
+            var isEditMode = !product_id,
+                order = isEditMode ? App.Data.myorder.at(category_id) : new App.Models.Myorder(),
+                self = this,
+                dfd;
+
+            if (!order) {
+                return this.navigate('index', true);
+            }
+
+            if (isEditMode) {
+                dfd = Backbone.$.Deferred();
+                dfd.resolve();
+            } else {
+                dfd = order.add_empty(product_id * 1, category_id * 1)
+            }
+
+            this.prepare('modifiers', function() {
+                App.Data.header.set('menu_index', null);
+                App.Data.mainModel.set('mod', 'Main');
+                App.Data.cart.set('visible', false);
+                dfd.then(showProductModifiers);
+
+                function showProductModifiers() {
+                    var _order = order.clone(),
+                        content;
+
+                    content = /*self.getStanfordReloadItem(order) || */{
+                        modelName: 'MyOrder',
+                        mod: 'ItemCustomization',
+                        className: 'myorder-item-customization',
+                        model: _order,
+                        ui: new Backbone.Model({isAddMode: !isEditMode}),
+                        myorder: App.Data.myorder,
+                        action: action,
+                        back: cancel,
+                        doNotCache: true
+                    };
+
+                    App.Data.mainModel.set({
+                        header: headers.main,
+                        cart: carts.main,
+                        content: content
+                    });
+
+                    self.change_page();
+
+                    function action() {
+                        var check = _order.check_order();
+
+                        if (check.status === 'OK') {
+                            if (App.Data.is_stanford_mode) {
+                                successfulValidation();
+                            } else {
+                                _order.get_product().check_gift(successfulValidation, function(errorMsg) {
+                                    App.Data.errors.alert(errorMsg); // user notification
+                                });
+                            }
+                        } else {
+                            App.Data.errors.alert(check.errorMsg); // user notification
+                        }
+                    }
+
+                    function cancel() {
+                        window.history.back();
+                    }
+
+                    function successfulValidation() {
+                        if (isEditMode) {
+                            order.update(_order);
+                        } else {
+                            App.Data.myorder.add(_order);
+                        }
+                        cancel();
+                    }
+                }
+            });
+        },
         about: function() {
             this.prepare('about', function() {
-                if (!App.Data.AboutModel) {
-                    App.Data.AboutModel = new App.Models.AboutModel();
+                if (!App.Data.aboutModel) {
+                    App.Data.aboutModel = new App.Models.AboutModel();
                 }
                 App.Data.header.set('menu_index', 1);
                 App.Data.mainModel.set('mod', 'Main');
@@ -679,9 +728,10 @@ define(["main_router"], function(main_router) {
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.AboutModel,
-                        mod: 'About',
-                        className: 'about'
+                        model: App.Data.timetables,
+                        mod: 'Main',
+                        about: App.Data.aboutModel,
+                        className: 'store-info about-box'
                     },
                     cart: carts.main
                 });
@@ -698,10 +748,9 @@ define(["main_router"], function(main_router) {
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        model: App.Data.timetables,
+                        mod: 'MapWithStores',
                         collection: stores,
-                        mod: 'Map',
-                        className: 'map'
+                        className: 'store-info map-box'
                     },
                     cart: carts.main
                 });
@@ -715,17 +764,19 @@ define(["main_router"], function(main_router) {
             });
         },
         checkout: function() {
-            App.Data.header.set('menu_index', NaN);
+            App.Data.header.set('menu_index', null);
             this.prepare('checkout', function() {
+                this.listenTo(App.Data.customer, 'change:access_token', function() {
+                    // update shipping address on login/logout
+                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
+                });
+
                 if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
 
-                this.initGiftCard();
-
-                if (!App.Data.customer) {
-                    App.Data.customer = new App.Models.Customer();
-                }
+                var settings = App.Data.settings.get('settings_system'),
+                    addresses = App.Data.customer.get('addresses');
 
                 var settings = App.Data.settings.get('settings_system'),
                     addresses = App.Data.customer.get('addresses');
@@ -737,22 +788,32 @@ define(["main_router"], function(main_router) {
 
                 App.Data.mainModel.set('mod', 'Main');
                 App.Data.mainModel.set({
-                    header: headers.checkout,
+                    header: headers.main,
                     cart: carts.checkout,
                     content: {
-                        isCartLeftPanel: true,
                         modelName: 'Checkout',
                         collection: App.Data.myorder,
                         mod: 'Page',
-                        className: 'checkout',
+                        className: 'checkout-page',
                         DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
                         customer: App.Data.customer,
                         acceptTips: settings.accept_tips_online,
-                        noteAllow: settings.order_notes_allow,
-                        discountAvailable: settings.accept_discount_code
+                        noteAllow:  settings.order_notes_allow,
+                        discountAvailable: settings.accept_discount_code,
+                        checkout: App.Data.myorder.checkout,
+                        paymentMethods: App.Data.paymentMethods,
+                        enableRewardCard: settings.enable_reward_cards_collecting,
+                        card: App.Data.card,
+                        giftcard: App.Data.giftcard,
+                        stanfordcard: App.Data.stanfordCard,
+                        promises: this.getProfilePaymentsPromises.bind(this),
+                        needShowBillingAddess: PaymentProcessor.isBillingAddressCard()
                     }
                 });
+
+                App.Data.cart.set('visible', true);
+
                 this.change_page();
             });
         },
@@ -765,6 +826,7 @@ define(["main_router"], function(main_router) {
             if(!(App.Data.myorder.paymentResponse instanceof Object)) {
                 return this.navigate('index', true);
             }
+            App.Data.header.set('menu_index', null);
             this.prepare('confirm', function() {
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
                 // need to init it.
@@ -772,25 +834,58 @@ define(["main_router"], function(main_router) {
                     this.loadCustomer();
                 }
 
+                var other_dining_options = App.Data.myorder.checkout.get('other_dining_options'),
+                    cartData = carts.checkout;
+
+                if (this.recentOrder) {
+                    cartData = _.extend({
+                        collection: this.recentOrder,
+                        checkout: this.recentOrder.checkout,
+                    }, carts.confirm);
+                }
+
+                App.Views.GeneratorView.cacheRemoveView('Main', 'Done', 'content_Main_Done');
+
                 App.Data.mainModel.set({
-                    mod: 'Done'
+                    mod: 'Main',
+                    header: headers.main,
+                    cart: cartData,
+                    content: {
+                        modelName: 'Main',
+                        mod: 'Done',
+                        model: App.Data.mainModel,
+                        customer: App.Data.customer,
+                        checkout: App.Data.myorder.checkout,
+                        other_options: other_dining_options || new Backbone.Collection(),
+                        className: 'main-done'
+                    }
                 });
+                App.Data.cart.set('visible', true);
                 this.change_page();
             });
         },
         maintenance: function() {
-            var settings = App.Data.settings;
+            var settings = App.Data.settings,
+                mainModel = App.Data.mainModel;
             if (settings.get('isMaintenance')) {
                 App.Data.mainModel.set({
                     mod: 'Maintenance',
-                    errMsg: ERROR[settings.get('maintenanceMessage')]
+                    errMsg: ERROR[settings.get('maintenanceMessage')],
+                    className: 'maintenance'
                 });
             }
-            this.change_page();
+            this.change_page(mainModel.set.bind(mainModel, 'needShowStoreChoice', true));
             App.Routers.RevelOrderingRouter.prototype.maintenance.apply(this, arguments);
         },
         profile_edit: function() {
-            var promises = this.setProfileEditContent();
+            App.Data.header.set('menu_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var promises = this.setProfileEditContent(true);
 
             if (!promises.length) {
                 return this.navigate('index', true);
@@ -799,13 +894,208 @@ define(["main_router"], function(main_router) {
             }
         },
         profile_payments: function() {
-            var promises = this.setProfilePaymentsContent();
+            App.Data.header.set('menu_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var promises = this.setProfilePaymentsContent(true);
 
             if (!promises.length) {
                 return this.navigate('index', true);
             } else {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
             }
+        },
+        createCategoriesTree: function() {
+            if (App.Data.categoriesTree) {
+                return;
+            }
+
+            var tree = App.Data.categoriesTree = new App.Collections.Tree(),
+                categories = App.Data.categories,
+                categorySelection = App.Data.categorySelection,
+                searchLine = App.Data.searchLine,
+                self = this,
+                lastSelected;
+
+            // remember last selected subcategory to deselect it after new selection
+            // and update selected 'subCategory' and 'parentCategory' values
+            this.listenTo(tree, 'onItemSelected', function(model, value) {
+                if (value) {
+                    lastSelected && lastSelected.set('selected', false);
+                    lastSelected = model;
+                    categorySelection.set({
+                        subCategory: model.get('id'),
+                        parentCategory: model.get('parent_id')
+                    });
+                }
+            });
+
+            // Need to update tree when 'subCategory' updates.
+            this.listenTo(categorySelection, 'change:subCategory', function(model, value) {
+                var item = tree.getItem('id', value, true);
+                item && item.set('selected', true);
+                // clear tree item selection
+                if (value === model.defaults.subCategory && lastSelected) {
+                    lastSelected.set('selected', false);
+                    lastSelected = undefined;
+                };
+            });
+
+            // need to update tree when 'parentCategory' updates
+            this.listenTo(categorySelection, 'change:parentCategory', function(model, value) {
+                var item = tree.getItem('id', value);
+                item && item.set('collapsed', false);
+            });
+
+            // once categories are loaded need to add them to tree collection
+            categories.receiving = categories.get_categories();
+            categories.receiving.always(setCategoriesItems);
+
+            function setCategoriesItems() {
+                var selected, parent_selected, data;
+
+                // need to abort execution in case of empty categories collection
+                if (!categories.length) {
+                    return;
+                }
+
+                // need to convert categories collection to array of tree items.
+                data = _.toArray(_.mapObject(categories.groupBy('parent_id'), function(value, key) {
+                    var data = {
+                        id: Number(key),
+                        name: value[0].get('parent_name'),
+                        sort: value[0].get('parent_sort'),
+                        items: _.invoke(value, 'toJSON')
+                    };
+                    // add 'View All' category
+                    value.length > 1 && data.items.unshift({
+                        id: _.pluck(value, 'id'),
+                        name: _loc.SUBCATEGORIES_VIEW_ALL,
+                        parent_name: value[0].get('parent_name'),
+                        sort: 0,
+                        parent_id: value[0].get('parent_id')
+                    });
+                    return data;
+                }));
+
+                // and reset 'tree' collection with adding new data
+                tree.reset(data);
+                // init state
+                initState();
+            }
+
+            function initState() {
+                // restore state if #index/<data> exists
+                self.restoreState({});
+                // if searchLine and categorySelection contain default attributes need to select first subcategory replacing state.
+                if (!searchLine.get('searchString') && categorySelection.areDefaultAttrs()) {
+                    categorySelection.set({
+                        parentCategory: tree.at(0).get('id'),
+                        subCategory: tree.at(0).get('items').at(0).get('id'),
+                    }, {
+                        replaceState: true
+                    });
+                }
+            }
+        },
+        showProducts: function(ids) {
+            var self = this,
+                isCached = false,
+                treeItem = App.Data.categoriesTree.getItem('id', ids, true),
+                productSet, key;
+
+            ids = Array.isArray(ids) ? ids : [ids];
+            key = ids.join();
+
+            if (treeItem) {
+                name = Array.isArray(treeItem.get('id')) ? treeItem.get('parent_name') : treeItem.get('name');
+            }
+
+            if (productSet = App.Data.productsSets.get(key)) {
+                isCached = true;
+            } else {
+                productSet = App.Data.productsSets.add({id: key});
+                productSet.set('name', name);
+            }
+
+            App.Data.curProductsSet.set('value', productSet);
+
+            // get items
+            !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
+                var products = [],
+                    productsAttr = productSet.get('products');
+
+                ids.forEach(function(id) {
+                    var items = App.Data.products[id],
+                        last = Math.max.apply(Math, items.pluck('sort')),
+                        floatNumber = Math.pow(10, String(last).length);
+                    items.each(function(item) {
+                        var product = item.toJSON();
+                        // need to exclude 'is_combo' and 'has_upsell' product
+                        if (product.is_combo || product.has_upsell) {
+                            return;
+                        }
+                        // add product with new sort value
+                        products.push(_.extend(product, {
+                            filterResult: true,
+                            sort: Number(App.Data.categories.get(id).get('sort')) + product.sort / floatNumber
+                        }));
+                    });
+                });
+
+                // set products and resolve status
+                productsAttr.reset(products);
+                setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
+
+                // Apply a sort method specified by user and listen to its further changes
+                App.Data.sortItems.sortCollection(productsAttr);
+            });
+        },
+        /**
+         * Creates App.Data.sortItem collection.
+         */
+        initSortItems: function() {
+            var sortItems = [
+                // Sort by Default
+                {
+                    id: 1,
+                    name: _loc.SORT_BY_DEFAULT,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'sort',
+                    sortOrder: 'asc',
+                    selected: true
+                },
+                // Sort by New Arrivals
+                {
+                    id: 2,
+                    name: _loc.SORT_BY_NEW_ARRIVALS,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'created_date',
+                    sortOrder: 'desc'
+                },
+                // Sort by Price: Low to High
+                {
+                    id: 3,
+                    name: _loc.SORT_BY_LOW_TO_HIGH,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'price',
+                    sortOrder: 'asc'
+                },
+                // Sort by Price: High to Low
+                {
+                    id: 4,
+                    name: _loc.SORT_BY_HIGH_TO_LOW,
+                    sortStrategy: 'sortNumbers',
+                    sortKey: 'price',
+                    sortOrder: 'desc'
+               }
+            ];
+
+            App.Data.sortItems = new App.Collections.SortItems(sortItems);
         }
     });
 

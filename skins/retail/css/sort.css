@@ -1,0 +1,43 @@
+.sort-menu {
+    display: inline-block;
+    margin-right: 22px;
+    margin-left: 22px;
+    position: relative;
+}
+
+.sort-menu .sort-by-title {
+    padding: 12px 5px;
+    cursor: pointer;
+}
+
+.sort-menu .chevron-down::before {
+    content: '\f078';
+    font-family: 'FontAwesome';
+    font-size: 8px;
+    display: block;
+    width: 8px;
+    margin-top: 4px;
+    margin-left: 5px;
+}
+
+.sort-menu .sort-items {
+    max-height: 300px;
+    border-width: 1px;
+    border-style: solid;
+    position: absolute;
+    top: 39px;
+    right: 0;
+    z-index: 1;
+    overflow: hidden;
+}
+
+.sort-menu.collapsed .sort-items {
+    max-height: 0;
+    border: none;
+}
+
+.sort-menu .sort-item {
+    padding: 6px 11px;
+    white-space: nowrap;
+    cursor: pointer;
+}

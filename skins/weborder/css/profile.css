@@ -379,6 +379,11 @@
     margin-bottom: 15px;
 }
 
+.profile-edit .address__header {
+    max-width: 300px;
+    width: 100%;
+}
+
 .expand.expanded:before {
     content: '\f147';
     font-family: "FontAwesome";

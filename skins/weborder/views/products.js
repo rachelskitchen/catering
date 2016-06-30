@@ -57,14 +57,6 @@ define(['products_view'], function(products_view) {
                                                               //the view will be removed from cache after the product is added/updated into the cart.
                 });
             });
-        },
-        show_hide: function() {
-            this.parent = this.parent && this.parent.length ? this.parent : this.$el.parent();
-            if (!this.model.get('active')) {
-                this.$el.detach();
-            } else {
-                this.parent.append(this.$el);
-            }
         }
     });
 

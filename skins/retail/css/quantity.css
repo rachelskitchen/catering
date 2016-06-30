@@ -1,141 +1,128 @@
-.quantity {
-    text-align: left;
-    padding:10px 10px 10px 20px;
+.combobox, .weight_edit_inner {
+    position: relative;
+    background: inherit;
+}
+
+.combobox::after {
+    content: '';
+    font-size: 14px;
+    display: block;
     position: absolute;
-    bottom:0px;
+    top: 0;
+    right: 0;
+    pointer-events: none;
+    background: inherit;
 }
 
-/*.quantity select {*/
-.quantity .select-wrapper {
-    border-width: 2px;
-    border-radius: 15px;
-    min-width: 30px;
-    vertical-align: top;
-    height: 24px;
+.quantity_info .title {
+    font-weight: 600;
 }
 
-.quantity .title {
-    font-weight: bold;
-    vertical-align: top;
-    line-height: 28px;
-    max-width: 150px;
-    min-width: 70px;
-    display: inline-block;
-    text-align: right;
+.quantity_info .combobox::after {
+    content: '\f078';
+    font-family: 'FontAwesome';
+    height: 16px;
+    padding-right: 5px;
 }
 
-.quantity_select {
-    display: inline-block;
-    font-weight: bold;
-    font-size: 15px;
-    padding-right: 22px;
+.order-item .combobox::after {
+    top: 1px;
+    right: 1px;
+    bottom: 1px;
+    width: 15px;
 }
 
-.quantity_select select {
-    font-weight: bold;
+.quantity_info .inputbox {
+    width: 110px;
+    padding-left: 14px;
+    border: none;
+    background: inherit;
+    font-size: inherit;
 }
 
-.quantity_select input {
-    border: medium none;
-    font-weight: bold;
-    font-size: 15px;
-    padding-right: 22px;
-}
-
-.quantity .combobox-wrapper.l2 {
-    width: 36px;
-}
-
-.quantity .select-wrapper.l1 {
-    width: 49px;
-}
-
-.quantity .select-wrapper.l2 {
-    width: 57px;
-}
-
-.quantity .select-wrapper.l3 {
-    width: 67px;
-}
-
-.quantity .select-wrapper.l4 {
-    width: 74px;
-}
-
-.quantity .select-wrapper.l5 {
-    width: 81px;
-}
-
-.quantity .select-wrapper.l6 {
-    width: 90px;
-}
-
-.quantity .select-wrapper.l7 {
-    width: 100px;
-}
-
-.quantity_select .select_arrows {
-    right: 7px;
-}
-
-/* css for sold_by_weight case */
-.weight_edit_input {
-    font-weight: bold;
-    font-size: 16px;
+.order-item .inputbox {
+    width: 40px;
+    padding: 3px 0 3px 12px;
+    border-width: 1px;
+    border-style: solid;
+    font-size: inherit;
+    text-align: center;
 }
 
 .weight_edit_inner {
-    width: auto !important;
-    height: 27px !important;
-    top: 1px;
+    height: 24px;
+    overflow: hidden;
+    vertical-align: middle;
 }
 
-.weight_edit {
-    display: inline-block;
-    vertical-align: bottom;
-    margin-left: 4px;
-    position: relative;
-    height: 30px;
+.weight_edit_inner::after {
+    content: attr(data-weight);
+    display: block;
+    margin-top: 30px;
 }
 
-.quantity_weight_wrapper {
-    padding: 0px;
+.weight_edit_input[class] {
+    width: 100%;
+    position: absolute;
+    top: 0;
+    left: 0;
 }
 
-.quantity .uom {
-    display: inline-block;
-    vertical-align: bottom;
-    width: 80px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
+.weight_edit_input,
+.weight_edit_inner::after {
+    border-width: 1px;
+    border-style: solid;
+    font-size: 14px;
+    text-align: center;
+    background: inherit;
+}
+
+.quantity_info .weight_edit_inner::after,
+.quantity_info .weight_edit_input {
+    padding: 3px 14px;
+    min-width: 82px;
+}
+
+.order-item .weight_edit_inner::after,
+.order-item .weight_edit_input {
+    padding: 3px 5px;
+    min-width: 54px;
+}
+
+.combobox .input-wrapper {
     overflow: hidden;
 }
 
-.quantity .weight_edit_input {
-    min-width: 60px;
+.selectbox {
+    display: none;
+    width: 100%;
+    height: 100px;
+    border-width: 1px;
+    border-style: solid;
+    background: inherit;
+    position: absolute;
+    top: 20px;
+    z-index: 2;
+    overflow: auto;
 }
 
-.quantity .weight_edit_input[data-size="5"] {
-    width: 64px;
+.order-item .selectbox {
+    top: 23px;
 }
 
-.quantity .weight_edit_input[data-size="6"] {
-    width: 73px;
+.selectbox li {
+    padding: 2px 4px;
+    overflow: hidden;
+    white-space: nowrap;
+    cursor: pointer;
 }
 
-.quantity .weight_edit_input[data-size="7"] {
-    width: 83px;
+.confirm .order-item .title:after {
+    content: attr(data-qty);
+    padding-left: 5px;
 }
 
-.quantity .weight_edit_input[data-size="8"] {
-    width: 93px;
+.confirm .order-item .quantity_select,
+.confirm .order-item .weight_edit_inner {
+    display: none;
 }
-
-.quantity .weight_edit_input[data-size="9"] {
-    width: 103px;
-}
-
-.quantity .weight_edit_input[data-size="10"] {
-    width: 113px;
-}
-/* end of sold_by_weight case */

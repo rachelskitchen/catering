@@ -1,20 +1,18 @@
 <script type="text/template" id="cart_main-template">
-    <h2 class="cart_title clip"> <%= _lp.CART_MAIN_TITLE %> </h2>
-    <div class="order-items vertical-scrollbar"></div>
-    <div class="cart-bottom">
-        <span class="subtotal"></span>
-        <div class="checkout fl-right" tabindex="0"> <span> <%= _lp.CART_CHECKOUT %> </span> </div>
+    <h2 class="cart_title header-underline text-center"> <%= _lp.CART_TITLE %> </h2>
+    <div class="order-items"></div>
+    <div class="hide-cart link">&times;</div>
+    <% if(_settings.online_orders) { %>
+    <div class="btn btn-bottom btn-checkout text-center" tabindex="0">
+        <%= _lp.CART_CHECKOUT %>
+        <span class="subtotal-subline">&ndash; <span class="subtotal-box"></span></span>
+        <span class="hide animate-spin"></span>
     </div>
-    <div class="cancel"></div>
+    <% } %>
 </script>
 
 <script type="text/template" id="cart_checkout-template">
-    <h2 class="cart_title clip"> <%= _lp.CART_CHECKOUT_TITLE %> </h2>
-    <div class="order-items_wrapper">
-        <div class="order-items vertical-scrollbar"></div>
-    </div>
-    <ul class="total_block"></ul>
-    <div class='pay_button'>
-        <div class="btn pay unselectable" tabindex="0"> <%= _lp.CART_PAY %> </div>
-    </div>
+    <h2 class="cart_title header-underline text-center"> <%= _lp.CART_TITLE %> </h2>
+    <div class="order-items"></div>
+    <ul class="total_block primary-bg optional-text"></ul>
 </script>

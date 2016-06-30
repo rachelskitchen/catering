@@ -24,6 +24,9 @@ define(["quantity_view"], function(quantity_view) {
     'use strict';
 
     var QuantityMainView = App.Views.CoreQuantityView.CoreQuantityMainView.extend({
+        bindings: {
+            '.title': 'attr: {"data-qty": quantity}'
+        },
         events: {
             'change input': 'change'
         },
@@ -74,7 +77,15 @@ define(["quantity_view"], function(quantity_view) {
         }
     });
 
+    var QuantityWeightView = App.Views.CoreQuantityView.CoreQuantityWeightView.extend({
+        bindings: {
+            '.weight_edit_inner': 'attr: {"data-weight": scalesFormat(weight)}',
+            '.title': 'attr: {"data-qty": quantity}'
+        }
+    });
+
     return new (require('factory'))(quantity_view.initViews.bind(quantity_view), function() {
         App.Views.QuantityView.QuantityMainView = QuantityMainView;
+        App.Views.QuantityView.QuantityWeightView = QuantityWeightView;
     });
 });

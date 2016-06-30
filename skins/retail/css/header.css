@@ -1,0 +1,153 @@
+#header .top {
+    padding: 0 32px;
+}
+
+#header .business-name {
+    padding: 16px 10px 16px 0;
+    font-size: 12px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+}
+
+#header .search-box {
+    width: 208px;
+    padding: 8px 0;
+    margin: 7px 12px 7px 0;
+    position: relative;
+    vertical-align: middle;
+    position: relative;
+}
+
+#header .search-box.collapsed {
+    width: auto
+}
+
+#header .search-box::after {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+#header .search-box.collapsed::after {
+    display: none;
+}
+
+#header .search-box::before {
+    content: '\f002';
+    font-family: 'FontAwesome';
+    font-size: 15px;
+    padding-right: 5px;
+    vertical-align: bottom;
+}
+
+#header .search-label {
+    display: none;
+    font-size: 12px;
+    letter-spacing: 3px;
+    vertical-align: bottom;
+    text-transform: uppercase;
+    cursor: pointer;
+}
+
+#header .collapsed .search-label {
+    display: inline-block;
+}
+
+#search {
+    display: inline-block;
+    width: 170px;
+    padding: 0 15px 0 0;
+    margin-left: -1px;
+    border: none;
+    border-radius: 0;
+    font-size: 12px;
+    background: transparent;
+}
+
+.collapsed #search {
+    display: none;
+}
+
+.search-box .cancel-input {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 20px;
+    height: 100%;
+    line-height: 1.5;
+    cursor: pointer;
+}
+
+.search-box.collapsed .cancel-input {
+    display: none;
+}
+
+#header .profile-panel-box {
+    padding: 0 16px;
+    margin: 15px 0;
+    border-width: 0 1px;
+    border-style: solid;
+    vertical-align: middle;
+}
+
+#header .cart-box {
+    padding-left: 16px;
+}
+
+#header .cart-box::before {
+    content: '\f290';
+    font-family: 'FontAwesome';
+    padding-right: 3px;
+}
+
+#header .logo {
+    width: 190px;
+    height: 84px;
+    margin: 18px 5px 22px 32px;
+    position: relative;
+}
+
+#header .img {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+}
+
+#header .menu {
+    height: 124px;
+}
+
+#header .menu-item {
+    display: inline-block;
+    margin-top: 88px;
+    margin-right: 60px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 3px;
+    position: relative;
+    cursor: pointer;
+}
+
+#header .menu-item.active {
+    cursor: default;
+}
+
+#header .menu-item.active::before {
+    content: '';
+    display: block;
+    width: 100%;
+    height: 0;
+    border-top-width: 3px;
+    border-top-style: solid;
+    position: absolute;
+    left: 0;
+    top: -6px;
+}
