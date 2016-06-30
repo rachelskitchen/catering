@@ -578,8 +578,9 @@ define(["backbone"], function(Backbone) {
                 amount = this.get('amount_free'),
                 selected = this.get('amount_free_selected'),
                 needAdd = model.get('selected'),
-                index = selected.indexOf(model),
                 changed = false;
+            var model_selected = selected.find(function(m){ return m.get('id') == model.get('id') }),
+                index = selected.indexOf(model_selected);
 
             // if it is admin_modifier amount_free functionality should be ignored
             if(isAdmin) {
