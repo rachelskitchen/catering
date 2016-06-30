@@ -1,294 +1,180 @@
-#header .checkout .title {
-    position: relative;
-    white-space: nowrap;
-    height: 30px;
-    top: 78px;
-    width: 65%;
-    margin-left: -6px;
-    z-index: 1;
-    text-align: center;
-    font-size: 1.2em;
-    font-weight: bold;
-}
-#content > .checkout label {
-    display: inline-block;
-    width: 300px;
-    background: none;
-    height: 25px;
-    padding: 7px 15px 7px 5px;
-    vertical-align: top;
-    text-align: right;
-}
-#content > .checkout label > span {
-    font-weight: bold;
-}
-#content > .checkout h2 {
-    padding-left: 100px;
-    font-weight: bold;
-}
-.delivery_address {
-    margin: 1em 0;
-}
-#content > .checkout div.row,
-.delivery_address .row {
-    position: relative;
-    height: 39px;
-}
-#content > .checkout div.row.specials {
-    height: 128px;
-}
-#content > .checkout .input_beauty {
-    left: 327px;
-    right: 100px;
+.checkout-page {
     position: absolute;
-    top: 6px;
-    bottom: 6px;
-}
-#content > .checkout .tipBlock {
-    height: 145px;
-}
-#content > .checkout div.select {
-    display: inline-block;
-    width: 210px;
-    position: relative;
-    top: 4px;
-    vertical-align: top;
-    height: 29px;
-}
-.select-row {
-    height: 39px;
-}
-#content > .checkout div.select.shipping {
-    display: inline-block;
-    width: 100%;
-}
-#content > .checkout .shipping-select-wrap {
-   display: inline-block;
-}
-#content > .checkout .shipping-status {
-    display: inline-block;
-    width: 32px;
-    height: 32px;
-    vertical-align: middle;
-    margin-top: 4px;
-    font-size: 8px;
-    position: absolute !important;
     top: 0;
-    right: -40px;
-}
-#content > .checkout div.select_day:last-child {
-    margin-bottom: 10px;
-}
-#content > .checkout div.select_day[disabled="disabled"] {
-    opacity: .5;
-    filter: alpha(opacity=50);
-}
-#content > .checkout input_beauty.firstName,
-#content > .checkout input_beauty.lastName,
-#content > .checkout input[name="city"],
-#content > .checkout input[name="address_line1"],
-#content > .checkout input[name="address_line2"] {
-    text-transform: capitalize;
-}
-
-#content > .checkout .arrival_address {
-    margin-bottom: 20px;
-}
-
-#content > .checkout .arrival_address > ul {
-    padding-left: 325px;
-}
-
-#content > .checkout .arrival_address > ul li {
-    text-overflow: ellipsis;
+    bottom: 0;
+    left: 0;
+    right: 385px;
     overflow: hidden;
 }
 
-#content > .checkout .input_beauty.special {
-    height: 115px;
-}
-
-#content > .checkout {
-    position: relative;
+.checkout-page .steps {
+    display: inline-block;
     width: 100%;
-    height: 100%;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
 }
 
-#content > .checkout .data {
+.checkout-page .step {
+    width: 33%;
+    padding: 12px 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.checkout-page .step-2 {
+    width: 34%;
+}
+
+.checkout-page .view {
+    padding: 15px;
     position: absolute;
-    top: 20px;
-    bottom: 20px;
+    top: 42px;
+    bottom: 60px;
     left: 0;
-    right: -10px;
-    overflow-x: hidden;
+    right: 0;
 }
-#content .checkout .arrow_top {
-    top: 4px;
+
+.checkout-page .view {
+    padding: 15px;
+    position: absolute;
+    top: 42px;
+    bottom: 70px;
     left: 0;
-    right: 7px;
+    right: 0;
+    overflow: auto;
 }
-#content .checkout .arrow_bottom {
+
+.checkout-page .btns {
+    padding: 15px;
+    position: absolute;
     bottom: 0;
     left: 0;
     right: 0;
 }
-/* Pay card / PayPal selection popup */
-#pay_popup {
-    width: 560px;
-}
-#pay_popup h2 {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 40px 0;
-    text-align: center;
-}
-#pay_popup .btn_wrapper {
-    margin: 0 0 40px;
-    min-height: 48px;
-    width: 100%;
-    height: auto;
-}
-#pay_popup .btn {
-    width: 248px;
-    height: auto;
-    border-radius: 25px;
-    margin: 0 auto 20px;
-    line-height: normal;
-    padding-top: 3px;
-    padding-bottom: 3px;
-}
-.btn.paypal {
-    border: none;
-    height: 48px;
-    width: 245px;
-    overflow: hidden;
-    line-height: 1000px;
-    height: 46px !important;
-}
-.btn.paypal:before {
-    display: none;
+
+.checkout-page .label {
+    margin-left: 15px;
+    font-size: 12px;
 }
 
-/* discount css */
-#content > .checkout .row.discountBlock {
-    height: 50px;
-}
-#content > .checkout .row.discountBlock .input_beauty {
-    bottom: 17px;
-}
-#content > .checkout .row.discountBlock .discount-code-btn.applied {
-    cursor: default;
-    text-decoration: none;
+.checkout-page .size1 {
+    width: 300px !important;
 }
 
-#content > .checkout  .discount-label {
-    margin-top: 5px;
+.checkout-page .size2 {
+    width: 140px !important;
 }
 
-#content > .checkout .rewards-card-input.input_beauty,
-#content > .checkout .discount-code-input.input_beauty {
-    right: 220px !important;
+.checkout-page .size3 {
+    width: 200px !important;
 }
 
-#content > .checkout .rewards-card-btn,
-#content > .checkout .discount-code-btn {
-    display: inline-block;
-    max-width: 85%;
-    padding: 0 10px 0 0;
-    text-decoration: underline;
-    cursor: pointer;
+.checkout-page .size4 {
+    width: 87px !important;
 }
 
-#popup h3 {
-    font-size: 24px;
-    font-weight: bold;
-    padding: 20px;
+.checkout-page .input {
+    margin-bottom: 15px;
+    margin-right: 16px;
 }
 
-#content > .checkout .btn-container {
-    width: 210px;
-    position: absolute;
-    top: 0;
-    right: 0;
+.checkout-page .select-wrapper {
+    margin-bottom: 11px;
+    margin-right: 16px;
 }
 
-#content > .checkout .btn-container::before {
-    content: '';
-    display: inline-block;
-    width: 0;
-    height: 39px;
+.checkout-page .inline-block {
     vertical-align: middle;
 }
 
-.stanford-student-status {
-    width: 500px !important;
+.checkout-page .shipping-status {
+    width: 44px;
+    height: 44px;
+    position: relative;
+    font-size: 10px;
 }
 
-.stanford-student-instructions {
-    padding: 0 20px;
+.checkout-page .btn {
+    display: inline-block;
+    min-width: 230px;
+    margin-top: 50px;
+    padding: 12px 15px;
+    font-size: 14px;
 }
 
-.stanford-student-status .btn-popup, .stanford-student-card .btn-popup {
-    margin: 20px;
+.checkout-page .payment-methods-box {
+    padding-bottom: 16px;
 }
 
-.stanford-student-card .btn-popup.disabled {
-    margin: 23px;
+.checkout-page .payment-method {
+    display: inline-block;
+    min-width: 116px;
+    padding: 11px;
+    margin: 15px 16px 15px 0;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    letter-spacing: 2px;
+    cursor: pointer;
 }
 
-.stanford-student-card {
-    width: 500px !important;
-}
-
-.stanford-student-card .row {
-    height: 39px;
+.checkout-page .ctrl-box {
+    margin-right: 12px;
     position: relative;
 }
 
-.stanford-student-card label {
+.checkout-page .ctrl-input {
+    margin-right: 4px;
+    padding-right: 30px;
+}
+
+.checkout-page .cancel::before {
+    display: block;
+    padding: 12px 14px 11px 4px;
+    font-size: 21px;
+}
+
+.checkout-page .stanford-verify {
+    min-width: 90px;
+    margin-top: 0;
+    margin-left: 16px;
+    padding: 12px 15px;
+    font-size: 14px;
+}
+
+.checkout-page .stanford-plans-box {
+    padding-top: 15px;
+}
+
+.cc-box .checkbox-outer {
+    padding-top: 5px;
+    cursor: pointer;
+}
+
+.cc-box .checkbox-outer > * {
+    vertical-align: middle;
+}
+
+.checkout-page .discounts-box .input {
+    margin-bottom: 0;
+}
+
+.checkout-page .discounts-box .cancel::before {
+    padding: 12px 6px 11px 4px;
+}
+
+.checkout-page .discount-code-box,
+.checkout-page .rewards-box {
+    padding-top: 16px;
+}
+
+.checkout-page .btnApply,
+.checkout-page .rewards-card-apply,
+.checkout-page .see-rewards {
     display: inline-block;
-    float: left;
-    width: 200px;
-    text-align: right;
-    line-height: 37px;
-}
-
-.stanford-student-card .input_beauty {
-    left: 220px;
-}
-
-.stanford-student-card .captcha_container {
-    margin-left: 127px;
-    margin-top: 5px;
-}
-
-/* for tablets */
-@media only screen and (max-device-width: 949px) {
-    #content > .checkout label {
-        width: 182px !important;
-    }
-    #content > .checkout label.shipping {
-        text-align: left !important;
-        width: 90% !important;
-    }
-    #content > .checkout .shipping-select-wrap {
-        left: 51px;
-    }
-    #content > .checkout h2 {
-        padding-left: 50px !important;
-    }
-    #content > .checkout div.input_beauty {
-        left: 212px !important;
-        right: 60px !important;
-    }
-    #content > .checkout .arrival_address > ul {
-        padding-left: 213px !important;
-    }
-    #content > .checkout .rewards-card-input.input_beauty,
-    #content > .checkout .discount-code-input.input_beauty {
-        right: 145px !important;
-    }
-    #content > .checkout .btn-container {
-        width: 140px !important;
-    }
+    padding: 10px 15px 10px 0;
+    margin-left: -5px;
+    font-size: 13px;
+    position: relative;
+    top: 3px;
 }

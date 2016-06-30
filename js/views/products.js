@@ -29,12 +29,8 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     App.Views.CoreProductView.CoreProductListItemView = App.Views.ItemView.extend({
         name: 'product',
         mod: 'list_item',
-        initialize: function() {
-            App.Views.ItemView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, 'change:active', this.show_hide);
-            this.show_hide();
-        },
         bindings: {
+            ':el': 'classes: {hide: not(active)}',
             '.product_list_item': "attr:{'data-id':compositeId}"
         },
         render: function() {
@@ -51,20 +47,16 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             return this;
         },
         events: {
-            "click": "showModifiers"
+            'click': 'showModifiers'
+        },
+        onEnterListeners: {
+            ':el': 'showModifiers'
         },
         showModifiers: function(e) {
             e.preventDefault();
             var id_category = this.model.get('id_category'),
                 id = this.model.get('id');
             App.Data.router.navigate("modifiers/" + id_category + "/" + id, true);
-        },
-        show_hide: function() {
-            if (!this.model.get('active')) {
-                this.$el.addClass('hide');
-            } else {
-                this.$el.removeClass('hide');
-            }
         }
     });
 
@@ -166,8 +158,6 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 inputTypeMask(this.$('.gift_card_price'), new RegExp(this.giftCardPriceRegStr), '', 'float');
             }
 
-            if (App.skin == App.Skins.RETAIL)
-                this.$('.img').attr('data-default-index', 2);
             this.loadImage(this.$('.img'));
 
             return this;

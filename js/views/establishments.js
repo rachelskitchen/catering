@@ -51,8 +51,14 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             return this;
         },
         events: {
-            'click button[name=back]': 'back',
-            'click button[name=proceed]': 'proceed'
+            'click .back_btn': 'back',
+            'click .proceed_btn': 'proceed',
+            'click .back-bg': 'back',
+            'click .wnd-wrapper': 'on_wnd_wrapper_click'
+        },
+        onEnterListeners: {
+            '.back_btn': 'back',
+            '.proceed_btn': 'proceed'
         },
         /**
         * The "Go Back" button was clicked.
@@ -105,6 +111,13 @@ define(['backbone', 'factory', 'generator', 'list'], function(Backbone) {
             } else {
                 estNotExist();
             }
+        },
+        /**
+        * Prevent the click event bubbling to the div.establishments dedicated for cancel.
+        */
+        on_wnd_wrapper_click: function(event) {
+            event.stopImmediatePropagation();
+            event.preventDefault();
         }
     });
 

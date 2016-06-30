@@ -1,55 +1,54 @@
 <script type="text/template" id="stanfordcard_main-template">
-    <div class="card_title"> <%= _lp.STANFORDCARD_TITLE %> </div>
-    <div>
-        <label for="stanfordCardNumber"> <span class="bold required clip"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
-        <div class="input_beauty stanford-input">
-            <input type="text" id="stanfordCardNumber" class="number-input">
+    <div class="inline-block">
+        <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+        <div class="ctrl-box">
+            <input type="text" id="stanfordCardNumber" class="number-input input ctrl-input size3">
+            <label class="ctrl-wrapper cancel">
+                <input type="button" class="ctrl cancel-input hide">
+            </label>
         </div>
-        <span class="cancel-input"></span>
     </div>
-    <div class="recaptcha_view stanford"></div>
+    <div class="recaptcha_view inline-block"></div>
+    <div class="btn-submit btn stanford-verify inline-block text-center" tabindex="0"><%= _lp.STANFORD_VERIFY %></div>
 </script>
 
 <script type="text/template" id="stanfordcard_plans-template">
-    <div class="card_title"><%= _lp.STANFORD_PLANS %></div>
+    <div class="card_title header-underline"><%= _lp.STANFORD_SELECT_PLAN %></div>
     <ul class="list"></ul>
 </script>
 
 <script type="text/template" id="stanfordcard_plan-template">
-    <span>
-        <span class="row name"></span>
-        <span class="row row-balance"><%= _lp.STANFORD_BALANCE %> <span class="balance"></span></span>
-    </span>
+    <span class="name optional-text"></span>
+    <span class="balance"></span>
 </script>
 
 <script type="text/template" id="stanfordcard_student-template">
-    <h3><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
+    <h3 class="student-status-question"><%= _lp.STANFORD_STUDENT_QUESTION %></h3>
     <p class="stanford-student-instructions"><%= _lp.STANFORD_STUDENT_INSTRUCTIONS %></p>
-    <div class="btn btn-popup btn-no unselectable" tabindex="0"><span class="clip"><%= _lp.NO %></span></div>
-    <div class="btn btn-popup btn-yes unselectable" tabindex="0"><span class="clip"><%= _lp.YES %></span></div>
 </script>
 
 <script type="text/template" id="stanfordcard_popup-template">
-    <h3><%= _lp.STANFORDCARD_TITLE %></h3>
-    <div class="row">
-        <label for="stanfordCardNumber"> <span class="bold required clip"><%= _lp.GIFTCARD_NUMBER %>:</span> </label>
-        <div class="input_beauty">
-            <input type="text" id="stanfordCardNumber" class="number-input">
-        </div>
-        <span class="cancel-input"></span>
-    </div>
+    <div class="label required optional-text"><%= _lp.STANFORD_CARD_RELOAD_ENTER_NUMBER %></div>
+    <input type="text" class="number-input input">
     <div class="recaptcha_view"></div>
-    <div class="btn btn-popup btn-cancel unselectable" tabindex="0"><span class="clip"><%= _lp.CANCEL %></span></div>
-    <div class="btn btn-popup btn-submit unselectable" tabindex="0"><span class="clip"><%= _lp.CONFIRM_SUBMIT %></span></div>
 </script>
 
 <script type="text/template" id="stanfordcard_reload-template">
-    <div class="row">
-        <label for="stanford-card-number"><%= _lp.STANFORD_CARD_NUMBER %>:</label>
-        <div class="input_beauty">
-            <input id="stanford-card-number" class="number-input ios-safari-caret">
+    <div class="card-box primary-border card-gradient-bg">
+        <div class="logo">
+            <div><%= _settings.business_name %></div>
+            <div><%= _lp.CHECKOUT_STANFORD_CARD %></div>
         </div>
-        <span class="cancel-input"></span>
+        <div class="card-number-box">
+            <div class="card-label optional-text"><%= _lp.STANFORD_CARD_RELOAD_ENTER_NUMBER %></div>
+            <div class="ctrl-box">
+                <input type="text" class="number-input input ctrl-input">
+                <label class="ctrl-wrapper cancel">
+                    <input type="button" class="ctrl cancel-input hide">
+                </label>
+            </div>
+        </div>
     </div>
     <div class="recaptcha_view"></div>
+    <div class="btn-submit btn stanford-verify border-box text-center" tabindex="0"><%= _lp.STANFORD_VERIFY %></div>
 </script>

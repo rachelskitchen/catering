@@ -28,29 +28,18 @@ define(["backbone", "factory"], function() {
     App.Views.CoreSearchLineView.CoreSearchLineMainView = App.Views.FactoryView.extend({
         name: 'search_line',
         mod: 'main',
-        initialize: function() {
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-        },       
-        render: function() {
-            this.$el.html(this.template());
-            this.applyBindings();
-        },
         bindings: {
-            "#search-input": "value:dummyString,valueTimeout:searchString,params:{timeout:1500},events:['input','blur','change']"
+            ':el': 'classes: {collapsed: collapsed}',
+            '.search-input': 'value: dummyString, valueTimeout: searchString, params: {timeout: 1500}, events: ["input", "blur", "change"]'
         },
         events: {
-            "click #delete-btn": "onDelete",
-            "input #search-input": "onInput"
+            'click .cancel-input': 'onCancel'
         },
-        onInput: function() {
-            if (this.$("#search-input").val().length > 0)
-                this.$("#delete-btn").show();
-            else
-                this.$("#delete-btn").hide();
+        onEnterListeners: {
+            '.cancel-input': 'onCancel'
         },
-        onDelete: function() {
-            this.model.set("searchString", "");
-            this.onInput();
+        onCancel: function() {
+            this.model.empty_search_line();
         }
     });
 

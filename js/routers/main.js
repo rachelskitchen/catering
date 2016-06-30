@@ -105,7 +105,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 if (needGoogleMaps)
                     settings.load_geoloc();
 
-                if (this.use_google_captcha)
+                if (this.use_google_captcha && !App.Data.settings.get('isMaintenance'))
                     settings.load_google_captcha();
 
                 // update session history state-object
@@ -300,11 +300,13 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     local_theme = app.get['local_theme'] == "true" ? true : false;
                 if (App.skin != App.Skins.WEBORDER_MOBILE
                     && App.skin != App.Skins.DIRECTORY_MOBILE
-                    && App.skin != App.Skins.WEBORDER) {
+                    && App.skin != App.Skins.WEBORDER
+                    && App.skin != App.Skins.RETAIL) {
                     local_theme = true;
                 }
                 var server_color_schemes = {};
                 server_color_schemes[ App.Skins.WEBORDER ] = 'weborder-desktop-colors';
+                server_color_schemes[ App.Skins.RETAIL ] = 'retail-desktop-colors';
                 server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
                 server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
 
@@ -1978,6 +1980,124 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         beforeUnloadApp: function() {
             App.Data.myorder.savePaymentResponse(this.getUID());
             App.Routers.MobileRouter.prototype.beforeUnloadApp.apply(this, arguments);
+        },
+        paymentsHandlers: function() {
+            var mainModel = App.Data.mainModel,
+                myorder = App.Data.myorder,
+                paymentCanceled = false;
+
+            this.listenTo(myorder, 'cancelPayment', function() {
+                paymentCanceled = true;
+            });
+
+            this.listenTo(myorder, "paymentFailed", function(message) {
+                mainModel.trigger('loadCompleted');
+                message && App.Data.errors.alert(message); // user notification
+            }, this);
+
+            // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithCreditCard', function() {
+                var customer = App.Data.customer,
+                    paymentProcessor = App.Data.settings.get_payment_process(),
+                    doPayWithToken = customer.doPayWithToken();
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                    card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken,
+                    card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
+                }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
+            }, this);
+
+            /* Gift Card */
+            this.initGiftCard();
+
+            // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithGiftCard', function() {
+                var customer = App.Data.customer,
+                    doPayWithGiftCard = customer.doPayWithGiftCard();
+                myorder.check_order({
+                    giftcard: !doPayWithGiftCard,
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true
+                }, function() {
+                    if (customer.isAuthorized() && !doPayWithGiftCard) {
+                        customer.linkGiftCard(App.Data.giftcard).done(function(data) {
+                            if (_.isObject(data) && data.status == 'OK') {
+                                customer.giftCards.ignoreSelected = false;
+                                sendRequest(PAYMENT_TYPE.GIFT);
+                            }
+                        });
+                    } else {
+                        sendRequest(PAYMENT_TYPE.GIFT);
+                    }
+                });
+            }, this);
+
+            /* Cash Card */
+            // invokes when user chooses the 'Cash' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithCash', function() {
+                myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.NO_PAYMENT));
+            }, this);
+
+            /* PayPal */
+            // invokes when user chooses the 'PayPal' payment processor on the #payments screen
+            this.listenTo(App.Data.paymentMethods, 'payWithPayPal', function() {
+                App.Data.myorder.check_order({
+                    order: true,
+                    tip: true,
+                    customer: true,
+                    checkout: true,
+                }, sendRequest.bind(window, PAYMENT_TYPE.PAYPAL));
+            }, this);
+
+            /* Stanford Card */
+            if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
+                // init Stanford Card model if it's turned on
+                App.Data.stanfordCard = new App.Models.StanfordCard();
+
+                // invokes when user chooses the 'Stanford Card' payment processor
+                this.listenTo(App.Data.paymentMethods, 'payWithStanfordCard', function() {
+                    myorder.check_order({
+                        order: true,
+                        tip: true,
+                        customer: true,
+                        checkout: true,
+                    }, sendRequest.bind(window, PAYMENT_TYPE.STANFORD));
+                }, this);
+            }
+
+            function sendRequest(paymentType) {
+                saveAllData();
+                mainModel.trigger('loadStarted');
+                myorder.create_order_and_pay(paymentType);
+                paymentCanceled && mainModel.trigger('loadCompleted');
+                paymentCanceled = false;
+            }
+        },
+        onInitialized: function() {
+            // get a stores list
+            this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this);
+
+            // reset establishments data
+            this.listenToOnce(App.Data.establishments, 'resetEstablishmentData', this.resetEstablishmentData, this);
+
+            // init payments handlers
+            !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
+
+            // listen to navigation control
+            this.navigationControl();
+
+            // run history tracking
+            this.triggerInitializedEvent();
         }
     });
 
