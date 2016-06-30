@@ -299,7 +299,8 @@ define(["backbone", "async"], function(Backbone) {
 
             if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
 
-            this.set('skin', App.skin);
+            this.set('skin', App.skin, {silent: true});
+            this.trigger('change:skin');
             this.trigger('changeSkin');
         },
         /**
@@ -453,6 +454,12 @@ define(["backbone", "async"], function(Backbone) {
                 },
                 load = $.Deferred();
 
+            if (App.Data.selectEstablishmentMode) {
+                self.set({
+                    settings_system: settings_system, // default settings
+                    });
+                return load.resolve();
+            }
             $.ajax({
                 url: self.get("host") + "/weborders/system_settings/",
                 data: {
@@ -730,6 +737,24 @@ define(["backbone", "async"], function(Backbone) {
                         }
                     });
                 });
+        },
+        load_google_captcha: function() {
+            if (!App.Data.dfd_recaptcha_load) {
+                App.Data.dfd_recaptcha_load = $.Deferred();
+            }
+            if (App.Data.dfd_recaptcha_load.state() == 'resolved') {
+                return App.Data.dfd_recaptcha_load;
+            }
+            if (!window.onloadCaptchaLibrary) {
+                window.onloadCaptchaLibrary = function() {
+                    App.Data.dfd_recaptcha_load.resolve();
+                }
+            }
+            require(["https://www.google.com/recaptcha/api.js?render=explicit&onload=onloadCaptchaLibrary&hl=" + App.Data.curLocale], function() {
+                return;
+            });
+
+            return App.Data.dfd_recaptcha_load;
         },
         /**
          * Gets payment processor config for current skin.
