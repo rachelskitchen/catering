@@ -164,9 +164,10 @@ body,
 .input-bg[class],
 .textarea,
 .input,
-.select-wrapper,
-.select-wrapper select {
-  background: #FFFFFF;
+.select-wrapper::after,
+.select-wrapper select,
+.mdf_split::before {
+  background: #F9F9F9;
 }
 /* [input_text] input text color */
 .textarea,

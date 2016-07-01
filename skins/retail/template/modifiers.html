@@ -3,14 +3,14 @@
 </script>
 
 <script type="text/template" id="modifiers_list-template">
-    <select class="modifiers modifiers-list select">
-        <option value="-1" selected="selected"> <%= _lp.MODIFIERS_PLEASE_SELECT %> <%= name %> </option>
+    <select class="modifiers modifiers-list select" tabindex="0">
+        <option value="-1" selected="selected"> <%= _lp.MODIFIERS_PLEASE_SELECT %></option>
     </select>
 </script>
 
 <script type="text/template" id="modifiers_classes_item-template">
-    <div class='modifiers_classes_title'><%= name %></div>
-    <div class="modifier_class_list select-wrapper"></div>
+    <span class="modifiers_classes_title title header-text bold"><%= name %>:</span>
+    <div class="modifier_class_list select-wrapper primary-bg"></div>
 </script>
 
 <script type="text/template" id="modifiers_classes_list-template">

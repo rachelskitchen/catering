@@ -6,38 +6,44 @@
     "color_schemes": ["default", "blue_&_white", "vintage"],
     "routing": {
         "main": {
-            "css": ["main", "myorder", "jquery.contentarrow", "products", "quantity", "categories", "jquery.combobox", "profile"],
-            "model": ["main", "header", "filter", "categories"],
-            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard", "profile", "rewards"],
-            "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "categories", "stanfordcard"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "subcategories", "stanfordcard", "customers", "profile_view", "payments", "giftcard", "rewards", "rewards_view"],
+            "css": ["main", "myorder", "products", "quantity", "categories", "profile", "header", "cart", "stanford"],
+            "model": ["main", "header", "filter", "category_products", "sort_items"],
+            "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "stanfordcard", "profile", "search_line", "rewards"],
+            "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "stanfordcard", "search_line", "profile"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "stanfordcard", "customers", "payments", "giftcard", "rewards", "rewards_view", "categories", "payment_methods"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
-            "css": ["categories", "filters"],
-            "views": ["categories", "filters"],
-            "templates": ["categories", "filters"],
-            "core": ["slider_view"]
+            "css": ["categories", "filters", "sort"],
+            "views": ["products", "sort", "sidebar"],
+            "templates": ["products", "filters", "tree", "sort", "sidebar"],
+            "core": ["tree"]
+        },
+        "modifiers": {
+            "css": ["products", "quantity", "myorder", "card", "modifiers"],
+            "views": ["products", "quantity", "myorder", "stanfordcard", "modifiers"],
+            "templates": ["modifiers", "products", "quantity", "myorder", "stanfordcard"],
+            "core": ["categories", "products", "modifiers"]
         },
         "about": {
-            "views": ["store_info"],
             "templates": ["store_info"],
             "css":  ["store_info"],
-            "core": ["jquery_gallery", "about"],
+            "core": ["jquery_gallery", "about", "store_info_view"],
             "cssCore": ["libs/jquery/jquery.gallery/jquery.gallery"]
         },
         "map": {
-            "views": ["store_info"],
             "templates": ["store_info"],
-            "css":  ["store_info"]
+            "css":  ["store_info"],
+            "core": ["store_info_view"]
         },
         "checkout": {
             "css": ["checkout", "confirm", "card", "rewards"],
-            "views": ["cart", "checkout", "cart", "rewards"],
-            "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard", "rewards"],
-            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "card_view", "giftcard_view", "confirm_view"]
+            "views": ["cart", "checkout", "cart", "rewards", "card"],
+            "templates": ["cart", "checkout", "cart", "confirm", "card", "giftcard", "rewards", "payment_methods"],
+            "core": ["products", "customers", "card", "giftcard", "checkout", "delivery_addresses", "giftcard_view", "confirm_view", "payment_methods_view"]
         },
         "confirm": {
+            "css": ["confirm"],
             "views": [],
             "templates": [],
             "model": [],
@@ -47,8 +53,8 @@
             "core": ["card", "giftcard", "customers"]
         },
         "establishments": {
-            "css": ["establishments"],
-            "templates": ["establishments"]
+            "cssCore": ["establishments"],
+            "templatesCore": ["establishments"]
         }
     }
 }

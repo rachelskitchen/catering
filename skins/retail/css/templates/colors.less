@@ -1,0 +1,249 @@
+/* [regular_text] reqular text */
+body,
+.regular-text[class] {
+    .resolve-color(@regular_text);
+}
+
+/* [alternate_text] primary button text */
+.alternate-text[class],
+.btn,
+.profile-panel-box .profile-item:hover,
+.sort-items .sort-item:hover,
+.sort-items .sort-item.active,
+#popup_ok[id],
+#popup_cancel[id] {
+    .resolve-color(@alternate_text);
+}
+
+/* [header_text] Catedory tree title, filter title */
+.header-text[class] {
+    .resolve-color(@header_text);
+}
+
+/* [optional_text] optional text (additional info), input label */
+.optional-text[class],
+#alert .icon {
+    .resolve-color(@optional_text);
+}
+
+/* [attention_text] attention text */
+.attention-text[class] {
+    .resolve-color(@attention_text);
+}
+
+.attention-bg[class] {
+    .resolve-background(@attention_text);
+}
+
+/* [primary_text] active category, links */
+.primary-text[class],
+.categories-tree .name.active,
+.payment-method.primary-button,
+.payment-method:hover {
+    .resolve-color(@primary_text);
+}
+
+.profile-panel-box .profile-item:hover,
+.sort-items .sort-item:hover,
+.sort-items .sort-item.active {
+    .resolve-background(@primary_text);
+}
+
+/* [primary_button] all primary buttons */
+.btn,
+.checkbox[checked="checked"]::before,
+.radio[checked="checked"]::before,
+.checkbox.checked::before,
+.radio.checked::before,
+#popup_ok[id],
+.about-box .image-point.selected {
+    .resolve-background(@primary_button);
+}
+
+/* [primary_button_highlighted] */
+.btn:active, .btn:focus,
+#popup_ok[id]:active, #popup_ok[id]:focus  {
+    .resolve-background(@primary_button_highlighted);
+}
+
+/* [primary_background] main background ('body' tag) */
+body,
+.primary-bg[class],
+.order-items li,
+.alert_wrapper,
+.order-item .inputbox,
+.weight_edit_inner .weight_edit_input,
+#popup_container[id] {
+    .resolve-background(@primary_background);
+}
+
+/* [primary_border] primary border */
+.primary-border[class],
+.header-underline {
+    .resolve-border-color(@primary_border);
+}
+
+/* [primary_icon] arrows icons */
+.primary-icon[class],
+.modifier_class_list.select-wrapper::after,
+.combobox::after {
+    .resolve-color(@primary_icon);
+}
+
+/* [secondary_border] 'Shopping Cart' bottom line, dotted vertical line at item's image */
+.secondary-border[class],
+.modifier_class_wrapper {
+    .resolve-border-color(@secondary_border);
+}
+
+/* [footer_background] footer background */
+#footer {
+    .resolve-background(@footer_background);
+}
+
+/* [cart_background] cart background */
+#cart {
+    .resolve-background(@cart_background);
+}
+
+/* [category_background] categories tree header, filter header */
+.category-bg,
+.products .no-photo {
+    .resolve-background(@category_background);
+}
+
+/* [shadow_background] background behind popup window */
+.shadow-bg[class],
+#alert,
+#popup_overlay[id] {
+    .resolve-background-alpha(@shadow_background, 60%);
+}
+
+/* [shadow_profile_background] profile shadow  background */
+.shadow-profile-bg {
+    .resolve-background-alpha(@shadow_profile_background, 10%);
+}
+
+/* [popup_background] popup window background */
+.popup-bg[class],
+#popup_container[id] {
+    .resolve-background(@popup_background);
+}
+
+/* [card_background] stanford card plan background, card balance background */
+.card-bg[class],
+.stanford-plans-box .stanford-plan {
+    .resolve-background-alpha(@card_background, 20%);
+}
+
+/* [card_background_gradient] stanford card plan background, card balance background */
+.card-gradient-bg,
+.giftcard-item::before {
+    .resolve-background-alpha(@card_background_gradient, 20%);
+}
+
+/* [cancel_button] cancel button */
+.cancel {
+    .resolve-color(@cancel_button);
+}
+
+/* [input_border] input border color */
+.input-border[class],
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select,
+.selectbox,
+.order-item .inputbox,
+.weight_edit_inner .weight_edit_input {
+    .resolve-border-color(@input_border);
+}
+
+.select-wrapper::after {
+    .resolve-color(@input_border);
+}
+
+/* [input_background] input background */
+.input-bg[class],
+.textarea,
+.input,
+.select-wrapper::after,
+.select-wrapper select {
+    .resolve-background(@input_background);
+}
+
+/* [input_text] input text color */
+.textarea,
+.input,
+.select-wrapper,
+.select-wrapper select,
+.order-item .inputbox,
+.weight_edit_inner .weight_edit_input {
+    .resolve-color(@input_text);
+}
+
+/* [input_highlighted] input text color */
+.textarea:focus,
+.input:focus,
+.select-wrapper:focus,
+.select-wrapper select:focus,
+.order-item .inputbox:focus,
+.weight_edit_inner .weight_edit_input:focus,
+.payment-method.primary-button,
+.payment-method:hover,
+.stanford-plans-box .stanford-plan.active,
+.stanford-plans-box .stanford-plan:hover {
+    box-shadow: 0 0 4px 0 @input_highlighted;
+    .resolve-border-color(@input_highlighted);
+}
+
+/* [secondary_button] */
+.btn-secondary[class],
+#popup_cancel[id] {
+    .resolve-background(@secondary_button);
+}
+
+/* [secondary_button_highlighted] */
+.btn-secondary[class]:active, .btn-secondary[class]:focus,
+#popup_cancel[id]:active, #popup_cancel[id]:focus {
+    .resolve-background(@secondary_button_highlighted);
+}
+
+/* [tab_active] active tab (Menu, About, Map) */
+.menu .menu-item.active, .menu .menu-item:hover {
+    .resolve-color(@tab_active);
+}
+
+.menu .menu-item.active::after {
+    border-top-color: @tab_active;
+}
+
+/* [top_header_text] header text (business_name, search line, user, items in cart) */
+#header .top {
+    .resolve-color(@top_header_text);
+}
+
+/* [top_header_background] top header */
+#header .top {
+    .resolve-background(@top_header_background);
+}
+
+/* [checkout_step_background] checkout step background */
+.checkout-page .step {
+    .resolve-background(@checkout_step_background);
+}
+
+/* [checkout_step_background_active] checkout active step background */
+.checkout-page .step.active {
+    .resolve-background(@checkout_step_background_active);
+}
+
+/* [checkout_step_text] checkout step text */
+.checkout-page .step {
+    .resolve-color(@checkout_step_text);
+}
+
+/* [checkout_step_text] checkout active step text */
+.checkout-page .step.active {
+    .resolve-color(@checkout_step_text_active);
+}

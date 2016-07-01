@@ -1,118 +1,135 @@
 <script type="text/template" id="profile_panel-template">
-    <div class="close"></div>
-    <div class="links fl-right">
-        <div class="login-link link fl-right"><%= _lp.PROFILE_LOG_IN %></div>
-        <div class="signup-link link fl-right"><%= _lp.PROFILE_SIGN_UP_LINK %></div>
-        <div class="logged-as fl-right">asdasdasdasdsss</div>
+    <div class="close shadow-profile-bg"></div>
+    <div class="links">
+        <span class="signup-link link pos-relative" tabindex="0"><%= _lp.PROFILE_SIGN_UP_LINK %></span>
+        <span class="slash">&frasl;</span>
+        <span class="login-link link pos-relative" tabindex="0"><%= _lp.PROFILE_LOG_IN %></span>
+        <span class="logged-as link" tabindex="0"></span>
     </div>
-    <div class="sign-up-box box text-center"></div>
-    <div class="log-in-box box text-center"></div>
-    <div class="menu-items box text-center"></div>
-    <div class="reset-password-box box text-center"></div>
+    <div class="sign-up-box box primary-border primary-bg"></div>
+    <div class="log-in-box box primary-border primary-bg"></div>
+    <div class="menu-items box primary-border primary-bg"></div>
+    <div class="reset-password-box box primary-border primary-bg"></div>
 </script>
 
 <script type="text/template" id="profile_log_in-template">
     <ul class="profile-form">
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" autocorrect="off" autocapitalize="none">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
             <div class="account-inactive field-description attention-text text-left"><%= _lp.PRIFILE_ACCOUNT_INACTIVE %> <span class="resend-activation simlink"><%= _lp.PROFILE_RESEND_ACTIVATION %></span></div>
             <div class="activation-sent field-description attention-text text-left"><%= _lp.PROFILE_ACTIVATION_SENT %></div>
         </li>
-        <li class="required">
-            <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="pwd ios-safari-caret input-colors">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_PASSWORD %></div>
+            <input type="password" class="pwd ios-safari-caret input">
         </li>
     </ul>
-    <div class="forgot-password link primary-text text-center"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
-    <div class="login-btn flat-btn primary-button"><%= _lp.PROFILE_LOG_IN %></div>
-    <div class="profile-separator optional-text">
-        <span><%= _lp.OR %></span>
+    <div class="profile-separator optional-text text-center primary-border">
+        <span class="primary-bg"><%= _lp.OR %></span>
     </div>
-    <div class="flat-btn login-fb-btn"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
+    <div class="btn login-fb-btn text-center"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
+    <div class="forgot-password link text-center primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
+    <div class="btn login-btn text-center"><%= _lp.PROFILE_LOG_IN %></div>
 </script>
 
 <script type="text/template" id="profile_sign_up-template">
     <ul class="profile-form">
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="first-name ios-safari-caret">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_FIRST_NAME %></div>
+            <input type="text" class="first-name ios-safari-caret input">
         </li>
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="last-name ios-safari-caret">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_LAST_NAME %></div>
+            <input type="text" class="last-name ios-safari-caret input">
         </li>
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret" autocorrect="off" autocapitalize="none">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email ios-safari-caret input" autocorrect="off" autocapitalize="none">
         </li>
-        <li class="required">
-            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret">
-            <span class="field-description regular-text text-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_PHONE %></div>
+            <input type="tel" class="phone ios-safari-caret input">
+            <span class="phone-privacy optional-text"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
-        <li class="required">
-            <input type="password" placeholder="<%= _lp.PROFILE_PASSWORD %>" class="password ios-safari-caret">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_PASSWORD %></div>
+            <input type="password" class="password ios-safari-caret input">
         </li>
-        <li class="required">
-            <input type="password" placeholder="<%= _lp.PROFILE_REENTER_PASSWORD %>" class="password-confirm ios-safari-caret">
-            <span class="field-description passwords-mismatch text-left attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
-            <span class="field-description regular-text text-left"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
+        <li class="pos-relative">
+            <div class="label required optional-text"><%= _lp.PROFILE_REENTER_PASSWORD %></div>
+            <input type="password" class="password-confirm ios-safari-caret input">
+            <span class="passwords-mismatch attention-text"><%= _lp.PROFILE_PASSWORDS_MISMATCH %></span>
+            <span class="phone-privacy optional-text"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
         <li class="text-left">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="accept-tou"><i class="input checkbox checkbox-accept-tou"></i> <%= _lp.PROFILE_TOU_ACCEPT %> <span class="read-tou link primary-text">[...]</span>
+            <label class="profile-checkbox text-left regular-text">
+                <input type="checkbox" class="accept-tou">
+                <span class="checkbox-accept-tou checkbox primary-border"></span>
+                <span class="checkbox-text"><%= _lp.PROFILE_TOU_ACCEPT %> <span class="read-tou link primary-text">[...]</span></span>
             </label>
         </li>
         <li class="text-left">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="email-notifications"><i class="input checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+            <label class="profile-checkbox regular-text">
+                <input type="checkbox" class="email-notifications"><i class="checkbox checkbox-email-notifications primary-border"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
             </label>
         </li>
         <li class="text-left">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="push-notifications"><i class="input checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
-                <div class="field-description"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+            <label class="profile-checkbox regular-text">
+                <input type="checkbox" class="push-notifications"><i class="checkbox checkbox-push-notifications primary-border"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <div class="phone-privacy optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
             </label>
         </li>
     </ul>
-    <div class="signup-btn flat-btn primary-button"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
+    <div class="btn signup-btn text-center"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
 </script>
 
 <script type="text/template" id="profile_menu-template">
-    <ul class="profile-items text-left">
-        <li class="profile-link"><%= _lp.PROFILE_EDIT_TITLE %></li>
-        <li class="payments-link"><%= _lp.PAYMENT_METHODS %></li>
-        <li class="logout-link"><%= _lp.PROFILE_LOG_OUT %></li>
+    <ul class="profile-items regular-text">
+        <li class="profile-link profile-item"><%= _lp.PROFILE_EDIT_TITLE %></li>
+        <li class="payments-link profile-item"><%= _lp.PAYMENT_METHODS %></li>
+        <li class="logout-link profile-item"><%= _lp.PROFILE_LOG_OUT %></li>
     </ul>
 </script>
 
 <script type="text/template" id="profile_edit-template">
-    <div class="profile-attention attention-bg"><%= _lp.PROFILE_REGISTRATION_INCOMPLETE %></div>
-    <div class="left-side side text-center border-box fl-left">
-        <h2 class="title"><%= _lp.PROFILE_BASIC_DETAILS %></h2>
-        <div class="basic-details-box"></div>
-        <h2 class="title"><%= _lp.PROFILE_CHANGE_PASSWORD %></h2>
-        <div class="account-password-box"></div>
-        <h2 class="title"><%= _lp.PROFILE_NOTIFICATIONS %></h3>
-        <div class="account-notifications-box"></div>
+    <h2 class="category-title primary-border category-bg"><%= _lp.PROFILE_EDIT_TITLE %></h2>
+    <div class="cols">
+        <div class="profile-attention attention-bg alternate-text"><%= _lp.PROFILE_REGISTRATION_INCOMPLETE %></div>
+        <div class="col-left border-box fl-left">
+            <h3 class="header-underline"><%= _lp.PROFILE_BASIC_DETAILS %></h3>
+            <div class="basic-details-box"></div>
+            <h3 class="header-underline"><%= _lp.PROFILE_CHANGE_PASSWORD %></h3>
+            <div class="account-password-box"></div>
+            <h2 class="header-underline"><%= _lp.PROFILE_NOTIFICATIONS %></h3>
+            <div class="account-notifications-box"></div>
+        </div>
+        <div class="col-right border-box fl-left">
+            <h3 class="header-underline"><%= _lp.PROFILE_ADDRESSES %></h3>
+            <div class="addresses"></div>
+        </div>
     </div>
-    <div class="right-side side text-center border-box">
-        <h2 class="title"><%= _lp.PROFILE_ADDRESSES %></h2>
-        <div class="addresses"></div>
-    </div>
-    <div class="successful-update animation"><%= _lp.PROFILE_UPDATE_SUCCESSFUL %></div>
-    <div class="update-btn flat-btn"><%= _lp.UPDATE %></div>
+    <div class="update-btn btn text-center"><%= _lp.UPDATE %></div>
 </script>
 
 <script type="text/template" id="profile_basic_details-template">
-    <ul class="profile-form text-center">
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_FIRST_NAME %>" class="first-name ios-safari-caret input-colors">
+    <ul>
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_FIRST_NAME %></div>
+            <input type="text" class="first-name input ios-safari-caret">
         </li>
-        <li class="required">
-            <input type="text" placeholder="<%= _lp.PROFILE_LAST_NAME %>" class="last-name ios-safari-caret input-colors">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_LAST_NAME %></div>
+            <input type="text" class="last-name input ios-safari-caret">
         </li>
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" autocorrect="off" autocapitalize="none" disabled>
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email input ios-safari-caret" autocorrect="off" autocapitalize="none">
         </li>
-        <li class="required">
-            <input type="tel" placeholder="<%= _lp.PROFILE_PHONE %>" class="phone ios-safari-caret input-colors">
-            <span class="phone-privacy regular-text fl-left"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_PHONE %></div>
+            <input type="tel" class="phone input ios-safari-caret">
+            <span class="phone-privacy optional-text"><%= _lp.PROFILE_PHONE_PRIVATE %></span>
         </li>
     </ul>
 </script>
@@ -125,55 +142,66 @@
 
 <script type="text/template" id="profile_address-template">
     <div class="address__header">
-        <div class="address__title">
+        <span class="address__title">
             <span class="expand"></span>
-            <span class="address__title-text"></span>
-        </div>
-        <span class="cancel link remove-btn"></span>
+            <span class="address__title-text link primary-text"></span>
+        </span>
+        <span class="cancel link fl-right remove-btn"></span>
     </div>
 
-    <ul class="address__fields profile-form text-center">
+    <ul class="address__fields">
         <li>
-            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE1 %>" class="street_1 ios-safari-caret input-colors">
+            <div class="label optional-text"><%= _lp.PROFILE_ADDRESS_LINE1 %></div>
+            <input type="text" class="street_1 input ios-safari-caret">
         </li>
         <li>
-            <input type="text" placeholder="<%= _lp.PROFILE_ADDRESS_LINE2 %>" class="street_2 ios-safari-caret input-colors">
+            <div class="label optional-text"><%= _lp.PROFILE_ADDRESS_LINE2 %></div>
+            <input type="text" class="street_2 input ios-safari-caret">
         </li>
         <li>
-            <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" class="city ios-safari-caret input-colors">
+            <div class="label optional-text"><%= _lp.PROFILE_CITY %></div>
+            <input type="text" class="city input ios-safari-caret">
         </li>
         <li class="country-row">
-            <div class="select-wrapper input-colors country-wrapper" data-placeholder="<%= _lp.CHOOSE_COUNTRY %>">
+            <div class="label optional-text"><%= _lp.CHOOSE_COUNTRY %></div>
+            <div class="select-wrapper">
                 <select class="country"></select>
             </div>
         </li>
         <li class="state-row">
-            <div class="select-wrapper input-colors state-wrapper" data-placeholder="<%= _lp.CHOOSE_STATE %>">
+            <div class="label optional-text"><%= _lp.CHOOSE_STATE %></div>
+            <div class="select-wrapper">
                 <select class="state"></select>
             </div>
         </li>
         <li class="province-row">
-           <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" class="province ios-safari-caret input-colors">
+            <div class="label optional-text"><%= _lp.PROFILE_PROVINCE %></div>
+            <input type="text" class="province input ios-safari-caret">
+        </li>
+        <li class="zipcode-row">
+            <div class="label optional-text"></div>
+            <input type="text" class="zipcode input ios-safari-caret">
         </li>
         <li>
-            <input type="text" class="zipcode ios-safari-caret input-colors">
-        </li>
-        <li class="default-row">
             <label class="address__default-checkbox profile-checkbox">
-                <input type="checkbox" class="address__default"><i class="input checkbox"></i> <%= _lp.PROFILE_DEFAULT_ADDRESS %>
+                <input type="checkbox" class="address__default">
+                <span class="checkbox primary-border"></span>
+                <span><%= _lp.PROFILE_DEFAULT_ADDRESS %></span>
             </label>
         </li>
     </ul>
 </script>
 
 <script type="text/template" id="profile_account_password-template">
-    <ul class="profile-form text-center">
-        <li class="account-password-field">
-            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_CURRENT_PASSWORD %>" class="current-password ios-safari-caret input-colors">
+    <ul>
+        <li>
+            <div class="label account-password-field optional-text"><%= _lp.PROFILE_ENTER_CURRENT_PASSWORD %></div>
+            <input type="password" class="current-password input ios-safari-caret">
         </li>
-        <li class="account-password-field">
-            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_NEW_PASSWORD %>" class="new-password ios-safari-caret input-colors">
-            <span class="show-password primary-text fade-out-hover"><%= _lp.PROFILE_SHOW_PASSWORD %></span>
+        <li>
+            <div class="label account-password-field optional-text"><%= _lp.PROFILE_ENTER_NEW_PASSWORD %></div>
+            <input type="password" class="new-password input ios-safari-caret">
+            <span class="show-password primary-text link"><%= _lp.PROFILE_SHOW_PASSWORD %></span>
         </li>
     </ul>
 </script>
@@ -181,14 +209,14 @@
 <script type="text/template" id="profile_account_notifications-template">
     <ul class="profile-form text-left">
         <li class="checkbox-item">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="email-notifications"><i class="input checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+            <label class="profile-checkbox ">
+                <input type="checkbox" class="email-notifications"><i class="checkbox checkbox-email-notifications input-border"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
             </label>
         </li>
         <li class="checkbox-item">
             <label class="profile-checkbox">
-                <input type="checkbox" class="push-notifications"><i class="input checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
-                <div class="field-description"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
+                <input type="checkbox" class="push-notifications"><i class="checkbox checkbox-push-notifications input-border"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <div class="phone-privacy optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
             </label>
         </li>
     </ul>
@@ -206,13 +234,14 @@
 </script>
 
 <script type="text/template" id="profile_reset_password-template">
-    <div class="reset-password-info"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
+    <div class="reset-password-info text-center regular-text"><%= _lp.PROFILE_PASSWORD_RESET_INFO %></div>
     <ul class="profile-form">
-        <li class="required">
-            <input type="email" placeholder="<%= _lp.PROFILE_EMAIL_ADDRESS %>" class="email ios-safari-caret input-colors" autocorrect="off" autocapitalize="none">
+        <li>
+            <div class="label required optional-text"><%= _lp.PROFILE_EMAIL_ADDRESS %></div>
+            <input type="email" class="email ios-safari-caret input " autocorrect="off" autocapitalize="none">
         </li>
     </ul>
-    <div class="reset-btn flat-btn"><%= _lp.PROFILE_CHANGE_PASSWORD %></div>
+    <div class="btn reset-btn text-center"><%= _lp.PROFILE_CHANGE_PASSWORD %></div>
 </script>
 
 <script type="text/template" id="profile_payment_selection-template">
@@ -220,41 +249,48 @@
 </script>
 
 <script type="text/template" id="profile_payments_selection-template">
-    <ul class="payments-list"></ul>
+    <div class="label required optional-text"><%= _lp.CHECKOUT_CHOOSE_CARD %></div>
+    <div class="select-wrapper">
+        <select class="payments-list"></select>
+    </div>
 </script>
 
 <script type="text/template" id="profile_payments-template">
-    <div class="left-side side text-center border-box">
-        <h2 class="title"><%= _lp.PROFILE_CREDIT_CARDS %></h2>
-        <div class="payments-box"></div>
+    <h2 class="category-title primary-border category-bg"><%= _lp.PAYMENT_METHODS %></h2>
+    <div class="cols">
+        <div class="col-left border-box fl-left">
+            <h3 class="header-underline"><%= _lp.PROFILE_CREDIT_CARDS %></h3>
+            <div class="payments-box"></div>
+        </div>
+        <div class="col-right border-box fl-left">
+            <h3 class="header-underline"><%= _lp.GIFT_CARDS %></h3>
+            <div class="gift-cards-box"></div>
+            <h3 class="header-underline rewards-title"><%= _lp.REWARD_CARDS %></h3>
+            <div class="reward-cards-box"></div>
+        </div>
     </div>
-    <div class="right-side side text-center border-box">
-        <h2 class="title"><%= _lp.GIFT_CARDS %></h2>
-        <div class="gift-cards-box"></div>
-        <h2 class="title"><%= _lp.REWARD_CARDS %></h2>
-        <div class="reward-cards-box"></div>
-    </div>
-    <div class="successful-update animation clear"><%= _lp.PROFILE_UPDATE_SUCCESSFUL %></div>
-    <div class="update-btn flat-btn"><%= _lp.UPDATE %></div>
+    <div class="update-btn btn text-center"><%= _lp.UPDATE %></div>
 </script>
 
 <script type="text/template" id="profile_payment_edition-template">
     <div class="card-title">
         <span class="card-type"></span> &mdash; ****<span class="card-number"></span>
+        <span class="cancel link fl-right remove-btn"></span>
     </div>
-
-    <div class="remove-btn"></div>
-
-    <ul class="profile-form">
+    <ul class="card-details primary-border card-gradient-bg border-box">
         <li>
-            <input type="text" placeholder="Card Name (First & Last)" class="card-holder" disabled>
+            <div class="label optional-text"><%= _lp.CARD_NAME %></div>
+            <input type="text" class="card-holder input" disabled>
         </li>
         <li>
-            <input type="text" placeholder="Card Number" class="card-num" disabled>
+            <div class="label optional-text"><%= _lp.CARD_NUMBER %></div>
+            <input type="text" class="card-num input" disabled>
         </li>
         <li>
             <label class="profile-checkbox">
-                <input type="checkbox" class="card-default"><i class="input checkbox"></i> <%= _lp.PROFILE_DEFAULT_CARD %>
+                <input type="checkbox" class="card-default">
+                <span class="checkbox primary-border"></span>
+                <span><%= _lp.PROFILE_DEFAULT_CARD %></span>
             </label>
         </li>
     </ul>
@@ -270,29 +306,27 @@
 </script>
 
 <script type="text/template" id="profile_gift_cards_selection-template">
-    <ul class="gift-cards-list"></ul>
+    <div class="label required optional-text"><%= _lp.CHECKOUT_CHOOSE_CARD %></div>
+    <div class="select-wrapper">
+        <select class="gift-cards-list"></select>
+    </div>
 </script>
 
 <script type="text/template" id="profile_gift_card_edition-template">
     <span class="card-number"></span>
     <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
-    <div class="remove-btn"></div>
+    <div class="remove-btn cancel fl-right link"></div>
 </script>
 
 <script type="text/template" id="profile_gift_cards_edition-template">
     <ul class="gift-cards-list"></ul>
-    <div class="add_gift_card_title_wrap">
-        <div class="add_gift_card_title primary-text"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_GIFT_CARD %></div>
-    </div>
-    <div class="profile-form">
-        <div class="new_gift_card"></div>
-    </div>
+    <div class="add_gift_card_title new-card primary-text link"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_GIFT_CARD %></div>
+    <div class="new_gift_card"></div>
 </script>
 
 <script type="text/template" id="profile_giftcard-template">
-    <div>
-        <input type="text" id="cardNumber" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input" value="<%= cardNumber %>" min="0">
-    </div>
+    <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+    <input type="text" id="cardNumber" class="number number-input input" min="0">
     <div class="recaptcha_view"></div>
 </script>
 
@@ -307,34 +341,25 @@
 
 <script type="text/template" id="profile_reward_card_edition-template">
     <span class="card-number"></span>
-    <div class="remove-btn"></div>
+    <div class="remove-btn cancel fl-right link"></div>
 </script>
 
 <script type="text/template" id="profile_reward_cards_edition-template">
-    <div class="reward-cards-list-wrap">
-        <ul class="reward-cards-list"></ul>
-        <div class="add_reward_card_title_wrap">
-            <div class="add_reward_card_title primary-text"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_REWARD_CARD %></div>
-        </div>
-        <div class="profile-form">
-            <div class="new_reward_card"></div>
-        </div>
-    </div>
+    <ul class="reward-cards-list"></ul>
+    <div class="add_reward_card_title new-card primary-text link"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_REWARD_CARD %></div>
+    <div class="new_reward_card"></div>
 </script>
 
 <script type="text/template" id="profile_rewardcard-template">
-    <div>
-        <input type="text" placeholder="<%= _lp.GIFTCARD_NUMBER %>" class="number number-input rewards-input">
-    </div>
+    <div class="label required optional-text"><%= _lp.GIFTCARD_NUMBER %></div>
+    <input type="text" class="number number-input rewards-input input">
     <div class="recaptcha_view"></div>
 </script>
 
 <script type="text/template" id="profile_payment_cvv-template">
     <h2 class="title primary-text"><%= _lp.CVV_REQUIRED %></h2>
-    <span class="cvv-required-info"><%= _lp.CVV_REQUIRED_INFO %></span>
-    <div class="input_beauty">
-        <input type="text" class="cvv ios-safari-caret input-colors">
-    </div>
+    <div class="cvv-required-info text-left"><%= _lp.CVV_REQUIRED_INFO %></div>
+    <input type="text" class="cvv ios-safari-caret input text-left">
 </script>
 
 <script type="text/template" id="profile_terms_of_use-template">

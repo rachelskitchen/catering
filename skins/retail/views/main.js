@@ -43,43 +43,37 @@ define(["done_view", "generator"], function(done_view) {
     var MainMainView = SpinnerView.extend({
         name: 'main',
         mod: 'main',
+        bindings: {
+            '.store_choice': 'toggle: needShowStoreChoice',
+            '#cart': 'classes: {visible: cartModel_visible}'
+        },
         initialize: function() {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
-            this.listenTo(this.model, 'change:popup', this.popup_change, this);
-            this.listenTo(this.model, 'change:profile_panel', this.profile_change, this);
-            this.listenTo(App.Data.search, 'onSearchStart', this.showSpinner.bind(this, EVENT.SEARCH), this);
-            this.listenTo(App.Data.search, 'onSearchComplete', this.hideSpinner.bind(this, EVENT.SEARCH, true), this);
-            this.listenTo(this.model, 'onRoute', this.hide_popup, this);
-            this.listenTo(this.model, 'change:needShowStoreChoice', this.checkBlockStoreChoice, this); // show the "Store Choice" block if a brand have several stores
-            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
 
             this.iOSFeatures();
 
-            this.subViews.length = 3;
+            this.subViews.length = 2;
 
             SpinnerView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
             SpinnerView.prototype.render.apply(this, arguments);
-            this.profile_change();
             this.iPad7Feature();
             this.createSpinner();
 
             return this;
         },
         events: {
-            'click #popup .cancel': 'hide_popup',
-            'click .change_establishment': 'change_establishment',
-            'click .go-to-directory': 'goToDirectory'
+            'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
             var content = this.$('#content'),
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            while (this.subViews.length > 4)
+            while (this.subViews.length > 2)
                 this.subViews.pop().removeFromDOMTree();
 
             if (Array.isArray(data))
@@ -114,53 +108,20 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[1] = App.Views.GeneratorView.create(data.modelName, data, id);
             this.$('#cart').append(this.subViews[1].el);
         },
-        popup_change: function(model, value) {
-            var popup = this.$('.popup'),
-                data, id;
-
-            this.subViews[2] && this.subViews[2].remove();//this.subViews[2].removeFromDOMTree();
-
-            if (typeof value == 'undefined')
-                return popup.removeClass('ui-visible');
-
-            data = _.defaults(this.model.get('popup'), this.popup_defaults());
-
-            $('#popup').addClass("popup-background");
-
-            id = 'popup_' + data.modelName + '_' + data.mod;
-            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data);
-            this.$('#popup').append(this.subViews[2].el);
-
-            value ? popup.addClass('ui-visible') : popup.removeClass('ui-visible');
-        },
-        profile_change: function() {
-            var data = _.defaults(this.model.get('profile_panel'), this.profile_defaults());
-
-            if(!data.modelName) {
-                return;
-            }
-
-            // Don't cache profile view.
-            // It can be used in MainProfile with specific el.
-            this.subViews[3] && this.subViews[3].remove();
-            this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data);
-        },
-        hide_popup: function() {
-            this.model.unset('popup');
-        },
         header_defaults: function() {
             return {
                 model: this.options.headerModel,
                 className: 'header',
                 modelName: 'Header',
-                collection: this.options.categories,
                 mainModel: this.model,
                 cart: this.options.cartCollection,
-                search: this.options.search
+                searchLine: this.options.searchLine,
+                profilePanel: this.model.get('profile_panel')
             };
         },
         cart_defaults: function() {
             return {
+                model: this.options.cartModel,
                 collection: this.options.cartCollection,
                 className: 'cart',
                 modelName: 'Cart'
@@ -171,16 +132,6 @@ define(["done_view", "generator"], function(done_view) {
                 className: 'content'
             };
         },
-        popup_defaults: function() {
-            /*return {
-             className: 'popup'
-             };*/
-        },
-        profile_defaults: function() {
-            return {
-                el: this.$('#profile-panel')
-            };
-        },
         addContent: function(data, removeClass) {
             var id = 'content_' + data.modelName + '_' + data.mod + (data.uniqId || '');
             data = _.defaults(data, this.content_defaults());
@@ -188,21 +139,14 @@ define(["done_view", "generator"], function(done_view) {
             if (removeClass)
                 delete data.className;
 
-            var subView = App.Views.GeneratorView.create(data.modelName, data, id);
-            this.subViews.push(subView); // subViews length always > 4
+            var subView = App.Views.GeneratorView.create(data.modelName, data, data.doNotCache ? undefined : id);
+            this.subViews.push(subView); // subViews length always > 2
 
             return subView.el;
         },
         iOSFeatures: function() {
             if (/iPad|iPod|iPhone/.test(window.navigator.userAgent))
                 document.addEventListener('touchstart', new Function, false); // enable css :active pseudo-class for all elements
-        },
-        /**
-         * Show the "Store Choice" block if a brand have several stores.
-         */
-        checkBlockStoreChoice: function() {
-            var block = this.$('.store_choice');
-            this.model.get('needShowStoreChoice') ? block.css({display: 'inline-block'}) : block.css({display: 'none'});
         },
         /**
          * Show the "Change Establishment" modal window.
@@ -213,46 +157,26 @@ define(["done_view", "generator"], function(done_view) {
                 storeDefined: true
             }); // get a model for the stores list view
             ests.trigger('loadStoresList');
-            this.model.set('isBlurContent', true);
-        },
-        /**
-         * A blur effect of content.
-         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
-         */
-        blurEffect: function() {
-            // http://caniuse.com/#search=filter
-            var mainEl = this.$('.main_el');
-            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
-        },
-        goToDirectory: function() {
-            var goToDirectory = this.model.get('goToDirectory');
-            typeof goToDirectory == 'function' && goToDirectory();
         }
     });
 
     var MainMaintenanceView = App.Views.FactoryView.extend({
         name: 'main',
         mod: 'maintenance',
-        initialize: function() {
-            this.listenTo(this.model, 'change:isBlurContent', this.blurEffect, this); // a blur effect of content
-            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        bindings: {
+            '.store_choice': 'toggle:needShowStoreChoice'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            this.$('.store_choice').css({display: 'inline-block'});
             this.listenToOnce(App.Data.mainModel, 'loadCompleted', App.Data.myorder.check_maintenance);
-            if (!App.Data.router.isNotFirstLaunch) this.$('.back').hide();
         },
         events: {
             'click .reload': 'reload',
-            'keydown .reload': function(e) {
-                if (this.pressedButtonIsEnter(e)) {
-                    this.reload();
-                }
-            },
-            'click .go-to-directory': 'goToDirectory',
             'click .back': 'back',
             'click .change_establishment': 'change_establishment'
+        },
+        onEnterListeners: {
+            ':el': 'reload'
         },
         /**
          * Go to the previous establishment.
@@ -263,10 +187,6 @@ define(["done_view", "generator"], function(done_view) {
         reload: function() {
             window.location.replace(window.location.href.replace(/#.*$/, ''));
         },
-        goToDirectory: function() {
-            var goToDirectory = this.model.get('goToDirectory');
-            typeof goToDirectory == 'function' && goToDirectory();
-        },
         /**
          * Show the "Change Establishment" modal window.
          */
@@ -276,23 +196,88 @@ define(["done_view", "generator"], function(done_view) {
                 storeDefined: true
             }); // get a model for the stores list view
             ests.trigger('loadStoresList');
-            this.model.set('isBlurContent', true);
-        },
-        /**
-         * A blur effect of content.
-         * Blur effect supported on Firefox 35, Google Chrome 18, Safari 6, iOS Safari 6.1, Android browser 4.4, Chrome for Android 39.
-         */
-        blurEffect: function() {
-            // http://caniuse.com/#search=filter
-            var mainEl = this.$('.maintenance');
-            this.model.get('isBlurContent') ? mainEl.addClass('blur') : mainEl.removeClass('blur');
         }
     });
 
     var MainDoneView = App.Views.CoreMainView.CoreMainDoneView.extend({
-        getPickupTime: function() {
-            return {};
-        }
+        bindings: {
+            '.thanks': 'text: insertPlaceholder(_lp_DONE_THANK_YOU, customer_first_name)',
+            '.submitted': 'html: insertPlaceholder(_lp_DONE_ORDER_SUBMITTED, format(boldTmp, _system_settings_business_name))',
+            '.pickup-time': 'classes: {hide: inList(checkout_dining_option, "DINING_OPTION_ONLINE", "DINING_OPTION_SHIPPING")}, html: insertPlaceholder(select(isDelivery, _lp_DONE_ARRIVE_TIME, _lp_DONE_PICKUP_TIME), format(boldTmp, checkout_pickupTime))',
+            '.email-sent-to': 'text: customer_email',
+            '.other-options-line': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_OTHER"))}',
+            '.other-options': 'text: joinOtherDiningOptions($other_options)',
+            '.address-box': 'classes: {hide: equal(checkout_dining_option, "DINING_OPTION_OTHER")}',
+            '.address-label': 'text: addressLabel(checkout_dining_option)',
+            '.contact-person': 'text: select(isDelivery, format("$1 $2", customer_first_name, customer_last_name), _system_settings_business_name)',
+            '.phone': 'toggle: isDelivery, text: customer_phone',
+            '.address-line': 'text: getAddressLine($customer, checkout_dining_option, isDelivery)'
+        },
+        bindingFilters: {
+            insertPlaceholder: function(pattern, value) {
+                return pattern.replace('%s', value);
+            },
+            joinOtherDiningOptions: function(options) {
+                if (options instanceof Backbone.Collection) {
+                    return options.map(function(option) {
+                        option = option.toJSON();
+                        return option.name + ' ' + option.value;
+                    }).join(', ');
+                } else {
+                    return '';
+                }
+            },
+            addressLabel: function(dining_option) {
+                var label = '';
+                switch (dining_option) {
+                    case 'DINING_OPTION_DELIVERY':
+                        label = _loc.CARD_DELIVERY_ADDRESS;
+                        break;
+                    case 'DINING_OPTION_SHIPPING':
+                        label = _loc.CARD_SHIPPING_ADDRESS;
+                        break;
+                    case 'DINING_OPTION_CATERING':
+                        label = _loc.CARD_CATERING_ADDRESS;
+                        break;
+                    default:
+                        label = _loc.DONE_STORE_ADDRESS;
+                }
+                return label;
+            },
+            getAddressLine: function(customer, dining_option, isDelivery) {
+                var address = isDelivery ? customer.get('addresses').getCheckoutAddress() : App.Settings.address,
+                    line = [],
+                    street_1, street_2, zipcode, region;
+
+                if (address) {
+                    street_1 = address.street_1 || address.line_1;
+                    street_2 = address.street_2 || address.line_2;
+                    zipcode = address.zipcode || address.postal_code;
+                    street_1 && line.push(street_1);
+                    street_2 && line.push(street_2);
+                    address.city && line.push(address.city);
+                    region = App.Data.settings.getRegion(address),
+                    (region || zipcode) && line.push((region ? region + ' ' : '') + (zipcode ? zipcode : ''));
+                    address.country && dining_option == 'DINING_OPTION_SHIPPING' && line.push(address.country);
+                }
+
+                return line.join(', ');
+            }
+        },
+        computeds: {
+            isDelivery: {
+                deps: ['checkout_dining_option'],
+                get: function(dining_option) {
+                    return dining_option == 'DINING_OPTION_DELIVERY'
+                        || dining_option == 'DINING_OPTION_SHIPPING'
+                        || dining_option == 'DINING_OPTION_CATERING';
+                }
+            },
+            boldTmp: function() {
+                return '<span class="bold">$1</span>';
+            }
+        },
+        getPickupTime: new Function()
     });
 
     var MainProfileView = App.Views.CoreMainView.CoreMainProfileView.extend({

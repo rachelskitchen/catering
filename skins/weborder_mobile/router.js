@@ -108,9 +108,6 @@ define(["main_router"], function(main_router) {
                 // once the route is initialized need to set profile menu
                 this.listenToOnce(this, 'initialized', this.initProfileMenu.bind(this));
 
-                // init payments handlers
-                !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
-
                 this.listenTo(App.Data.myorder, 'add remove change', function() {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
                 });
@@ -120,18 +117,11 @@ define(["main_router"], function(main_router) {
                 });
 
                 Backbone.$('body').prepend(mainView.el);
-//common
-                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-//common
-                this.listenTo(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
+
                 this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
-//common
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
 
-                this.navigationControl();
-
-                // run history tracking
-                this.triggerInitializedEvent();
+                this.onInitialized();
             });
 
             var checkout = App.Data.myorder.checkout;

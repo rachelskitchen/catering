@@ -56,6 +56,12 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             if (!this.timeout) {
                 console.error("timeout param is not specified for valueTimeout binding");
             }
+            this.clearTimeout = function() {
+                if (this.inputTimeout) {
+                    clearTimeout(this.inputTimeout);
+                    this.inputTimeout = null;
+                }
+            }
         },
         set: function( $element, value) {
             $element.val(value);
@@ -64,14 +70,17 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             if (event.type == 'blur' || event.type == 'change') {
                 return $element.val().trim();
             }
+            this.clearTimeout();
+            this.inputTimeout = setTimeout((function(){
+                $element.trigger("change");
+                this.clearTimeout();
+            }).bind(this), this.timeout);
+            return value;
+        },
+        clean: function() {
             if (this.inputTimeout) {
                 clearTimeout(this.inputTimeout);
             }
-            this.inputTimeout = setTimeout((function(){
-                this.$el.trigger("change");
-                this.inputTimeout = null;
-            }).bind(this), this.timeout);
-            return value;
         }
     });
 
@@ -346,6 +355,46 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         },
         clean: function() {
             this.stopListening();
+        }
+    });
+
+    // Adds new view to bound html element.
+    // `value` is an object that is passed to App.Views.GeneratorView.create(value.name, value, value.viewId).
+    // `value` has special properties:
+    //     `value.name`         [mandatory] - name of view class
+    //     `value.mod`          [mandatory] - name of view class mode
+    //     `value.viewId`       [optional]  - unique id of view (if it exists a new view is cached)
+    //     `value.subViewIndex` [optional]  - index of `subView` which a new view should be inserted to (if another view is occupied this index it is removed)
+    Backbone.Epoxy.binding.addHandler('updateContent', {
+        set: function($el, value) {
+            if (!_.isObject(value) || !value.name || !value.mod) {
+                return;
+            }
+
+            var subViews = this.view.subViews;
+
+            // If binding handler creates new view inherited from EpoxyView it changes objects set that the current EpoxyBinding instance listens to.
+            // This is feature of Epoxy lib implementation.
+            // Just look at how native 'collection' handler removes and restores 'viewMap' variable.
+            //
+            // Need to create new view after the current EpoxyBinding is initialized.
+            setTimeout(function() {
+                var view = App.Views.GeneratorView.create(value.name, value, value.viewId),
+                    removeMethod = value.viewId ? 'removeFromDOMTree' : 'remove',
+                    existingView = subViews[value.subViewIndex];
+
+                // remove view if it exists
+                existingView && existingView[removeMethod]();
+
+                // add new view to `subViews` array
+                if (typeof value.subViewIndex == 'number' && value.subViewIndex > -1) {
+                    subViews[value.subViewIndex] = view;
+                } else {
+                    subViews.push(view);
+                }
+
+                $el.append(view.el);
+            }, 0);
         }
     });
 });

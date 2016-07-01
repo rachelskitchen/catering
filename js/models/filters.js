@@ -215,25 +215,36 @@ define(['backbone'], function() {
             /**
              * Filter name.
              * @type {string}
+             * @default ''
              */
             title: '',
             /**
              * Filter items.
              * @type {App.Collections.FilterItems}
+             * @default null
              */
             filterItems: null,
             /**
              * Compares selected filter item with an item.
              * @type {Function}
-             * @param {*} item - an item of an array that the filter is applied to.
+             * @param {*} item - an item of an array which the filter is applied to.
              * @param {App.Models.FilterItem} filter - selected filter item.
              * @returns {boolean} A result of comparing.
              */
             compare: null,
             /**
              * Type of filter. If it is a `true` then filter items works as radio. Otherwise, user can select multi items.
+             * @type {boolean}
+             * @default false
              */
-            radio: false
+            radio: false,
+            /**
+             * Indicates whether the filter is optional.
+             * If value is `true` then the filter is ignored in case when none item is selected.
+             * @type {boolean}
+             * @default false
+             */
+            optional: false
         },
         /**
          * Converts `filterItems` attribute value to App.Collections.FilterItems instance if it isn't instance of.
@@ -293,10 +304,18 @@ define(['backbone'], function() {
             }
 
             if(selected.length == 0) {
-                result.invalid = items;
-                items.forEach(function(item) {
-                    item.set('filterResult', false);
-                });
+                if (this.get('optional')) {
+                    // the filter is ignored in this case.
+                    result.valid = items;
+                    items.forEach(function(item) {
+                        item.set('filterResult', true);
+                    });
+                } else {
+                    result.invalid = items;
+                    items.forEach(function(item) {
+                        item.set('filterResult', false);
+                    });
+                }
                 return result;
             }
 
@@ -404,16 +423,23 @@ define(['backbone'], function() {
         },
         /**
          * Applies filters when user select/deselect filter item.
-         * If `selected` attribute of filter item changed on `true` need to check invalid items
-         * because a new valid condition is added that affects only invalid items.
-         * If `selected` changed on `false` need to check valid items
-         * because one valid condition is removed that affects only valid items.
+         * `value` is `true`:
+         *     need to check invalid items because a new validation criteria affects only invalid items.
+         * `value` is `true`, `model.attributes.optional` is `true`, `model.getSelected()` returns `1` (optional filter gains first selection):
+         *     need to check valid items because a filter was ignored last filter application.
+         * `valid` is `false`:
+         *     need to check valid items because validation criteria reduction affects only valid items.
+         * `valid` is `false`, `model.attributes.optional` is `true`, `model.getSelected()` returns `0` (optional filter gets ignored):
+         *     need to check invalid items because a filter is ignored and doesn't have to affect items at all.
+         *
+         * @param {App.Models.Filter} model - changed filter
+         * @param {boolean} value - indicates whether filter item is selected
          */
         listenToChanges: function(model, value) {
             if(value === true) {
-                this.applyFilters('invalid');
+                this.applyFilters(model.get('optional') && model.getSelected().length == 1 ? 'valid' : 'invalid');
             } else if(value === false) {
-                this.applyFilters('valid', model.get('radio'));
+                this.applyFilters(model.get('optional') && !model.getSelected().length ? 'invalid' : 'valid', model.get('radio'));
             }
         },
         /**
@@ -440,7 +466,7 @@ define(['backbone'], function() {
             }
 
             for(var ind = 0, length = filters.length; ind < length; ind++) {
-                if(!filters[ind].getSelected().length) {
+                if(!filters[ind].get('optional') && !filters[ind].getSelected().length) {
                     result.valid = [];
                     result.invalid = valid.concat(invalid);
                     result.invalid.forEach(function(item) {

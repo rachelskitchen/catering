@@ -1,178 +1,147 @@
-#modifiers_popup {
-    margin-bottom: 60px;
-    width: 875px;
-    height: 512px;
+.myorder-item-customization {
+    padding: 60px 22px 0;
 }
-#modifiers_popup .info {
-    margin: 18px;
-    border-radius: 18px;
-    border-width: 1px;
-    border-style: solid;
-    position: relative;
-}
-#modifiers_popup .action_button {
+
+.myorder-item-customization .cancel {
     position: absolute;
-    right: 20px;
-    bottom: 10px;
-    cursor: pointer;
-    padding: 0px 15px;
-    margin: -7px 2px 0px 2px;
-    font-size: 22px;
-    border-radius: 19px;
-    border-width: 2px;
-    border-style: solid;
-}
-#modifiers_popup .action_button > span {
-    font-weight: bold;
+    top: 15px;
+    right: 22px;
+    font-size: 26px;
 }
 
-/* stanford reload item block start */
-.stanford-reload-item {
-    min-height: 336px;
-    min-width: 510px;
-    padding: 20px;
-    text-align: left;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    -ms-box-sizing: border-box;
-    box-sizing: border-box;
+.myorder-item-customization .right-side:not(.no-images) {
+    padding-left: 15px;
+    margin-left: 631px;
 }
 
-.stanford-reload-item .name {
-    font-weight: bold;
-    font-size: 24px;
-    padding: 0 !important;
+.myorder-item-customization .attr-line:not(.no-images) {
+    padding-left: 25px;
+    margin-left: 0;
 }
 
-.stanford-reload-item .row {
-    height: 27px;
-    padding: 6px 0;
-}
-
-.stanford-reload-item .btn-popup {
-    max-width: 40%;
-    margin-top: 20px;
-    height: auto;
-}
-
-.stanford-reload-item .btn-popup.validated {
-    margin-top: 107px;
-}
-
-.stanford-reload-item .view {
-    min-height: 236px;
-    padding-bottom: 64px;
-}
-
-.stanford-reload-item .btn.fl-right {
-    margin-right: 40px;
-}
-
-.stanford-reload-item .btn.fl-left {
-    margin-left: 40px;
-}
-
-.stanford-reload-item label {
+.myorder-item-customization .modifier_class_wrapper,
+.myorder-item-customization .quantity_info {
     display: inline-block;
-    width: 170px;
-    text-align: right;
-    padding-right: 5px;
+    margin-top: 12px;
+    margin-right: 18px;
+    padding: 10px 0;
+    border-top-width: 2px;
+    border-top-style: solid;
 }
 
-.stanford-reload-item .input_beauty {
-    display: inline-block;
-    width: 255px;
-    height: 27px;
-    position: relative;
-    top: 0;
-    bottom: 0;
+.myorder-item-customization .modifier_class_wrapper .title,
+.myorder-item-customization .quantity_info .title {
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    vertical-align: middle;
 }
 
-.stanford-reload-item .info {
-    display: inline-block;
-    padding-bottom: 20px;
+.myorder-item-customization .quantity_select,
+.myorder-item-customization .select-wrapper {
+    vertical-align: bottom;
 }
 
-.stanford-reload-item .left-offset::before {
-    content: '';
-    display: inline-block;
-    width: 175px;
+.myorder-item-customization .action_button {
+    padding: 12px 10px;
+    margin-top: 23px;
 }
 
-.stanford-reload-item .captcha_container {
-    margin-left: 157px;
-    margin-top: 4px;
+.order-items .order-item,
+.order-items .service-fee-item,
+.order-items .discount-item {
+    margin: 15px 0;
+    padding: 20px 11px;
 }
 
-.stanford-reload-item .cancel-input {
-    position: static;
+.order-items .order-item {
+    min-height: 80px;
 }
 
-.stanford-reload-item .btn-popup.disabled {
-    top: 3px;
-    right: 3px;
-}
-
-.stanford-reload-item .plans-row {
-    padding: 6px 0;
-}
-
-.stanford-reload-item .label {
-    display: inline-block;
-    width: 150px;
-    padding-right: 10px;
-    text-align: right;
-}
-
-.stanford-reload-item .stanford-plan {
-    margin: 5px 0;
-    padding: 10px;
-    border-width: 1px;
-    border-style: solid;
-    position: relative;
-}
-
-.stanford-reload-item .stanford-plan .name {
-    font-size: 18px;
-    display: block;
-}
-
-.stanford-reload-item .stanford-plan .row {
-    height: auto;
-}
-
-.stanford-reload-item .card_title {
+.order-items .service-fee-item .sub-box {
     display: none;
 }
 
-.stanford-reload-item .plans {
-    margin-top: 15px;
-    min-height: 90px;
-    max-height: 320px;
-    overflow-x: hidden;
-    overflow-y: auto;
-    -webkit-overflow-scrolling: touch; /* set native iOS scrolling */
+.order-items .left-offset {
+    margin-left: 103px;
 }
 
-.stanford-reload-item .stanford-plan.active:after {
+.order-items .image {
+    width: 81px;
+    height: 81px;
+    padding-right: 9px;
+    margin-right: 11px;
+    border-right-width: 2px;
+    border-right-style: dotted;
+}
+
+.order-items .item-sum {
+    padding-left: 5px;
+}
+
+.order-items .name {
+    font-size: inherit;
+}
+
+.order-items .btns,
+.order-items .attrs,
+.order-items .discount_place,
+.order-items .modifier_place,
+.order-items .qty-box {
+    margin-top: 7px;
+}
+
+.confirm .order-items .edit,
+.confirm .order-items .remove {
+    display: none;
+}
+
+.order-items .edit {
+    padding: 5px 8px;
+    border-radius: 2px;
+    font-size: 10px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.order-items .remove {
+    font-size: 12px;
+    text-decoration: underline;
+}
+
+.giftcard-item {
+    position: relative;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 6px;
+    background-size: 26px 26px;
+}
+
+.giftcard-item::before {
     content: '';
-    display: block;
-    width: 30px;
-    height: 30px;
     position: absolute;
-    top: 5px;
-    right: 5px;
-}
-/* stanford reload item block end */
-
-@media only screen and (max-device-width: 949px) {
-    #modifiers_popup {
-        width: 680px !important;
-    }
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 0;
 }
 
-@media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
-    #modifiers_popup {
-        width: 742px !important;
-    }
+.giftcard-item .logo {
+    padding-left: 72px;
+    background-repeat: no-repeat;
+    background-position: 10px 0;
+    background-size: 42px;
+    background-color: transparent;
+    position: relative;
+    z-index: 1;
+}
+
+.giftcard-item .card-number,
+.giftcard-item .btns {
+    margin-top: 30px;
+}
+
+.giftcard-item .remove,
+.giftcard-item .edit {
+    margin-left: 20px;
 }

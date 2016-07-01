@@ -1,0 +1,26 @@
+<script type="text/template" id="payment_methods_main-template">
+    <h3 class="header-underline"><%= _lp.CHECKOUT_PAYMENT_METHODS_LABEL %></h3>
+    <ul class="payment-methods text-left">
+        <% if(credit_card_button) { %>
+        <li class="payment-method payment text-center animation" data-payment="credit_card_button" tabindex="0">
+            <%= _lp.CHECKOUT_PAYMENT_METHOD_CREDIT_CARD %>
+        </li>
+        <% } %>
+        <% if(gift_card) { %>
+        <li class="payment-method payment text-center animation" data-payment="gift_card" tabindex="0">
+            <%= _lp.CHECKOUT_PAYMENT_METHOD_GIFT_CARD %>
+        </li>
+        <% } %>
+        <% if(cash) { %>
+        <li class="payment-method payment cash text-center animation" data-payment="cash" tabindex="0"></li>
+        <% } %>
+        <% if(paypal) { %>
+        <li class="payment-method payment text-center animation" data-payment="paypal" tabindex="0"><%= _lp.PAYPAL %></li>
+        <% } %>
+        <% if(stanford) { %>
+        <li class="payment-method payment text-center animation" data-payment="stanford" tabindex="0">
+            <%= _lp.CHECKOUT_PAYMENT_METHOD_STANFORD_CARD %>
+        </li>
+        <% } %>
+    </ul>
+</script>

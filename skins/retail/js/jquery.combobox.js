@@ -174,7 +174,7 @@
     /** private methods **/
 
     function prepareOption(value, combobox) {
-        var selectOption = $("<li>" + value + "</li>").appendTo(combobox.children("ol"));
+        var selectOption = $("<li tabindex='0'>" + value + "</li>").appendTo(combobox.children("ol"));
         var inputbox = combobox.children("input");
 
         //bind click on this option
