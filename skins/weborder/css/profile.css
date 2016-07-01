@@ -379,6 +379,11 @@
     margin-bottom: 15px;
 }
 
+.profile-edit .address__header {
+    max-width: 300px;
+    width: 100%;
+}
+
 .expand.expanded:before {
     content: '\f147';
     font-family: "FontAwesome";
@@ -390,19 +395,17 @@
 
 .profile-separator {
     position: relative;
-    height: 2px;
-    margin: 10px 34px 25px;
-    background-color: #CCCCCC;
-    font-size: 0;
+    border-top-width: 2px;
+    border-top-style: solid;
+    margin: 16px 34px 10px;
 }
 
 .profile-separator span {
     display: inline-block;
     position: relative;
-    top: -6px;
+    top: -9px;
     padding: 0 14px;
     line-height: 16px;
-    background-color: white;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-size: 13px;
@@ -412,7 +415,26 @@
     border: 0;
     font-weight: normal;
     font-size: 16px;
-    color: #FFFFFF;
+}
+
+.profile-terms-of-use {
+    padding: 30px 30px 15px;
+    line-height: 1.5;
+    font-size: 14px;
+}
+
+.profile-terms-of-use h2 {
+    margin: 0 0 15px;
+    font-size: 21px;
+}
+
+.profile-terms-of-use h3 {
+    margin: 0 0 15px;
+    font-size: 18px;
+}
+
+.profile-terms-of-use p {
+    margin: 0 0 15px;
 }
 
 .profile-terms-of-use {

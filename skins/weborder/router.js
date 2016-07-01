@@ -67,39 +67,31 @@ define(["main_router"], function(main_router) {
             // load main, header, footer necessary files
             this.prepare('main', function() {
                 App.Views.Generator.enableCache = true;
-                // set header, cart, main models
+                // set header, cart, main, categories, search, paymentMethods models
                 App.Data.header = new App.Models.HeaderModel();
-                var mainModel = App.Data.mainModel = new App.Models.MainModel({
-                    acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES
-                });
-                var ests = App.Data.establishments;
                 App.Data.categories = new App.Collections.Categories();
                 App.Data.search = new App.Collections.Search();
                 App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
-                App.Data.paymentMethods.set('acceptableCCTypes', ACCEPTABLE_CREDIT_CARD_TYPES);
-
-                this.listenTo(mainModel, 'change:mod', this.createMainView);
-                this.listenTo(this, 'needLoadEstablishments', this.getEstablishments, this); // get a stores list
-                this.listenToOnce(ests, 'resetEstablishmentData', this.resetEstablishmentData, this);
-
-                mainModel.set({
+                var mainModel = App.Data.mainModel = new App.Models.MainModel({
+                    acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES,
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
-                    model: mainModel,
                     headerModel: App.Data.header,
                     cartCollection: App.Data.myorder,
                     paymentMethods: App.Data.paymentMethods
                 });
-                ests.getModelForView().set('clientName', mainModel.get('clientName'));
 
-                // init payments handlers
-                !App.Data.settings.get('isMaintenance') && this.paymentsHandlers();
+                App.Data.paymentMethods.set('acceptableCCTypes', ACCEPTABLE_CREDIT_CARD_TYPES);
 
-                // listen to navigation control
-                this.navigationControl();
+                mainModel.set('model', mainModel);
 
-                // run history tracking
-                this.triggerInitializedEvent();
+                // set clientName
+                App.Data.establishments.getModelForView().set('clientName', mainModel.get('clientName'));
+
+                // track main UI change
+                this.listenTo(mainModel, 'change:mod', this.createMainView);
+
+                this.onInitialized();
             });
 
             var checkout = App.Data.myorder.checkout;
@@ -115,108 +107,6 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
             // Once the customer is initialized need to set profile panel
             this.initProfilePanel();
-        },
-        paymentsHandlers: function() {
-            var mainModel = App.Data.mainModel,
-                myorder = App.Data.myorder,
-                paymentCanceled = false;
-
-            this.listenTo(myorder, 'cancelPayment', function() {
-                paymentCanceled = true;
-            });
-
-            this.listenTo(myorder, "paymentFailed", function(message) {
-                mainModel.trigger('loadCompleted');
-                message && App.Data.errors.alert(message); // user notification
-            }, this);
-
-            // invokes when user chooses the 'Credit Card' payment processor on the #payments screen
-            this.listenTo(App.Data.paymentMethods, 'payWithCreditCard', function() {
-                var customer = App.Data.customer,
-                    paymentProcessor = App.Data.settings.get_payment_process(),
-                    doPayWithToken = customer.doPayWithToken();
-                myorder.check_order({
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true,
-                    card_billing_address: PaymentProcessor.isBillingAddressCard() && !doPayWithToken,
-                    card: doPayWithToken ? false : paymentProcessor.credit_card_dialog
-                }, sendRequest.bind(window, PAYMENT_TYPE.CREDIT));
-            }, this);
-
-            /* Gift Card */
-            this.initGiftCard();
-
-            // invokes when user chooses the 'Gift Card' payment processor on the #payments screen
-            this.listenTo(App.Data.paymentMethods, 'payWithGiftCard', function() {
-                var customer = App.Data.customer,
-                    doPayWithGiftCard = customer.doPayWithGiftCard();
-                myorder.check_order({
-                    giftcard: !doPayWithGiftCard,
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true
-                }, function() {
-                    if (customer.isAuthorized() && !doPayWithGiftCard) {
-                        customer.linkGiftCard(App.Data.giftcard).done(function(data) {
-                            if (_.isObject(data) && data.status == 'OK') {
-                                customer.giftCards.ignoreSelected = false;
-                                sendRequest(PAYMENT_TYPE.GIFT);
-                            }
-                        });
-                    } else {
-                        sendRequest(PAYMENT_TYPE.GIFT);
-                    }
-                });
-            }, this);
-
-            /* Cash Card */
-            // invokes when user chooses the 'Cash' payment processor on the #payments screen
-            this.listenTo(App.Data.paymentMethods, 'payWithCash', function() {
-                myorder.check_order({
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true,
-                }, sendRequest.bind(window, PAYMENT_TYPE.NO_PAYMENT));
-            }, this);
-
-            /* PayPal */
-            // invokes when user chooses the 'PayPal' payment processor on the #payments screen
-            this.listenTo(App.Data.paymentMethods, 'payWithPayPal', function() {
-                App.Data.myorder.check_order({
-                    order: true,
-                    tip: true,
-                    customer: true,
-                    checkout: true,
-                }, sendRequest.bind(window, PAYMENT_TYPE.PAYPAL));
-            }, this);
-
-            /* Stanford Card */
-            if(_.isObject(App.Settings.payment_processor) && App.Settings.payment_processor.stanford) {
-                // init Stanford Card model if it's turned on
-                App.Data.stanfordCard = new App.Models.StanfordCard();
-
-                // invokes when user chooses the 'Stanford Card' payment processor
-                this.listenTo(App.Data.paymentMethods, 'payWithStanfordCard', function() {
-                    myorder.check_order({
-                        order: true,
-                        tip: true,
-                        customer: true,
-                        checkout: true,
-                    }, sendRequest.bind(window, PAYMENT_TYPE.STANFORD));
-                }, this);
-            }
-
-            function sendRequest(paymentType) {
-                saveAllData();
-                mainModel.trigger('loadStarted');
-                myorder.create_order_and_pay(paymentType);
-                paymentCanceled && mainModel.trigger('loadCompleted');
-                paymentCanceled = false;
-            }
         },
         /**
          * Change page.
@@ -446,13 +336,6 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.myorder.rewardsCard, 'onResetData', function() {
                 App.Data.myorder.get_cart_totals();
             });
-
-            // when user clicks on any category need to hide search input
-            this.listenTo(App.Data.categories, 'show_subcategory', function() {
-                if (App.Data.searchLine) {
-                    App.Data.searchLine.set('collapsed', true);
-                }
-            });
         },
         /**
          * Enable browser history for navigation through categories, subcategories and search screens.
@@ -677,7 +560,7 @@ define(["main_router"], function(main_router) {
         },
         about: function() {
             this.prepare('about', function() {
-                if (!App.Data.AboutModel) {
+                if (!App.Data.aboutModel) {
                     App.Data.aboutModel = new App.Models.AboutModel();
                 }
                 App.Data.header.set('tab_index', 1);
@@ -706,7 +589,7 @@ define(["main_router"], function(main_router) {
                     header: headers.main,
                     content: {
                         modelName: 'StoreInfo',
-                        mod: 'Map',
+                        mod: 'MapWithStores',
                         collection: stores,
                         className: 'store-info map-box'
                     },

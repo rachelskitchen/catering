@@ -1,10 +1,8 @@
 <script type="text/template" id="cart_main-template">
     <h2 class="cart_title text-center secondary-border"> <%= _lp.CART_CART %> </h2>
-    <div class="order-items_wrapper">
-        <div class="order-items"></div>
-    </div>
+    <div class="order-items"></div>
     <% if(_settings.online_orders) { %>
-        <div class="btn text-center" tabindex="0">
+        <div class="btn btn-bottom btn-checkout text-center" tabindex="0">
             <%= _lp.CART_CHECKOUT %>
             <span class="subtotal-subline">&ndash; <span class="subtotal-box"></span></span>
             <span class="hide animate-spin"></span>
@@ -14,9 +12,7 @@
 
 <script type="text/template" id="cart_checkout-template">
     <h2 class="cart_title text-center"> <%= _lp.CART_CART %></h2>
-    <div class="order-items_wrapper">
-        <div class="order-items"></div>
-    </div>
+    <div class="order-items"></div>
     <ul class="total_block primary-bg"></ul>
-    <div class="pay-btn btn text-center" tabindex="0"><%= _lp.CART_PAY %><span class="hide animate-spin"></span></div>
+    <div class="pay-btn btn btn-bottom text-center" tabindex="0"><%= _lp.CART_PAY %><span class="hide animate-spin"></span></div>
 </script>

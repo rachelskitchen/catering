@@ -1,19 +1,13 @@
 <script type="text/template" id="quantity_main-template">
-    <span class="title clip"> <%= _lp.QUANTITY_HOW_MANY %> </span>
-
-    <div class='quantity_select combobox-wrapper l2'>
-        <select>
-        </select>
+    <span class="title header-text"><%= _lp.QUANTITY_TITLE %>:</span>
+    <div class="quantity_select combobox-wrapper inline-block primary-bg">
+        <select tabindex="0"></select>
     </div>
 </script>
 
 <script type="text/template" id="quantity_weight-template">
-    <div class="quantity_weight_wrapper">
-    <span class="title clip"> <%= _lp.QUANTITY_ENTER_WEIGHT %>: </span>
-    <div class='weight_edit'>
-        <div class='weight_edit_inner input_beauty'>
-            <input class="weight_edit_input" value="<%= weight %>">
-        </div>
-    </div>
+    <span class="title header-text"><%= _lp.QUANTITY_WEIGHT %>:</span>
+    <div class="weight_edit_inner inline-block">
+        <input class="weight_edit_input border-box" value="<%= weight %>">
     </div>
 </script>

@@ -39,7 +39,6 @@ body,
     .resolve-background(@attention_text);
 }
 
-
 /* [special_text] special text (modifier price) */
 .special-text[class] {
     .resolve-color(@special_text);
@@ -86,7 +85,6 @@ input[type="radio"]:checked + .radio::before,
 #popup_ok[id]:active, #popup_ok[id]:focus  {
     .resolve-background(@primary_button_highlighted);
 }
-
 
 /* [primary_background] main background ('body' tag) */
 body,
@@ -191,8 +189,9 @@ body,
 .input-bg[class],
 .textarea,
 .input,
-.select-wrapper,
-.select-wrapper select {
+.select-wrapper::after,
+.select-wrapper select,
+.mdf_split::before {
     .resolve-background(@input_background);
 }
 

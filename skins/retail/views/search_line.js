@@ -20,27 +20,23 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["establishments_view"], function() {
+define(["search_line_view"], function(search_line_view) {
     'use strict';
 
-    var EstablishmentsMainView = App.Views.CoreEstablishmentsView.CoreEstablishmentsMainView.extend({
+    var SearchLineView = App.Views.CoreSearchLineView.CoreSearchLineMainView.extend({
         events: {
-            'click .btn[name=back]': 'back',
-            'click .btn[name=proceed]': 'proceed',
-            'click .establishments': 'back',
-            'click .wnd-wrapper': 'on_wnd_wrapper_click'
+            'click .search-label': 'show'
         },
-        /**
-        * Prevent the click event pass to the .establishments div dedicated for cancel.
-        */
-        on_wnd_wrapper_click: function(event) {
-            event.stopImmediatePropagation();
-            event.preventDefault();
+        onEnterListeners: {
+            '.search-label': 'show'
+        },
+        show: function() {
+            this.model.set('collapsed', false);
+            this.$('.search-input').focus();
         }
     });
 
-    return new (require('factory'))(function() {
-        App.Views.EstablishmentsView = {};
-        App.Views.EstablishmentsView.EstablishmentsMainView = EstablishmentsMainView;
+    return new (require('factory'))(search_line_view.initViews.bind(search_line_view), function() {
+        App.Views.SearchLineView.SearchLineMainView = SearchLineView;
     });
 });

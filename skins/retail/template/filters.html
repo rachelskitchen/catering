@@ -1,14 +1,15 @@
-<script type="text/template" id="filter_sort-template">
-    <select class="select">
-        <option value="sort" selected="selected"> <%= _lp.FILTERS_DEFAULT_SORTING %> </option>
-        <option value="created_date|1"> <%= _lp.FILTERS_NEW_ARRIVALS %> </option>
-        <option value="price"> <%= _lp.FILTERS_LOW_TO_HIGH %> </option>
-        <option value="price|1"> <%= _lp.FILTERS_HIGH_TO_LOW %> </option>
-    </select>
+<script type="text/template" id="filter_item-template">
+    <span class="checkbox primary-border"></span>
+    <span class="name"><%= title %></span>
 </script>
 
-<script type="text/template" id="filter_attribute-template">
-    <select class="select">
-        <option value="1" selected="selected"> <%= _lp.FILTERS_SHOW_ALL %> </option>
-    </select>
+<script type="text/template" id="filter_items-template">
+    <h3 class="tree-title category-bg" tabindex="0">
+        <span class="subtree-icon primary-icon fl-right"></span>
+        <span class="break-word header-text bold"><%= title %></span>
+    </h3>
+    <ul class="tree primary-border"></ul>
+</script>
+
+<script type="text/template" id="filter_set-template">
 </script>

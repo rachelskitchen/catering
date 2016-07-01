@@ -1,459 +1,291 @@
-#profile-panel {
-    position: absolute;
+.profile-panel-box {
+    position: relative;
+}
+
+.profile-panel-box .close {
+    position: fixed;
     top: 0;
+    left: 0;
     right: 0;
+    bottom: 0;
     z-index: 200;
 }
 
-#profile-panel.active {
-    left: 0;
-    bottom: 0;
-}
-
-#profile-panel .close {
-    background: rgba(70, 70, 70, .8);
-    width: 100%;
-    height: 100%;
+.profile-panel-box .box {
+    width: 330px;
+    padding-top: 10px;
+    border-width: 1px;
+    border-style: solid;
     position: absolute;
-    top: 0;
-    left: 0;
+    right: 16px;
+    top: 20px;
+    z-index: 200;
 }
 
-#profile-panel .links {
-    position: relative;
-    right: 6px;
-    top: 17px;
-    width: 250px;
-    padding: 4px 15px;
-    border-top-left-radius: 4px;
-    border-top-right-radius: 4px;
-}
-
-#profile-panel .links.logged-links {
+.profile-panel-box .menu-items.box {
     width: auto;
-}
-
-#profile-panel .links > div {
-    display: inline-block;
-    padding: 0 8px;
-    cursor: pointer;
-    font-size: 16px;
-}
-
-#profile-panel .regular-text.link {
-    text-decoration: none;
-    cursor: default;
-}
-
-#profile-panel .signup-link {
-    border-right-width: 1px;
-    border-right-style: solid;
-    text-align: right;
-}
-
-#profile-panel .box {
-    position: absolute;
-    right: 6px;
-    top: 39px;
-    width: 250px;
-    background: #fff;
-    border-bottom-left-radius: 6px;
-    border-bottom-right-radius: 6px;
-    border-top-left-radius: 6px;
-    padding: 15px;
-}
-
-#profile-panel .box.menu-items {
     padding: 0;
 }
 
-#profile-panel .simlink {
-    text-decoration: underline;
+.profile-panel-box .profile-item {
+    margin: 10px 6px;
+    padding: 7px 18px;
+    border-radius: 2px;
+    letter-spacing: 1px;
     cursor: pointer;
+    white-space: nowrap;
 }
 
-#profile-panel .simlink:hover {
-    text-decoration: none;
+.profile-panel-box .slash {
+    padding: 0 3px;
 }
 
-#profile-panel .field-description {
-    display: block;
-    padding: 0px 14px 5px;
-    font-size: 10px;
-}
-
-#profile-panel .passwords-mismatch {
-    position: absolute;
-    bottom: -15px;
-}
-
-#profile-panel .flat-btn {
-    display: inline-block;
-    width: 84%;
-    height: auto;
-    margin-top: 10px;
-    font-size: 14px;
-    padding: 6px 0;
-    line-height: normal;
-}
-
-#profile-panel .login-fb-btn {
-    background: #3b5998;
-    border-color: #3b5998;
-    opacity: 0.89;
-}
-
-#profile-panel .login-fb-btn:hover {
-    opacity: 1;
-    transition: opacity .3s;
-}
-
-#profile-panel .btn.disabled {
-    margin-top: 13px;
-    margin-bottom: 3px;
-}
-
-#profile-panel .forgot-password {
-    margin: 12px 15px 5px;
-    font-size: 14px;
-}
-
-#profile-panel .profile-items li {
-    padding: 15px;
-    border-bottom-color: #ccc;
-    border-bottom-width: 1px;
-    border-bottom-style: solid;
-    cursor: pointer
-}
-
-#profile-panel .profile-items li:not(.disabled):hover,
-#profile-panel .profile-items li:not(.disabled):active  {
-    background-color: rgba(100,100,100,0.15);
-}
-
-#profile-panel .profile-items .logout-link {
-    border-bottom-style: none;
-}
-
-.profile-edit {
-    padding: 15px 0;
-}
-
-.profile-edit .side {
-    width: 50%;
-    min-height: 320px;
-    display: inline-block;
-    vertical-align: top;
-    position: relative;
-    overflow-y: auto;
-    max-height: 560px;
-}
-
-.profile-edit .left-side::after {
-    content: '';
-    display: inline-block;
-    position: absolute;
-    top: 15%;
-    bottom: 15%;
-    right: 0;
-    border-left-width: 1px;
-    border-left-style: solid;
-    border-left-color: #ccc;
-}
-
-.profile-edit .phone-privacy {
-    font-size: 10px;
-    text-align: left;
-    padding-left: 15px;
-}
-
-.profile-edit .profile-form {
-    width: 250px;
-    display: inline-block;
-}
-
-.profile-edit .successful-update {
-    position: relative;
-    margin-bottom: 12px;
-    text-align: center;
-    opacity: 0;
-    clear: both;
-    filter: alpha(opacity=0);
-}
-
-.profile-edit .successful-update.visible {
-    opacity: 1;
-    filter: alpha(opacity=100);
-}
-
-.profile-edit .update-btn {
-    width: auto;
-    min-width: 220px;
-    display: inline-block;
-    font-size: 14px;
-}
-
-.profile-edit .profile-form input {
-    width: 212px;
-}
-
-.profile-edit .profile-form input:disabled {
-    color: #999;
-}
-.profile-edit .gift-cards-box .add_gift_card_title_wrap,
-.profile-edit .reward-cards-box .add_reward_card_title_wrap {
-    display: block;
-    margin: 8px auto 10px auto;
-    width: 300px;
-}
-.profile-edit .gift-cards-box .add_gift_card_title,
-.profile-edit .reward-cards-box .add_reward_card_title {
-    font-size: 14px;
-    margin-left: 15px;
-    text-align: left;
-}
-
-.profile-edit .gift-cards-box .add_gift_card_title .plus_sign,
-.profile-edit .reward-cards-box .add_reward_card_title .plus_sign {
-    width: 12px;
-    display: inline-block;
-}
-
-.profile-edit .gift-cards-box .add_gift_card_title:hover,
-.profile-edit .reward-cards-box .add_reward_card_title:hover {
-    cursor: pointer;
-}
-
-.profile-edit .gift-cards-box input,
-.profile-edit .reward-cards-box input {
-    margin-bottom: 8px;
-}
-
-.profile-edit .gift-cards-box .captcha_container,
-.profile-edit .reward-cards-box .captcha_container {
-    text-align: left;
-}
-
-.profile-edit .gift-cards-box .new_gift_card,
-.profile-edit .reward-cards-box .new_reward_card {
-    text-align: left;
-    margin-bottom: 10px;
-}
-
-.profile-edit .select-wrapper {
-    width: 228px;
-    height: 24px;
-    box-shadow: none;
-    background: transparent;
-}
-
-.profile-edit .title {
-    margin-bottom: 15px;
-    font-size: 16px;
-    text-decoration: underline;
-}
-
-.profile-edit .card-title {
-    margin-bottom: 10px;
-}
-
-.profile-edit .basic-details-box {
-    margin-bottom: 15px;
-}
-
-.profile-edit .remove-btn::after {
-    content: '\f057';
-    font-size: 18px;
-    font-family: "FontAwesome";
-    display: block;
-    width: 1em;
-    position: absolute;
-    top: 50%;
-    right: 0;
-    margin-top: -8px;
-    opacity: 0.5;
-}
-
-.profile-edit .payments-list .remove-btn::after {
-    right: auto;
-    left: 215px;
-    top: 14px;
-}
-
-.profile-edit .profile-checkbox {
-    display: inline-block;
-    position: relative;
-    line-height: 21px;
-    padding-left: 28px;
-    text-align: left;
-}
-
-.profile-edit .profile-checkbox input {
+.profile-panel-box .logged .slash {
     display: none;
 }
 
-.profile-edit .profile-checkbox .input {
-    display: block;
-    position: absolute;
-    left: 0;
-    top: 0;
-    height: 21px;
-    width: 21px;
-    border-radius: 4px;
+.profile-panel-box .signup-link,
+.profile-panel-box .login-link,
+.profile-panel-box .logged-as {
+    font-size: 12px;
+    letter-spacing: 1px;
 }
 
-.profile-edit .checkbox-item .profile-checkbox {
-    line-height: 22px;
-    font-size: 14px;
-}
-
-.profile-edit .checkbox-item .field-description {
-    margin-top: 4px;
-    line-height: normal;
-    font-size: 10px;
-}
-
-.profile-edit .payments-list,
-.profile-edit .gift-cards-list,
-.profile-edit .reward-cards-list {
-    font-size: 14px;
-    width: 300px;
-}
-
-.profile-edit .payments-list {
-    margin: 0;
-    padding: 0;
-}
-
-.profile-edit .payments-list > li,
-.profile-edit .gift-cards-list > li ,
-.profile-edit .reward-cards-list > li{
-    text-align: left;
-}
-
-.profile-form > li {
-    margin-bottom: 10px;
-}
-
-.profile-form .required::before {
-    position: absolute;
-    left: 0px;
-    top: -4px;
-}
-
-.profile-form input {
-    width: 85%;
-    padding: 4px 8px;
-    border-radius: 12px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: #ccc;
-    font-size: 14px;
-}
-
-.profile-form select {
-    font-size: 14px;
-    border-width: 1px;
-    border-style: solid;
-    border-color: transparent;
-}
-
-.profile-form .placeholder::before {
-    padding: 4px 8px;
-    font-size: 14px;
-}
-
-.profile-form .profile-checkbox {
-    font-size: 14px;
-}
-
-.profile-form .profile-checkbox input {
-    width: auto;
-}
-
-#profile-panel .profile-checkbox .field-description {
-    padding: 4px 14px 0;
-}
-
-.profile-form .account-password-field {
+.profile-panel-box .links {
     position: relative;
+    z-index: 201;
 }
 
-.profile-form .show-password {
-    display: block;
-    position: absolute;
-    right: 10px;
-    top: 0;
-    line-height: 26px;
-    padding: 0 8px;
-    font-size: 14px;
-    cursor: pointer;
+.profile-panel-box .links .primary-text,
+.profile-panel-box .links .regular-text {
+    color: inherit;
 }
 
-.reset-password-info {
-    font-size: 14px;
-    padding-bottom: 15px;
-}
-
-.payments-list,
-.gift-cards-list,
-.reward-cards-list {
-    display: inline-block;
-    width: 95%;
-    vertical-align: middle;
-}
-
-.payments-list > li,
-.gift-cards-list > li,
-.reward-cards-list > li {
-    border-color: #fff;
-    border-style: solid;
-    border-width: 1px;
-    margin: 5px 10px;
-    padding: 7px 0;
-    text-align: center;
-    cursor: pointer;
-    position: relative;
-    padding-right: 20px;
-}
-
-.payments-list > li.selected::after,
-.gift-cards-list > li.selected::after,
-.reward-cards-list > li.selected::after {
+.profile-panel-box .signup-link.active::before,
+.profile-panel-box .login-link.active::before {
     content: '';
     display: block;
-    width: 30px;
-    height: 30px;
+    width: 100%;
+    height: 0;
+    border-top-width: 2px;
+    border-top-style: solid;
     position: absolute;
-    top: 5px;
-    right: 5px;
+    top: -5px;
+    left: 0px;
 }
 
-
-.profile-cvv-container {
-    margin-bottom: 25px;
+.profile-panel-box .profile-form {
+    padding: 15px 20px 0;
 }
 
-.profile-cvv-container .title {
-    font-size: 24px;
+.profile-panel-box .label {
+    display: block;
+    font-size: 12px;
+    padding: 0 14px;
+}
+
+.profile-panel-box .input {
     margin-bottom: 15px;
 }
 
-.profile-cvv-container {
-    font-size: 16px;
+.profile-panel-box .passwords-mismatch {
+    position: absolute;
+    bottom: -5px;
+    left: 19px;
+    font-size: 12px;
 }
 
-.profile-cvv-container .input_beauty {
-    width: 200px;
-    margin: 10px auto;
+.profile-panel-box .phone-privacy {
+    display: block;
+    margin-top: -10px;
+    padding: 0 19px 15px;
+    font-size: 12px;
+}
+
+.profile-panel-box .btn {
+    padding: 11px 10px;
+    margin-top: 15px;
+}
+
+.profile-panel-box .forgot-password {
+    padding: 0 20px;
+    font-size: 12px;
+    font-style: italic;
+}
+
+.profile-panel-box .reset-password-info {
+    padding: 0 20px 15px;
+}
+
+.profile-panel-box .logged-as::after {
+    content: '\f0d7';
+    font-family: 'FontAwesome';
+    padding-left: 4px;
+}
+
+.profile-panel-box .profile-checkbox {
+    display: block;
+    padding: 8px 14px 0;
     position: relative;
-    top: initial;
-    bottom: initial;
+    overflow: hidden;
+    font-size: 12px;
+    cursor: pointer;
+}
+
+.profile-panel-box .profile-checkbox .phone-privacy {
+    margin-top: 5px;
+    padding: 0 0 15px 19px;
+}
+
+.profile-panel-box .profile-checkbox .checkbox {
+    position: relative;
+    top: 2px;
+}
+
+.profile-panel-box input[type="checkbox"] {
+    position: absolute;
+    left: -9999px;
+    margin: 0;
+}
+
+.profile-panel-box .login-fb-btn {
+    height: 35px;
+    overflow: hidden;
+    line-height: 36px;
+    margin: 0 24px 40px;
+    padding: 0;
+    border-radius: 2px;
+    background: #3b5998;
+    opacity: 0.89;
+    font-size: 14px;
+}
+
+.profile-edit {
+    width: 100%;
+    height: 100%;
+    position: relative;
+}
+
+.profile-edit .cols {
+    position: absolute;
+    top: 51px;
+    bottom: 50px;
+    left: 0;
+    right: 0;
+    overflow-y: auto;
+}
+
+.profile-edit .col-left {
+    width: 50%;
+    padding: 8px 15px 8px 25px;
+}
+
+.profile-edit .col-right {
+    width: 50%;
+    padding: 8px 25px 8px 15px;
+}
+
+.profile-edit .label {
+    padding: 15px 0 1px 14px;
+    font-size: 13px;
+}
+
+.profile-edit .select-wrapper {
+    max-width: 308px;
+    width: 100%;
+}
+
+.profile-edit .input,
+.profile-edit .card-title,
+.profile-edit .card-details,
+.profile-edit .select-wrapper[class] select,
+.profile-edit .new_gift_card,
+.profile-edit .reward-cards-list,
+.profile-edit .new_reward_card,
+.profile-edit .gift-cards-list {
+    max-width: 300px;
+    width: 100%;
+}
+
+.profile-edit .header-underline {
+    max-width: 320px;
+    width: 100%;
+}
+
+.profile-edit .basic-details-box {
+    margin-bottom: 20px;
+}
+
+.profile-edit .phone-privacy {
+    display: block;
+    padding-left: 19px;
+    font-size: 12px;
+}
+
+.profile-edit .update-btn {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.profile-edit .cancel {
+    font-size: 18px;
+}
+
+.profile-edit .card-title {
+    padding: 13px 0;
+}
+
+.profile-edit .card-details {
+    padding: 0 15px 15px;
+    margin-bottom: 25px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 5px;
+}
+
+.profile-edit .card-details .input {
+    max-width: 292px;
+    width: 96%;
+}
+
+.profile-edit .profile-checkbox {
+    display: block;
+    padding: 5px 14px 0;
+    position: relative;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.profile-edit input[type="checkbox"] {
+    position: absolute;
+    top: -500px;
+}
+
+.profile-edit .checkbox {
+    position: relative;
+    top: 2px;
+}
+
+.profile-edit .new-card {
+    margin-top: 13px;
+}
+
+.profile-edit .captcha_container {
+    padding: 16px 0px 0 3px;
+}
+
+.profile-edit .rewards-title {
+    margin-top: 25px;
+}
+
+.profile-edit .reward-cards-list > li,
+.profile-edit .gift-cards-list > li {
+    margin: 13px 0;
 }
 
 .profile-edit .addresses {
-    width: 240px;
-    margin: 0 auto;
     margin-top: 15px;
 }
 
@@ -462,21 +294,20 @@
     margin-bottom: 15px;
 }
 
-.profile-edit .address__header,
-.profile-edit .address-item .default-row {
-    text-align: left;
-    padding: 0 8px;
+.profile-edit .address__header {
+    max-width: 300px;
+    width: 100%;
 }
 
-.profile-edit .address__header {
-    position: relative;
-    margin-bottom: 1em;
+.profile-edit .checkbox-item {
+    margin: 15px 0;
 }
 
 .expand.expanded:before {
     content: '\f147';
     font-family: "FontAwesome";
 }
+
 .collapsed .expand:before {
     content: '\f196';
     font-family: "FontAwesome";
@@ -484,50 +315,56 @@
 
 .profile-separator {
     position: relative;
-    width: 84%;
-    height: 2px;
-    margin: 20px auto 10px;
-    background-color: #CCCCCC;
-    font-size: 0;
+    border-top-width: 2px;
+    border-top-style: solid;
+    margin: 16px 34px 19px;
 }
 
 .profile-separator span {
     display: inline-block;
     position: relative;
-    top: -6px;
+    top: -9px;
     padding: 0 14px;
     line-height: 16px;
-    background-color: white;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-size: 13px;
-    color: #9B9D9F;
 }
 
 .profile-attention {
-    margin: 0 15px 15px;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 13px 25px;
     font-size: 16px;
-    color: #FFFFFF;
 }
 
 .profile-terms-of-use {
-    padding: 1em 1.75em 1.75em;
+    padding: 30px 30px 15px;
     line-height: 1.5;
     font-size: 14px;
 }
 
 .profile-terms-of-use h2 {
-    margin: 0 0 1em;
+    margin: 0 0 15px;
     font-size: 21px;
 }
 
 .profile-terms-of-use h3 {
-    margin: 0 0 1em;
+    margin: 0 0 15px;
     font-size: 18px;
 }
 
 .profile-terms-of-use p {
-    margin: 0 0 1em;
+    margin: 0 0 15px;
+}
+
+.profile-cvv-container,
+.profile-cvv-container .title {
+    padding: 20px;
+}
+
+.profile-cvv-container .cvv-required-info {
+    padding-left: 20px;
+}
+
+.profile-cvv-container .cvv {
+    width: 300px;
 }
