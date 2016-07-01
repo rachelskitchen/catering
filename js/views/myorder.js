@@ -372,6 +372,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var self = this,
                 modifiers = this.model.get_modifiers();
 
+            modifiers.models.sort(function(model1, model2){ return model1.get('sort') > model2.get('sort') });
             modifiers && modifiers.each(function(modifier) {
                 if(modifier.get('admin_modifier') && (modifier.get('admin_mod_key') == 'SPECIAL' || modifier.get('admin_mod_key') == 'SIZE'))
                     return;
