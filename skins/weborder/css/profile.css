@@ -395,19 +395,17 @@
 
 .profile-separator {
     position: relative;
-    height: 2px;
-    margin: 10px 34px 25px;
-    background-color: #CCCCCC;
-    font-size: 0;
+    border-top-width: 2px;
+    border-top-style: solid;
+    margin: 16px 34px 10px;
 }
 
 .profile-separator span {
     display: inline-block;
     position: relative;
-    top: -6px;
+    top: -9px;
     padding: 0 14px;
     line-height: 16px;
-    background-color: white;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-size: 13px;
@@ -417,7 +415,6 @@
     border: 0;
     font-weight: normal;
     font-size: 16px;
-    color: #FFFFFF;
 }
 
 .profile-terms-of-use {

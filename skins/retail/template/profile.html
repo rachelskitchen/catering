@@ -25,12 +25,12 @@
             <input type="password" class="pwd ios-safari-caret input">
         </li>
     </ul>
-    <div class="forgot-password link text-right primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
-    <div class="btn login-btn text-center"><%= _lp.PROFILE_LOG_IN %></div>
-    <div class="profile-separator optional-text">
-        <span><%= _lp.OR %></span>
+    <div class="profile-separator optional-text text-center primary-border">
+        <span class="primary-bg"><%= _lp.OR %></span>
     </div>
-    <div class="login-fb-btn"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
+    <div class="btn login-fb-btn text-center"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
+    <div class="forgot-password link text-center primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
+    <div class="btn login-btn text-center"><%= _lp.PROFILE_LOG_IN %></div>
 </script>
 
 <script type="text/template" id="profile_sign_up-template">
@@ -63,18 +63,20 @@
             <span class="phone-privacy optional-text"><%= _lp.PROFILE_PASSWORDS_REQUIREMENTS %></span>
         </li>
         <li class="text-left">
-            <label class="profile-checkbox">
-                <input type="checkbox" class="accept-tou"><i class="input checkbox checkbox-accept-tou"></i> <%= _lp.PROFILE_TOU_ACCEPT %> <span class="read-tou link primary-text">[...]</span>
+            <label class="profile-checkbox text-left regular-text">
+                <input type="checkbox" class="accept-tou">
+                <span class="checkbox-accept-tou checkbox primary-border"></span>
+                <span class="checkbox-text"><%= _lp.PROFILE_TOU_ACCEPT %> <span class="read-tou link primary-text">[...]</span></span>
             </label>
         </li>
         <li class="text-left">
             <label class="profile-checkbox regular-text">
-                <input type="checkbox" class="email-notifications"><i class="checkbox checkbox-email-notifications"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
+                <input type="checkbox" class="email-notifications"><i class="checkbox checkbox-email-notifications primary-border"></i> <%= _lp.PROFILE_EMAIL_NOTIFICATIONS %>
             </label>
         </li>
         <li class="text-left">
             <label class="profile-checkbox regular-text">
-                <input type="checkbox" class="push-notifications"><i class="checkbox checkbox-push-notifications"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
+                <input type="checkbox" class="push-notifications"><i class="checkbox checkbox-push-notifications primary-border"></i> <%= _lp.PROFILE_PUSH_NOTIFICATIONS %>
                 <div class="phone-privacy optional-text"><%= _lp.PROFILE_PUSH_NOTIFICATIONS_TEXT %></div>
             </label>
         </li>
@@ -92,8 +94,8 @@
 
 <script type="text/template" id="profile_edit-template">
     <h2 class="category-title primary-border category-bg"><%= _lp.PROFILE_EDIT_TITLE %></h2>
-    <div class="profile-attention attention-bg"><%= _lp.PROFILE_REGISTRATION_INCOMPLETE %></div>
     <div class="cols">
+        <div class="profile-attention attention-bg alternate-text"><%= _lp.PROFILE_REGISTRATION_INCOMPLETE %></div>
         <div class="col-left border-box fl-left">
             <h3 class="header-underline"><%= _lp.PROFILE_BASIC_DETAILS %></h3>
             <div class="basic-details-box"></div>
