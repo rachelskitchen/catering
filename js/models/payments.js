@@ -332,7 +332,13 @@ define(['backbone'], function(Backbone) {
             this.listenTo(this, 'change:selected', this.radioSelection);
             this.listenTo(this, 'change:is_primary', this.checkboxSelection);
             this.listenTo(this, 'add', this.onAddHandler);
+            this.listenTo(this, 'resetModelsAttrs', this.resetModelsAttrs);
             Backbone.Collection.prototype.initialize.apply(this, arguments);
+        },
+        resetModelsAttrs: function() {
+            this.forEach(function(model) {
+                model.resetAttributes();
+            });
         },
         /**
          * When payment is selected, deselects all other payments (radio button behavior).
