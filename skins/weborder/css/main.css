@@ -276,6 +276,10 @@ input[type="radio"]:checked + .radio::before,
     overflow: hidden;
 }
 
+.proceed_btn.start {
+    width: 100%;
+}
+
 .btn,
 #popup_panel[id] > input[type='button'] {
     font-size: 16px;

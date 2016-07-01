@@ -148,6 +148,18 @@
     margin: 0;
 }
 
+.profile-panel-box .login-fb-btn {
+    height: 35px;
+    overflow: hidden;
+    line-height: 36px;
+    margin: 0 24px 40px;
+    padding: 0;
+    border-radius: 2px;
+    background: #3b5998;
+    opacity: 0.89;
+    font-size: 14px;
+}
+
 .profile-edit {
     width: 100%;
     height: 100%;
@@ -303,52 +315,45 @@
 
 .profile-separator {
     position: relative;
-    width: 84%;
-    height: 2px;
-    margin: 20px auto 10px;
-    background-color: #CCCCCC;
-    font-size: 0;
+    border-top-width: 2px;
+    border-top-style: solid;
+    margin: 16px 34px 19px;
 }
 
 .profile-separator span {
     display: inline-block;
     position: relative;
-    top: -6px;
+    top: -9px;
     padding: 0 14px;
     line-height: 16px;
-    background-color: white;
     letter-spacing: 2px;
     text-transform: uppercase;
     font-size: 13px;
-    color: #9B9D9F;
 }
 
 .profile-attention {
-    margin: 0 15px 15px;
-    padding: 15px;
-    border-radius: 8px;
+    padding: 13px 25px;
     font-size: 16px;
-    color: #FFFFFF;
 }
 
 .profile-terms-of-use {
-    padding: 1em 1.75em 1.75em;
+    padding: 30px 30px 15px;
     line-height: 1.5;
     font-size: 14px;
 }
 
 .profile-terms-of-use h2 {
-    margin: 0 0 1em;
+    margin: 0 0 15px;
     font-size: 21px;
 }
 
 .profile-terms-of-use h3 {
-    margin: 0 0 1em;
+    margin: 0 0 15px;
     font-size: 18px;
 }
 
 .profile-terms-of-use p {
-    margin: 0 0 1em;
+    margin: 0 0 15px;
 }
 
 .profile-cvv-container,
