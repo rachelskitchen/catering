@@ -27,6 +27,12 @@ define(["profile_view"], function(profile_view) {
         name: 'profile',
         mod: 'payments_selection',
         initialize: function() {
+            var customer = this.appData.customer;
+
+            this.listenTo(customer, 'updateCheckoutPaymentTokens', function() {
+                this.collection.reset(customer.payments.models);
+            });
+
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
@@ -75,6 +81,15 @@ define(["profile_view"], function(profile_view) {
     var ProfileGiftCardsSelectionView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'gift_cards_selection',
+        initialize: function() {
+            var customer = this.appData.customer;
+
+            this.listenTo(customer, 'updateCheckoutGiftCards', function() {
+                this.collection.reset(customer.giftCards.models);
+            });
+
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
             '.gift-cards-list': 'value: selection, options: options'
         },
@@ -120,6 +135,36 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
+    var ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView.extend({
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.update-btn': 'text: buttonText'
+        },
+        computeds: {
+            buttonText: {
+                deps: ['ui_show_response', '_lp_UPDATE', '_lp_PROFILE_UPDATE_SUCCESSFUL'],
+                get: function(ui_show_response, text_default, text_success) {
+                    var text = text_default,
+                        duration = 2000,
+                        self = this;
+
+                    if (ui_show_response) {
+                        text = text_success;
+
+                        this.buttonTimer && clearTimeout(this.buttonTimer);
+                        this.buttonTimer = setTimeout(function() {
+                            self.options.ui.set('show_response', false);
+                        }, duration);
+                    }
+
+                    return text;
+                }
+            }
+        }
+    });
+
     var ProfileEditView = App.Views.CoreProfileView.CoreProfileEditView.extend({
         bindings: {
             '.update-btn': 'classes: {disabled: updateBtn_disabled}, text: select(ui_show_response, _lp_PROFILE_UPDATE_SUCCESSFUL, _lp_UPDATE)'
@@ -134,6 +179,7 @@ define(["profile_view"], function(profile_view) {
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfileGiftCardsSelectionView = ProfileGiftCardsSelectionView;
+        App.Views.ProfileView.ProfilePaymentsView = ProfilePaymentsView;
         App.Views.ProfileView.ProfileEditView = ProfileEditView;
     });
 });

@@ -679,7 +679,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 customer = this.options.collectionView.options.customer;
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.model.resetAttributes();
 
             this.listenTo(this.model, 'change:is_primary', function(model) {
                 if (model.get('is_primary')) {
