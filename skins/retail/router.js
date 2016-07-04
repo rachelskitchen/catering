@@ -643,6 +643,7 @@ define(["main_router"], function(main_router) {
         },
         modifiers: function(category_id, product_id) {
             var isEditMode = !product_id,
+                isInitialized = this.initialized,
                 order = isEditMode ? App.Data.myorder.at(category_id) : new App.Models.Myorder(),
                 self = this,
                 dfd;
@@ -705,7 +706,7 @@ define(["main_router"], function(main_router) {
                     }
 
                     function cancel() {
-                        window.history.back();
+                        isInitialized ? window.history.back() : App.Data.mainModel.trigger('onMenu');
                     }
 
                     function successfulValidation() {
@@ -853,7 +854,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 var other_dining_options = App.Data.myorder.checkout.get('other_dining_options'),
-                    cartData = carts.checkout;
+                    cartData = carts.confirm;
 
                 if (this.recentOrder) {
                     cartData = _.extend({
