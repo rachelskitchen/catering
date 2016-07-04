@@ -1198,6 +1198,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 mainModel = App.Data.mainModel,
                 self = this;
 
+            preparatoryActions();
+
             if (promises.length) {
                 if (doNotChangeMod) {
                      App.Data.mainModel.set({
@@ -1240,6 +1242,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             return promises;
+
+            function preparatoryActions() {
+                if (customer.payments) {
+                    customer.payments.trigger('resetModelsAttrs');
+                }
+            }
 
             function logout() {
                 self.navigate('index', true);
@@ -1687,6 +1695,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 mainModel = App.Data.mainModel,
                 self=this, content = [];
 
+            preparatoryActions();
+
             content.push({
                 modelName: 'Profile',
                 mod: 'Payments',
@@ -1721,6 +1731,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 content: content,
                 promises: promises
             };
+
+            function preparatoryActions() {
+                if (customer.payments) {
+                    customer.payments.trigger('resetModelsAttrs');
+                }
+            }
 
             function preValidateData(data) {
                 App.Data.header.set('enableLink', data ? data.status == 'OK' : false);

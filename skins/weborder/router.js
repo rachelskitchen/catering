@@ -661,17 +661,18 @@ define(["main_router"], function(main_router) {
         },
         checkout: function() {
             this.prepare('checkout', function() {
-                this.listenTo(App.Data.customer, 'change:access_token', function() {
+                var settings = App.Data.settings.get('settings_system'),
+                    customer = App.Data.customer,
+                    addresses = customer.get('addresses');
+
+                this.listenTo(customer, 'change:access_token', function() {
                     // update shipping address on login/logout
-                    App.Data.customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
+                    customer.get('addresses').changeSelection(App.Data.myorder.checkout.get('dining_option'));
                 });
 
                 if (!App.Data.card) {
                     App.Data.card = new App.Models.Card;
                 }
-
-                var settings = App.Data.settings.get('settings_system'),
-                    addresses = App.Data.customer.get('addresses');
 
                 App.Data.header.set('tab_index', null);
 
@@ -691,7 +692,7 @@ define(["main_router"], function(main_router) {
                         className: 'checkout-order-details',
                         DINING_OPTION_NAME: this.LOC_DINING_OPTION_NAME,
                         timetable: App.Data.timetables,
-                        customer: App.Data.customer,
+                        customer: customer,
                         acceptTips: settings.accept_tips_online,
                         noteAllow:  settings.order_notes_allow,
                         discountAvailable: settings.accept_discount_code,
@@ -706,6 +707,14 @@ define(["main_router"], function(main_router) {
                     }
                 });
 
+                if (customer.payments) {
+                    customer.trigger('updateCheckoutPaymentTokens');
+                }
+
+                if (customer.giftCards) {
+                    customer.trigger('updateCheckoutGiftCards');
+                }
+                
                 this.change_page();
             });
         },
