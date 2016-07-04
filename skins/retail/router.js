@@ -110,6 +110,8 @@ define(["main_router"], function(main_router) {
                 App.Data.productsSets = new App.Collections.ProductsSets();
                 App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
+                App.Data.paymentMethods.set('acceptableCCTypes', ACCEPTABLE_CREDIT_CARD_TYPES);
+
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
                     isDirMode: App.Data.dirMode && !App.Data.isNewWnd,
                     clientName: window.location.origin.match(/\/\/([a-zA-Z0-9-_]*)\.?/)[1],
