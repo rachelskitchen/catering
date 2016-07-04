@@ -1023,7 +1023,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             function force_profile() {
-                if (customer.check()) {
+                if (customer.isLocked()) {
                     profileEdit();
                 }
             }
