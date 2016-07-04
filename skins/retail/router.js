@@ -812,11 +812,21 @@ define(["main_router"], function(main_router) {
 
                 App.Data.cart.set('visible', true);
 
-                if (customer.payments) {
+                var customerPayments = customer.payments,
+                    customerGiftCards = customer.giftCards;
+
+                if (customerPayments) {
+                    customerPayments.trigger('resetModelsAttrs');
+
+                    var primaryPayment = customerPayments.getPrimaryPayment();
+                    if (primaryPayment) {
+                        primaryPayment.setPrimaryAsSelected();
+                    }
+
                     customer.trigger('updateCheckoutPaymentTokens');
                 }
 
-                if (customer.giftCards) {
+                if (customerGiftCards) {
                     customer.trigger('updateCheckoutGiftCards');
                 }
 
