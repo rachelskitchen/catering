@@ -34,7 +34,7 @@ define(["backbone", "factory"], function(Backbone) {
             this.setBinding('product_stock_amount', this.model.get_product().get('stock_amount'));
 
             this.listenTo(this.model, 'change:quantity', this.update, this);
-            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.hide_show);
+            this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.hide_show.bind(this, false));
             this.hide_show();
         },
         bindings: {
@@ -80,7 +80,7 @@ define(["backbone", "factory"], function(Backbone) {
                 if (this.model.get('quantity') > 1) {
                     this.$('.decrease').removeClass('disabled');
                 }
-                if (this.model.get('quanity') < stock_amount) {
+                if (this.model.get('quantity') < stock_amount) {
                     this.$('.increase').removeClass('disabled');
                 }
             }
