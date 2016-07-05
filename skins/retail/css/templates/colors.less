@@ -77,6 +77,16 @@ body,
     .resolve-background(@primary_background);
 }
 
+.checkout-page .step-2::before,
+.checkout-page .step-3::before {
+    border-color: transparent transparent transparent @primary_background;
+}
+
+.checkout-page .step-2.active::before,
+.checkout-page .step-3.active::before {
+    border-left-color: @primary_background;
+}
+
 /* [primary_border] primary border */
 .primary-border[class],
 .header-underline {
@@ -233,9 +243,26 @@ body,
     .resolve-background(@checkout_step_background);
 }
 
+.checkout-page .step-1::after,
+.checkout-page .step-2::after {
+    border-color: transparent transparent transparent @checkout_step_background;
+}
+
 /* [checkout_step_background_active] checkout active step background */
 .checkout-page .step.active {
     .resolve-background(@checkout_step_background_active);
+}
+
+.checkout-page .step-2.active::before,
+.checkout-page .step-3.active::before {
+    border-top-color: @checkout_step_background_active;
+    border-right-color: @checkout_step_background_active;
+    border-bottom-color: @checkout_step_background_active;
+}
+
+.checkout-page .step-1.active::after,
+.checkout-page .step-2.active::after {
+    border-color: transparent transparent transparent @checkout_step_background_active;
 }
 
 /* [checkout_step_text] checkout step text */

@@ -72,3 +72,9 @@
 .main-done[class] .stanford-plan:hover {
     box-shadow: none;
 }
+
+@media only screen and (max-width: 1190px) {
+    .main-done {
+        right: 300px !important;
+    }
+}

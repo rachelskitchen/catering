@@ -12,17 +12,49 @@
     width: 100%;
     border-bottom-width: 1px;
     border-bottom-style: solid;
+    overflow: hidden;
 }
 
 .checkout-page .step {
     width: 33%;
     padding: 12px 0;
+    position: relative;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
 
 .checkout-page .step-2 {
     width: 34%;
+}
+
+.checkout-page .step-2::before,
+.checkout-page .step-3::before,
+.checkout-page .step-1::after,
+.checkout-page .step-2::after {
+    content: '';
+    display: block;
+    border-style: solid;
+    position: absolute;
+    top: 0;
+    z-index: 1;
+}
+
+.checkout-page .step-2::before,
+.checkout-page .step-3::before {
+    border-width: 27px 0 27px 20px;
+    top: -7px;
+    z-index: 0;
+}
+
+.checkout-page .step-2.active::before,
+.checkout-page .step-3.active::before {
+    left: 0;
+}
+
+.checkout-page .step-1::after,
+.checkout-page .step-2::after {
+    border-width: 20px 15px;
+    right: -30px;
 }
 
 .checkout-page .view {
@@ -194,4 +226,10 @@
     font-size: 13px;
     position: relative;
     top: 3px;
+}
+
+@media only screen and (max-width: 1190px) {
+    .checkout-page {
+        right: 300px !important;
+    }
 }
