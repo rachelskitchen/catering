@@ -43,7 +43,8 @@
     margin-right: 0.3em;
 }
 
-.input.checkbox::before {
+.input.checkbox[checked]::before,
+.input.checkbox.checked::before {
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;
