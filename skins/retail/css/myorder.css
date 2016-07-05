@@ -80,6 +80,7 @@
 
 .order-items .name {
     font-size: inherit;
+    word-break: break-word;
 }
 
 .order-items .btns,
