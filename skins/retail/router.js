@@ -864,6 +864,7 @@ define(["main_router"], function(main_router) {
                 }
 
                 App.Views.GeneratorView.cacheRemoveView('Main', 'Done', 'content_Main_Done');
+                App.Views.GeneratorView.cacheRemoveView('Cart', 'Confirmation', 'cart_Cart_Confirmation');
 
                 App.Data.mainModel.set({
                     mod: 'Main',
