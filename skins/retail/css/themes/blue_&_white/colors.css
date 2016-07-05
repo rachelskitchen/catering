@@ -73,6 +73,14 @@ body,
 #popup_container[id] {
   background: #FFFFFF;
 }
+.checkout-page .step-2::before,
+.checkout-page .step-3::before {
+  border-color: transparent transparent transparent #FFFFFF;
+}
+.checkout-page .step-2.active::before,
+.checkout-page .step-3.active::before {
+  border-left-color: #FFFFFF;
+}
 /* [primary_border] primary border */
 .primary-border[class],
 .header-underline {
@@ -218,9 +226,23 @@ body,
 .checkout-page .step {
   background: #F1F1F1;
 }
+.checkout-page .step-1::after,
+.checkout-page .step-2::after {
+  border-color: transparent transparent transparent #F1F1F1;
+}
 /* [checkout_step_background_active] checkout active step background */
 .checkout-page .step.active {
   background: #5F6266;
+}
+.checkout-page .step-2.active::before,
+.checkout-page .step-3.active::before {
+  border-top-color: #5F6266;
+  border-right-color: #5F6266;
+  border-bottom-color: #5F6266;
+}
+.checkout-page .step-1.active::after,
+.checkout-page .step-2.active::after {
+  border-color: transparent transparent transparent #5F6266;
 }
 /* [checkout_step_text] checkout step text */
 .checkout-page .step {
