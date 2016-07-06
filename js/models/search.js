@@ -243,8 +243,12 @@ define(['products'], function() {
          * Performs a search by `searchString` attribute value.
          */
         updateSearch: function() {
+            var searchCollection = this.get('search');
+
             if (this.get('searchString')) {
-                this.get('search').search(this.get('searchString'));
+                searchCollection.search(this.get('searchString'));
+            } else {
+                searchCollection.trigger('onSearchComplete', new Backbone.Model());
             }
         },
         /**
@@ -255,7 +259,7 @@ define(['products'], function() {
                 dummyString: '',
                 collapsed: true
             });
-            this.set('searchString', '', {silent: true});
+            this.set('searchString', '');
         },
         /**
          * @returns {App.Models.Search} Search model.
