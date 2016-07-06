@@ -174,6 +174,7 @@ define(["main_router"], function(main_router) {
             this.listenTo(App.Data.categorySelection, 'change:subCategory', function(model, value) {
                 // don't call this.showProducts() for default value
                 if (value !== model.defaults.subCategory) {
+                    model.set('subCategorySaved', value);
                     this.showProducts(value);
                 }
             });
@@ -181,8 +182,10 @@ define(["main_router"], function(main_router) {
             // 'searchString' event occurs when a search text field is filled out
             this.listenTo(App.Data.searchLine, 'change:searchString', function(model, value) {
                 model = model;
+                var subCategorySaved = App.Data.categorySelection.get('subCategorySaved');
 
                 if (!value) {
+                    subCategorySaved && App.Data.categorySelection.set('subCategory', subCategorySaved, {doNotUpdateState: true});
                     return;
                 }
 
@@ -613,7 +616,6 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             categoriesTree: App.Data.categoriesTree,
                             curProductsSet: App.Data.curProductsSet,
-                            searchLine: App.Data.searchLine,
                             className: 'fl-left'
                         },
                         {
