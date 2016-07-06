@@ -57,6 +57,12 @@ define(['products', 'filters'], function() {
              * @default -1
              */
             parentCategory: -1,
+            /**
+             * Saved sub category
+             * @type {object}
+             * @default null
+             */
+            subCategorySaved: null
         },
         /**
          * @returns {boolean} `true` is `subCategory` or `parentCategory` doesn't have default values.
