@@ -616,7 +616,6 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             categoriesTree: App.Data.categoriesTree,
                             curProductsSet: App.Data.curProductsSet,
-                            searchLine: App.Data.searchLine,
                             className: 'fl-left'
                         },
                         {
