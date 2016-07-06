@@ -49,7 +49,7 @@ define(["backbone", "factory"], function() {
                 });
                 this.subViews.push(view);
             }
-            loadSpinner(this.$('img.logo'));
+            loadSpinner(this.$('img.img'));
         },
         events: {
             'click .menu': onClick('onMenu'),
