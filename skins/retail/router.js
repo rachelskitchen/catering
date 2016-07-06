@@ -175,7 +175,6 @@ define(["main_router"], function(main_router) {
                 // don't call this.showProducts() for default value
                 if (value !== model.defaults.subCategory) {
                     this.showProducts(value);
-                    App.Data.searchLine.empty_search_line();
                 }
             });
 
@@ -614,6 +613,7 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             categoriesTree: App.Data.categoriesTree,
                             curProductsSet: App.Data.curProductsSet,
+                            searchLine: App.Data.searchLine,
                             className: 'fl-left'
                         },
                         {

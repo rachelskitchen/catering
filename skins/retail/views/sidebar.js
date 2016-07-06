@@ -32,13 +32,14 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
         },
         computeds: {
             categories: {
-                deps: ['$categoriesTree'],
-                get: function(categoriesTree) {
+                deps: ['$categoriesTree', '$searchLine'],
+                get: function(categoriesTree, searchLine) {
                     return {
                         name: 'Tree',
                         mod: 'Categories',
                         className: 'categories-tree primary-border',
                         collection: categoriesTree,
+                        searchLine: searchLine,
                         viewId: 0,
                         subViewIndex: 0
                     };
