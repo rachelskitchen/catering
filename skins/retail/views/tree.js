@@ -49,12 +49,19 @@ define(["factory"], function() {
             // otherwise need to update 'selected' attribute
             var attr = this.model.get('items').length ? 'collapsed' : 'selected';
             this.model.set(attr, !this.model.get(attr));
+            this.appData.searchLine.empty_search_line();
         }
     });
 
     var TreeCategoriesView = App.Views.FactoryView.extend({
         name: 'tree',
         mod: 'categories',
+        initialize: function() {
+            var search = this.options.searchLine.get('search');
+            this.listenTo(search, 'onSearchComplete', this.onResetSelection, this);
+            this.listenTo(this.appData.categorySelection, 'change:subCategory', this.onSaveSelection, this);
+            App.Views.ListView.prototype.initialize.apply(this, arguments);
+        },
         itemView: TreeCategoryView,
         bindings: {
             '.tree': 'collection: $collection, itemView: "itemView", toggle: not(ui_collapsed)',
@@ -75,6 +82,19 @@ define(["factory"], function() {
             event.stopPropagation();
             var $ui =  this.getBinding('$ui');
             $ui.set('collapsed', !$ui.get('collapsed'));
+        },
+        onSaveSelection: function(model, value) {
+            if (value !== model.defaults.subCategory) {
+                this.collection.savedSubCategory = value;
+            }
+        },
+        onResetSelection: function() {
+            var searchString = this.options.searchLine.get('searchString'),
+                savedSubCategory = this.collection.savedSubCategory;
+
+            if (!searchString && savedSubCategory) {
+                App.Data.categorySelection.set('subCategory', savedSubCategory, {doNotUpdateState: true});
+            }
         }
     });
 
