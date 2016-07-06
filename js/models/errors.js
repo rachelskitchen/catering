@@ -141,7 +141,7 @@ define(['backbone'], function(Backbone) {
             if (options instanceof Object) this.set(options);
             var dView = (App.skin == App.Skins.WEBORDER || App.skin == App.Skins.RETAIL || (App.skin == App.Skins.WEBORDER_MOBILE && this.get('isConfirm'))) ?
                 (defaultView === undefined) ? false : !!defaultView :
-                defaultView;
+                (App.skin == App.Skins.WEBORDER_MOBILE) ? true : defaultView;
             this.set({
                 message: message && message.toString() || this.defaults.message,
                 reloadPage: !!reloadPage || false,
