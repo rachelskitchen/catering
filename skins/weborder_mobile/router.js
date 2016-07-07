@@ -78,6 +78,7 @@ define(["main_router"], function(main_router) {
             "my_promotions": "promotions_my",
             "promotion/:id_promotion": "promotion_details",
             "profile_payments": "profile_payments",
+            "establishment": "establishment",
             "*other": "index"
         },
         hashForGoogleMaps: ['location', 'map', 'checkout'],//for #index we start preload api after main screen reached
@@ -112,11 +113,11 @@ define(["main_router"], function(main_router) {
                     App.Data.header.set('cartItemsQuantity', App.Data.myorder.get_only_product_quantity());
                 });
 
-                var mainView = new App.Views.MainView.MainMainView({
+                this.mainView = new App.Views.MainView.MainMainView({
                     model: mainModel
                 });
 
-                Backbone.$('body').prepend(mainView.el);
+                Backbone.$('body').prepend(this.mainView.el);
 
                 this.listenTo(ests, 'resetEstablishmentData', mainModel.trigger.bind(mainModel, 'showSpinnerAndHideContent'), this);
                 this.listenTo(ests, 'clickButtonBack', mainModel.set.bind(mainModel, 'isBlurContent', false), this);
@@ -2193,7 +2194,17 @@ define(["main_router"], function(main_router) {
             });
 
             return true;
-        }
+        },
+        establishment: function() {
+            App.Data.establishments.trigger('loadStoresList');
+        },
+        /**
+        * Remove HTML and CSS of current establishment in case if establishment ID will change.
+        */
+        removeHTMLandCSS: function() {
+            App.Routers.RevelOrderingRouter.prototype.removeHTMLandCSS.apply(this, arguments);
+            this.mainView && this.mainView.remove();
+        },
     });
 
 
