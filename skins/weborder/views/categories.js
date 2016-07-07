@@ -56,11 +56,11 @@ define(["generator", "list"], function() {
             }
         },
         uncheck: function(value) {
-            if(this.collection.parent_selected != this.model.get('parent_name')) {
+            if (this.collection.parent_selected != this.model.get('parent_name')) {
                 this.$('input').prop('checked', false);
             }
             else {
-                this.$('input').prop('checked', true);
+                this.$('input').prop('checked', true).parents('label').addClass('checked');
 
                 if (!this.collection.saved_parent_selected) {
                     this.$('input').trigger('change');
