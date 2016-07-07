@@ -765,7 +765,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             ests && ests.trigger('hideEstsView');
             App.Data.errors.trigger('hideAlertMessage');
 
-            if(data && ests) {
+            if(_.isObject(data) && ests && data.establishment > 0) {
                 ests.trigger('changeEstablishment', data.establishment, true); // 3rd parameter is flag of restoring
             }
             return data;
@@ -1956,10 +1956,10 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 // Need to redirect on #login screen if the app starts with #index or without hash
                 if (!App.Data.customer.isAuthorized() && App.Data.settings.isMobileVersion()
                     && ['', '#index'].indexOf(location.hash) > -1) {
-                    window.location.hash = '#login';
+                    this.updateState(true, '#login');
                 }
                 if (App.Data.selectEstablishmentMode) {
-                    window.location.hash = '#establishment';
+                    this.updateState(true, '#establishment');
                 }
                 // emit 'initialized' event
                 this.trigger('initialized');

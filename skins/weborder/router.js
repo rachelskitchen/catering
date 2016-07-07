@@ -670,7 +670,7 @@ define(["main_router"], function(main_router) {
                 if (customerGiftCards) {
                     customer.trigger('updateCheckoutGiftCards');
                 }
-                
+
                 this.change_page();
 
                 this.preparePromotions();
