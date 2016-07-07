@@ -50,6 +50,7 @@ define(["main_router"], function(main_router) {
             "profile_edit": "profile_edit",
             "profile_payments": "profile_payments",
             "maintenance": "maintenance",
+            "establishment": "establishment",
             "*other": "index"
         },
         hashForGoogleMaps: ['map', 'checkout'],//for #index we start preload api after main screen reached
@@ -545,7 +546,7 @@ define(["main_router"], function(main_router) {
         getState: function() {
             var categorySelection = App.Data.categorySelection,
                 searchLine = App.Data.searchLine,
-                sortItem = App.Data.sortItems.getCheckedItem(),
+                sortItem = App.Data.sortItems && App.Data.sortItems.getCheckedItem(),
                 data = {},
                 hash = location.hash;
 
@@ -1118,6 +1119,9 @@ define(["main_router"], function(main_router) {
             ];
 
             App.Data.sortItems = new App.Collections.SortItems(sortItems);
+        },
+        establishment: function() {
+            App.Data.establishments.trigger('loadStoresList');
         }
     });
 
