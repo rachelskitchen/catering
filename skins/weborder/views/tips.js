@@ -31,7 +31,7 @@ define(["tips_view"], function(tips_view) {
             '.ctrl': 'reset: tipValue, events: ["click"]',
             '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"], restrictInput: "0123456789.", kbdSwitcher: "float"',
             '.percents': 'value: percentAmount, options: _percents',
-            '.types': 'value: typeValue, options: [{label: _lp_TIPS_NONE, value: "0"}, {label: _lp_TIPS_CREDIT, value: "1"}]',
+            '.types': 'value: typeValue, options: typeOptions',
             '.tip-amount-box': 'attr: {"data-currency": _system_settings_currency_symbol}, classes: {disabled: not(type)}',
             '.percents-box': 'classes: {disabled: not(type)}'
         },
@@ -110,14 +110,34 @@ define(["tips_view"], function(tips_view) {
                 }
             },
             typeValue: {
-                deps: ['type'],
-                get: function(type) {
-                    return Number(this.model.get('type'));
+                deps: ['type', 'paymentMethods_selected'],
+                get: function(type, pm) {
+                    return (pm == 'credit_card_button' || pm == 'gift_card') ? Number(this.model.get('type')) : 0;
                 },
                 set: function(value) {
                     value = Boolean(Number(value));
                     this.model.set('type', value);
                     return value;
+                }
+            },
+            typeOptions: {
+                deps: ['paymentMethods_selected', '_lp_TIPS_NONE', '_lp_TIPS_CREDIT', '_lp_TIPS_GIFT'],
+                get: function(pm, label_none, label_cc, label_gc) {
+                    var data = [];
+                    data.push({
+                        label: label_none,
+                        value: 0
+                    });
+
+                    var label_cards = (pm == 'credit_card_button') ? label_cc : (pm == 'gift_card') ? label_gc : null;
+                    if (label_cards) {
+                        data.push({
+                            label: label_cards,
+                            value: 1
+                        });
+                    }
+
+                    return data;
                 }
             }
         },
