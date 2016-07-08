@@ -39,15 +39,21 @@ define(["checkout_view"], function(checkout_view) {
         name: 'checkout',
         mod: 'page',
         bindings: {
+            '.payment-methods-container': 'classes: {hide: not(hasGrandTotal(total_grandTotal))}',
             '.order-notes': 'toggle: _system_settings_order_notes_allow',
             '.notes': 'value: checkout_notes, events: ["input"]',
-            '.cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}',
-            '.choose-cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)))}',
-            '.gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false))}',
-            '.choose-gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)))}',
-            '.stanford-card-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
-            '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
-            '.billing-address-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}'
+            '.cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal)))}',
+            '.choose-cc-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)), not(hasGrandTotal(total_grandTotal)))}',
+            '.gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false), not(hasGrandTotal(total_grandTotal)))}',
+            '.choose-gift-card-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)), not(hasGrandTotal(total_grandTotal)))}',
+            '.stanford-card-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"), not(hasGrandTotal(total_grandTotal)))}',
+            '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"), not(hasGrandTotal(total_grandTotal)))}',
+            '.billing-address-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal)))}'
+        },
+        bindingFilters: {
+            hasGrandTotal: function(grandTotal) {
+                return Boolean(Number(grandTotal));
+            }
         },
         initialize: function() {
             this.tokens = new Backbone.Collection();
