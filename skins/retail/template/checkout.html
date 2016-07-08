@@ -156,10 +156,16 @@
     <div class="view-3">
         <div class="view">
             <div class="order-summary">
-                <h3 class="header-underline"><%= _lp.CHECKOUT_ORDER_INFO %></h3>
+                <h3 class="header-underline">
+                    <%= _lp.CHECKOUT_ORDER_INFO %>
+                    <span class="fl-right edit-btn edit-step-1 primary-text link" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
+                </h3>
             </div>
             <div class="billing-summary">
-                <h3 class="header-underline"><%= _lp.CHECKOUT_BILLING_INFO %></h3>
+                <h3 class="header-underline">
+                    <%= _lp.CHECKOUT_BILLING_INFO %>
+                    <span class="fl-right edit-btn edit-step-2 primary-text link" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
+                </h3>
             </div>
         </div>
         <div class="btns text-right">

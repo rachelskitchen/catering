@@ -207,12 +207,16 @@ define(["checkout_view"], function(checkout_view) {
             'click .to-step-1': 'toStep1',
             'click .to-step-2': 'toStep2',
             'click .to-step-3': 'toStep3',
+            'click .edit-step-1': 'toStep1',
+            'click .edit-step-2': 'toStep2',
             'click .submit': 'submit'
         },
         onEnterListeners: {
             '.to-step-1': 'toStep1',
             '.to-step-2': 'toStep2',
             '.to-step-3': 'toStep3',
+            '.edit-step-1': 'toStep1',
+            '.edit-step-2': 'toStep2',
             '.submit': 'submit'
         },
         initialize: function() {
