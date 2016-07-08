@@ -26,6 +26,7 @@ define(["factory"], function(factory) {
     var PaymentMethodsMain = App.Views.FactoryView.extend({
         name: 'payment_methods',
         mod: 'main',
+        className: 'payment-methods-container',
         events: {
             'click .payment': 'selectPayment'
         },
