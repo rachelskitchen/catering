@@ -699,6 +699,7 @@ define(["main_router"], function(main_router) {
                         checkout: App.Data.myorder.checkout,
                         paymentMethods: App.Data.paymentMethods,
                         enableRewardCard: settings.enable_reward_cards_collecting,
+                        total: App.Data.myorder.total,
                         card: App.Data.card,
                         giftcard: App.Data.giftcard,
                         stanfordcard: App.Data.stanfordCard,

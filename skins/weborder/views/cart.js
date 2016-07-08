@@ -126,6 +126,15 @@ define(["products_view"], function() {
     var CartCheckoutView = CartCoreView.extend({
         name: 'cart',
         mod: 'checkout',
+        bindings: {
+            '.pay-btn .text': 'text: payBtnText(orderItems_quantity, total_grandTotal)'
+        },
+        bindingFilters: {
+            payBtnText: function(quantity, grandTotal) {
+                // if grandTotal is $0 we must show "Place Order" button instead of "Pay".
+                return (Number(grandTotal) || !quantity) ? _loc.CHECKOUT_PAY : _loc.PLACE_ORDER;
+            }
+        },
         events: {
             'click .pay-btn': 'pay'
         },
