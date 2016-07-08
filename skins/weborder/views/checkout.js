@@ -49,7 +49,7 @@ define(["checkout_view"], function(checkout_view) {
             '.stanford-card-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"), not(hasGrandTotal(total_grandTotal)))}',
             '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"), not(hasGrandTotal(total_grandTotal)))}',
             '.billing-address-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal)))}',
-            '.give-tips-box': 'classes: {hide: not(hasGrandTotal(total_grandTotal))}'
+            '.give-tips-box': 'classes: {hide: any(all(not(equal(paymentMethods_selected, "credit_card_button")), not(equal(paymentMethods_selected, "gift_card"))), not(hasGrandTotal(total_grandTotal)))}'
         },
         bindingFilters: {
             hasGrandTotal: function(grandTotal) {
@@ -167,7 +167,7 @@ define(["checkout_view"], function(checkout_view) {
                 giftCard = App.Views.GeneratorView.create('GiftCard', {
                     mod: 'Main',
                     model: this.options.giftcard,
-                    className: 'gift-card-box item'
+                    className: 'gift-card-box'
                 });
 
                 this.subViews.push(giftCard);
@@ -199,7 +199,8 @@ define(["checkout_view"], function(checkout_view) {
                 tips = App.Views.GeneratorView.create('Tips', {
                     model: this.collection.total.get('tip'),
                     mod: 'Line',
-                    total: this.collection.total
+                    total: this.collection.total,
+                    paymentMethods: this.options.paymentMethods
                 });
                 this.subViews.push(tips);
                 paymentInfo.append(tips.el);
