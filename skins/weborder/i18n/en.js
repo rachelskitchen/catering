@@ -142,6 +142,7 @@
         'TIPS_NONE': 'None',
         'TIPS_OTHER': 'Other',
         'TIPS_CREDIT': 'Credit Card',
+        'TIPS_GIFT': 'Gift Card',
         'STANFORD_PLANS': 'Available Plans',
         'STANFORD_NO_PLANS': 'You do not have any plan at this time.',
         'STANFORD_BALANCE': 'Balance:',
