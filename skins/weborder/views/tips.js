@@ -26,6 +26,7 @@ define(["tips_view"], function(tips_view) {
     var TipsLineView = App.Views.FactoryView.extend({
         name: 'tips',
         mod: 'line',
+        className: 'give-tips-box',
         bindings: {
             '.ctrl': 'reset: tipValue, events: ["click"]',
             '.tipAmount': 'value: monetaryFormat(tipValue), events:["blur"], restrictInput: "0123456789.", kbdSwitcher: "float"',

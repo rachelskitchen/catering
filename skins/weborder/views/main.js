@@ -178,6 +178,7 @@ define(["done_view", "generator"], function(done_view) {
                 model: this.options.paymentMethods,
                 customer: this.options.customer,
                 checkout: this.options.cartCollection.checkout,
+                total: this.options.cartCollection.total,
                 className: 'cart',
                 modelName: 'Cart'
             };
