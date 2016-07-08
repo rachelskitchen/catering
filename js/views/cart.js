@@ -67,6 +67,9 @@ define(["factory"], function() {
                 }
 
                 return model;
+            },
+            total: function() {
+                return App.Data.myorder.total;
             }
         },
         initialize: function() {

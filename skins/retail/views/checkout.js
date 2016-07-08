@@ -35,14 +35,14 @@ define(["checkout_view"], function(checkout_view) {
             '.view-3': 'toggle: equal(ui_step, 3)',
             '.order-type': 'updateContent: orderTypeView',
             '.personal-box': 'updateContent: mainView',
-            '.payment-methods-box': 'updateContent: paymentMethodsView',
-            '.choose-cc-box': 'updateContent: chooseCreditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens))), "inline-block": not(paymentMethods_credit_card_dialog)}',
-            '.cc-box': 'updateContent: creditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false)), "inline-block": not(paymentMethods_credit_card_dialog)}',
-            '.billing-address-box': 'updateContent: billingAddressView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false))}',
-            '.choose-gift-card-box': 'updateContent: chooseGiftCardView, classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)))}',
-            '.gift-card-box': 'updateContent: giftCardView, classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false))}',
-            '.stanford-card-box': 'updateContent: stanfordCardView, classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
-            '.stanford-plans-box': 'updateContent: stanfordPlansView, classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
+            '.payment-methods-box': 'updateContent: paymentMethodsView, classes: {hide: not(hasGrandTotal(total_grandTotal))}',
+            '.choose-cc-box': 'updateContent: chooseCreditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)), not(hasGrandTotal(total_grandTotal))), "inline-block": not(paymentMethods_credit_card_dialog)}',
+            '.cc-box': 'updateContent: creditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal))), "inline-block": not(paymentMethods_credit_card_dialog)}',
+            '.billing-address-box': 'updateContent: billingAddressView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal)))}',
+            '.choose-gift-card-box': 'updateContent: chooseGiftCardView, classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)), not(hasGrandTotal(total_grandTotal)))}',
+            '.gift-card-box': 'updateContent: giftCardView, classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), select(length($giftCards), giftCard_selected, false), not(hasGrandTotal(total_grandTotal)))}',
+            '.stanford-card-box': 'updateContent: stanfordCardView, classes: {hide: any(not(equal(paymentMethods_selected, "stanford")), not(hasGrandTotal(total_grandTotal)))}',
+            '.stanford-plans-box': 'updateContent: stanfordPlansView, classes: {hide: any(not(equal(paymentMethods_selected, "stanford")), not(hasGrandTotal(total_grandTotal)))}',
             '.discounts-box': 'classes: {hide: all(not(discountCodeView), not(rewardsView))}',
             '.discounts-title': 'text: discountsTitle(discountCodeView, rewardsView)',
             '.discount-code-box': 'updateContent: discountCodeView',
@@ -191,6 +191,9 @@ define(["checkout_view"], function(checkout_view) {
                 } else {
                     return _loc.CHECKOUT_REWARDS_TITLE;
                 }
+            },
+            hasGrandTotal: function(grandTotal) {
+                return Boolean(Number(grandTotal));
             }
         },
         bindingSources: {
