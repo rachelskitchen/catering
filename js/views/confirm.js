@@ -149,6 +149,8 @@ define(["backbone", "checkout_view", "stanfordcard_view", "profile_view"], funct
                             customer.giftCards.ignoreSelected = false;
                             makePayment();
                         }
+                    }).fail(function() {
+                        App.Data.errors.alert(MSG.ERROR_CAN_NOT_LINK_CARD_TO_PROFILE, true);
                     });
                 } else {
                     makePayment();
