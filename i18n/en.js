@@ -499,6 +499,7 @@
             'MERCURY_RETURN_MESSAGE_DEFAULT': 'Unknown error',
             'ERROR_DURING_TOKENIZATION': 'Error during tokenization',
             'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE': 'Can\'t load the google maps service. The page will be reloaded.',
+            'ERROR_CAN_NOT_LINK_CARD_TO_PROFILE': 'Can\'t link the card to a user profile.',
             'CARD_SAVE': 'Save the card for future payments?'
         },
         'DINING_OPTION_NAME': {

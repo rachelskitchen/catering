@@ -203,6 +203,8 @@ define(["main_router"], function(main_router) {
                                 customer.giftCards.ignoreSelected = false;
                                 sendRequest(PAYMENT_TYPE.GIFT);
                             }
+                        }).fail(function() {
+                            App.Data.errors.alert(MSG.ERROR_CAN_NOT_LINK_CARD_TO_PROFILE, true);
                         });
                     } else {
                         sendRequest(PAYMENT_TYPE.GIFT);
