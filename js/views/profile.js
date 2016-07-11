@@ -590,7 +590,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         bindings: {
             ':el': 'classes: {active: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)}',
-            '.links': 'classes: {"logged-links": access_token}',
+            '.links': 'classes: {logged: access_token}',
             '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp, active: ui_showSignUp}',
             '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn, active: ui_showLogIn}',
             '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)',
@@ -598,8 +598,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.log-in-box': 'toggle: ui_showLogIn',
             '.menu-items': 'toggle: ui_showMenu',
             '.logged-as': 'text: first_name, toggle: access_token',
-            '.reset-password-box': 'toggle: ui_showPWDReset',
-            '.links': 'classes: {logged: access_token}'
+            '.reset-password-box': 'toggle: ui_showPWDReset'
         },
         events: {
             'click .signup-link': controlLinks(true, false, false, false),
