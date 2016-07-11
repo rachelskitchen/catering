@@ -497,7 +497,8 @@
             'MERCURY_RETURN_MESSAGE_VALIDATE_NAME_FAIL': 'Введены неверные данные в поле имя владельца карты',
             'MERCURY_RETURN_MESSAGE_DEFAULT': 'Неизвестная ошибка',
             'ERROR_DURING_TOKENIZATION': 'Ошибка во время токенизации',
-            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE': 'Не удалось загрузить службу Google Maps. Страница будет перезагружена.'
+            'ERROR_CAN_NOT_LOAD_THE_GOOGLE_MAPS_SERVICE': 'Не удалось загрузить службу Google Maps. Страница будет перезагружена.',
+            'ERROR_CAN_NOT_LINK_CARD_TO_PROFILE': 'Ошибка добавления карты к профилю пользователя.'
         },
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO': 'С собой',
