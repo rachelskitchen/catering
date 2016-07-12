@@ -541,11 +541,13 @@ define(['backbone', 'captcha'], function(Backbone) {
 
             return Backbone.$.ajax({
                 url: "/weborders/v1/rewardscard/" + cardNumber + "/link/",
-                method: "GET",
+                method: "POST",
                 headers: authorizationHeader,
-                data: {
+                dataType: "json",
+                contentType: "application/json",
+                data: JSON.stringify({
                     captchaValue: captchaValue,
-                },
+                }),
                 success: function(data) {
                     if (!_.isObject(data)) {
                         return;
