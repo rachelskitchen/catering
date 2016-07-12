@@ -1597,7 +1597,8 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
                 context: this,
                 data: {
                     email: attrs.email,
-                    password: attrs.password
+                    password: attrs.password,
+                    instance: getInstanceName()
                 },
                 success: function(data) {
                     this.trigger('onResendActivationSuccess');
