@@ -434,7 +434,8 @@ define(["backbone"], function(Backbone) {
                 admin_mod_key: "",
                 amount_free_is_dollars: false, // true - 'Price', false - 'Quantity', receive from server
                 amount_free_selected: [],
-                ignore_free_modifiers: false
+                ignore_free_modifiers: false,
+                forced: false
             };
         },
         /**
@@ -463,6 +464,7 @@ define(["backbone"], function(Backbone) {
          * @returns {App.Models.ModifierBlock} The modifiers class.
          */
         addJSON: function(data) {
+            data.forced = data.minimum_amount > 0 ? true : false;
             this.set(data);
             var modifiers = new App.Collections.Modifiers();
             modifiers.addJSON(data.modifier || data.modifiers);
