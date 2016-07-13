@@ -241,25 +241,6 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
             return cloned;
         },
         /**
-         * Deeply updates the child products collections. Attribute data type is kept.
-         * @param {App.Collections.ChildProducts} updated - An instance of {@link App.Collections.ChildProducts}
-         *                                                  each attribute value is used to update
-         *                                                  corresponding attribute of the child products collection.
-         * @returns {App.Collections.ChildProducts} The updated child products collection.
-         */
-        update: function(updated) {
-            var self = this;
-            updated.each(function(el) {
-                var old = self.get(el);
-                if (old) {
-                    old.update(el);
-                } else {
-                    self.add(el.clone());
-                }
-            });
-            return this;
-        },
-        /**
          * Gets item that matches `filter` param.
          * @param {Object} filter - Object literal
          * @param {boolean} filter.attribute_1_enable - true if Attribute 1 is assigned to child product.
