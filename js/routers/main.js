@@ -357,7 +357,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 self = this;
 
             if (typeof App.SettingsDirectory.auth_url == 'string' && App.SettingsDirectory.auth_url) {
-                customer.set('serverURL', App.SettingsDirectory.auth_url.replace(/\/*$/, ''));
+                var srv_url = App.SettingsDirectory.auth_url.replace(/\/*$/, '');
+                customer.set('serverURL', srv_url);
+                customer.defaults.serverURL = srv_url;
             }
 
             // set payments tokens collection
