@@ -46,7 +46,35 @@ define(["checkout_view"], function(checkout_view) {
             '.discounts-box': 'classes: {hide: all(not(discountCodeView), not(rewardsView))}',
             '.discounts-title': 'text: discountsTitle(discountCodeView, rewardsView)',
             '.discount-code-box': 'updateContent: discountCodeView',
-            '.rewards-box': 'updateContent: rewardsView'
+            '.rewards-box': 'updateContent: rewardsView',
+            '.order-summary-pick-up': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_TOGO"))}',
+            '.pick-up-store-name': 'text: _system_settings_about_title',
+            '.pick-up-store-address-line1': 'text: storeAddressLine1',
+            '.pick-up-store-address-line2': 'text: storeAddressLine2',
+            '.order-summary-shipping': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_SHIPPING"))}',
+            '.shipping-customer-name': 'text: customerName',
+            '.shipping-customer-address-line1': 'text: customerAddressLine1',
+            '.shipping-customer-address-line2': 'text: customerAddressLine2',
+            '.shipping-customer-phone': 'text: customer_phone',
+            '.shipping-customer-email': 'text: customer_email',
+            '.order-summary-other': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_OTHER"))}',
+            '.other-customer-name': 'text: customerName',
+            '.other-customer-phone': 'text: customer_phone',
+            '.other-customer-email': 'text: customer_email',
+            '.other-dining-options-box': 'updateContent: otherDiningOptionsView',
+            '.billing-summary-credit-card': 'classes: {hide: not(equal(paymentMethods_selected, "credit_card_button"))}',
+            '.credit-card-last-digits': 'text: select(token_selected, token_last_digits, creditCardLastDigits)',
+            '.credit-card-exp-date': 'text: select(token_selected, "", creditCardExpDate)',
+            '.credit-card-type': 'text: select(token_selected, token_card_type, ""), classes: {hide: equal(token_card_type, "")}',
+            '.billing-summary-gift-card': 'classes: {hide: not(equal(paymentMethods_selected, "gift_card"))}',
+            '.gift-card-number': 'text: giftcard_cardNumber',
+            '.billing-summary-stanford-card': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
+            '.stanford-card-number': 'text: stanfordCardNumber',
+            '.billing-summary-paypal': 'classes: {hide: not(equal(paymentMethods_selected, "paypal"))}',
+            '.billing-summary-cash': 'classes: {hide: not(equal(paymentMethods_selected, "cash"))}',
+            '.cash-store-name': 'text: _system_settings_about_title',
+            '.cash-store-address-line1': 'text: storeAddressLine1',
+            '.cash-store-address-line2': 'text: storeAddressLine2'
         },
         computeds: {
             orderTypeView: function() {
@@ -82,7 +110,8 @@ define(["checkout_view"], function(checkout_view) {
                             name: 'Profile',
                             mod: 'PaymentsSelection',
                             collection: this.tokens,
-                            model: this.token
+                            model: this.token,
+                            customer: this.options.customer
                         };
                     }
                 }
@@ -180,6 +209,88 @@ define(["checkout_view"], function(checkout_view) {
                         model: this.collection.rewardsCard
                     };
                 }
+            },
+            otherDiningOptionsView: {
+                deps: ['checkout_other_dining_options'],
+                get: function(options) {
+                    if (options) {
+                        return {
+                            name: 'Checkout',
+                            mod: 'OtherDiningOptions',
+                            collection: this.collection.checkout.get('other_dining_options')
+                        };
+                    }
+                }
+            },
+            storeAddressLine1: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    var line1 = address.line_1,
+                        line2 = address.line_2;
+
+                    return line2 ? (line1 + ', ' + line2) : line1;
+                }
+            },
+            storeAddressLine2: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    return address.city + ', ' + address.getRegion() + ' ' + address.postal_code;
+                }
+            },
+            customerName: {
+                deps: ['customer_first_name', 'customer_last_name'],
+                get: function(first_name, last_name) {
+                    return first_name + ' ' + last_name;
+                }
+            },
+            customerAddressLine1: {
+                deps: ['$customer_address'],
+                get: function(address) {
+                    var street_1 = address.get('street_1'),
+                        street_2 = address.get('street_2');
+
+                    return street_2 ? (street_1 + ', ' + street_2) : street_1;
+                }
+            },
+            customerAddressLine2: {
+                deps: ['$customer_address'],
+                get: function(address) {
+                    var province = address.get('province'),
+                        zipcode = address.get('zipcode'),
+                        country = address.get('country'),
+                        state = address.get('state'),
+                        city = address.get('city'),
+                        data = [];
+
+                    data.push(city);
+                    if (country === 'US') {
+                        data.push(state);
+                    }
+                    if (country === 'CA') {
+                        data.push(province);
+                    }
+                    data.push(zipcode);
+
+                    return data.join(', ');
+                }
+            },
+            creditCardLastDigits: {
+                deps: ['card_cardNumber'],
+                get: function(card_number) {
+                    return (card_number.length > 4) ? card_number.slice(-4) : card_number;
+                }
+            },
+            creditCardExpDate: {
+                deps: ['card_expMonth', 'card_expDate'],
+                get: function(month, year) {
+                    return ', ' + month + '/' + year.slice(-2);
+                }
+            },
+            stanfordCardNumber: {
+                deps: ['paymentMethods_stanford'],
+                get: function(stanford) {
+                    return stanford ? this.getBinding('stanfordcard_number') : "";
+                }
             }
         },
         bindingFilters: {
@@ -201,6 +312,18 @@ define(["checkout_view"], function(checkout_view) {
                 return new Backbone.Model({
                     step: 1
                 });
+            },
+            customer_address: function() {
+                return new Backbone.Model({
+                    street_1: "",
+                    street_2: "",
+                    province: "",
+                    address: "",
+                    country: "",
+                    zipcode: "",
+                    state: "",
+                    city: ""
+                });
             }
         },
         events: {
@@ -218,7 +341,7 @@ define(["checkout_view"], function(checkout_view) {
         initialize: function() {
             this.tokens = new Backbone.Collection();
             this.giftCards = new Backbone.Collection();
-            this.token = new Backbone.Model({selected: false, paymentsExist: false});
+            this.token = new Backbone.Model({selected: false, paymentsExist: false, last_digits: "", card_type: ""});
             this.giftCard = new Backbone.Model({selected: false});
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
@@ -229,7 +352,11 @@ define(["checkout_view"], function(checkout_view) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.customer, 'onLogin', this.setProfileData);
             this.listenTo(this.options.customer, 'onLogout', this.removeProfileData);
+            this.listenTo(this.options.customer.get('addresses'), 'addressFieldsChanged change:selected', this.setCustomerAddress, this);
             this.setProfileData();
+        },
+        setCustomerAddress: function(model) {
+            this.getBinding('$customer_address').set(model.attributes);
         },
         setProfileData: function() {
             var promises = this.options.promises(),
@@ -334,9 +461,40 @@ define(["checkout_view"], function(checkout_view) {
         }
     });
 
+    var CheckoutOtherDiningOptionsView = App.Views.ListView.extend({
+        name: 'checkout',
+        mod: 'other_dining_options',
+        className: 'options-list',
+        render: function() {
+            App.Views.ListView.prototype.render.apply(this, arguments);
+            this.collection.each(this.addItem.bind(this));
+            return this;
+        },
+        addItem: function(model) {
+            var view = App.Views.GeneratorView.create('Checkout', {
+                mod: 'OtherDiningOptionsItem',
+                model: model
+            });
+
+            App.Views.ListView.prototype.addItem.call(this, view, this.$el);
+            this.subViews.push(view);
+        }
+    });
+
+    var CheckoutOtherDiningOptionsItemView = App.Views.ItemView.extend({
+        name: 'checkout',
+        mod: 'other_dining_options_item',
+        bindings: {
+            '.option-name': 'text: name',
+            '.option-value': 'text: value'
+        }
+    });
+
     return new (require('factory'))(checkout_view.initViews.bind(checkout_view), function() {
         App.Views.CheckoutView.CheckoutPageView = CheckoutPageView;
         App.Views.CheckoutView.CheckoutRewardsCardView = CheckoutRewardsCardView;
         App.Views.CheckoutView.CheckoutAddressView = CheckoutAddressView;
+        App.Views.CheckoutView.CheckoutOtherDiningOptionsView = CheckoutOtherDiningOptionsView;
+        App.Views.CheckoutView.CheckoutOtherDiningOptionsItemView = CheckoutOtherDiningOptionsItemView;
     });
 });
