@@ -228,6 +228,41 @@
     top: 3px;
 }
 
+.checkout-page .view-3 .header-underline {
+    width: 80%;
+    max-width: 350px;
+    margin-bottom: 15px;
+}
+
+.checkout-page .edit-btn {
+    font-size: 13px;
+    letter-spacing: 1.3px;
+}
+
+.checkout-page .summary-info-box {
+    position: relative;
+    margin-bottom: 15px;
+    line-height: 22px;
+}
+
+.checkout-page .billing-summary-credit-card {
+    font-size: 0;
+}
+
+.checkout-page .billing-summary-credit-card span {
+    display: inline-block;
+    line-height: 28px;
+    font-size: 14px;
+}
+
+.checkout-page .credit-card-type {
+    margin-right: 15px;
+    padding: 0 10px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+}
+
 @media only screen and (max-width: 1190px) {
     .checkout-page {
         right: 300px !important;
