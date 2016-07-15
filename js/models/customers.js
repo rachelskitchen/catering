@@ -2473,7 +2473,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
         },
         onModelChange: function(model) {
             var changed = model.changedAttributes(),
-                keys = ['street_1', 'street_2', 'state', 'province', 'country', 'zipcode', 'is_primary'],
+                keys = ['street_1', 'street_2', 'city', 'state', 'province', 'country', 'zipcode', 'is_primary'],
                 trigger = _.some(keys, function(key) {
                     return _.has(changed, key);
                 });
@@ -2592,7 +2592,10 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
                 return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
             });
             if (!reverse_addr && fromProfile && customer.isAuthorized()) {
-                reverse_addr = this.getDefaultProfileAddress().toJSON(); // use profile address
+                reverse_addr = this.getDefaultProfileAddress(); // use profile address
+                if (reverse_addr) {
+                    reverse_addr = reverse_addr.toJSON();
+                }
             }
 
             if (reverse_addr) {
