@@ -67,8 +67,7 @@
         </div>
     </div>
     <div class="address-edit">
-        <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-        <div class="inline-block">
+        <div class="states-box inline-block">
             <div class="label required optional-text"><%= _lp.PROFILE_STATE %></div>
             <div class="select-wrapper inline-block">
                 <select class="states size1" id="states">
@@ -78,13 +77,10 @@
                 </select>
             </div>
         </div>
-        <% } %>
-        <% if(typeof province == 'string') { %>
-        <div class="inline-block">
+        <div class="province-box inline-block">
             <div class="label required optional-text"><%= _lp.PROFILE_PROVINCE %></div>
             <input type="text" name="province" class="input ios-safari-caret size1">
         </div>
-        <% } %>
         <div class="inline-block">
             <div class="label required optional-text"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
             <input type="text" name="zipcode" class="input ios-safari-caret size2">
@@ -160,12 +156,50 @@
                     <%= _lp.CHECKOUT_ORDER_INFO %>
                     <span class="fl-right edit-btn edit-step-1 primary-text link" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
                 </h3>
+                <div class="summary-info-box order-summary-pick-up">
+                    <div class="bold pick-up-store-name"></div>
+                    <div class="bold pick-up-store-address-line1"></div>
+                    <div class="bold pick-up-store-address-line2"></div>
+                </div>
+                <div class="summary-info-box order-summary-shipping">
+                    <div class="bold shipping-customer-name"></div>
+                    <div class="bold shipping-customer-address-line1"></div>
+                    <div class="bold shipping-customer-address-line2"></div>
+                    <div class="shipping-customer-phone"></div>
+                    <div class="shipping-customer-email"></div>
+                </div>
+                <div class="summary-info-box order-summary-other">
+                    <div class="bold other-customer-name"></div>
+                    <div class="bold other-customer-phone"></div>
+                    <div class="bold other-customer-email"></div>
+                    <div class="other-dining-options-box"></div>
+                </div>
             </div>
             <div class="billing-summary">
                 <h3 class="header-underline">
                     <%= _lp.CHECKOUT_BILLING_INFO %>
                     <span class="fl-right edit-btn edit-step-2 primary-text link" tabindex="0"><%= _lp.MYORDER_EDIT %></span>
                 </h3>
+                <div class="summary-info-box billing-summary-credit-card">
+                    <span class="credit-card-type primary-text primary-border"></span>
+                    <span class="bold"><%= _lp.CARD_ENDING_IN %>&nbsp;</span>
+                    <span class="credit-card-last-digits bold"></span>
+                    <span class="credit-card-exp-date bold"></span>
+                </div>
+                <div class="summary-info-box billing-summary-gift-card">
+                    <div class="bold"><%= _lp.CHECKOUT_GIFT_CARD %>: <span class="gift-card-number"></span></div>
+                </div>
+                <div class="summary-info-box billing-summary-stanford-card">
+                    <div class="bold"><%= _lp.CHECKOUT_STANFORD_CARD %>: <span class="stanford-card-number"></span></div>
+                </div>
+                <div class="summary-info-box billing-summary-paypal">
+                    <div class="bold"><%= _lp.CHECKOUT_PAY_PAYPAL %></div>
+                </div>
+                <div class="summary-info-box billing-summary-cash">
+                    <div class="bold cash-store-name"></div>
+                    <div class="bold cash-store-address-line1"></div>
+                    <div class="bold cash-store-address-line2"></div>
+                </div>
             </div>
         </div>
         <div class="btns text-right">
@@ -173,6 +207,12 @@
             <div class="btn submit text-center" tabindex="0"><%= _lp.CHECKOUT_CONFIRM %></div>
         </div>
     </div>
+</script>
+
+<script type="text/template" id="checkout_other_dining_options-template"></script>
+
+<script type="text/template" id="checkout_other_dining_options_item-template">
+    <span class="option-name"></span>: <span class="option-value"></span>
 </script>
 
 <script type="text/template" id="checkout_discount_code-template">

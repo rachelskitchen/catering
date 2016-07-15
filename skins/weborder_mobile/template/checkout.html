@@ -149,20 +149,16 @@
         <div class="required">
             <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" name="city" class="ios-safari-caret input-colors">
         </div>
-        <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
-            <div class="select-wrapper shipping-state input-colors">
-                <select class="states">
-                <% for(var i in states) { %>
-                    <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
-                <% } %>
-                </select>
-            </div>
-        <% } %>
-        <% if(typeof province == 'string') { %>
-        <div class="required province">
+        <div class="states-box select-wrapper shipping-state input-colors">
+            <select class="states">
+            <% for(var i in states) { %>
+                <option value="<%= i %>" <% if(i.toLowerCase() == state.toLowerCase()) { %>selected="selected"<% } %>><%= states[i] %></option>
+            <% } %>
+            </select>
+        </div>
+        <div class="province-box required province">
            <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret input-colors">
-       </div>
-        <% } %>
+        </div>
         <div class="required">
             <input type="text" placeholder="<% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>" name="zipcode" class="ios-safari-caret input-colors">
         </div>

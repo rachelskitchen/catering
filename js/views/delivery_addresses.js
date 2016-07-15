@@ -88,7 +88,10 @@ define(['backbone', 'factory'], function(Backbone) {
             'input[name="city"]': 'value: firstLetterToUpperCase(city), events: ["input"], trackCaretPosition: city',
             'input[name="province"]': 'value: firstLetterToUpperCase(province), events: ["input"], trackCaretPosition: province',
             'input[name=zipcode]': 'value: zipcode, pattern: /^((\\w|\\s){0,20})$/', // all requirements are in Bug 33655
-            '.zip-label-text': 'text: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)'
+            '.zip-label-text': 'text: select(equal(country, "US"), _lp_PROFILE_ZIP_CODE, _lp_PROFILE_POSTAL_CODE)',
+            '.country': 'value: countrySelection, options: countryOptions',
+            '.states-box': 'classes: {hide: not(state)}',
+            '.province-box': 'classes: {hide: not(hasProvince)}'
         },
         events: {
             'change select.country': 'countryChange',
@@ -96,6 +99,35 @@ define(['backbone', 'factory'], function(Backbone) {
             'change .shipping-select': 'changeShipping',
             'blur input[name]': 'change',
             'change input[name]': 'change'
+        },
+        computeds: {
+            countryOptions: {
+                deps: ['countries'],
+                get: function(countries) {
+                    var options = [];
+
+                    for (var key in countries) {
+                        options.push({
+                            label: countries[key],
+                            value: key
+                        });
+                    }
+
+                    return options;
+                }
+            },
+            countrySelection: {
+                deps: [],
+                get: function() {
+                    return 'US';
+                }
+            },
+            hasProvince: {
+                deps: ['province'],
+                get: function(province) {
+                    return (typeof province === 'string');
+                }
+            }
         },
         change: function(e) {
             e.target.value = e.target.value.trim();
@@ -120,9 +152,7 @@ define(['backbone', 'factory'], function(Backbone) {
             }
 
             model.province = model.country == 'CA' ? '' : undefined;
-
             this.model.set(model);
-            this.render(); // need to hide state if this is neccessary
 
             this.updateAddress();
         },
