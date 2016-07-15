@@ -1152,6 +1152,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         passwordXHR.done(function() {
                             updatePassword = false;
                         });
+                        passwordXHR.error(function(res) {
+                            errorFields = res.responseText;
+                        });
                         passwordXHR.always(hideSpinner);
                     }
 
@@ -1170,8 +1173,10 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     function hideSpinner() {
                         if(--requests <= 0) {
                             mainModel.trigger('loadCompleted');
-                            updateBtn.set('disabled', true);
-                            ui.set('show_response', true);
+                            if (!errorFields.length) {
+                                updateBtn.set('disabled', true);
+                                ui.set('show_response', true);
+                            }
                         }
                     }
                 }
