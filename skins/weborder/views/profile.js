@@ -137,6 +137,7 @@ define(["profile_view"], function(profile_view) {
 
     var ProfilePaymentsView = App.Views.CoreProfileView.CoreProfilePaymentsView.extend({
         initialize: function() {
+            this.init_update_btn_value();
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
@@ -152,6 +153,8 @@ define(["profile_view"], function(profile_view) {
 
                     if (ui_show_response) {
                         text = text_success;
+
+                        this.getBinding('$ui').trigger('change:check_update_btn');
 
                         this.buttonTimer && clearTimeout(this.buttonTimer);
                         this.buttonTimer = setTimeout(function() {

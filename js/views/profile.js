@@ -976,7 +976,30 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         bindings: {
             '.left-side': 'classes: {hidden: not(_settings_directory_saved_credit_cards), "border-none": not(_settings_directory_saved_gift_cards), "fl-left": _settings_directory_saved_gift_cards}',
             '.right-side': 'classes: {hidden: not(_settings_directory_saved_gift_cards)}',
-            '.successful-update': 'classes: {visible: ui_show_response}'
+            '.successful-update': 'classes: {visible: ui_show_response}',
+            '.btn.update-btn': 'classes: {disabled: update_disabled}'
+        },
+        computeds: {
+            update_disabled: {
+                deps: ['ui_check_update_btn'],
+                get: function() {
+                    var self = this, req,
+                        collection = this.model.payments,
+                        primaryPaymentsModel = collection.getPrimaryPayment();
+                    var ret1 = primaryPaymentsModel.checkAttributesDiff(),
+                        ret2 = this.newGiftCard ? this.newGiftCard.check() : {status: 'ERROR'},
+                        ret3 = this.newRewardCard ? this.newRewardCard.check() : {status: 'ERROR'};
+
+                    return !(ret1.status == 'OK' || ret2.status == 'OK' || ret3.status == 'OK');
+                }
+            }
+        },
+        init_update_btn_value: function() {
+            var self = this;
+            this.options.ui.set('check_update_btn', true);
+            this.listenTo(this.model, 'change_cards', function() {
+                setTimeout( function() { self.getBinding('$ui').trigger('change:check_update_btn') }, 1);
+            });
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -1125,6 +1148,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         resetUpdateStatus: function() {
             this.options.ui.set('show_response', false);
+            trace("Update it ==>");
             this.updateCounter = 0;
         },
         incrementUpdateCounter: function() {
