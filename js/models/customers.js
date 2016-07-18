@@ -2381,7 +2381,10 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
                 return typeof el.id == 'string' && isNaN(el.id) && el.id != dining_option && (reverse_addr = el); // use the first existing address
             });
             if (!reverse_addr && fromProfile && customer.isAuthorized()) {
-                reverse_addr = this.getDefaultProfileAddress().toJSON(); // use profile address
+                reverse_addr = this.getDefaultProfileAddress(); // use profile address
+                if (reverse_addr) {
+                    reverse_addr = reverse_addr.toJSON();
+                }
             }
 
             if (reverse_addr) {
