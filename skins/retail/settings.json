@@ -14,7 +14,7 @@
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
-            "css": ["categories", "filters", "sort"],
+            "css": ["categories", "filters", "sort", "promotions"],
             "views": ["products", "sort", "sidebar"],
             "templates": ["products", "filters", "tree", "sort", "sidebar"],
             "core": ["tree"]
@@ -55,6 +55,11 @@
         "establishments": {
             "cssCore": ["establishments"],
             "templatesCore": ["establishments"]
+        },
+        "promotions": {
+            "core": ["promotions", "promotions_view"],
+            "css": ["promotions"],
+            "templates": ["promotions"]
         }
     }
 }

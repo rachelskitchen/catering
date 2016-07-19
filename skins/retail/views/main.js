@@ -51,6 +51,7 @@ define(["done_view", "generator"], function(done_view) {
             this.listenTo(this.model, 'change:content', this.content_change, this);
             this.listenTo(this.model, 'change:header', this.header_change, this);
             this.listenTo(this.model, 'change:cart', this.cart_change, this);
+            this.listenTo(this.model, 'change:popup', this.popup_change, this);
 
             this.iOSFeatures();
 
@@ -66,6 +67,8 @@ define(["done_view", "generator"], function(done_view) {
             return this;
         },
         events: {
+            'click #popup .cancel-btn ': 'hide_popup',
+            'click .popup .shadow-bg': 'hide_popup',
             'click .change_establishment': 'change_establishment'
         },
         content_change: function() {
@@ -108,6 +111,47 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[1] = App.Views.GeneratorView.create(data.modelName, data, id);
             this.$('#cart').append(this.subViews[1].el);
         },
+        popup_change: function(model, value) {
+            var popup = this.$('.popup'),
+                data, cache_id;
+
+            if (this.subViews[2]) {
+                if (this.subViews[2].options.cache_id ) {
+                    this.subViews[2].is_hidden = true; //it's cause of setInterval function in DynamicHeightHelper
+                    this.subViews[2].removeFromDOMTree(); //saving the view which was cached before
+                }
+                else
+                    this.subViews[2].remove();
+            }
+
+            if (typeof value == 'undefined')
+                return popup.removeClass('ui-visible');
+
+            data = _.defaults(this.model.get('popup'), this.popup_defaults());
+             if (data.two_columns_view === true) {
+                $('#popup').removeClass("popup-background");
+            } else {
+                $('#popup').addClass("popup-background");
+            }
+
+            cache_id = data.cache_id ? 'popup_' + data.modelName + '_' + data.mod + '_' + data.cache_id : undefined;
+
+            var is_init_cache_session = data['init_cache_session'];
+            if (is_init_cache_session && cache_id) {
+                App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cache_id);
+            }
+
+            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
+            this.subViews[2].is_hidden = false;
+            this.$('#popup').append(this.subViews[2].el);
+
+            popup.addClass('ui-visible');
+        },
+        hide_popup: function(event, status) {
+            var callback = _.isObject(this.model.get('popup')) ? this.model.get('popup').action_callback : null;
+            this.model.unset('popup');
+            callback && callback(status);
+        },
         header_defaults: function() {
             return {
                 model: this.options.headerModel,
@@ -131,6 +175,11 @@ define(["done_view", "generator"], function(done_view) {
             return {
                 className: 'content'
             };
+        },
+        popup_defaults: function() {
+            /*return {
+             className: 'popup'
+             };*/
         },
         addContent: function(data, removeClass) {
             var id = 'content_' + data.modelName + '_' + data.mod + (data.uniqId || '');

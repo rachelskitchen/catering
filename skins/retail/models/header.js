@@ -30,7 +30,8 @@ define(["backbone"], function(Backbone) {
             logo: "/_blank.png", // if server returns 'logo: null' need set fake image src that doens't exist (Bug #14189)
             business_name: "",
             menu_index: 0,
-            isShowPromoMessage: false
+            isShowPromoMessage: false,
+            promotions_available: false
         },
         initialize: function() {
             var settings = App.Data.settings.toJSON(),

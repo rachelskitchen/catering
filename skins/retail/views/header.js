@@ -31,7 +31,8 @@ define(["backbone", "factory"], function(Backbone) {
             '.about': 'classes: {active: equal(menu_index, 1)}, attr: {tabindex: select(equal(menu_index, 1), -1, 0)}',
             '.map': 'classes: {active: equal(menu_index, 2)}, attr: {tabindex: select(equal(menu_index, 2), -1, 0)}',
             '.cart-box': 'classes: {link: ui_quantity}',
-            '.cart-qty': 'text: format("($1)", ui_quantity), toggle: ui_quantity'
+            '.cart-qty': 'text: format("($1)", ui_quantity), toggle: ui_quantity',
+            '.promotions-link': 'toggle: promotions_available'
         },
         bindingSources: {
             ui: function() {
@@ -69,7 +70,8 @@ define(["backbone", "factory"], function(Backbone) {
             'click .shop': 'onMenu',
             'click .about': 'onAbout',
             'click .map': 'onMap',
-            'click .cart-box.link': 'onCart'
+            'click .cart-box.link': 'onCart',
+            'click .promotions-link': 'onPromotions'
         },
         onEnterListeners: {
             '.shop': 'onMenu',
@@ -91,6 +93,9 @@ define(["backbone", "factory"], function(Backbone) {
         },
         update: function() {
             this.setBinding('ui_quantity', this.options.cart.get_only_product_quantity());
+        },
+        onPromotions: function() {
+            this.model.trigger('onPromotions');
         }
     });
 
