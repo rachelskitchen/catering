@@ -519,7 +519,7 @@ define(["backbone"], function(Backbone) {
          *     ...
          * }
          * ```
-         * - {} - always open;
+         * - {} or [] - always open;
          * - FALSE - always closed;
          * - NULL - timetables is empty.
          */
@@ -527,7 +527,7 @@ define(["backbone"], function(Backbone) {
             var table = this.get('timetables'),
                 current_date_year = current_date.getFullYear();
 
-            if (empty_object(table)) { // check object (empty or not empty)
+            if ((Array.isArray(table) && table.length == 0) || empty_object(table)) { // check object (empty or not empty)
                 return null;
             } else {
                 for (var i = 0, j = table.length; i < j; i++) {
