@@ -16,7 +16,7 @@
             // opts.scrollTo is index of image
             if (typeof opts.scrollTo == 'number') {
                 var data_curIndex = $.data(this, 'gallery-current-index') || 0,
-                    data_scroll = $.data(this, 'gallery-scroll')
+                    data_scroll = $.data(this, 'gallery-scroll'),
                     scrollTo = opts.scrollTo >= 0 ? opts.scrollTo : 0;
                 if (typeof data_scroll == 'function') {
                     data_scroll(scrollTo - data_curIndex);
