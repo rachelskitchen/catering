@@ -2118,6 +2118,9 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
             if (!_.isObject(giftCard) || typeof giftCard.linkToCustomer != 'function') {
                 return;
             }
+            var status = giftCard.check();
+            if (status.status != "OK")
+                return;
 
             var req = giftCard.linkToCustomer(this.getAuthorizationHeader()),
                 self = this;
@@ -2173,6 +2176,10 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
             if (!_.isObject(rewardCard) || typeof rewardCard.linkToCustomer != 'function') {
                 return;
             }
+
+            var status = rewardCard.check();
+            if (status.status != "OK")
+                return;
 
             var req = rewardCard.linkToCustomer(this.getAuthorizationHeader());
 
