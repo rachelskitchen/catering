@@ -986,7 +986,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                     var self = this, req,
                         collection = this.model.payments,
                         primaryPaymentsModel = collection.getPrimaryPayment();
-                    var ret1 = primaryPaymentsModel.checkAttributesDiff(),
+                    var ret1 = primaryPaymentsModel ? primaryPaymentsModel.checkAttributesDiff() : {status: 'ERROR'},
                         ret2 = this.newGiftCard ? this.newGiftCard.check() : {status: 'ERROR'},
                         ret3 = this.newRewardCard ? this.newRewardCard.check() : {status: 'ERROR'};
 
