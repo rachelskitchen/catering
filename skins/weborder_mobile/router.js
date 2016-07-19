@@ -198,7 +198,11 @@ define(["main_router"], function(main_router) {
                     giftcard: true
                 }, function() {
                     if (customer.isAuthorized() && !customer.doPayWithGiftCard()) {
-                        customer.linkGiftCard(App.Data.giftcard).done(function(data) {
+                        var req = customer.linkGiftCard(App.Data.giftcard)
+                        if (!req) {
+                            App.Data.errors.alert(MSG.ERROR_CAN_NOT_LINK_CARD_TO_PROFILE);
+                        }
+                        req.done(function(data) {
                             if (_.isObject(data) && data.status == 'OK') {
                                 customer.giftCards.ignoreSelected = false;
                                 sendRequest(PAYMENT_TYPE.GIFT);
