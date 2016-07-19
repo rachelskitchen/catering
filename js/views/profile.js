@@ -1097,6 +1097,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             var self = this,
                 mainModel = App.Data.mainModel,
                 req = this.model.linkGiftCard(giftcard);
+
             this.listenTo(giftcard, 'onLinkError', App.Data.errors.alert.bind(App.Data.errors));
             if (req) {
                 this.incrementUpdateCounter();
@@ -1148,7 +1149,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         resetUpdateStatus: function() {
             this.options.ui.set('show_response', false);
-            trace("Update it ==>");
             this.updateCounter = 0;
         },
         incrementUpdateCounter: function() {
