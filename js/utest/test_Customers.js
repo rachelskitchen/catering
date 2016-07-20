@@ -6,7 +6,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
         beforeEach(function() {
             docCookies_getItem = undefined;
-            docCookies_getItem_spyOn = spyOn(require('doc_cookies'), 'getItem');
+            docCookies_getItem_spyOn = spyOn(require('js_cookie'), 'get');
             docCookies_getItem_spyOn.and.callFake(function() {
                 return docCookies_getItem;
             });
@@ -948,9 +948,9 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
         });
 
         it("logout()", function() {
-            var docCookies = require('doc_cookies');
+            var docCookies = require('js_cookie');
 
-            spyOn(docCookies, 'removeItem');
+            spyOn(docCookies, 'remove');
             spyOn(model, 'removePayments');
             spyOn(model, 'removeGiftCards');
             spyOn(model, 'removeRewardCards');
@@ -969,7 +969,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             model.logout();
 
-            expect(docCookies.removeItem).toHaveBeenCalledWith('user', '/weborder', 'revelup.com');
+            expect(docCookies.remove).toHaveBeenCalledWith('user', '/weborder', 'revelup.com');
             expect(model.get('addresses').removeProfileAddresses).toHaveBeenCalled();
             expect(model.removePayments).toHaveBeenCalled();
             expect(model.removeGiftCards).toHaveBeenCalled();
@@ -1967,14 +1967,14 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             beforeEach(function() {
                 keepCookie = undefined;
-                docCookies = require('doc_cookies');
+                docCookies = require('js_cookie');
                 dataStr = "123213213";
                 _data = {
                     customer: {first_name: 'Test Name'},
                     token: {expires_in: 3600}
                 };
 
-                spyOn(docCookies, 'setItem');
+                spyOn(docCookies, 'set');
                 spyOn(window, 'utf8_to_b64').and.returnValue(dataStr);
                 spyOn(model, 'get').and.callFake(function() {
                     return keepCookie;
@@ -1986,7 +1986,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 values.forEach(function(value) {
                     model.updateCookie(value);
                     expect(model.get).not.toHaveBeenCalled();
-                    expect(docCookies.setItem).not.toHaveBeenCalled();
+                    expect(docCookies.set).not.toHaveBeenCalled();
                 });
             });
 
@@ -1995,7 +1995,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 values.forEach(function(value) {
                     model.updateCookie(_.extend(_data, {token: value}));
                     expect(model.get).not.toHaveBeenCalled();
-                    expect(docCookies.setItem).not.toHaveBeenCalled();
+                    expect(docCookies.set).not.toHaveBeenCalled();
                 });
             });
 
@@ -2005,7 +2005,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.updateCookie(_data);
                 expect(model.get).toHaveBeenCalledWith('keepCookie');
                 expect(window.utf8_to_b64).toHaveBeenCalledWith(JSON.stringify(_data));
-                expect(docCookies.setItem).toHaveBeenCalledWith(data.cookieName, dataStr, 0, data.cookiePath, data.cookieDomain, data.cookieSecure);
+                expect(docCookies.set).toHaveBeenCalledWith(data.cookieName, dataStr, { expires : 0, path : data.cookiePath, domain : data.cookieDomain, secure : data.cookieSecure });
             });
 
             it("`data` param is object, `data.token` is object, `keepCookie` is true", function() {
@@ -2013,12 +2013,12 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 model.updateCookie(_data);
                 expect(model.get).toHaveBeenCalledWith('keepCookie');
                 expect(window.utf8_to_b64).toHaveBeenCalledWith(JSON.stringify(_data));
-                expect(docCookies.setItem).toHaveBeenCalledWith(data.cookieName, dataStr, _data.token.expires_in, data.cookiePath, data.cookieDomain, data.cookieSecure);
+                expect(docCookies.set).toHaveBeenCalledWith(data.cookieName, dataStr, { expires : _data.token.expires_in, path : data.cookiePath, domain : data.cookieDomain, secure : data.cookieSecure });
             });
         });
 
         describe("setCustomerFromCookie()", function() {
-            var docCookies = require('doc_cookies'),
+            var docCookies = require('js_cookie'),
                 decodeStr = '{"a": 1}';
 
             beforeEach(function() {
@@ -2029,7 +2029,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
 
             it("cookie isn't specified", function() {
                 model.setCustomerFromCookie();
-                expect(docCookies.getItem).toHaveBeenCalledWith(data.cookieName);
+                expect(docCookies.get).toHaveBeenCalledWith(data.cookieName);
                 expect(window.b64_to_utf8).not.toHaveBeenCalled();
                 expect(model.setCustomerFromAPI).not.toHaveBeenCalled();
             });
@@ -2037,7 +2037,7 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
             it("cookie is specified", function() {
                 docCookies_getItem = 'aSDASDSsd';
                 model.setCustomerFromCookie();
-                expect(docCookies.getItem).toHaveBeenCalledWith(data.cookieName);
+                expect(docCookies.get).toHaveBeenCalledWith(data.cookieName);
                 expect(window.b64_to_utf8).toHaveBeenCalledWith(docCookies_getItem);
                 expect(model.setCustomerFromAPI).toHaveBeenCalledWith(JSON.parse(decodeStr));
             });

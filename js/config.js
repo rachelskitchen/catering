@@ -418,9 +418,9 @@ define({
         promotions_view: 'js/views/promotions',
         /**
          * @type {string}
-         * @description The actual path of [doc_cookies]{@link module:doc_cookies} module.
+         * @description The actual path of [js_cookie]{@link module:js_cookie} module.
          */
-        doc_cookies: 'js/libs/docCookies',
+        js_cookie: 'js/libs/cookie',
         /**
          * @type {string}
          * @description The actual path of [page_visibility]{@link module:page_visibility} module.
@@ -510,7 +510,7 @@ define({
             deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
-            deps: ["backbone", "doc_cookies", "page_visibility", "giftcard"]
+            deps: ["backbone", "js_cookie", "page_visibility", "giftcard"]
         },
         "errors" : {
             deps: ["backbone"]
@@ -647,7 +647,7 @@ define({
         'promotions_view' : {
             deps: ['factory']
         },
-        'doc_cookies': {
+        'js_cookie': {
             deps: []
         },
         'page_visibility': {
