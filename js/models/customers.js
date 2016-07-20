@@ -24,12 +24,12 @@
  * Contains {@link App.Models.Customer} constructors.
  * @module customers
  * @requires module:backbone
- * @requires module:doc_cookies
+ * @requires module:js_cookie
  * @requires module:page_visibility
  * @requires module:geopoint
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Backbone, docCookies, page_visibility) {
+define(["backbone", "js_cookie", "page_visibility", "geopoint"], function(Backbone, Cookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -790,7 +790,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
         logout: function() {
             this.defaults.addresses = [];
 
-            docCookies.removeItem(cookieName, cookiePath, cookieDomain);
+            Cookies.remove(cookieName, {path: cookiePath, domain: cookieDomain});
 
             for(var attr in this.defaults) {
                 this.set(attr, this.defaults[attr]);
@@ -1624,8 +1624,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             }
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
-
-            docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+            Cookies.set(cookieName, utf8_to_b64(JSON.stringify(data)), {expires: expires_in, path: cookiePath, domain: cookieDomain, secure: true});
         },
         /**
          * Parse cookie and set customer attributes.
@@ -1634,7 +1633,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
             var data;
 
             try {
-                data = docCookies.getItem(cookieName);
+                data = Cookies.get(cookieName);
             } catch(e) {
                 console.error(e);
             }
@@ -1676,7 +1675,7 @@ define(["backbone", "doc_cookies", "page_visibility", "geopoint"], function(Back
          * Emits `onCookieChange` event if cookie changed.
          */
         trackCookieChange: function() {
-            var currentState = docCookies.getItem(cookieName);
+            var currentState = Cookies.get(cookieName);
             // condition may be true
             // if user returns on tab after profile updating in another tab
             if (_.isString(this.trackCookieChange.prevState) && _.isString(currentState)
