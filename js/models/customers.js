@@ -24,11 +24,11 @@
  * Contains {@link App.Models.Customer} constructors.
  * @module customers
  * @requires module:backbone
- * @requires module:doc_cookies
+ * @requires module:js_cookie
  * @requires module:page_visibility
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], function(Backbone, FB, docCookies, page_visibility) {
+define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], function(Backbone, FB, Cookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -816,7 +816,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
          * Changes attributes values on default values. Emits `onLogout` event.
          */
         logout: function() {
-            docCookies.removeItem(cookieName, cookiePath, cookieDomain);
+            Cookies.remove(cookieName, {path: cookiePath, domain: cookieDomain});
 
             for (var attr in this.defaults) {
                 if (attr != 'addresses') {
@@ -1691,8 +1691,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
             delete data.addresses;
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
-
-            docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+            Cookies.set(cookieName, utf8_to_b64(JSON.stringify(data)), {expires: expires_in, path: cookiePath, domain: cookieDomain, secure: true});
         },
         /**
          * Parse cookie and set customer attributes.
@@ -1701,7 +1700,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
             var data;
 
             try {
-                data = docCookies.getItem(cookieName);
+                data = Cookies.get(cookieName);
                 data && delete data.addresses;
             } catch(e) {
                 console.error(e);
@@ -1745,7 +1744,7 @@ define(["backbone", "facebook", "doc_cookies", "page_visibility", "giftcard"], f
          * Emits `onCookieChange` event if cookie changed.
          */
         trackCookieChange: function() {
-            var currentState = docCookies.getItem(cookieName);
+            var currentState = Cookies.get(cookieName);
             // condition may be true
             // if user returns on tab after profile updating in another tab
             if (_.isString(this.trackCookieChange.prevState) && _.isString(currentState)
