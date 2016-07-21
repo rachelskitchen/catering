@@ -60,6 +60,17 @@ define(["cart_view"], function(cart_view) {
     var CartConfirmationView = CartCheckoutView.extend({
         bindings: {
             '.pay-btn': 'toggle: false'
+        },
+        render: function() {
+            App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
+
+            this.subViews.push(App.Views.GeneratorView.create('Total', {
+                el: this.$('.total_block'),
+                mod: 'Checkout',
+                model: this.options.total,
+                collection: this.options.collection,
+                checkout: this.options.collection.checkout
+            }));
         }
     });
 
