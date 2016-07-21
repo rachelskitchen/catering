@@ -2421,10 +2421,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                             if (data.balances && data.balances.rewards) {
                                 App.Data.myorder.rewardsCard && App.Data.myorder.rewardsCard.resetDataAfterPayment();
                             }
-                            if (payment_type == PAYMENT_TYPE.GIFT && App.Data.customer.isAuthorized()) {
-                                App.Data.customer.getGiftCards();
-                            }
                             if (App.Data.customer.isAuthorized()) {
+                                App.Data.customer.getGiftCards();
                                 App.Data.customer.getRewardCards();
                                 App.Data.customer.getAddresses();
                             }
