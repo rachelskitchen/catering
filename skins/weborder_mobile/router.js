@@ -1204,7 +1204,8 @@ define(["main_router"], function(main_router) {
                     order: true,
                     tip: true,
                     customer: true,
-                    checkout: true
+                    checkout: true,
+                    validationOnly: App.Data.customer.isAuthorized() ? true : false //false => /pre_validate has already been sent on #checkout
                 }, function() {
                    self.navigate('payments', true);
                 });
