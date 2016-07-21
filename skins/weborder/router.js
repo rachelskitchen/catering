@@ -701,6 +701,7 @@ define(["main_router"], function(main_router) {
                     cartData = _.extend({
                         collection: this.recentOrder,
                         checkout: this.recentOrder.checkout,
+                        total: this.recentOrder.total.clone()
                     }, carts.confirm);
                 }
 

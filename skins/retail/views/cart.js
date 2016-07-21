@@ -53,7 +53,21 @@ define(["cart_view"], function(cart_view) {
         }
     });
 
-    var CartConfirmationView = CartCheckoutView.extend({});
+    var CartConfirmationView = CartCheckoutView.extend({
+        computeds: {
+            totalViewData: function() {
+                setTimeout(this.resize.bind(this), 500);
+                return {
+                    el: this.$('.total_block'),
+                    name: 'Total',
+                    mod: 'Checkout',
+                    model: this.options.total,
+                    collection: this.options.collection,
+                    checkout: this.options.collection.checkout
+                };
+            }
+        }
+    });
 
     return new (require('factory'))(cart_view.initViews.bind(cart_view), function() {
         App.Views.CartView.CartMainView = CartMainView;
