@@ -62,6 +62,7 @@ define(["cart_view"], function(cart_view) {
             '.pay-btn': 'toggle: false'
         },
         render: function() {
+            this.options.no_qty_arrows = true;
             App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
 
             this.subViews.push(App.Views.GeneratorView.create('Total', {

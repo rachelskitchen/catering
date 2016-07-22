@@ -38,8 +38,8 @@ define(["backbone", "factory"], function(Backbone) {
             this.hide_show();
         },
         bindings: {
-            '.decrease': 'classes: {disabled: equal(quantity, 1)}',
-            '.increase': 'classes: {disabled: equal(quantity, product_stock_amount)}'
+            '.decrease': 'classes: {disabled: any(equal(quantity, 1), equal(no_qty_arrows, true))}',
+            '.increase': 'classes: {disabled: any(equal(quantity, product_stock_amount), equal(no_qty_arrows, true))}'
         },
         events: {
             'click .increase:not(.disabled)': 'increase',
@@ -48,6 +48,11 @@ define(["backbone", "factory"], function(Backbone) {
         bindingSources: {
             product: function() {
                 return new Backbone.Model({stock_amount: App.Models.Product.prototype.defaults.stock_amount});
+            }
+        },
+        computeds: {
+            no_qty_arrows: function() {
+                return this.options.no_qty_arrows;
             }
         },
         hide_show: function(isComboWithWeightProduct) {
@@ -73,7 +78,7 @@ define(["backbone", "factory"], function(Backbone) {
                 this.model.set('quantity', 1);
             }
 
-            if (stock_amount === 1 || product.isParent() || isComboWithWeightProduct) {
+            if (stock_amount === 1 || product.isParent() || isComboWithWeightProduct || this.getBinding('no_qty_arrows')) {
                 this.$('.decrease').addClass('disabled');
                 this.$('.increase').addClass('disabled');
             } else {
