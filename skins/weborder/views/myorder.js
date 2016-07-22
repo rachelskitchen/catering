@@ -118,7 +118,8 @@ define(["myorder_view"], function(myorder_view) {
                 view = App.Views.GeneratorView.create('Quantity', {
                     el: this.$('.qty-box'),
                     model: this.model,
-                    mod: mod
+                    mod: mod,
+                    no_qty_arrows: this.options.no_qty_arrows
                 });
                 this.subViews.push(view);
             }

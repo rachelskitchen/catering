@@ -69,7 +69,8 @@ define(["products_view"], function() {
             this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
                 el: this.$('.order-items'),
                 mod: 'List',
-                collection: this.collection
+                collection: this.collection,
+                no_qty_arrows: Boolean(this.options.no_qty_arrows)
             }));
 
             this.onChangeOrder();
@@ -162,6 +163,7 @@ define(["products_view"], function() {
             '.pay-btn': 'toggle: false'
         },
         render: function() {
+            this.options.no_qty_arrows = true;
             App.Views.CartView.CartCoreView.prototype.render.apply(this, arguments);
 
             this.subViews.push(App.Views.GeneratorView.create('Total', {

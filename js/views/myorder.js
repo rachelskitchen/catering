@@ -584,7 +584,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 mod: mod,
                 model: model,
                 el: $('<li></li>'),
-                collection: this.collection
+                collection: this.collection,
+                no_qty_arrows: this.options.no_qty_arrows
             });
 
             if (model.isServiceFee()) {
