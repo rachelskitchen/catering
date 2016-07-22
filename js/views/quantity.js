@@ -38,8 +38,6 @@ define(["backbone", "factory"], function(Backbone) {
             this.hide_show();
         },
         bindings: {
-            // '.decrease': 'classes: {disabled: equal(quantity, 1)}',
-            // '.increase': 'classes: {disabled: equal(quantity, product_stock_amount)}'
             '.decrease': 'classes: {disabled: any(equal(quantity, 1), equal(no_qty_arrows, true))}',
             '.increase': 'classes: {disabled: any(equal(quantity, product_stock_amount), equal(no_qty_arrows, true))}'
         },
