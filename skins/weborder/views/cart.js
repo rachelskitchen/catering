@@ -154,6 +154,11 @@ define(["products_view"], function() {
             }));
         },
         pay: function() {
+            // use Cash payment method always when Grand Total value equals 0
+            if (Number(this.getBinding('total_grandTotal')) == 0) {
+                this.model.set('selected', 'cash');
+            }
+
             this.collection.trigger('onPay', this.model.onPay.bind(this.model));
         }
     });
