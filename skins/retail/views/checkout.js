@@ -394,27 +394,38 @@ define(["checkout_view"], function(checkout_view) {
             this.setBinding('ui_step', 1);
         },
         toStep2: function() {
-            var ui = this.getBinding('$ui');
+            var ui = this.getBinding('$ui'),
+                self = this;
             this.collection.check_order({
                 order: true,
                 checkout: true,
                 customer: true
             }, function() {
+                self.grandTotalActions();
                 ui.set('step', 2);
             });
         },
         toStep3: function() {
-            var ui = this.getBinding('$ui');
+            var ui = this.getBinding('$ui'),
+                self = this;
             this.collection.check_order({
                 order: true,
                 checkout: true,
                 customer: true
             }, function() {
+                self.grandTotalActions();
                 ui.set('step', 3);
             });
         },
         submit: function() {
+            this.grandTotalActions();
             this.collection.trigger('onPay', this.options.paymentMethods.onPay.bind(this.options.paymentMethods));
+        },
+        grandTotalActions: function() {
+            // use Cash payment method always when Grand Total value equals 0
+            if (Number(this.getBinding('total_grandTotal')) == 0) {
+                this.setBinding('paymentMethods_selected', 'cash');
+            }
         }
     });
 
