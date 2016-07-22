@@ -80,7 +80,8 @@ define(["factory"], function() {
             this.subViews.push(App.Views.GeneratorView.create('MyOrder', {
                 el: this.$('.order-items'),
                 mod: 'List',
-                collection: this.collection
+                collection: this.collection,
+                no_qty_arrows: Boolean(this.options.no_qty_arrows)
             }));
         },
         resize: function() {
