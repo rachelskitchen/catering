@@ -185,7 +185,7 @@
 
 @-moz-document url-prefix() {
     .checkout-page .cancel::before {
-        padding: 10px 14px 11px 4px;
+        padding: 10px 14px 10px 4px;
     }
 }
 
@@ -220,7 +220,7 @@
 
 @-moz-document url-prefix() {
     .checkout-page .discounts-box .cancel::before {
-        padding: 10px 6px 11px 4px;
+        padding: 10px 6px 10px 4px;
     }
 }
 

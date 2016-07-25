@@ -132,7 +132,7 @@
 
 @-moz-document url-prefix() {
     .checkout-order-details .cancel::before {
-        padding: 10px 14px 11px 4px;
+        padding: 10px 7px 10px 4px;
     }
 }
 
