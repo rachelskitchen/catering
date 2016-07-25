@@ -130,6 +130,12 @@
     font-size: 21px;
 }
 
+@-moz-document url-prefix() {
+    .checkout-order-details .cancel::before {
+        padding: 10px 14px 11px 4px;
+    }
+}
+
 .checkout-order-details .types {
     min-width: 144px;
 }
