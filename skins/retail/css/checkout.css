@@ -183,6 +183,12 @@
     font-size: 21px;
 }
 
+@-moz-document url-prefix() {
+    .checkout-page .cancel::before {
+        padding: 10px 14px 11px 4px;
+    }
+}
+
 .checkout-page .stanford-verify {
     min-width: 90px;
     margin-top: 0;
@@ -210,6 +216,12 @@
 
 .checkout-page .discounts-box .cancel::before {
     padding: 12px 6px 11px 4px;
+}
+
+@-moz-document url-prefix() {
+    .checkout-page .discounts-box .cancel::before {
+        padding: 10px 6px 11px 4px;
+    }
 }
 
 .checkout-page .discount-code-box,
