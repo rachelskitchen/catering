@@ -81,6 +81,7 @@ define(["factory"], function() {
                 el: this.$('.order-items'),
                 mod: 'List',
                 collection: this.collection,
+                saved_discount: this.options.discount,
                 no_qty_arrows: Boolean(this.options.no_qty_arrows)
             }));
         },

@@ -701,7 +701,9 @@ define(["main_router"], function(main_router) {
                     cartData = _.extend({
                         collection: this.recentOrder,
                         checkout: this.recentOrder.checkout,
-                        total: this.recentOrder.total.clone()
+                        total: this.recentOrder.total.clone(),
+                        discount: this.recentOrder.discount.clone(),
+                        no_qty_arrows: true
                     }, carts.confirm);
                 }
 
