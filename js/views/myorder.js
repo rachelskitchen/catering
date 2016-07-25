@@ -621,7 +621,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             if (this.subViews.indexOf(this.discountItemView) == -1 && this.collection.discount && !this.discountItemView ) {
                 var view = App.Views.GeneratorView.create('MyOrder', {
                     mod: 'Discount',
-                    model: this.collection.discount,
+                    model: this.options.saved_discount ? this.options.saved_discount : this.collection.discount,
                     el: $('<li></li>')
                 });
                 this.subViews.push(view);
