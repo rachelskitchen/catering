@@ -1439,6 +1439,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             orders.checkout.set('dining_option', this.checkout.get('dining_option'));
             orders.total = this.total.clone();
+            orders.discount = this.discount.clone();
             return orders;
         },
         /**
