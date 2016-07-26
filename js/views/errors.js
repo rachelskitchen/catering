@@ -32,9 +32,15 @@ define(['backbone', 'factory'], function(Backbone) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model, 'showAlertMessage', this.alertMessage); // user notification
             this.listenTo(this.model, 'hideAlertMessage', this.hideAlertMessage); // hide user notification
+            this.listenTo(this.model, 'change:btnDisabled1', this.disableOKBtn, this);
+
+            if (typeof this.model.get('initialize') === 'function') {
+                this.model.get('initialize')(this);
+            }
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
+            this.disableOKBtn();
             return this;
         },
         events: {
@@ -50,6 +56,17 @@ define(['backbone', 'factory'], function(Backbone) {
             }
             this.hideAlertMessage(1); // hide user notification
             this.model.get('reloadPage') && reloadPageOnceOnline();
+        },
+        disableOKBtn: function() {
+            var btn = this.$('#popup_ok'),
+                disabledClass = 'disabled';
+
+            if (this.model.get('btnDisabled1')) {
+                btn.addClass(disabledClass);
+            }
+            else {
+                btn.removeClass(disabledClass);
+            }
         },
         /**
          * 'Cancel' button was clicked.
