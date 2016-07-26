@@ -71,7 +71,8 @@ define(["profile_view"], function(profile_view) {
                         this.model.set({
                             selected: true,
                             last_digits: model.get('last_digits'),
-                            card_type: creditCardType(model.get('card_type'))
+                            card_type: creditCardType(model.get('card_type')),
+                            ignoreSelectedToken: false
                         });
                     }
                     else if (selected) {
@@ -82,7 +83,8 @@ define(["profile_view"], function(profile_view) {
                         this.model.set({
                             selected: false,
                             last_digits: '',
-                            card_type: ''
+                            card_type: '',
+                            ignoreSelectedToken: true
                         });
                     }
                 }
