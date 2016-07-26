@@ -66,12 +66,21 @@ define(["profile_view"], function(profile_view) {
                         selected = this.collection.findWhere({selected: true});
                     if (model) {
                         model.set('selected', true);
-                        this.model.set('selected', true);
+                        this.model.set({
+                            selected: true,
+                            ignoreSelectedToken: false
+                        });
                     } else if (selected) {
                         selected.set('selected', false);
-                        this.model.set('selected', false);
+                        this.model.set({
+                            selected: false,
+                            ignoreSelectedToken: true
+                        });
                     } else {
-                        this.model.set('selected', false);
+                        this.model.set({
+                            selected: false,
+                            ignoreSelectedToken: true
+                        });
                     }
                 }
             }
