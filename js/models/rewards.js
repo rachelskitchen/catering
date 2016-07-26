@@ -424,6 +424,7 @@ define(['backbone', 'captcha'], function(Backbone) {
         resetData: function() {
             var defaults = $.extend({}, this.defaults);
             delete defaults.rewards;
+            delete defaults.captchaKey;
             this.set(defaults);
             this.get('rewards').reset(); // reset rewards collection
             this.get('rewards').trigger('update');
@@ -436,6 +437,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             var defaults = $.extend({}, this.defaults);
             delete defaults.number;
             delete defaults.rewards;
+            delete defaults.captchaKey;
             this.set(defaults);
             this.get('rewards').reset(); // reset rewards collection
         },
