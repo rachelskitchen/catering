@@ -316,6 +316,7 @@ define(["main_router"], function(main_router) {
                 if (!rewardsCard.get('number') && customer.isAuthorized() && customer.get('rewardCards').length) {
                     rewardsCard.set('number', customer.get('rewardCards').at(0).get('number'));
                 }
+                rewardsCard.set('captchaValue', ''); // reset Captcha key
                 App.Data.mainModel.set('popup', {
                     modelName: 'Rewards',
                     mod: 'Card',

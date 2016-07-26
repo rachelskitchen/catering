@@ -150,13 +150,16 @@ define(['backbone'], function(Backbone) {
             // buttons (begin)
             var btnText1 = this.defaults.confirm.ok;
             var btnText2 = this.defaults.confirm.cancel;
+            var btnDisabled1 = false;
             if (this.get('isConfirm')) {
                 var confirm = this.get('confirm');
                 if (confirm.ok) btnText1 = confirm.ok;
+                if (confirm.ok_disabled) btnDisabled1 = confirm.ok_disabled;
                 if (confirm.cancel) btnText2 = confirm.cancel;
             }
             this.set({
                 btnText1: btnText1,
+                btnDisabled1: btnDisabled1,
                 btnText2: btnText2
             });
             // buttons (end)
