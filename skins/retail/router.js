@@ -470,11 +470,20 @@ define(["main_router"], function(main_router) {
                     typeIcon: '',
                     confirm: {
                         ok: _loc.CONTINUE,
+                        ok_disabled: true,
                         cancel: _loc.CANCEL
                     },
                     customView: view,
                     callback: function(res) {
                         res && view.submit();
+                    },
+                    initialize: function(alertView) {
+                        alertView.listenTo(rewardsCard, 'change:number change:captchaValue', function(model) {
+                            var hasCaptchaValue = Boolean(model.get('captchaValue')),
+                                hasNumber = Boolean(model.get('number'));
+
+                            alertView.model.set('btnDisabled1', !(hasNumber && hasCaptchaValue));
+                        });
                     }
                 });
             });
