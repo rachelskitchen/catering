@@ -2661,3 +2661,29 @@ function objectsDiff(a, b, props)
 
     return diff;
 }
+
+/*
+*  Debug unresolved deferred object(s). It is used in dev=true mode only.
+*/
+if (App.Data.devMode) {
+    function traceDeferredObjects() {
+        var jQueryDeferredFunc = $.Deferred;
+        $.Deferred = function() {
+            if (!_.isObject(App.stackDeferred))
+                App.stackDeferred = {};
+
+            var key = (new Date).getTime() * 1000 + Math.floor(Math.random() * 0x100);
+            var e = new Error;
+
+            var dfd = jQueryDeferredFunc.apply(this, arguments);
+            //trace(key, " => new dfd !");
+            App.stackDeferred[key] = { dfd: dfd, stack: e.stack };
+            dfd.always(function() {
+                delete App.stackDeferred[key];
+                //trace(key, " => dfd done");
+            });
+            return dfd;
+        }
+    }
+}
+

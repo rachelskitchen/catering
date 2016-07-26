@@ -54,8 +54,7 @@ define(['backbone'], function(Backbone) {
          */
         loadLanguagePack: function() {
             var self = this,
-                dfd_core = $.Deferred(),
-                dfd_skin = $.Deferred(),
+                dfd_core, dfd_skin,
                 load_all = $.Deferred();
 
             if (!App.Data.get_parameters) {

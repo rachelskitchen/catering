@@ -215,6 +215,8 @@
         require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
             var win = Backbone.$(window);
 
+            App.Data.devMode && traceDeferredObjects();
+
             app.get = parse_get_params();
 
             // it's for testing:
