@@ -1435,9 +1435,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         clone: function() {
             var orders = new App.Collections.Myorders();
             this.each(function(order) {
-                orders.add(order.clone()) ;
+                orders.add(order.clone(), {silent: true}) ;
             });
             orders.checkout.set('dining_option', this.checkout.get('dining_option'));
+            orders.discount = this.discount.clone();
             orders.total = this.total.clone();
             orders.discount = this.discount.clone();
             return orders;
@@ -1563,13 +1564,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             this.checkout.loadCheckout();
             this.rewardsCard.loadData();
             this.total.loadTotal();
+            this.discount.loadDiscount();
             var orders = getData('orders');
 
             if (orders) {
                 this.addJSON(orders);
             }
-
-            this.discount.loadDiscount();
         },
         /**
          * Checks the cart before payment.

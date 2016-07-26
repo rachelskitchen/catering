@@ -34,8 +34,8 @@ define(["backbone", "factory", "generator"], function() {
                 opt.model.listenTo(opt.model, opt.show_event, this.show_spinner.bind(this), this);
                 opt.model.listenTo(opt.model, opt.hide_event, this.hide_spinner.bind(this), this);
                 this.hide_spinner();
-            }            
-        },       
+            }
+        },
         show_spinner: function() {
             this.$el.show();
         },
@@ -47,12 +47,12 @@ define(["backbone", "factory", "generator"], function() {
     // generator for SpinnerMainView
     $.fn.view_spinner = function(options) {
         return this.each(function(index){
-            var cache_id, 
+            var cache_id,
                 defaults = {
                 className: "view_spinner",
                 show_event: "startLoading",
                 hide_event: "completeLoading"
-            }; 
+            };
             var settings = $.extend( {}, defaults, options );
             if (options) {
                 cache_id = options.cache_id ? (options.cache_id + index.toString()) : undefined;
