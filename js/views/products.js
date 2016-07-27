@@ -126,15 +126,23 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         getData: function() {
             var model = this.product.toJSON(),
-                settings = App.Data.settings;
+                settings = App.Data.settings,
+                sys_settings = settings.get('settings_system');
 
-            model.hide_images = settings.get('settings_system').hide_images;
-            model.currency_symbol = settings.get('settings_system').currency_symbol;
+            model.hide_images = sys_settings.hide_images;
+            model.currency_symbol = sys_settings.currency_symbol;
             model.price = this.getProductPrice();
             model.price_length = model.price.length;
             model.not_size = this.modifiers && this.modifiers.getSizeModel() === undefined;
-            model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
+            model.uom = sys_settings.scales.default_weighing_unit;
             model.images = Array.isArray(model.images) ? model.images : [];
+            model.gift_name = null;
+
+            if (model.is_gift) {
+                model.gift_name = model.name;
+                model.name = sys_settings.business_name;
+                model.image = sys_settings.logo_img;
+            }
 
             if (App.skin == App.Skins.RETAIL && model.images[0] == settings.get_img_default()) {
                 model.images[0] = settings.get_img_default(2); //to load noneMatrix.png
