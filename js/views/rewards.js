@@ -63,7 +63,14 @@
                 return parseInt(points, 10) <= 1 ? text1 : text2;
             },
             discountAmount: function(amount, type) {
-                return type ? Number(amount).toFixed(0) + '%' : App.Settings.currency_symbol + round_monetary_currency(amount);
+                if (type == 0 || type == 2) {
+                    return App.Settings.currency_symbol + round_monetary_currency(amount);
+                } else if (type == 1){
+                    return Number(amount).toFixed(0) + '%';
+                } else {
+                    console.error("Unexpected discount type:", type);
+                    return "";
+                }
             }
         },
         /**
