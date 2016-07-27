@@ -94,7 +94,7 @@ define(['backbone', 'captcha'], function(Backbone) {
             rewards_type: null,
             /**
              * Discount type.
-             *   0 for Amount; 1 for Percent.
+             *   0 for Amount; 1 for Percent, 2 - RePrice discount.
              * @type {Number}
              */
             type: 0,
