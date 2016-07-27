@@ -49,6 +49,7 @@
         'GIFTCARD_NUMBER': 'Card Number',
         'GIFTCARD_CAPTCHA': 'Captcha',
         'GIFTCARD_RELOAD': 'Reload',
+        'GIFT_CARD_ENTER_AMOUNT': 'Please Enter the Amount You Wish to Add',
         'STANFORDCARD_TITLE': 'Enter your Stanford Card Number',
         'STANFORDCARD_TITLE_INFO': 'Your Stanford Card Information',
         'HEADER_MENU': 'Menu',
