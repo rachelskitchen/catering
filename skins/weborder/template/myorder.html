@@ -22,7 +22,7 @@
     <h3 class="product_place">
         <span class="name <% if(isUsualProduct || is_service_fee) {print('bold')} %>">
             <% if(is_child_product && !is_service_fee && !sold_by_weight) { print(quantity + "x") } %>
-            <%= sizeModifier %> <%= name %>
+            <%= sizeModifier %> <%= name %> <% if (gift_name) { %> <br><%= gift_name %> <% } %>
         </span>
         <% if(isUsualProduct) { %>
         <span class="edit primary-icon link"><% _lp.MYORDER_EDIT %></span>
@@ -127,6 +127,7 @@
 <script type="text/template" id="myorder_matrix_footer-template">
     <div class="product_instructions text-left primary-border"></div>
     <div class="footer-line text-left primary-border">
+        <div class="product_price_label fl-left header-text label"><%= _lp.GIFT_CARD_ENTER_AMOUNT %></div>
         <div class="product_price fl-right"></div>
         <div class="quantity quantity_info"></div>
     </div>
