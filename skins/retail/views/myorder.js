@@ -188,6 +188,7 @@ define(["myorder_view"], function(myorder_view) {
                 product: this.model.get_product()
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'change', this.applyBindings, this);
         },
         editItem: function() {
             this.model.trigger('onItemEdit', this.model);
