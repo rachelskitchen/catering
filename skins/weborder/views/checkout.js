@@ -58,7 +58,7 @@ define(["checkout_view"], function(checkout_view) {
         },
         initialize: function() {
             this.tokens = new Backbone.Collection();
-            this.token = new Backbone.Model({selected: false, paymentsExist: false});
+            this.token = new Backbone.Model({selected: false, paymentsExist: false, ignoreSelectedToken: false});
             this.giftCard = new Backbone.Model({selected: false});
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
@@ -245,6 +245,10 @@ define(["checkout_view"], function(checkout_view) {
                             paymentsExist: true
                         });
                         self.tokens.reset(customer.payments.models);
+                        customer.payments.ignoreSelectedToken = self.token.get('ignoreSelectedToken');
+                        customer.payments.listenTo(self.token, 'change:ignoreSelectedToken', function(model, value) {
+                            customer.payments.ignoreSelectedToken = value;
+                        });
                     }
                     if (customer.giftCards) {
                         self.giftCard.set('selected', true);
