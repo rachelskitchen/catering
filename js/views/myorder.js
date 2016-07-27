@@ -124,12 +124,21 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             this.subViews.push(viewModifiers);
         },
         renderProduct: function() {
-            var model = this.model;
-            this.viewProduct = App.Views.GeneratorView.create('Product', {
+            var model = this.model,
+                product = model.get('product'),
+                is_gift = product.get('is_gift');
+
+            var viewOptions = {
                 modelName: 'Product',
                 model: model,
                 mod: 'Modifiers'
-            });
+            };
+
+            if (is_gift) {
+                viewOptions['className'] = 'gift-card-box btn-secondary';
+            }
+
+            this.viewProduct = App.Views.GeneratorView.create('Product', viewOptions);
             this.$('.product_info').append(this.viewProduct.el);
             this.subViews.push(this.viewProduct);
         },
@@ -410,26 +419,28 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 model = this.model.toJSON(),
                 modifiers = this.model.get_modifiers(),
                 product = this.model.get_product(),
-                sizeModifier = modifiers ? modifiers.getSizeModel() : null;
+                sizeModifier = modifiers ? modifiers.getSizeModel() : null,
+                systemSettings = App.Data.settings.get('settings_system');
 
             model.sizeModifier = sizeModifier ? sizeModifier.get('name') : '';
-            model.name = product.get('name');
-            model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
+            model.is_gift = product.get('is_gift');
+            model.name = model.is_gift ? systemSettings.business_name : product.get('name');
+            model.gift_name = model.is_gift ? product.get('name') : null;
+            model.currency_symbol = systemSettings.currency_symbol;
 
             model.initial_price = round_monetary_currency(this.model.get('initial_price'));
 
-            model.uom = App.Data.settings.get("settings_system").scales.default_weighing_unit;
-            model.is_gift = product.get('is_gift');
+            model.uom = systemSettings.scales.default_weighing_unit;
             model.gift_card_number = product.get('gift_card_number');
             model.sold_by_weight = model.product.get("sold_by_weight");
-            model.label_manual_weights = App.Data.settings.get("settings_system").scales.label_for_manual_weights;
+            model.label_manual_weights = systemSettings.scales.label_for_manual_weights;
             model.image = product.get_product().get('image');
             model.id = product.get_product().get('id');
             model.is_service_fee = this.model.isServiceFee();
             model.attrs = this.model.get_attributes() || [];
 
             if (model.sold_by_weight) {
-                num_digits = App.Data.settings.get("settings_system").scales.number_of_digits_to_right_of_decimal;
+                num_digits = systemSettings.scales.number_of_digits_to_right_of_decimal;
                 model.weight = model.weight.toFixed(num_digits);
             }
 

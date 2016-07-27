@@ -157,7 +157,7 @@ define(["myorder_view"], function(myorder_view) {
             ':el': 'classes: {"order-item": true, "giftcard-item": true, "primary-border": true}',
             '.item-sum': 'text: format("+$1", currencyFormat(initial_price))',
             '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}',
-            '.card-number': 'text: product_gift_card_number'
+            '.card-number': 'text: cardNumber'
         },
         bindingFilters: {
             showLogo: function(url) {
@@ -165,6 +165,14 @@ define(["myorder_view"], function(myorder_view) {
                     return '';
                 }
                 return 'background-image: url(%s);'.replace('%s', url);
+            }
+        },
+        computeds: {
+            cardNumber: {
+                deps: ['product_gift_card_number'],
+                get: function(card_number) {
+                    return _loc.MYORDER_ADD_AMOUNT_TO + ' ' + card_number;
+                }
             }
         },
         events: {

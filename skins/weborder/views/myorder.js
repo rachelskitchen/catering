@@ -176,6 +176,17 @@ define(["myorder_view"], function(myorder_view) {
     });
 
     var MyOrderMatrixFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        bindings: {
+            '.product_price_label': 'classes: {hide: select(isGift, false, true)}'
+        },
+        computeds: {
+            isGift: {
+                deps: ['product'],
+                get: function(product) {
+                    return Boolean(product.get('is_gift'));
+                }
+            }
+        },
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
 

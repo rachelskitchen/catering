@@ -110,6 +110,13 @@
     border-top-style: solid;
 }
 
+.product_info_footer .footer-line .label {
+    line-height: 44px;
+    text-transform: uppercase;
+    font-weight: 600;
+    font-size: 12px;
+}
+
 .product_info_footer .currency,
 .product_info_footer .uom,
 .product_info_footer .price,
@@ -126,6 +133,27 @@
 .product_info_footer .currency,
 .product_info_footer .uom {
     padding: 9px 0;
+}
+
+.product_info .gift-card-box {
+    position: relative;
+    padding: 20px;
+    border-radius: 8px;
+    width: 320px;
+    height: 180px;
+    margin: 0 auto;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.product_info .gift-card-box .gift_card_number {
+    display: block;
+    position: absolute;
+    margin: 0;
+    width: 280px;
+    left: 20px;
+    bottom: 20px;
 }
 
 .price-wrapper {
