@@ -2632,7 +2632,12 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          * @returns {object} address object.
          */
         getOrderAddress: function(address) {
-            var address = _.isObject(address) ? address : this.getSelectedAddress().toJSON();
+            var address = _.isObject(address) ? address :
+                this.getSelectedAddress() ? this.getSelectedAddress().toJSON() : null;
+
+            if (!address) {
+                return;
+            }
 
             return {
                 // here we need only the following fields (no need for extra fields from profile address.
