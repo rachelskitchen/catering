@@ -33,12 +33,19 @@
             ':el': 'classes: {"reward-selection__item_selected": selected}',
             '.reward__name': 'text: name',
             '.reward__discount-amount': 'text: discountAmount(amount, type)',
-            '.reward__discount-text': 'text: select(is_item_level, _lp_REWARDS_ITEM_LEVEL_DISCOUNT, _lp_REWARDS_ENTIRE_ORDER_DISCOUNT)',
+            '.reward__discount-text': 'text: discount_text',
             '.reward__redemption-amount': 'text: points',
             '.reward__redemption-text': 'text: redemptionText(points, _lp_REWARDS_POINTS_REDEMPTION_AMOUNT)'
         },
         events: {
             'click': 'selectReward'
+        },
+        computeds: {
+            discount_text: function() {
+                var is_item_level = this.getBinding("is_item_level"),
+                    is_reprice_type = this.getBinding("type") == 2;
+                return is_item_level ? (is_reprice_type ? _loc.REWARDS_ITEM_LEVEL_REPRICE_DISCOUNT : _loc.REWARDS_ITEM_LEVEL_DISCOUNT) : _loc.REWARDS_ENTIRE_ORDER_DISCOUNT;
+            }
         },
         bindingFilters: {
             /**
