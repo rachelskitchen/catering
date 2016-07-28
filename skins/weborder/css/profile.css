@@ -73,6 +73,35 @@
     border-style: solid;
 }
 
+#profile-panel .sign-up-box {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    padding: 0 0 40px;
+}
+
+#profile-panel .sign-up-box .profile-form {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+    height: 100%;
+    padding-top: 25px;
+    padding-bottom: 25px;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+#profile-panel .sign-up-box .signup-btn {
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+}
+
 #profile-panel .required {
     position: relative;
 }

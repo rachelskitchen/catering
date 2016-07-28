@@ -594,7 +594,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.signup-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showSignUp), "regular-text": ui_showSignUp, active: ui_showSignUp}',
             '.login-link': 'toggle: not(access_token), classes: {"primary-text": not(ui_showLogIn), "regular-text": ui_showLogIn, active: ui_showLogIn}',
             '.close': 'toggle: any(ui_showSignUp, ui_showLogIn, ui_showMenu, ui_showPWDReset)',
-            '.sign-up-box': 'toggle: ui_showSignUp',
+            '.sign-up-box': 'toggle: ui_showSignUp, css: {height: signUpHeight}',
             '.log-in-box': 'toggle: ui_showLogIn',
             '.menu-items': 'toggle: ui_showMenu',
             '.logged-as': 'text: first_name, toggle: access_token',
@@ -614,6 +614,26 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                     showMenu: false,
                     showPWDReset: false
                 });
+            }
+        },
+        computeds: {
+            signUpHeight: {
+                deps: ['ui_showSignUp'],
+                get: function(show) {
+                    if (show) {
+                        var el = this.$('.sign-up-box'),
+                            offsetTop = el.offset().top,
+                            indentBottom = offsetTop,
+                            elHeight = el.height(),
+                            availableHeight = $(window).height() - offsetTop - indentBottom;
+
+                        if (elHeight > availableHeight) {
+                            return availableHeight;
+                        }
+                    }
+
+                    return 'auto';
+                }
             }
         },
         render: function() {
