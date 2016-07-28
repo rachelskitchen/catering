@@ -114,6 +114,8 @@ define(["factory"], function() {
             return this;
         },
         bindings: {
+            '.btn': 'classes: {disabled: any(not(orderItems_quantity), orderItems_pending)}',
+            '.animate-spin': 'classes: {hide: all(not(orderItems_pending))}',
             '.subtotal-subline': 'toggle: orderItems_quantity'
         },
         events: {
