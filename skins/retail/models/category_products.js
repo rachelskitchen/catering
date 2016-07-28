@@ -137,8 +137,15 @@ define(['products', 'filters'], function() {
         },
         /**
          * Updates `filters` collection depending on `attribute1`, `attribute2` values of products.
+         *
+         * @param {Backbone.Collection} collection - products collection that provides attributes for filters
+         * @param {Object} opts - options
          */
-        updateFilters: function() {
+        updateFilters: function(collection, opts) {
+            if (_.isObject(opts) && opts.ignoreFilters) {
+                return;
+            }
+
             var products = this.get('products'),
                 attr1 = products.getAttributeValues(1),
                 attr2 = products.getAttributeValues(2),
@@ -187,6 +194,43 @@ define(['products', 'filters'], function() {
                     title: item,
                     uid: btoa(uprefix + item)
                 };
+            }
+        },
+        /**
+         * Predefines order item attributes specified by filters.
+         *
+         * @param {App.Models.Myorder} orderItem - order item.
+         */
+        predefineAttributes: function(orderItem) {
+            var product = orderItem.get('product'),
+                filters = this.get('filters'),
+                attr1_predefined = !product.get('attribute_1_enable'),
+                attr2_predefined = !product.get('attribute_2_enable'),
+                product_atts = product.get_attributes_list(),
+                attr_1_all = _.invert(product_atts.attribute_1_all),
+                attr_2_all = _.invert(product_atts.attribute_2_all);
+
+            product.isParent() && needToPredefine() && filters.every(function(filter) {
+                var name = filter.get('title');
+                filter.getSelected().every(function(filterItem) {
+                    if (!attr1_predefined && product.get('attribute_1_name') === name && filterItem.get('value') in attr_1_all) {
+                        product.set('attribute_1_selected', Number(attr_1_all[filterItem.get('value')]));
+                        attr1_predefined = true;
+                    }
+
+                    if (!attr2_predefined && product.get('attribute_2_name') === name && filterItem.get('value') in attr_2_all) {
+                        product.set('attribute_2_selected', Number(attr_2_all[filterItem.get('value')]));
+                        attr2_predefined = true;
+                    }
+
+                    return needToPredefine();
+                });
+
+                return needToPredefine();
+            });
+
+            function needToPredefine() {
+                return !attr1_predefined || !attr2_predefined;
             }
         }
     });

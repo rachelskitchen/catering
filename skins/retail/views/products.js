@@ -46,7 +46,8 @@ define(["products_view"], function(products_view) {
         name: 'product',
         mod: 'category_list',
         bindings: {
-            ':el': 'updateContent: productSet'
+            '.products-box': 'updateContent: productSet',
+            '.sort-menu': 'updateContent: sortItemsView'
         },
         computeds: {
             productSet: {
@@ -60,6 +61,17 @@ define(["products_view"], function(products_view) {
                         viewId: value.id,
                         subViewIndex: 0
                     };
+                }
+            },
+            sortItemsView: function() {
+                var sortItems = this.getBinding('$sortItems');
+                return {
+                    name: 'Sort',
+                    mod: 'Items',
+                    collection: sortItems,
+                    el: this.$('.sort-menu'),
+                    viewId: sortItems.id,
+                    subViewIndex: 1
                 }
             }
         }

@@ -1,5 +1,11 @@
 .products-view {
-    margin-left: 190px;
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 190px;
+    right: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .products-view .products-set-title {
