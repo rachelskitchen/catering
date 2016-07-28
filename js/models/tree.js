@@ -70,11 +70,11 @@ define(["backbone"], function(Backbone) {
              */
             sort: 0,
             /**
-             * Indicates whether items are collapsed.
+             * Indicates whether items are expanded.
              * @type {boolean}
              * @default true
              */
-            collapsed: true,
+            expanded: false,
             /**
              * Indicates whether the item is selected.
              * @type {boolean}
@@ -148,11 +148,17 @@ define(["backbone"], function(Backbone) {
      *     var tree = new App.Collections.Tree([{name: 'Fruits', sort: 2}, {name: 'Vegetables', sort: 1}]);
      * });
      */
-    App.Collections.Tree = Backbone.Collection.extend(
+    App.Collections.Tree = Backbone.RadioCollection.extend(
     /**
      * @lends Backbone.Model.prototype
      */
     {
+        /**
+         * Attribute name which specifies radio behavior for items.
+         * @type {string}
+         * @default 'expanded'
+         */
+        criteriaAttr: 'expanded',
         /**
          * Defines item attribute that is used in sorting.
          * @type {string}

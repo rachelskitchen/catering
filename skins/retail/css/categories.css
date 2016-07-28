@@ -38,10 +38,6 @@
     cursor: pointer;
 }
 
-.categories-tree .tree-item.no-subtree {
-    margin-bottom: 0;
-}
-
 .categories-tree > .tree > .tree-item {
     padding: 0 11px;
 }
