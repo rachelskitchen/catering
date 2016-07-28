@@ -49,11 +49,27 @@ define(["checkout_view"], function(checkout_view) {
             '.stanford-card-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"), not(hasGrandTotal(total_grandTotal)))}',
             '.stanford-plans-box': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"), not(hasGrandTotal(total_grandTotal)))}',
             '.billing-address-box': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal)))}',
-            '.give-tips-box': 'classes: {hide: any(all(not(equal(paymentMethods_selected, "credit_card_button")), not(equal(paymentMethods_selected, "gift_card"))), not(hasGrandTotal(total_grandTotal)))}'
+            '.give-tips-box': 'classes: {hide: any(not(hasTips), not(hasGrandTotal(total_grandTotal)))}'
         },
         bindingFilters: {
             hasGrandTotal: function(grandTotal) {
                 return Boolean(Number(grandTotal));
+            }
+        },
+        computeds: {
+            hasTips: {
+                deps: ['paymentMethods_selected'],
+                get: function(pm) {
+                    if (pm === 'credit_card_button' ||
+                        pm === 'gift_card' ||
+                        pm === 'stanford' ||
+                        pm === 'paypal')
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
             }
         },
         initialize: function() {
