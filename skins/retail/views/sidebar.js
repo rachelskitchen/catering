@@ -28,7 +28,12 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
         mod: 'main',
         bindings: {
             '.categories': 'updateContent: categories',
-            '.filters': 'updateContent: filtersSet'
+            '.filters': 'updateContent: filtersSet, toggle: not(isArray(categorySelection_subCategory))'
+        },
+        bindingFilters: {
+            isArray: function(value) {
+                return Array.isArray(value);
+            }
         },
         computeds: {
             categories: {

@@ -687,17 +687,13 @@ define(["main_router"], function(main_router) {
                             mod: 'Main',
                             categoriesTree: App.Data.categoriesTree,
                             curProductsSet: App.Data.curProductsSet,
-                            className: 'fl-left'
-                        },
-                        {
-                            modelName: 'Sort',
-                            collection: App.Data.sortItems,
-                            mod: 'Items',
-                            className: 'sort-menu fl-right'
+                            categorySelection: App.Data.categorySelection,
+                            className: 'left-sidebar'
                         },
                         {
                             modelName: 'Product',
-                            collection: App.Data.curProductsSet,
+                            model: App.Data.curProductsSet,
+                            sortItems: App.Data.sortItems,
                             mod: 'CategoryList',
                             className: 'products-view'
                         }
@@ -721,7 +717,7 @@ define(["main_router"], function(main_router) {
                 isInitialized = this.initialized,
                 order = isEditMode ? App.Data.myorder.at(category_id) : new App.Models.Myorder(),
                 self = this,
-                dfd;
+                dfd, needToPredefine;
 
             if (!order) {
                 return this.navigate('index', true);
@@ -731,7 +727,8 @@ define(["main_router"], function(main_router) {
                 dfd = Backbone.$.Deferred();
                 dfd.resolve();
             } else {
-                dfd = order.add_empty(product_id * 1, category_id * 1)
+                dfd = order.add_empty(product_id * 1, category_id * 1);
+                needToPredefine = true;
             }
 
             this.prepare('modifiers', function() {
@@ -744,7 +741,11 @@ define(["main_router"], function(main_router) {
                     var _order = order.clone(),
                         content;
 
-                    content = /*self.getStanfordReloadItem(order) || */{
+                    if (needToPredefine && !Array.isArray(App.Data.categorySelection.get('subCategory')) && App.Data.curProductsSet.get('value')) {
+                        App.Data.curProductsSet.get('value').predefineAttributes(_order);
+                    }
+
+                    content = {
                         modelName: 'MyOrder',
                         mod: 'ItemCustomization',
                         className: 'myorder-item-customization',
@@ -1035,7 +1036,10 @@ define(["main_router"], function(main_router) {
             // Need to update tree when 'subCategory' updates.
             this.listenTo(categorySelection, 'change:subCategory', function(model, value) {
                 var item = tree.getItem('id', value, true);
-                item && item.set('selected', true);
+                item && item.set({
+                    selected: true,
+                    expanded: true
+                });
                 // clear tree item selection
                 if (value === model.defaults.subCategory && lastSelected) {
                     lastSelected.set('selected', false);
@@ -1045,8 +1049,8 @@ define(["main_router"], function(main_router) {
 
             // need to update tree when 'parentCategory' updates
             this.listenTo(categorySelection, 'change:parentCategory', function(model, value) {
-                var item = tree.getItem('id', value);
-                item && item.set('collapsed', false);
+                var item = tree.getItem('id', value, true);
+                item && item.set('expanded', true);
             });
 
             // once categories are loaded need to add them to tree collection
@@ -1063,21 +1067,24 @@ define(["main_router"], function(main_router) {
 
                 // need to convert categories collection to array of tree items.
                 data = _.toArray(_.mapObject(categories.groupBy('parent_id'), function(value, key) {
-                    var data = {
-                        id: Number(key),
-                        name: value[0].get('parent_name'),
-                        sort: value[0].get('parent_sort'),
-                        items: _.invoke(value, 'toJSON')
-                    };
-                    // add 'View All' category
-                    value.length > 1 && data.items.unshift({
-                        id: _.pluck(value, 'id'),
-                        name: _loc.SUBCATEGORIES_VIEW_ALL,
-                        parent_name: value[0].get('parent_name'),
-                        sort: 0,
-                        parent_id: value[0].get('parent_id')
-                    });
-                    return data;
+                    var sub_categories = _.pluck(value, 'id');
+                    if (sub_categories.length > 1) {
+                        // in this case a parent category is present as 'View All' subcategory
+                        return {
+                            id: sub_categories,                       // array of sub categories ids used to show all products
+                            parent_id: sub_categories,                // array of sub categories ids used to show all products
+                            name: value[0].get('parent_name'),        // parent category name
+                            parent_name: value[0].get('parent_name'), // parent category name
+                            sort: value[0].get('parent_sort'),        // parent category sort
+                            items: value.map(function(item) {
+                                return _.extend(item.toJSON(), {parent_id: sub_categories});
+                            }) // sub categories
+                        };
+                    } else {
+                        return _.extend(value[0].toJSON(), {
+                            sort: value[0].get('parent_sort')
+                        });
+                    }
                 }));
 
                 // and reset 'tree' collection with adding new data
@@ -1093,7 +1100,7 @@ define(["main_router"], function(main_router) {
                 if (!searchLine.get('searchString') && categorySelection.areDefaultAttrs()) {
                     categorySelection.set({
                         parentCategory: tree.at(0).get('id'),
-                        subCategory: tree.at(0).get('items').at(0).get('id'),
+                        subCategory: tree.at(0).get('id'),
                     }, {
                         replaceState: true
                     });
@@ -1104,6 +1111,7 @@ define(["main_router"], function(main_router) {
             var self = this,
                 isCached = false,
                 treeItem = App.Data.categoriesTree.getItem('id', ids, true),
+                ignoreFilters = Array.isArray(ids),
                 productSet, key;
 
             ids = Array.isArray(ids) ? ids : [ids];
@@ -1146,7 +1154,7 @@ define(["main_router"], function(main_router) {
                 });
 
                 // set products and resolve status
-                productsAttr.reset(products);
+                productsAttr.reset(products, {ignoreFilters: ignoreFilters});
                 setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
 
                 // Apply a sort method specified by user and listen to its further changes
