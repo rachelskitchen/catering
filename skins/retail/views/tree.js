@@ -35,7 +35,7 @@ define(["factory"], function() {
         bindings: {
             '.name': 'text: name, classes: {active: selected}, attr: {tabindex: select(selected, -1, 0)}',
             '.subtree': 'collection: items, itemView: "itemView"',
-            ':el': 'classes: {"has-subtree": length(items), "no-subtree": not(length(items)), collapsed: collapsed}'
+            ':el': 'classes: {"has-subtree": length(items), "no-subtree": not(length(items)), collapsed: not(expanded)}'
         },
         events: {
             'click .name:not(.active)': 'onClick'
@@ -45,10 +45,10 @@ define(["factory"], function() {
         },
         onClick: function(event) {
             event.stopPropagation();
-            // if item contains subtree need to change 'collapsed' attribute
-            // otherwise need to update 'selected' attribute
-            var attr = this.model.get('items').length ? 'collapsed' : 'selected';
-            this.model.set(attr, !this.model.get(attr));
+            this.model.set({
+                selected: !this.model.get('selected'),
+                expanded: !!this.model.get('items').length
+            });
             this.appData.searchLine.empty_search_line();
         }
     });

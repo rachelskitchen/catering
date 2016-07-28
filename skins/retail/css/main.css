@@ -351,6 +351,17 @@ input[type="radio"]:checked + .radio::before,
     font-weight: 600;
 }
 
+.left-sidebar {
+    position: absolute;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+    padding-right: 10px;
+    z-index: 1;
+}
+
 .maintenance .back {
     padding-left: 30px;
     line-height: 30px;
