@@ -35,6 +35,18 @@ define(["tips_view"], function(tips_view) {
             '.tip-amount-box': 'attr: {"data-currency": _system_settings_currency_symbol}, classes: {disabled: not(type)}',
             '.percents-box': 'classes: {disabled: not(type)}'
         },
+        bindingSources: {
+            config: function() {
+                return new Backbone.Model({
+                    allowed_payment_methods: {
+                        credit_card_button: _loc.TIPS_CREDIT,
+                        gift_card: _loc.TIPS_GIFT,
+                        stanford: _loc.TIPS_STANFORD,
+                        paypal: _loc.TIPS_PAYPAL
+                    }
+                });
+            }
+        },
         computeds: {
             _percents: {
                 deps: ['percents'],
@@ -112,7 +124,8 @@ define(["tips_view"], function(tips_view) {
             typeValue: {
                 deps: ['type', 'paymentMethods_selected'],
                 get: function(type, pm) {
-                    return (pm == 'credit_card_button' || pm == 'gift_card') ? Number(this.model.get('type')) : 0;
+                    var allowedPaymentMethods = this.getBinding('config_allowed_payment_methods');
+                    return allowedPaymentMethods.hasOwnProperty(pm) ? Number(this.model.get('type')) : 0;
                 },
                 set: function(value) {
                     value = Boolean(Number(value));
@@ -121,18 +134,20 @@ define(["tips_view"], function(tips_view) {
                 }
             },
             typeOptions: {
-                deps: ['paymentMethods_selected', '_lp_TIPS_NONE', '_lp_TIPS_CREDIT', '_lp_TIPS_GIFT'],
-                get: function(pm, label_none, label_cc, label_gc) {
+                deps: ['paymentMethods_selected'],
+                get: function(pm) {
                     var data = [];
                     data.push({
-                        label: label_none,
+                        label: _loc.TIPS_NONE,
                         value: 0
                     });
 
-                    var label_cards = (pm == 'credit_card_button') ? label_cc : (pm == 'gift_card') ? label_gc : null;
-                    if (label_cards) {
+                    var allowedPaymentMethods = this.getBinding('config_allowed_payment_methods'),
+                        label = allowedPaymentMethods.hasOwnProperty(pm) ? allowedPaymentMethods[pm] : null;
+
+                    if (label) {
                         data.push({
-                            label: label_cards,
+                            label: label,
                             value: 1
                         });
                     }
