@@ -441,9 +441,20 @@
 }
 
 .profile-attention {
-    border: 0;
+    line-height: 44px;
+    padding: 0 25px;
     font-weight: normal;
     font-size: 16px;
+    opacity: 1;
+    -webkit-transition: margin .5s ease-out, opacity 1s ease-out;
+    -moz-transition: margin .5s ease-out, opacity 1s ease-out;
+    -ms-transition: margin .5s ease-out, opacity 1s ease-out;
+    transition: margin .5s ease-out, opacity 1s ease-out;
+}
+
+.profile-attention.stash {
+    margin-top: -44px;
+    opacity: 0;
 }
 
 .profile-terms-of-use {
