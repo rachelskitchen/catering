@@ -1091,7 +1091,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 updateBasicDetails = false,
                 updatePassword = false,
                 updateBtn = this.profileEditData.updateBtn || new Backbone.Model({disabled: true}),
-                ui = this.profileEditData.ui || new Backbone.Model({show_response: false}),
+                ui = this.profileEditData.ui || new Backbone.Model({show_response: false, show_attention: false}),
                 updatedAddresses = this.profileEditData.updatedAddresses || new Backbone.Collection(),
 
                 basicDetailsChanged = this.profileEditData.basicDetailsChanged || function() {
@@ -1572,6 +1572,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 modelName: 'Profile',
                 mod: 'BasicDetails',
                 model: customer,
+                ui: new Backbone.Model({ show_attention: false }),
                 applyChanges: update,
                 className: 'profile-basic-details'
             }, {
