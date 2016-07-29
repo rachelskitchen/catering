@@ -40,12 +40,12 @@ define(["factory"], function() {
             '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
             '.email': 'value: email, events:["input"]',
             '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/',
-            '.profile-attention': 'css: { display: select(attentionTextVisibility(), "", "none") }'
+            '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}'
         },
-        bindingFilters: {
-            attentionTextVisibility: function() {
-                return App.Data.customer.isLocked();
-            }
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'onUserUpdate', this.setAttentionVisibility, this);
+            this.setAttentionVisibility();
         },
         computeds: {
             allFilled: {
@@ -61,6 +61,9 @@ define(["factory"], function() {
         onEnter: function() {
             var action = setCallback('applyChanges');
             this.getBinding('allFilled') && action.apply(this, arguments);
+        },
+        setAttentionVisibility: function() {
+            this.setBinding('ui_show_attention', this.model.isLocked());
         }
     });
 
@@ -468,15 +471,15 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         bindings: {
             '.update-btn': 'classes: {disabled: updateBtn_disabled}',
             '.successful-update': 'classes: {visible: ui_show_response}',
-            '.profile-attention': 'css: { display: select(attentionTextVisibility(), "", "none") }'
-        },
-        bindingFilters: {
-            attentionTextVisibility: function() {
-                return App.Data.customer.isLocked();
-            }
+            '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}'
         },
         events: {
             'click .update-btn:not(.disabled)': setCallback('updateAction')
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'onUserUpdate', this.setAttentionVisibility, this);
+            this.setAttentionVisibility();
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -513,6 +516,9 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         onEnterListeners: {
             ':el': setCallback('updateAction')
+        },
+        setAttentionVisibility: function() {
+            this.setBinding('ui_show_attention', this.model.isLocked());
         }
     });
 
