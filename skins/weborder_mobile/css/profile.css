@@ -432,9 +432,19 @@
 
 .profile-attention {
     margin: 0 -0.9em;
-    padding: .8em;
-    line-height: 1.25;
+    padding: 0 .8em;
+    line-height: 2.8em;
     color: #FFFFFF;
+    opacity: 1;
+    -webkit-transition: margin .5s ease-out, opacity 1s ease-out;
+    -moz-transition: margin .5s ease-out, opacity 1s ease-out;
+    -ms-transition: margin .5s ease-out, opacity 1s ease-out;
+    transition: margin .5s ease-out, opacity 1s ease-out;
+}
+
+.profile-attention.stash {
+    margin-top: -2.8em;
+    opacity: 0;
 }
 
 #section .profile-terms-of-use {
