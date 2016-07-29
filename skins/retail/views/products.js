@@ -112,7 +112,8 @@ define(["products_view"], function(products_view) {
         mod: 'title',
         bindings: {
             '.price': 'text: select(product_sold_by_weight, weightFormat(initial_price), currencyFormat(initial_price))',
-            '.name': 'text: product_name'
+            '.name': 'text: product_name',
+            '.size_chart': 'toggle: product_size_chart, attr: {href: product_size_chart}'
         }
     });
 
