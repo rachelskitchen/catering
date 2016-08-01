@@ -376,25 +376,29 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             // If binding handler creates new view inherited from EpoxyView it changes objects set that the current EpoxyBinding instance listens to.
             // This is feature of Epoxy lib implementation.
             // Just look at how native 'collection' handler removes and restores 'viewMap' variable.
-            //
-            // Need to create new view after the current EpoxyBinding is initialized.
-            setTimeout(function() {
-                var view = App.Views.GeneratorView.create(value.name, value, value.viewId),
-                    removeMethod = value.viewId ? 'removeFromDOMTree' : 'remove',
-                    existingView = subViews[value.subViewIndex];
 
-                // remove view if it exists
-                existingView && existingView[removeMethod]();
+            // Need to suspend the working graph map here before making children
+            this.suspendDependencyGraph();
 
-                // add new view to `subViews` array
-                if (typeof value.subViewIndex == 'number' && value.subViewIndex > -1) {
-                    subViews[value.subViewIndex] = view;
-                } else {
-                    subViews.push(view);
-                }
+            // create subview
+            var view = App.Views.GeneratorView.create(value.name, value, value.viewId),
+                removeMethod = value.viewId ? 'removeFromDOMTree' : 'remove',
+                existingView = subViews[value.subViewIndex];
 
-                $el.append(view.el);
-            }, 0);
+            // remove view if it exists
+            existingView && existingView[removeMethod]();
+
+            // add new view to `subViews` array
+            if (typeof value.subViewIndex == 'number' && value.subViewIndex > -1) {
+                subViews[value.subViewIndex] = view;
+            } else {
+                subViews.push(view);
+            }
+
+            $el.append(view.el);
+
+            // Restore cached dependency graph configuration
+            this.restoreDependencyGraph();
         }
     });
 });

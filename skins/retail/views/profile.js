@@ -33,8 +33,10 @@ define(["profile_view"], function(profile_view) {
         },
         selectFirstAndReset: function() {
             var customer = this.options.customer;
-            customer.payments.selectFirstItem();
-            this.collection.reset(customer.payments.models);
+            if (customer.payments) {
+                customer.payments.selectFirstItem();
+                this.collection.reset(customer.payments.models);
+            }
         },
         bindings: {
             '.payments-list': 'value: selection, options: options'
@@ -99,6 +101,7 @@ define(["profile_view"], function(profile_view) {
             var customer = this.appData.customer;
 
             this.listenTo(customer, 'updateCheckoutGiftCards', function() {
+                customer.giftCards.selectFirstItem();
                 this.collection.reset(customer.giftCards.models);
             });
 
@@ -130,7 +133,12 @@ define(["profile_view"], function(profile_view) {
                 deps: ['$collection'],
                 get: function(collection) {
                     var selected = collection.findWhere({selected: true});
-                    return selected ? selected.id : -1;
+                    if (selected) {
+                        this.model.set('selected', true);
+                        return selected.get('cardNumber');
+                    } else {
+                        return -1;
+                    }
                 },
                 set: function(value) {
                     var model = this.collection.findWhere({cardNumber: value}),

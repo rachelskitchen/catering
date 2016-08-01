@@ -53,7 +53,7 @@ define(["backbone", "captcha"], function(Backbone) {
          * @property {string} storageKey='giftcard' - key in a storage
          * @property {string} remainingBalance=null - remaining balance on the card
          * @property {string} token='' - token for current session
-         * @property {boolean} selected=false - the card is selected for payment or not
+         * @property {boolean} selected=false - indicates whether the card is selected for payment
          */
         defaults: _.extend({}, App.Models.Captcha.prototype.defaults,
         {
@@ -260,7 +260,7 @@ define(["backbone", "captcha"], function(Backbone) {
      *     var giftcards = new App.Collections.GiftCards([{cardNumber: '777'}, {cardNumber: '555'}]);
      * });
      */
-    App.Collections.GiftCards = Backbone.Collection.extend(
+    App.Collections.GiftCards = Backbone.RadioCollection.extend(
     /**
      * @lends App.Collections.GiftCards.prototype
      */
@@ -281,17 +281,10 @@ define(["backbone", "captcha"], function(Backbone) {
          * Adds listener to 'change:selected' to implement radio button behavior for gift card selection. New added item triggers 'change:selected' event.
          */
         initialize: function() {
-            this.listenTo(this, 'change:selected', function(model, value) {
-                if (value) {
-                    this.where({selected: true}).forEach(function(item) {
-                        item !== model && item.set('selected', false);
-                    });
-                }
-            });
-
             this.listenTo(this, 'add', function(model) {
                 model.trigger('change:selected', model, model.get('selected'));
             });
+            Backbone.RadioCollection.prototype.initialize.apply(this, arguments);
         },
         /**
          * Receives gift cards from server. Sends request with following parameters:
