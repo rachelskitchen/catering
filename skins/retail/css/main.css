@@ -235,7 +235,15 @@ textarea:focus {
     margin: 4px;
 }
 
-.border-box, .input, .textarea,
+.border-box,
+.border-box * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+.input, .textarea,
 #popup_panel[id] > input[type='button'] {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
