@@ -1654,6 +1654,7 @@ var NoPaymentPaymentProcessor = {
 };
 
 var USAePayPaymentProcessor = {
+    name: 'USAePayPaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString.replace(/&?UM[^=]*=[^&]*/g, '').replace(/&?card_type=[^&]*/g, '');
     },
@@ -1682,6 +1683,7 @@ var USAePayPaymentProcessor = {
 };
 
 var BraintreePaymentProcessor = {
+    name: 'BraintreePaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString;
     },
@@ -1725,6 +1727,7 @@ var BraintreePaymentProcessor = {
 };
 
 var GlobalCollectPaymentProcessor = {
+    name: 'GlobalCollectPaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString;//.replace(/&?UM[^=]*=[^&]*/g, '');
     },
@@ -1882,6 +1885,7 @@ $(window).on('LocalizationCompleted', function() {
 });
 
 var MercuryPaymentProcessor = {
+    name: 'MercuryPaymentProcessor',
     clearQueryString: function(queryString) {
         qStr = queryString.replace(/&amp;/g, '&');
         qStr = qStr.replace(/&&/g, '&');
@@ -1975,6 +1979,7 @@ var MONERIS_PARAMS = {
 };
 
 var MonerisPaymentProcessor = {
+    name: 'MonerisPaymentProcessor',
     clearQueryString: function(queryString) {
         qStr = queryString.replace(/&?response_order_id=[^&]*/, '');
         qStr = qStr.replace(/&?date_stamp=[^&]*/, '');
@@ -2034,6 +2039,7 @@ var WORLDPAY_PARAMS = {
 };
 
 var WorldPayPaymentProcessor = {
+    name: 'WorldPayPaymentProcessor',
     clearQueryString: function(queryString) {
 
         qStr = queryString.replace(/&?Accepted=[^&]*/, '');
@@ -2102,6 +2108,7 @@ var WorldPayPaymentProcessor = {
 
 
 var QuickBooksPaymentProcessor = {
+    name: 'QuickBooksPaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString;
     },
@@ -2145,6 +2152,7 @@ var QuickBooksPaymentProcessor = {
 };
 
 var AdyenPaymentProcessor = {
+    name: 'AdyenPaymentProcessor',
     clearQueryString: function(queryString) {
         qStr = queryString.replace(/&?merchantReference=[^&]*/, '');
         qStr = qStr.replace(/&?skinCode=[^&]*/, '');
@@ -2175,6 +2183,7 @@ var AdyenPaymentProcessor = {
 };
 
 var PayPalPaymentProcessor = {
+    name: 'PayPalPaymentProcessor',
     clearQueryString: function(queryString) {
         res = queryString.replace(/&?token=[^&]*/, '');
         res = res.replace(/&?PayerID=[^&]*/, '');
@@ -2202,6 +2211,7 @@ var PayPalPaymentProcessor = {
 };
 
 var PayPalMobilePaymentProcessor = {
+    name: 'PayPalMobilePaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString;
     },
@@ -2216,6 +2226,7 @@ var PayPalMobilePaymentProcessor = {
 };
 
 var GiftCardPaymentProcessor = {
+    name: 'GiftCardPaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString;
     },
@@ -2242,6 +2253,7 @@ var GiftCardPaymentProcessor = {
 };
 
 var StanfordCardPaymentProcessor = {
+    name: 'StanfordCardPaymentProcessor',
     clearQueryString: function(queryString) {
         return queryString;
     },
@@ -2255,6 +2267,7 @@ var StanfordCardPaymentProcessor = {
 };
 
 var FreedomPayPaymentProcessor = {
+    name: 'FreedomPayPaymentProcessor',
     clearQueryString: function(queryString) {
         qStr = queryString.replace(/&?transid=[^&]*/, '');
 
@@ -2351,6 +2364,7 @@ var FreedomPayPaymentProcessor = {
 };
 
 var CRESecurePaymentProcessor = {
+    name: 'CRESecurePaymentProcessor',
     clearQueryString: function(queryString) {
         qStr = queryString.replace(/&?code=[^&]*/, '');
         qStr = qStr.replace(/&?message=[^&]*/, '');
