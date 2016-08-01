@@ -161,6 +161,14 @@ select:focus,
     border: none !important;
 }
 
+.border-box,
+.border-box * {
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
 .input, .select-wrapper select {
     width: 100%;
     padding: 8px 14px;
