@@ -79,7 +79,7 @@ define(["checkout_view"], function(checkout_view) {
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
                 tokens: this.tokens,         // tokens
-                giftCard: this.giftCard,     // indicated any saved gift card is selected or not
+                giftCard: this.giftCard      // indicated any saved gift card is selected or not
             });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.options.customer, 'onLogin', this.setProfileData);

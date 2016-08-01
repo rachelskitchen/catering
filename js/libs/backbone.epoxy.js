@@ -1177,6 +1177,27 @@
   Epoxy.binding = {
     allowedParams: allowedParams,
     addHandler: function(name, handler) {
+      // Revel's Edition start
+      (function() {
+        if (_.isObject(handler)) {
+          var mapCache = null;
+          handler.suspendDependencyGraph = function() {
+            // Cache and reset the current dependency graph state:
+            // sub-views may be created (each with their own dependency graph),
+            // therefore we need to suspend the working graph map here before making children...
+            mapCache = viewMap;
+            viewMap = null;
+          };
+          handler.restoreDependencyGraph = function() {
+            // Restore cached dependency graph configuration:
+            if (mapCache) {
+              viewMap = mapCache;
+              mapCache = null;
+            }
+          };
+        }
+      })();
+      // Revel's Edition end
       bindingHandlers[ name ] = makeHandler(handler);
     },
     addFilter: function(name, handler) {
