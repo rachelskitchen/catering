@@ -912,7 +912,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                     email_notifications: attrs.email_notifications,
                     push_notifications: attrs.push_notifications,
                     instance: getInstanceName(),
-                    establishment_id: App.Data.settings.get("establishment")
+                    establishment_id: App.Data.settings.get_current_establishment()
+
                 }),
                 success: function(data) {
                     this.clearPasswords();
