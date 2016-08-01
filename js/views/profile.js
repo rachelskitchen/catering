@@ -1011,7 +1011,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 get: function() {
                     var self = this, req,
                         collection = this.model.payments,
-                        primaryPaymentsModel = collection.getPrimaryPayment();
+                        primaryPaymentsModel = collection ? collection.getPrimaryPayment() : undefined;
                     var ret1 = primaryPaymentsModel ? primaryPaymentsModel.checkAttributesDiff() : {status: 'ERROR'},
                         ret2 = this.newGiftCard ? this.newGiftCard.check() : {status: 'ERROR'},
                         ret3 = this.newRewardCard ? this.newRewardCard.check() : {status: 'ERROR'};
