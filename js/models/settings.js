@@ -387,6 +387,13 @@ define(["backbone", "async"], function(Backbone) {
             return establishment;
         },
         /**
+         * Gets ID of current establishment (which could be changed by 'Change Store' feature).
+         * @returns {number} Establishment id.
+         */
+        get_current_establishment: function() {
+            return this.get('establishment') ?  this.get('establishment') : undefined;
+        },
+        /**
          * Gets system settings.
          * Request parameters:
          * ```
