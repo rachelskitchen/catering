@@ -14,11 +14,6 @@
     margin-left: 631px;
 }
 
-.myorder-item-customization .attr-line:not(.no-images) {
-    padding-left: 25px;
-    margin-left: 0;
-}
-
 .myorder-item-customization .modifier_class_wrapper,
 .myorder-item-customization .quantity_info {
     display: inline-block;
@@ -145,4 +140,16 @@
 .giftcard-item .remove,
 .giftcard-item .edit {
     margin-left: 20px;
+}
+
+@media only screen and (max-width: 1440px) {
+    .myorder-item-customization .right-side:not(.no-images) {
+        margin-left: 552px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .myorder-item-customization .right-side:not(.no-images) {
+        margin-left: 482px;
+    }
 }
