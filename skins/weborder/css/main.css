@@ -546,8 +546,8 @@ input[type="radio"]:checked + .radio::before,
     font-size: 16px;
 }
 
-#alert [data-btns="2"] {
-    letter-spacing: -50px;
+#alert .btn_wrapper {
+    font-size: 0;
 }
 
 #alert [data-btns="2"] .btn {
