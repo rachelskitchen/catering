@@ -68,6 +68,11 @@ li:not(:last-child) .promotions__item {
     border-bottom-style: solid;
 }
 
+.promotions__item-left {
+    line-height: 20px;
+    margin-top: -10px;
+}
+
 .promotions__item-applied:before {
     font-family: FontAwesome;
     content: '\f00c';
