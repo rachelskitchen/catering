@@ -36,7 +36,7 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             '.phone': 'toggle: _system_settings_phone',
             '.phone-number': 'text: phoneFormat(_system_settings_phone), attr: {href: format("tel:$1", _system_settings_phone)}',
             '.email-wrap': 'toggle: _system_settings_email',
-            '.email': 'text: _system_settings_email, attr: {href: format("mail:$1", _system_settings_email)}',
+            '.email': 'text: _system_settings_email, attr: {href: format("mailto:$1", _system_settings_email)}',
             '.access': 'toggle: _system_settings_about_access_to_location',
             '.access-info': 'text: _system_settings_about_access_to_location',
             '.gallery': 'updateContent: galleryViewData'
