@@ -52,6 +52,7 @@
         },
         "promotions": {
             "core": ["promotions", "promotions_view"],
+            "views": ["promotions"],
             "css": ["promotions"],
             "templates": ["promotions"]
         }

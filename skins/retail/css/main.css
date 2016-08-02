@@ -654,6 +654,39 @@ input[type="radio"]:checked + .radio::before,
     opacity: 1;
 }
 
+/* Promotions item popup */
+.promotions-item-popup #popup_overlay {
+    opacity: .65;
+}
+
+.promotions-item-popup #popup_container {
+    box-shadow: 0 0 50px rgba(0, 0, 0, .25);
+}
+
+.promotions-item-popup #popup_content {
+    min-width: 450px;
+}
+
+.promotions-item-popup .promotions__title {
+    text-align: center;
+}
+
+.promotions-item-popup .promotion-details__discount {
+    padding: 21px 24px;
+    border-top-width: 1px;
+    border-top-style: solid;
+}
+
+.promotions-item-popup .promotion-details__discount-label {
+    font-size: 16px;
+    margin-bottom: 21px;
+}
+
+.promotions-item-popup #popup_panel > input[type=button] {
+    display: block;
+    width: 100%;
+}
+
 /* for tablets */
 @media only screen and (min-device-width : 768px) and (max-device-width : 1024px) and (orientation : landscape) {
     html.ipad {
