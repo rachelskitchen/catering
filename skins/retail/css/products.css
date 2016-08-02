@@ -120,3 +120,25 @@
 .product_info .btn {
     padding: 13px 10px;
 }
+
+@media only screen and (max-width: 1440px) {
+    .product_info .img_wrapper {
+        width: 450px;
+        height: 450px;
+    }
+
+    .product_info .images {
+        height: 450px;
+    }
+}
+
+@media only screen and (max-width: 1024px) {
+    .product_info .img_wrapper {
+        width: 380px;
+        height: 380px;
+    }
+
+    .product_info .images {
+        height: 380px;
+    }
+}
