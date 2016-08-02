@@ -202,6 +202,11 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
+            this.options.addresses = this.options.customer.get('addresses');
+            _.extend(this.bindingSources, {
+                addresses: this.options.customer.get('addresses')
+            });
+
             this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
 
             if (this.isShippingServices)
@@ -209,8 +214,8 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
 
-            this.toggleAddressEdit();
-            this.listenTo(this.options.customer.get('addresses'), 'change:selected', this.toggleAddressEdit);
+            this.listenTo(this.options.addresses , 'change:selected', this.toggleAddressEdit);
+            setTimeout(this.toggleAddressEdit.bind(this),0);//gets to init isAuthorized computed field
         },
         bindings: {
             '.address-selection': 'toggle: showAddressSelection',
@@ -233,7 +238,7 @@ define(['backbone', 'factory'], function(Backbone) {
              * Indicates whether the address selection drop-down list should be shown.
              */
             showAddressSelection: {
-                deps: ['isAuthorized', 'customer_addresses', 'checkout_dining_option'],
+                deps: ['isAuthorized', '$addresses', 'checkout_dining_option'],
                 get: function(isAuthorized, customer_addresses, checkout_dining_option) {
                     return isAuthorized && customer_addresses.filter(function(addr) {
                         var address = addr.toJSON();
@@ -342,6 +347,10 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesSelectionView = App.Views.FactoryView.extend({
         initialize: function() {
+            this.options.addresses = this.options.customer.get('addresses');
+            _.extend(this.bindingSources, {
+                addresses: this.options.customer.get('addresses')
+            });
             this.listenTo(this.options.customer, 'change:access_token', function(customer, value) {
                 if (!value) {
                     return this.$('#addresses').html('');
@@ -349,7 +358,7 @@ define(['backbone', 'factory'], function(Backbone) {
                 delete this.options.address_index;
                 this.updateAddressesOptions();
             });
-            this.listenTo(this.options.customer.get('addresses'), 'reset add remove', function() {
+            this.listenTo(this.options.addresses, 'reset add remove', function() {
                 this.updateAddressesOptions();
             });
 
