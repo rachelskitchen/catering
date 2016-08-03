@@ -610,6 +610,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
+                    giftcard = App.Data.giftcard,
                     customer = App.Data.customer,
                     stanfordCard = App.Data.stanfordCard,
                     myorderClone = myorder.clone();
@@ -627,6 +628,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                             myorder.checkout.revert_dining_option();   //restore dinin_option from selected_dining_option
                         }
                         customer && customer.resetShippingServices();  // clear shipping service selected
+                        giftcard && giftcard.reset();                  // clear Gift card data
                         stanfordCard && stanfordCard.clearData();      // clear Stanford card data
                         break;
                     case 'error':
