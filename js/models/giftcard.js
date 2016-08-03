@@ -246,6 +246,19 @@ define(["backbone", "captcha"], function(Backbone) {
                 },
                 error: new Function()           // to override global ajax error handler
             });
+        },
+        /**
+         * @method
+         * Resets all attribute values to default.
+         */
+        reset: function() {
+            this.set({
+                cardNumber: this.defaults.cardNumber,
+                storageKey: this.defaults.storageKey,
+                remainingBalance: this.defaults.remainingBalance,
+                token: this.defaults.token,
+                selected: this.defaults.selected
+            });
         }
     });
 
