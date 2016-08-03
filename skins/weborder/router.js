@@ -684,9 +684,10 @@ define(["main_router"], function(main_router) {
          */
         confirm: function() {
             // if App.Data.myorder.paymentResponse isn't defined navigate to #index
-            if(!(App.Data.myorder.paymentResponse instanceof Object)) {
+            if (!(App.Data.myorder.paymentResponse instanceof Object) || !this.recentOrder) {
                 return this.navigate('index', true);
             }
+
             this.prepare('confirm', function() {
                 // if App.Data.customer doesn't exist (success payment -> history.back() to #checkout -> history.forward() to #confirm)
                 // need to init it.
@@ -707,6 +708,14 @@ define(["main_router"], function(main_router) {
                         no_qty_arrows: true
                     }, carts.confirm);
                 }
+
+                // the order should be displayed once
+                delete this.recentOrder;
+
+                // Listeners
+                this.listenTo(App.Data.customer, 'onLogin onLogout', function() {
+                    this.navigate('index', true);
+                }, this);
 
                 App.Views.GeneratorView.cacheRemoveView('Main', 'Done', 'content_Main_Done');
                 App.Views.GeneratorView.cacheRemoveView('Cart', 'Confirmation', 'cart_Cart_Confirmation');
