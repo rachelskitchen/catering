@@ -202,9 +202,11 @@ define(['backbone', 'factory'], function(Backbone) {
 
     var DeliveryAddressesView = AddressView.extend({
         initialize: function() {
+            var self =this;
             this.options.addresses = this.options.customer.get('addresses');
             _.extend(this.bindingSources, {
-                addresses: this.options.customer.get('addresses')
+                addresses: this.options.customer.get('addresses'),
+                viewModel: new Backbone.Model({address_edit: null}) //dummi value
             });
 
             this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
@@ -214,12 +216,14 @@ define(['backbone', 'factory'], function(Backbone) {
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
 
-            this.listenTo(this.options.addresses , 'change:selected', this.toggleAddressEdit);
-            setTimeout(this.toggleAddressEdit.bind(this),0);//gets to init isAuthorized computed field
+            this.listenTo(this.options.addresses, 'change:selected', function() {
+                self.bindingSources.viewModel.trigger('change:address_edit');
+            });
         },
         bindings: {
             '.address-selection': 'toggle: showAddressSelection',
-            '.shipping-services': 'toggle: equal(checkout_dining_option, "DINING_OPTION_SHIPPING")'
+            '.shipping-services': 'toggle: equal(checkout_dining_option, "DINING_OPTION_SHIPPING")',
+            '.address-edit': 'toggle: toggleAddressEdit'
         },
         events: {
             'change #addresses': 'updateAddress'
@@ -248,6 +252,15 @@ define(['backbone', 'factory'], function(Backbone) {
                     }).length;
                 }
             },
+            /*
+            *  Indicates whether the view shows or hides editable address fields
+            */
+            toggleAddressEdit: {
+                deps: ['viewModel_address_edit'],
+                get: function() {
+                    return !this.getBinding('isAuthorized') || !this.getBinding('customer_addresses').isProfileAddressSelected() || !this.getBinding('showAddressSelection');
+                }
+            }
         },
         render: function() {
             this.model.set('isShippingServices', this.isShippingServices);
@@ -338,10 +351,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 && (model.country == 'US' ? model.state : true) && (model.country == 'CA' ? model.province : true)) {
                 App.Data.myorder.update_cart_totals({update_shipping_options: true});
             }
-        },
-        toggleAddressEdit: function() {
-            var show = !this.getBinding('isAuthorized') || !this.getBinding('customer_addresses').isProfileAddressSelected() || !this.getBinding('showAddressSelection');
-            this.$('.address-edit').toggle(show);
         }
     });
 
