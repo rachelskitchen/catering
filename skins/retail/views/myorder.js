@@ -157,6 +157,7 @@ define(["myorder_view"], function(myorder_view) {
             ':el': 'classes: {"order-item": true, "giftcard-item": true, "primary-border": true}',
             '.item-sum': 'text: format("+$1", currencyFormat(initial_price))',
             '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}',
+            '.card-type': 'text: product_name',
             '.card-number': 'text: cardNumber'
         },
         bindingFilters: {
