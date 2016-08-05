@@ -2515,6 +2515,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             _.each(addresses, function(address) {
                 self.add(App.Models.CustomerAddress.prototype.convertFromAPIFormat(address));
             });
+            this.trigger('updated_from_backend');
         },
         /**
          * Saves addresses to a storage.
