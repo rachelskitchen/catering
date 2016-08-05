@@ -12,6 +12,7 @@ var tests_list = [
     'test_Errors',
     'test_Establishments',
     'test_Filters',
+    'test_Geolocation',
     'test_Geopoint',
     'test_Giftcard',
     'test_Locale',
