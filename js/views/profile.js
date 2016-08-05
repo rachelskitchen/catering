@@ -36,16 +36,33 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'basic_details',
         bindings: {
-            '.first-name': 'value: firstLetterToUpperCase(first_name), events:["input"], trackCaretPosition: first_name',
-            '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name',
-            '.email': 'value: email, events:["input"]',
-            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/',
+            '.first-name-label': 'classes: {"attention-text": checkError(errors_attrs, "first_name")}',
+            '.first-name': 'value: firstLetterToUpperCase(first_name), events:["input"], trackCaretPosition: first_name, classes: {"field-error": checkError(errors_attrs, "first_name")}',
+            '.last-name-label': 'classes: {"attention-text": checkError(errors_attrs, "last_name")}',
+            '.last-name': 'value: firstLetterToUpperCase(last_name), events:["input"], trackCaretPosition: last_name, classes: {"field-error": checkError(errors_attrs, "last_name")}',
+            '.email-label': 'classes: {"attention-text": checkError(errors_attrs, "email")}',
+            '.email': 'value: email, events:["input"], classes: {"field-error": checkError(errors_attrs, "email")}',
+            '.phone-label': 'classes: {"attention-text": checkError(errors_attrs, "phone")}',
+            '.phone': 'value: phone, events: ["input"], restrictInput: "0123456789+", pattern: /^\\+?\\d{0,15}$/, classes: {"field-error": checkError(errors_attrs, "phone")}',
             '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}'
         },
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, 'onCheckSignUpData', this.setErrorsData, this);
             this.listenTo(this.model, 'onUserUpdate', this.setAttentionVisibility, this);
             this.setAttentionVisibility();
+        },
+        bindingFilters: {
+            checkError: function(errors, field) {
+                return (errors.indexOf(field) !== -1);
+            }
+        },
+        bindingSources: {
+            errors: function() {
+                return new Backbone.Model({
+                    attrs: []
+                });
+            }
         },
         computeds: {
             allFilled: {
@@ -64,6 +81,9 @@ define(["factory"], function() {
         },
         setAttentionVisibility: function() {
             this.setBinding('ui_show_attention', this.model.isLocked());
+        },
+        setErrorsData: function(data) {
+            this.setBinding('errors_attrs', data ? data : []);
         }
     });
 
@@ -71,7 +91,8 @@ define(["factory"], function() {
         name: 'profile',
         mod: 'sign_up',
         bindings: {
-            '.password': 'value: password, events:["input"]',
+            '.password-label': 'classes: {"attention-text": checkError(errors_attrs, "password")}',
+            '.password': 'value: password, events:["input"], classes: {"field-error": checkError(errors_attrs, "password")}',
             '.password-confirm': 'value: confirm_password, events:["input"]',
             '.passwords-mismatch': 'toggle: select(all(password, confirm_password), not(equal(password, confirm_password)), false)',
             '.accept-tou': 'checked: terms_accepted',

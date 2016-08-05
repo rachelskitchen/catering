@@ -463,16 +463,18 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          * ```
          */
         checkSignUpData: function() {
-            var err = [];
+            var err = [], atts = [];
 
-            !this.get('first_name') && err.push(_loc.PROFILE_FIRST_NAME);
-            !this.get('last_name') && err.push(_loc.PROFILE_LAST_NAME);
-            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS);
-            !this.get('phone') && err.push(_loc.PROFILE_PHONE);
-            !this.get('password') && err.push(_loc.PROFILE_PASSWORD);
-            !_.isBoolean(this.get('email_notifications')) && err.push(_loc.PROFILE_EMAIL_NOTIFICATIONS);
-            !_.isBoolean(this.get('push_notifications')) && err.push(_loc.PROFILE_PUSH_NOTIFICATIONS);
+            !this.get('first_name') && err.push(_loc.PROFILE_FIRST_NAME) && atts.push('first_name');
+            !this.get('last_name') && err.push(_loc.PROFILE_LAST_NAME) && atts.push('last_name');
+            !EMAIL_VALIDATION_REGEXP.test(this.get('email')) && err.push(_loc.PROFILE_EMAIL_ADDRESS) && atts.push('email');
+            !this.get('phone') && err.push(_loc.PROFILE_PHONE) && atts.push('phone');
+            !this.get('password') && err.push(_loc.PROFILE_PASSWORD) && atts.push('password');
+            !_.isBoolean(this.get('email_notifications')) && err.push(_loc.PROFILE_EMAIL_NOTIFICATIONS) && atts.push('email_notifications');
+            !_.isBoolean(this.get('push_notifications')) && err.push(_loc.PROFILE_PUSH_NOTIFICATIONS) && atts.push('push_notifications');
 
+            this.trigger('onCheckSignUpData', atts);
+            
             if (err.length) {
                 return {
                     status: "ERROR_EMPTY_FIELDS",
@@ -933,6 +935,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                         default:
                             this.trigger('onUserCreateError', resp);
                     }
+
+                    this.trigger('onCheckSignUpData', Object.keys(resp));
 
                     function getResponse() {
                         return _.isObject(jqXHR.responseJSON) ? jqXHR.responseJSON : {};

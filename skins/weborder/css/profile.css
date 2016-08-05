@@ -155,7 +155,8 @@
     top: -1px;
 }
 
-#profile-panel .attention-text {
+#profile-panel .activation-sent,
+#profile-panel .account-inactive {
     margin-top: -10px;
     padding: 0 14px 15px;
     text-align: left;
