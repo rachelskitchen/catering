@@ -470,6 +470,14 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 });
             });
 
+            this.listenTo(customer, 'onLogin', function() {
+                this.detectCurrentLocation().done(function(coordinates) {
+                    if (Array.isArray(coordinates)) {
+                        customer.updateCustomer({coordinates: coordinates});
+                    }
+                });
+            });
+
             function listenToCVVRequired() {
                 this.listenTo(customer, 'onCVVRequired', function(data) {
                     App.Data.errors.alert('', false, false, {
@@ -513,6 +521,27 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
                 return messages.length ? messages.join(' ') : null;
             }
+        },
+        /**
+         * Detects current location.
+         */
+        detectCurrentLocation: function() {
+            var dfd = Backbone.$.Deferred(),
+                geoloc = new App.Models.Geolocation({
+                    timeout: App.Data.settings.get('timeout')
+                });
+
+            geoloc.detect_current_location().done(function() {
+                var coords = geoloc.get_current_loc() || geoloc.getDefaultCurrentLoc();
+
+                if (_.isObject(coords) && typeof coords.latitude == 'number' && typeof coords.longitude == 'number') {
+                    dfd.resolve([coords.latitude, coords.longitude]);
+                } else {
+                    dfd.resolve();
+                }
+            });
+
+            return dfd;
         },
         /**
          * Inits App.Data.giftcard if it is undefined
