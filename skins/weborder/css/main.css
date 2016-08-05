@@ -191,11 +191,15 @@ select:focus,
 
 .checkbox, .radio {
     display: inline-block;
-    width: 13px;
-    height: 13px;
+    width: 15px;
+    height: 15px;
     border-width: 1px;
     border-style: solid;
     position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 input[type="checkbox"]:checked + .checkbox::before,

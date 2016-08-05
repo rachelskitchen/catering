@@ -293,11 +293,15 @@ textarea:focus {
 
 .checkbox, .radio {
     display: inline-block;
-    width: 12px;
-    height: 12px;
+    width: 14px;
+    height: 14px;
     border-width: 1px;
     border-style: solid;
     position: relative;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    -ms-box-sizing: border-box;
+    box-sizing: border-box;
 }
 
 input[type="checkbox"]:checked + .checkbox::before,
