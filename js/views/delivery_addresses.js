@@ -367,8 +367,10 @@ define(['backbone', 'factory'], function(Backbone) {
                 delete this.options.address_index;
                 this.updateAddressesOptions();
             });
-            this.listenTo(this.options.addresses, 'reset add remove', function() {
+            this.listenTo(this.options.addresses, 'updated_from_backend', function() {
+                this.options.address_index = -1;
                 this.updateAddressesOptions();
+                delete this.options.address_index;
             });
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
