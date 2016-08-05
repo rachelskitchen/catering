@@ -369,7 +369,7 @@ define(['backbone', 'factory'], function(Backbone) {
             });
             this.listenTo(this.options.addresses, 'updated_from_backend', function() {
                 //this.options.address_index = -1;
-                theis.updateAddressesOptions();
+                this.updateAddressesOptions();
                 //delete this.options.address_index;
             });
 
