@@ -117,10 +117,6 @@
     margin-bottom: 15px;
 }
 
-.profile-panel-box .input.field-error {
-    border-color: red;
-}
-
 .profile-panel-box .passwords-mismatch {
     position: absolute;
     bottom: -5px;

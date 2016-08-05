@@ -125,10 +125,6 @@
     margin-bottom: 15px;
 }
 
-#profile-panel .input.field-error {
-    border-color: red;
-}
-
 #profile-panel .profile-checkbox {
     display: block;
     padding: 8px 14px 0;
@@ -159,7 +155,8 @@
     top: -1px;
 }
 
-#profile-panel .attention-text {
+#profile-panel .activation-sent,
+#profile-panel .account-inactive {
     margin-top: -10px;
     padding: 0 14px 15px;
     text-align: left;
