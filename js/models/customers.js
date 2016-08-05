@@ -915,7 +915,6 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                     push_notifications: attrs.push_notifications,
                     instance: getInstanceName(),
                     establishment_id: App.Data.settings.get_current_establishment()
-
                 }),
                 success: function(data) {
                     this.clearPasswords();
@@ -1014,9 +1013,11 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          * ```
          * The model emits `onUserValidationError` event in this case.
          *
+         * @param {Object} data - custom data need to update.
+         *
          * @returns {Object} jqXHR object.
          */
-        updateCustomer: function() {
+        updateCustomer: function(data) {
             var attrs = this.toJSON();
 
             return Backbone.$.ajax({
@@ -1025,7 +1026,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 context: this,
                 contentType: "application/json",
                 headers: this.getAuthorizationHeader(),
-                data: JSON.stringify({
+                data: JSON.stringify(_.isObject(data) ? data : {
                     email: attrs.email,
                     first_name: attrs.first_name,
                     last_name: attrs.last_name,
