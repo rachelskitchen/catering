@@ -451,6 +451,11 @@ define({
          * @description The actual path of [tree]{@link module:tree} module.
          */
         tree: 'js/models/tree',
+        /**
+         * @type {string}
+         * @description The actual path of [tree]{@link module:geolocation} module.
+         */
+        geolocation: 'js/models/geolocation'
     },
     /**
      * A waiting time of a module loading.
@@ -666,6 +671,9 @@ define({
             deps: ['factory']
         },
         'tree': {
+            deps: ['backbone']
+        },
+        'geolocation': {
             deps: ['backbone']
         }
     },
