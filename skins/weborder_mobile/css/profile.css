@@ -21,10 +21,6 @@
     margin-bottom: 1.4em;
 }
 
-.profile-form input.field-error {
-    border-color: red;
-}
-
 .profile-form .account-password-input {
     position: relative;
 }
