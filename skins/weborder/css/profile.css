@@ -125,6 +125,10 @@
     margin-bottom: 15px;
 }
 
+#profile-panel .input.field-error {
+    border-color: red;
+}
+
 #profile-panel .profile-checkbox {
     display: block;
     padding: 8px 14px 0;
