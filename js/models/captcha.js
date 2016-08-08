@@ -68,8 +68,8 @@ define(["backbone"], function(Backbone) {
             captchaValue: ''
         },
         /**
-         * Gets captcha image from `/weborders/captcha/?establishment=%estId%` resource.
-         * It updates `captchaImage`, `captchaKey` attributes.
+         * Sets `captchaKey` attribute as `recaptcha_site_key` system settings.
+         * Updates `captchaValue`, `captchaKey` attributes.
          */
         loadCaptcha: function() {
             this.set('captchaKey', App.Settings.recaptcha_site_key);
