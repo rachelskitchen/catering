@@ -453,7 +453,7 @@ define({
         tree: 'js/models/tree',
         /**
          * @type {string}
-         * @description The actual path of [tree]{@link module:geolocation} module.
+         * @description The actual path of [geolocation]{@link module:geolocation} module.
          */
         geolocation: 'js/models/geolocation'
     },
