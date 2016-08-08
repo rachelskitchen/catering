@@ -5,13 +5,15 @@ define(['card'], function() {
 
         var model, def,
             locale = App.Data.locale.toJSON(),
-            isBillingAddressCard;
+            isBillingAddressCard,
+            _getData;
 
         beforeEach(function() {
             isBillingAddressCard = spyOn(PaymentProcessor, 'isBillingAddressCard');
+            _getData = null
 
             model = new App.Models.Card();
-            spyOn(window, "getData");
+            spyOn(window, "getData").and.callFake(function() {return _getData;});
             spyOn(window, "setData");
             def = {
                 firstName: '',
@@ -102,8 +104,13 @@ define(['card'], function() {
         });
 
         it('loadCard()', function() {
+            spyOn(model, 'set');
             model.loadCard(); // load state model from storage (detected automatic)
             expect(getData).toHaveBeenCalledWith('card');
+            expect(model.set).toHaveBeenCalledWith({billing_address: jasmine.any(Backbone.Model)});
+            _getData = {img: 'asdasd', billing_address: {}};
+            model.loadCard();
+            expect(model.set).toHaveBeenCalledWith({billing_address: jasmine.any(Backbone.Model)});
         });
 
         describe("check()", function() {
@@ -211,6 +218,19 @@ define(['card'], function() {
                 expect(model.check().status).toBe('OK');
             });
 
+            it('`opts.ignorePerson`, `opts.ignoreCardNumber`, `opts.ignoreSecurityCode` are passed as `true`', function() {
+                spyOn(model, 'checkPerson');
+                spyOn(model, 'checkCardNumber');
+                spyOn(model, 'checkSecurityCode');
+                model.check({
+                    ignorePerson: true,
+                    ignoreCardNumber: true,
+                    ignoreSecurityCode: true
+                });
+                expect(model.checkPerson).not.toHaveBeenCalled();
+                expect(model.checkCardNumber).not.toHaveBeenCalled();
+                expect(model.checkSecurityCode).not.toHaveBeenCalled();
+            });
         });
 
         describe('check_billing_address()', function() {
@@ -427,17 +447,19 @@ define(['card'], function() {
         });
 
         describe('window.get_billing_address()', function() {
-            var billing_address = new Backbone.Model({
-                test: 'test',
-                country: 'US'
-            });
+            var billing_address;
 
             beforeEach(function() {
+                billing_address = new Backbone.Model({
+                    test: 'test',
+                    country: 'US'
+                });
+
                 this.customer = App.Data.customer;
 
                 App.Data.customer = new Backbone.Model({
                     addresses: {
-                        getDefaultProfileAddress: jasmine.createSpy().and.returnValue(billing_address),
+                        getDefaultProfileAddress: jasmine.createSpy().and.callFake(function() {return billing_address;}),
                         getCheckoutAddress: jasmine.createSpy().and.returnValue(billing_address.toJSON())
                     }
                 });
@@ -452,8 +474,10 @@ define(['card'], function() {
 
             it('card.use_profile_address is true', function() {
                 App.Data.card.set('use_profile_address', true);
-
                 expect(window.get_billing_address()).toEqual(billing_address.toJSON());
+                expect(App.Data.customer.get('addresses').getDefaultProfileAddress).toHaveBeenCalled();
+                billing_address = false;
+                expect(window.get_billing_address()).toBe(null);
                 expect(App.Data.customer.get('addresses').getDefaultProfileAddress).toHaveBeenCalled();
             });
 

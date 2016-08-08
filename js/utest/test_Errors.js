@@ -1,8 +1,8 @@
 define(['errors'], function() {
     describe("App.Models.Error", function() {
-        
-        var model, def, result, skin;
-        
+
+        var model, def, empty, result, skin;
+
         beforeEach(function() {
             model = new App.Models.Errors();
 
@@ -61,25 +61,25 @@ define(['errors'], function() {
             }
 
             it('empty arguments', function() {
-                model.alert()
+                model.alert();
                 expect(model.toJSON()).toEqual(empty);
                 expectTrigger();
             });
-            
+
             it('`message` as number', function() {
                 model.alert(123);
                 result.message = '123';
                 expect(model.toJSON()).toEqual(result);
                 expectTrigger();
             });
-            
+
             it('`message` as string', function() {
                 model.alert('123');
                 result.message = '123';
                 expect(model.toJSON()).toEqual(result);
                 expectTrigger();
             });
-            
+
             it('`message` as string and `reload_page` as number (12)', function() {
                 model.alert('123', 12);
                 result.message = '123';
@@ -87,14 +87,14 @@ define(['errors'], function() {
                 expect(model.toJSON()).toEqual(result);
                 expectTrigger();
             });
-            
+
             it('`message` as string and `reload_page` as null', function() {
                 model.alert('123', null);
                 result.message = '123';
                 expect(model.toJSON()).toEqual(result);
                 expectTrigger();
             });
-            
+
             it('`message` as string and `reload_page` as boolean (true)', function() {
                 model.alert('123', true);
                 result.message = '123';
