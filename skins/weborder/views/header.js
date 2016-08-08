@@ -60,15 +60,17 @@ define(["backbone", "factory"], function() {
         },
         computeds: {
             isNarrow: {
-                deps: ['$_system_settings', 'promotions_available'],
-                get: function(settings, promotions_available) {
-                    var delivery_for_online_orders = settings.get('delivery_for_online_orders'),
-                        min_delivery_amount = settings.get('min_delivery_amount'),
-                        delivery_post_code_lookup = settings.get('delivery_post_code_lookup'),
-                        delivery_post_code_lookup_enabled = _.isArray(delivery_post_code_lookup) && delivery_post_code_lookup[0],
-                        delivery_geojson = settings.get('delivery_geojson'),
-                        delivery_geojson_enabled = _.isArray(delivery_geojson) && delivery_geojson[0],
-                        estimated_delivery_time = settings.get('estimated_delivery_time');
+                deps: [
+                    'promotions_available',
+                    '_system_settings_delivery_for_online_orders',
+                    '_system_settings_min_delivery_amount',
+                    '_system_settings_delivery_post_code_lookup',
+                    '_system_settings_delivery_geojson',
+                    '_system_settings_estimated_delivery_time'
+                ],
+                get: function(promotions_available, delivery_for_online_orders, min_delivery_amount, delivery_post_code_lookup, delivery_geojson, estimated_delivery_time) {
+                        var delivery_post_code_lookup_enabled = _.isArray(delivery_post_code_lookup) && delivery_post_code_lookup[0],
+                            delivery_geojson_enabled = _.isArray(delivery_geojson) && delivery_geojson[0];
 
                     if (promotions_available &&
                         min_delivery_amount &&
