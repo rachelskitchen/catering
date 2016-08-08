@@ -107,7 +107,13 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
              * @type {?Array}
              * @default null
              */
-            default_products: null
+            default_products: null,
+            /*
+            * the current qty to add for this product set
+            * @type {number}
+            * @default 1
+            */
+            cur_qty_to_add: 1
         },
         /**
          * Initialization through a json object, internal method used for order restoring from localStorage
@@ -209,6 +215,14 @@ define(["backbone", 'products', 'collection_sort', 'myorder'], function(Backbone
             return this.get('order_products').filter(function(model) {
                 return model.get('selected') == true;
             });
+        },
+        /*
+        *
+        */
+        update_cur_qty_to_add: function() {
+            var cur_qty = this.get_selected_qty(),
+                max_quantity = this.get('maximum_amount');
+            this.set('cur_qty_to_add', max_quantity - cur_qty);
         }
     });
 
