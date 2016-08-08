@@ -37,7 +37,8 @@ define(["backbone", "factory"], function() {
             '.about': 'classes: {active: strictEqual(tab_index, 1)}',
             '.map': 'classes: {active: strictEqual(tab_index, 2)}',
             '.title': 'text: business_name',
-            '.promotions-link': 'toggle: promotions_available'
+            '.promotions-link': 'toggle: promotions_available',
+            '.store_info': 'classes: {"store-info-narrow": isNarrow}'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -56,6 +57,32 @@ define(["backbone", "factory"], function() {
             'click .about': onClick('onAbout'),
             'click .map': onClick('onMap'),
             'click .promotions-link': onClick('onPromotions')
+        },
+        computeds: {
+            isNarrow: {
+                deps: [
+                    'promotions_available',
+                    '_system_settings_delivery_for_online_orders',
+                    '_system_settings_min_delivery_amount',
+                    '_system_settings_delivery_post_code_lookup',
+                    '_system_settings_delivery_geojson',
+                    '_system_settings_estimated_delivery_time'
+                ],
+                get: function(promotions_available, delivery_for_online_orders, min_delivery_amount, delivery_post_code_lookup, delivery_geojson, estimated_delivery_time) {
+                        var delivery_post_code_lookup_enabled = _.isArray(delivery_post_code_lookup) && delivery_post_code_lookup[0],
+                            delivery_geojson_enabled = _.isArray(delivery_geojson) && delivery_geojson[0];
+
+                    if (promotions_available &&
+                        min_delivery_amount &&
+                        estimated_delivery_time &&
+                        (delivery_post_code_lookup_enabled || !delivery_geojson_enabled))
+                    {
+                        return true;
+                    }
+
+                    return false;
+                }
+            }
         }
     });
 
