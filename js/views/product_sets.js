@@ -72,6 +72,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:quantity', this.update, this);
             this.listenTo(this.model, 'change:weight', this.update, this);
+            this.listenTo(this.options.productSet, 'change:cur_qty_to_add', this.update_cur_qty_to_add, this);
             this.listenTo(this.model.get_modifiers(), 'modifiers_changed', this.update, this);
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
@@ -98,20 +99,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
             this.$el.html(this.template(model));
 
-            var option_el, max_quantity,
-                exact_amount = productSet.get("maximum_amount"),
-                mdf_quantity_el = this.$(".mdf_quantity select");
-
-            if (!exact_amount) {
-                max_quantity = 5; //default value
-            }
-            else {
-                max_quantity = exact_amount;
-            }
-            for (var i=1; i <= max_quantity; i++) {
-                option_el = $('<option>').val(i).text("x" + i);
-                mdf_quantity_el.append(option_el);
-            }
+            this.update_cur_qty_to_add();
 
             this.update_elements();
             return this;
@@ -160,6 +148,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             this.model.set('selected', checked);
+            if (!checked) {
+                this.model.set('quantity', 1);
+            }
             this.$('.input').attr('checked', checked ? 'checked' : false);
             if (checked && this.model.check_order().status != 'OK') {
                 this.$(".customize").click();
@@ -181,6 +172,28 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             else {
                 this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
+            }
+        },
+        update_cur_qty_to_add: function() {
+            var option_el,
+                max_quantity = this.options.productSet.get('cur_qty_to_add'),
+                mdf_quantity_el = this.$(".mdf_quantity select"),
+                is_selected = this.model.get('selected');
+
+            //trace(this.model.get("product").get("name"), "cur_qty_to_add =", max_quantity, "is_selected=", is_selected, "get('quantity')=", this.model.get('quantity'));
+            max_quantity = is_selected ? max_quantity + this.model.get('quantity') : max_quantity;
+
+            var list_elements = mdf_quantity_el.children(),
+                list_count = list_elements.length;
+
+            for (var i = list_count; i > max_quantity; i--) {
+                list_elements[i-1].remove();
+                //trace("removed:", "x" + i);
+            }
+            for (var i = list_count + 1; i <= max_quantity; i++) {
+                option_el = $('<option>').val(i).text("x" + i);
+                mdf_quantity_el.append(option_el);
+                //trace("append:", "x" + i);
             }
         },
         update: function() {
@@ -270,6 +283,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 checked.removeClass('fade-out');
                 unchecked.removeClass('fade-out');
             }
+            this.model.update_cur_qty_to_add();
         }
     });
 
