@@ -162,7 +162,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
             this.model.set('selected', checked);
             if (!checked) {
-                this.model.set('quantity', 1);
+                this.model.set('quantity', 1, {silent: true});
             }
             this.$('.input').attr('checked', checked ? 'checked' : false);
             if (checked && this.model.check_order().status != 'OK') {
