@@ -48,10 +48,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'click .title_wrapper': 'change'
         },
         bindings: {
-            '.mdf_quantity select': 'value: decimal(quantity)',
+            '.mdf_quantity select': 'value: decimal(quantity), options:qty_options',
             '.customize ': "classes:{hide:any(not(selected), not(is_modifiers))}",
             '.cost': "classes: {hide: any(not(selected), not(is_modifiers))}",
-            '.price': "text: currencyFormat(modifiers_sum)",
+            '.price': "text: currencyFormat(modifiers_sum)"
         },
         computeds: {
             is_modifiers: function() {
@@ -61,6 +61,22 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 deps: ['modifiers'],
                 get: function() {
                     return this.model.get_sum_of_modifiers();
+                }
+            },
+            qty_options: {
+                deps: ['productSet_cur_qty_to_add'],
+                get: function(cur_qty_to_add) {
+                    var data=[],
+                        is_selected = this.model.get('selected');
+                    //trace(this.model.get("product").get("name"), "cur_qty_to_add =", max_quantity, "is_selected=", is_selected, "qty=", this.model.get('quantity'));
+                    var max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
+                    for (var i = 1; i <= max_quantity; i++) {
+                        data.push({
+                            label: "x" + i,
+                            value: i
+                        });
+                    }
+                    return data;
                 }
             }
         },
@@ -97,21 +113,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.name =  product.escape('name');
 
             this.$el.html(this.template(model));
-
-            var option_el, max_quantity,
-                exact_amount = productSet.get("maximum_amount"),
-                mdf_quantity_el = this.$(".mdf_quantity select");
-
-            if (!exact_amount) {
-                max_quantity = 5; //default value
-            }
-            else {
-                max_quantity = exact_amount;
-            }
-            for (var i=1; i <= max_quantity; i++) {
-                option_el = $('<option>').val(i).text("x" + i);
-                mdf_quantity_el.append(option_el);
-            }
 
             this.update_elements();
             return this;
@@ -160,6 +161,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             this.model.set('selected', checked);
+            if (!checked) {
+                this.model.set('quantity', 1);
+            }
             this.$('.input').attr('checked', checked ? 'checked' : false);
             if (checked && this.model.check_order().status != 'OK') {
                 this.$(".customize").click();
@@ -270,6 +274,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 checked.removeClass('fade-out');
                 unchecked.removeClass('fade-out');
             }
+            this.model.update_cur_qty_to_add();
         }
     });
 
