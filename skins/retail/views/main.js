@@ -316,9 +316,7 @@ define(["done_view", "generator"], function(done_view) {
             isDelivery: {
                 deps: ['checkout_dining_option'],
                 get: function(dining_option) {
-                    return dining_option == 'DINING_OPTION_DELIVERY'
-                        || dining_option == 'DINING_OPTION_SHIPPING'
-                        || dining_option == 'DINING_OPTION_CATERING';
+                    return (dining_option == 'DINING_OPTION_SHIPPING');
                 }
             },
             boldTmp: function() {
