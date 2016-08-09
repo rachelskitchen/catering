@@ -252,7 +252,6 @@ define(["done_view", "generator"], function(done_view) {
         bindings: {
             '.thanks': 'text: insertPlaceholder(_lp_DONE_THANK_YOU, customer_first_name)',
             '.submitted': 'html: insertPlaceholder(_lp_DONE_ORDER_SUBMITTED, format(boldTmp, _system_settings_business_name))',
-            '.pickup-time': 'classes: {hide: inList(checkout_dining_option, "DINING_OPTION_ONLINE", "DINING_OPTION_SHIPPING")}, html: insertPlaceholder(select(isDelivery, _lp_DONE_ARRIVE_TIME, _lp_DONE_PICKUP_TIME), format(boldTmp, checkout_pickupTime))',
             '.email-sent-to': 'text: customer_email',
             '.other-options-line': 'classes: {hide: not(equal(checkout_dining_option, "DINING_OPTION_OTHER"))}',
             '.other-options': 'text: joinOtherDiningOptions($other_options)',
@@ -317,9 +316,7 @@ define(["done_view", "generator"], function(done_view) {
             isDelivery: {
                 deps: ['checkout_dining_option'],
                 get: function(dining_option) {
-                    return dining_option == 'DINING_OPTION_DELIVERY'
-                        || dining_option == 'DINING_OPTION_SHIPPING'
-                        || dining_option == 'DINING_OPTION_CATERING';
+                    return (dining_option == 'DINING_OPTION_SHIPPING');
                 }
             },
             boldTmp: function() {
