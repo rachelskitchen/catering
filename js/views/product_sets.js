@@ -48,10 +48,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'click .title_wrapper': 'change'
         },
         bindings: {
-            '.mdf_quantity select': 'value: decimal(quantity)',
+            '.mdf_quantity select': 'value: decimal(quantity), options:qty_options',
             '.customize ': "classes:{hide:any(not(selected), not(is_modifiers))}",
             '.cost': "classes: {hide: any(not(selected), not(is_modifiers))}",
-            '.price': "text: currencyFormat(modifiers_sum)",
+            '.price': "text: currencyFormat(modifiers_sum)"
         },
         computeds: {
             is_modifiers: function() {
@@ -61,6 +61,22 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 deps: ['modifiers'],
                 get: function() {
                     return this.model.get_sum_of_modifiers();
+                }
+            },
+            qty_options: {
+                deps: ['productSet_cur_qty_to_add'],
+                get: function(cur_qty_to_add) {
+                    var data=[],
+                        is_selected = this.model.get('selected');
+                    //trace(this.model.get("product").get("name"), "cur_qty_to_add =", max_quantity, "is_selected=", is_selected, "qty=", this.model.get('quantity'));
+                    var max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
+                    for (var i = 1; i <= max_quantity; i++) {
+                        data.push({
+                            label: "x" + i,
+                            value: i
+                        });
+                    }
+                    return data;
                 }
             }
         },
@@ -72,7 +88,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.listenTo(this.model, 'change:selected', this.update, this);
             this.listenTo(this.model, 'change:quantity', this.update, this);
             this.listenTo(this.model, 'change:weight', this.update, this);
-            this.listenTo(this.options.productSet, 'change:cur_qty_to_add', this.update_cur_qty_to_add, this);
             this.listenTo(this.model.get_modifiers(), 'modifiers_changed', this.update, this);
             this.listenTo(this.model, 'model_changed', this.reinit_new_model, this);
         },
@@ -98,8 +113,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.name =  product.escape('name');
 
             this.$el.html(this.template(model));
-
-            this.update_cur_qty_to_add();
 
             this.update_elements();
             return this;
@@ -172,28 +185,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             else {
                 this.$('.input').attr('checked', false);
                 this.$(".mdf_quantity").hide();
-            }
-        },
-        update_cur_qty_to_add: function() {
-            var option_el,
-                max_quantity = this.options.productSet.get('cur_qty_to_add'),
-                mdf_quantity_el = this.$(".mdf_quantity select"),
-                is_selected = this.model.get('selected');
-
-            //trace(this.model.get("product").get("name"), "cur_qty_to_add =", max_quantity, "is_selected=", is_selected, "get('quantity')=", this.model.get('quantity'));
-            max_quantity = is_selected ? max_quantity + this.model.get('quantity') : max_quantity;
-
-            var list_elements = mdf_quantity_el.children(),
-                list_count = list_elements.length;
-
-            for (var i = list_count; i > max_quantity; i--) {
-                list_elements[i-1].remove();
-                //trace("removed:", "x" + i);
-            }
-            for (var i = list_count + 1; i <= max_quantity; i++) {
-                option_el = $('<option>').val(i).text("x" + i);
-                mdf_quantity_el.append(option_el);
-                //trace("append:", "x" + i);
             }
         },
         update: function() {
