@@ -377,7 +377,46 @@ define([], function() {
             "maximum_amount": 1,
             "sort": 2,
             "quantity": 1
-        }]
+        }],
 
-    }
+        "ajaxJsonUpsell": {
+            "slots":
+            [{
+                "sort":1,
+                "name":"Lunch 1",
+                "default_products":[
+                ],
+                "products":[
+                ],
+                "id":67,
+                "quantity":3
+             },
+             {
+                "sort":2,
+                "name":"Lunch 2",
+                "default_products":[
+                ],
+                "products":[
+                ],
+                "id":68,
+                "quantity":1
+             },
+             {
+                "sort":3,
+                "name":"Lunch 3",
+                "default_products":[
+                ],
+                "products":[
+                ],
+                "id":69,
+                "quantity":3
+             }
+          ],
+          "price":"70.00",
+          "upsell_combo_price":20.0,
+          "name":"Upsell Lunch"
+       }//end of ajaxJsonUpcharge
+
+//------------------
+    }//end of return
 });

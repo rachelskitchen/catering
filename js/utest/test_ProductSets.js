@@ -105,6 +105,18 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
             expect(clone.cid).not.toBe(model.cid);
             expect(clone.__proto__).toEqual(model.__proto__);
         });
+
+        it('update_cur_qty_to_add()', function() {
+            model.addAjaxJSON(dataJson);
+            model.set({maximum_amount: 10}, {silent: true});
+            model.update_cur_qty_to_add();
+            expect(model.get('cur_qty_to_add')).toEqual(10);
+
+            model.get("order_products").at(0).set({quantity: 3, selected: true}, {silent: true});
+
+            model.update_cur_qty_to_add();
+            expect(model.get('cur_qty_to_add')).toEqual(7);
+        });
     });
 
     describe('App.Collections.ProductSets', function() {
@@ -119,7 +131,7 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
             expect(App.Collections.ProductSets).toBeDefined();
         });
 
-        describe('get_product_sets(product_id)', function() {
+        describe('get_product_sets(product_id) - Combo', function() {
             var ajaxSpy, ajax, product_id;
 
             beforeEach(function() {
@@ -142,6 +154,44 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
                 expect(result.state()).toBe('resolved');
                 expect(App.Models.ProductSet.prototype.addAjaxJSON).toHaveBeenCalled();
                 expect(model.models[0].get('name')).toBe('Product set 1');
+            });
+
+            it('error', function() {
+                ajaxSpy.and.callFake(function(opts) {
+                    opts.error();
+                });
+                spyOn(App.Data.errors, 'alert');
+
+                model.get_product_sets(product_id);
+                expect(App.Data.errors.alert).toHaveBeenCalled();
+            });
+        });
+
+        describe('get_product_sets(product_id) - Upsell', function() {
+            var ajaxSpy, ajax, product_id;
+
+            beforeEach(function() {
+                ajaxSpy = spyOn($, 'ajax');
+                product_id = 1;
+            });
+
+            it('success', function() {
+                var response = deepClone(data.ajaxJsonUpsell);
+                ajaxSpy.and.callFake(function(opts) {
+                    ajax = opts;
+                    opts.successResp(response);
+                });
+                spyOn(App.Models.ProductSet.prototype, 'addAjaxJSON');
+
+                var result = model.get_product_sets(product_id, 'upsell');
+
+                expect(ajax.data).toEqual({product: product_id});
+                expect(ajax.url).toBe(App.Data.settings.get('host') + '/weborders/product_upcharge/');
+                expect(result.state()).toBe('resolved');
+                expect(App.Models.ProductSet.prototype.addAjaxJSON).toHaveBeenCalled();
+                expect(model.models.length).toBe(3);
+                expect(model.upcharge_name).toBe(response.name);
+                expect(model.upcharge_price).toBe(response.upsell_combo_price);
             });
 
             it('error', function() {
@@ -250,6 +300,6 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
             var result = App.Collections.ProductSets.init(product_id);
             expect(result.state()).toBe('resolved');
         });
-        
+
     });
 });
