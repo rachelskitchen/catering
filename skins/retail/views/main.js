@@ -55,7 +55,7 @@ define(["done_view", "generator"], function(done_view) {
 
             this.iOSFeatures();
 
-            this.subViews.length = 2;
+            this.subViews.length = 3;
 
             SpinnerView.prototype.initialize.apply(this, arguments);
         },
@@ -76,7 +76,7 @@ define(["done_view", "generator"], function(done_view) {
                 data = this.model.get('content'),
                 content_defaults = this.content_defaults();
 
-            while (this.subViews.length > 2)
+            while (this.subViews.length > 3)
                 this.subViews.pop().removeFromDOMTree();
 
             if (Array.isArray(data))
@@ -115,13 +115,13 @@ define(["done_view", "generator"], function(done_view) {
             var popup = this.$('.popup'),
                 data, cache_id;
 
-            if (this.subViews[5]) {
-                if (this.subViews[5].options.cache_id ) {
-                    this.subViews[5].is_hidden = true; //it's cause of setInterval function in DynamicHeightHelper
-                    this.subViews[5].removeFromDOMTree(); //saving the view which was cached before
+            if (this.subViews[2]) {
+                if (this.subViews[2].options.cache_id ) {
+                    this.subViews[2].is_hidden = true; //it's cause of setInterval function in DynamicHeightHelper
+                    this.subViews[2].removeFromDOMTree(); //saving the view which was cached before
                 }
                 else
-                    this.subViews[5].remove();
+                    this.subViews[2].remove();
             }
 
             if (typeof value == 'undefined')
@@ -141,9 +141,9 @@ define(["done_view", "generator"], function(done_view) {
                 App.Views.GeneratorView.cacheRemoveView(data.modelName, data.mod, cache_id);
             }
 
-            this.subViews[5] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
-            this.subViews[5].is_hidden = false;
-            this.$('#popup').append(this.subViews[5].el);
+            this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
+            this.subViews[2].is_hidden = false;
+            this.$('#popup').append(this.subViews[2].el);
 
             popup.addClass('ui-visible');
         },
