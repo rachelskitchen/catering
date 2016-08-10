@@ -962,7 +962,7 @@ define(["main_router"], function(main_router) {
                         modelName: 'Main',
                         mod: 'Done',
                         model: App.Data.mainModel,
-                        customer: App.Data.customer,
+                        customer: App.Data.customer.clone(),
                         checkout: App.Data.myorder.checkout,
                         other_options: other_dining_options || new Backbone.Collection(),
                         className: 'main-done'
