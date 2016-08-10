@@ -318,6 +318,9 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             };
 
             this.setPosition = function(pos) {
+                if (!$el.is(':focus')) {
+                    return;
+                }
                 // Using Selection API for input[type=number] throws exception in some browsers (Chrome)
                 // ("Browser Compatibility" at https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange)
                 try {
