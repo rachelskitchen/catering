@@ -117,7 +117,6 @@ define(["done_view", "generator"], function(done_view) {
 
             if (this.subViews[2]) {
                 if (this.subViews[2].options.cache_id ) {
-                    this.subViews[2].is_hidden = true; //it's cause of setInterval function in DynamicHeightHelper
                     this.subViews[2].removeFromDOMTree(); //saving the view which was cached before
                 }
                 else
@@ -142,7 +141,6 @@ define(["done_view", "generator"], function(done_view) {
             }
 
             this.subViews[2] = App.Views.GeneratorView.create(data.modelName, data, cache_id);
-            this.subViews[2].is_hidden = false;
             this.$('#popup').append(this.subViews[2].el);
 
             popup.addClass('ui-visible');
