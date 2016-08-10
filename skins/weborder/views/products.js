@@ -116,8 +116,20 @@ define(['products_view'], function(products_view) {
         }
     });
 
+    var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend({
+        bindings: {
+            '.img_wrapper': 'classes: {"no-photo": isDefaultImage(_product_image)}'
+        },
+        bindingFilters: {
+            isDefaultImage: function(image) {
+                return image == App.Data.settings.get_img_default();
+            }
+        }
+    });
+
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductListItemView = ProductListItemView;
         App.Views.ProductView.ProductPriceView = ProductPriceView;
+        App.Views.ProductView.ProductModifiersView = ProductModifiersView;
     });
 });
