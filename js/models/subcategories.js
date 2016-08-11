@@ -173,6 +173,21 @@
                 return parent.get('subs').where({active: true});
             else
                 return [];
+        },
+        /**
+         * Gets all active subcategories ids of parent category with given id.
+         * @param  {string} id - id of parent category.
+         * @return {array} - list of subcategories or empty array.
+         */
+        getSubsIds: function(id) {
+            var subs, parent = this.get(id);
+            if(parent) {
+                return parent.get('subs').where({active: true}).map(function(model) {
+                    return model.get('id');
+                });
+            }
+            else
+                return [];
         }
     });
  });

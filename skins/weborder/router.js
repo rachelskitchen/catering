@@ -70,6 +70,7 @@ define(["main_router"], function(main_router) {
                 // set header, cart, main, categories, search, paymentMethods models
                 App.Data.header = new App.Models.HeaderModel();
                 App.Data.categories = new App.Collections.Categories();
+                App.Data.parentCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
                 App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
@@ -503,12 +504,11 @@ define(["main_router"], function(main_router) {
 
                 // load content block for categories
                 if (!categories.receiving) {
-                    categories.receiving = categories.get_categories();
+                    categories.receiving = categories.get_categories().then(function() {
+                        App.Data.parentCategories.add(App.Data.categories.getParents());
+                        dfd.resolve();
+                    });
                 }
-
-                categories.receiving.then(function() {
-                    dfd.resolve();
-                });
 
                 if (!App.Data.searchLine) {
                     App.Data.searchLine = new App.Models.SearchLine({

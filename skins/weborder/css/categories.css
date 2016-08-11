@@ -78,8 +78,24 @@
     width: 100%;
     position: absolute;
     top: 41px;
-    bottom: 0;
+    bottom: 30px;
     overflow: auto;
+}
+
+.products_pages_control {
+    width: 100%;
+    position: absolute;
+    height: 30px;
+    bottom: 0px;
+    overflow: auto;
+}
+
+.products_pages_control .pages_control_wrapper {
+   text-align: center;
+}
+
+.products_pages_control .pages_control {
+    display: inline-block;
 }
 
 .categories_table .category_description {
