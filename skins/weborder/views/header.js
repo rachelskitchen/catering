@@ -69,11 +69,11 @@ define(["backbone", "factory"], function() {
                     '_system_settings_estimated_delivery_time'
                 ],
                 get: function(promotions_available, delivery_for_online_orders, min_delivery_amount, delivery_post_code_lookup, delivery_geojson, estimated_delivery_time) {
-                        var delivery_post_code_lookup_enabled = _.isArray(delivery_post_code_lookup) && delivery_post_code_lookup[0],
-                            delivery_geojson_enabled = _.isArray(delivery_geojson) && delivery_geojson[0];
+                    var delivery_post_code_lookup_enabled = _.isArray(delivery_post_code_lookup) && delivery_post_code_lookup[0],
+                        delivery_geojson_enabled = _.isArray(delivery_geojson) && delivery_geojson[0];
 
                     if (promotions_available &&
-                        min_delivery_amount &&
+                        _.isNumber(min_delivery_amount) &&
                         estimated_delivery_time &&
                         (delivery_post_code_lookup_enabled || !delivery_geojson_enabled))
                     {
