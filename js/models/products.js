@@ -746,22 +746,24 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          *     url: "/weborders/products/",
          *     dataType: "json",
          *     data: {
-         *         category: <category id>,
+         *         category: <category id(s)>,
          *         establishment: <establishment id>,
          *         search: <lookup string>
          *     }
          * }
          * ```
-         * @param {number} id_category - category id.
+         * @param {number} id_category - category id or array of ids.
          * @param {string} search - search pattern (used in retail skin).
          * @returns {Object} Deferred object.
          */
-        get_products: function(id_category, search) {
+        get_products: function(id_category, options) {
             var self = this,
                 settings = App.Data.settings,
+                search = _.isObject(options) ? options.search : undefined,
+                page = _.isObject(options) ? options.page : undefined,
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
 
-            if (id_category == undefined && (search == null || search == undefined)) {
+            if (id_category == undefined && search == undefined && !page) {
                 fetching.resolve();//this is the search request with an undefined pattern
                 return fetching;
             }
@@ -772,16 +774,23 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 data: {
                     category: id_category,
                     establishment: settings.get("establishment"),
-                    search: search
+                    search: search,
+                    page: page,
+                    limit: App.SettingsDirectory.json_page_limit
                 },
                 traditional: true, // it removes "[]" from "category" get parameter name
                 dataType: "json",
-                successResp: function(data) {
-                    for (var i = 0; i < data.length; i++) {
-                        if(data[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
-                        data[i].compositeId = data[i].id + '_' + data[i].id_category;
-                        self.add(data[i]);
+                success: function(data) {
+                    if (!_.isObject(data) || data.status != "OK") {
+                        return self.onProductsError();
                     }
+                    var products = data.data;
+                    for (var i = 0; i < products.length; i++) {
+                        if(products[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
+                        products[i].compositeId = products[i].id + '_' + products[i].id_category;
+                        self.add(products[i]);
+                    }
+                    self.meta = data.meta;
                     fetching.resolve();
                 },
                 error: function() {
@@ -901,6 +910,78 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             product_load.resolve();
         }
 
+        return product_load;
+    };
+
+    App.Models.ProductsBunch = Backbone.Model.extend({
+        defaults: {
+            parent_id: null,
+            products: null,
+            has_next: true,
+            num_pages: 1,
+            cur_page: 1,
+            last_page_loaded: 0
+        },
+        initialize: function(){
+            this.set('products', new Backbone.Collection);
+        },
+        get_products: function(options) {
+            var self = this, cur_page,
+                start_index = _.isObject(options) ? options.start_index : 0;
+                //end_index = _.isObject(options) ? options.end_index : App.SettingsDirectory.view_page_size,
+            if (!this.get('parent_id')) {
+                return undefined;
+            }
+
+            cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1; //!!((start_index + 1) % App.SettingsDirectory.json_page_limit);
+            if (this.get('last_page_loaded') >= cur_page) {
+                return $.Deferred().resolve();
+            }
+            var ids = App.Data.parentCategories.getSubsIds(this.get('parent_id')),
+                products = this.get('products');
+
+            var tmp_col = new App.Collections.Products();
+
+            return tmp_col.get_products(ids, {page: cur_page}).then(function(){
+                products.add(tmp_col.models); //it's to avoid sorting on total products collection
+                self.set({
+                    num_pages: tmp_col.meta.num_pages,
+                    has_next: tmp_col.meta.has_next,
+                    cur_page: cur_page,
+                    num_of_products: tmp_col.meta.count,
+                    last_page_loaded: cur_page
+                });
+            });
+        },
+        get_subcategory_products: function(sub_id, start_index, end_index) {
+            var products = [];
+            end_index = end_index <= this.get('products').length ? end_index : this.get('products').length;
+            for (var i = start_index; i < end_index; i++) {
+                if (this.get('products').models[i].get("id_category") == sub_id) {
+                    products.push(this.get('products').models[i]);
+                }
+            }
+            //where({id_category: sub_id});
+            return products;
+        }
+    });
+
+    /**
+     * Loads products for category.
+     * @static
+     * @alias App.Collections.Products.init
+     * @param {number} id_category - category id.
+     * @returns {Object} Deferred object.
+     */
+    App.Models.ProductsBunch.init = function(id_parent_category) {
+        var product_load = $.Deferred();
+        if (App.Data.products_bunches[id_parent_category] === undefined) {
+            App.Data.products_bunches[id_parent_category] = new App.Models.ProductsBunch({parent_id: id_parent_category});
+            product_load = App.Data.products_bunches[id_parent_category].get_products({start_index:1});
+        }
+        else {
+            product_load.resolve();
+        }
         return product_load;
     };
 });

@@ -257,6 +257,7 @@ define(["backbone", "collection_sort"], function(Backbone) {
                         name: item.parent_name,
                         sort: item.parent_sort,
                         ids: '',
+                        id: item.parent_id,
                         subs: []
                     };
                     addSubCategory();

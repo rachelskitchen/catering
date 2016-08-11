@@ -90,6 +90,7 @@
             myorder: {},
             orders: {},
             products: {},
+            products_bunches: {},
             productSets: {},
             router: {},
             settings: {},
