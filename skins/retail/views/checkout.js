@@ -67,7 +67,7 @@ define(["checkout_view"], function(checkout_view) {
             '.credit-card-exp-date': 'text: select(token_selected, "", creditCardExpDate)',
             '.credit-card-type': 'text: select(token_selected, token_card_type, ""), classes: {hide: equal(token_card_type, "")}',
             '.billing-summary-gift-card': 'classes: {hide: not(equal(paymentMethods_selected, "gift_card"))}',
-            '.gift-card-number': 'text: giftcard_cardNumber',
+            '.gift-card-number': 'text: giftCardNumber',
             '.billing-summary-stanford-card': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
             '.stanford-card-number': 'text: stanfordCardNumber',
             '.billing-summary-paypal': 'classes: {hide: not(equal(paymentMethods_selected, "paypal"))}',
@@ -286,6 +286,12 @@ define(["checkout_view"], function(checkout_view) {
                     return ', ' + month + '/' + year.slice(-2);
                 }
             },
+            giftCardNumber: {
+                deps: ['giftcard_cardNumber', 'giftCard_selected', 'giftCard_cardNumber'],
+                get: function(giftCardNewNumber, isGiftCardSelected, giftCardSelectedNumber) {
+                    return isGiftCardSelected ? giftCardSelectedNumber : giftCardNewNumber;
+                }
+            },
             stanfordCardNumber: {
                 deps: ['paymentMethods_stanford'],
                 get: function(stanford) {
@@ -352,7 +358,7 @@ define(["checkout_view"], function(checkout_view) {
                 card_type: "",
                 ignoreSelectedToken: false
             });
-            this.giftCard = new Backbone.Model({selected: false});
+            this.giftCard = new Backbone.Model({selected: false, cardNumber: null});
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
                 tokens: this.tokens,         // tokens
@@ -389,7 +395,7 @@ define(["checkout_view"], function(checkout_view) {
                     }
                     if (customer.giftCards) {
                         customer.giftCards.selectFirstItem();
-                        self.giftCard.set('selected', true);
+                        self.giftCard.set({ selected: true, cardNumber: customer.giftCards.at(0).get('cardNumber') });
                         self.giftCards.reset(customer.giftCards.models);
                     }
                 });
@@ -400,7 +406,7 @@ define(["checkout_view"], function(checkout_view) {
                 paymentsExist: false,
                 selected: false
             });
-            this.giftCard.set('selected', false);
+            this.giftCard.set({ selected: false, cardNumber: null });
             this.tokens.reset();
             this.giftCards.reset();
         },
