@@ -391,7 +391,11 @@ define(["checkout_view"], function(checkout_view) {
                     }
                     if (customer.giftCards) {
                         customer.giftCards.selectFirstItem();
-                        self.giftCard.set({ selected: true, cardNumber: customer.giftCards.getSelected().get('cardNumber') });
+                        var selectedGiftCard = customer.giftCards.getSelected();
+                        self.giftCard.set({
+                            selected: true,
+                            cardNumber: selectedGiftCard ? selectedGiftCard.get('cardNumber') : null
+                        });
                         self.giftCards.reset(customer.giftCards.models);
                     }
                 });
