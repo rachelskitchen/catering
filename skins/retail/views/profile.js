@@ -134,8 +134,9 @@ define(["profile_view"], function(profile_view) {
                 get: function(collection) {
                     var selected = collection.findWhere({selected: true});
                     if (selected) {
-                        this.model.set('selected', true);
-                        return selected.get('cardNumber');
+                        var cardNumber = selected.get('cardNumber');
+                        this.model.set({ selected: true, cardNumber: cardNumber });
+                        return cardNumber;
                     } else {
                         return -1;
                     }
@@ -143,14 +144,15 @@ define(["profile_view"], function(profile_view) {
                 set: function(value) {
                     var model = this.collection.findWhere({cardNumber: value}),
                         selected = this.collection.findWhere({selected: true});
+
                     if (model) {
                         model.set('selected', true);
-                        this.model.set('selected', true);
+                        this.model.set({ selected: true, cardNumber: model.get('cardNumber') });
                     } else if (selected) {
                         selected.set('selected', false);
-                        this.model.set('selected', false);
+                        this.model.set({ selected: false, cardNumber: null });
                     } else {
-                        this.model.set('selected', false);
+                        this.model.set({ selected: false, cardNumber: null });
                     }
                 }
             }
