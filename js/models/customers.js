@@ -194,10 +194,6 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             // Facebook SDK initialization
             this.FB_init();
 
-            // trim for `first_name`, `last_name`
-            this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
-            this.listenTo(this, 'change:last_name', this._trimValue.bind(this, 'last_name'));
-
             // set customer data from cookie
             this.setCustomerFromCookie();
 
