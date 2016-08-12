@@ -903,8 +903,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 data: JSON.stringify({
                     email: attrs.email,
                     password: attrs.password,
-                    first_name: attrs.first_name,
-                    last_name: attrs.last_name,
+                    first_name: Backbone.$.trim(attrs.first_name),
+                    last_name: Backbone.$.trim(attrs.last_name),
                     phone_number: attrs.phone,
                     address: _.isObject(address) ? address : undefined,
                     email_notifications: attrs.email_notifications,
@@ -1024,8 +1024,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(_.isObject(data) ? data : {
                     email: attrs.email,
-                    first_name: attrs.first_name,
-                    last_name: attrs.last_name,
+                    first_name: Backbone.$.trim(attrs.first_name),
+                    last_name: Backbone.$.trim(attrs.last_name),
                     phone_number: attrs.phone,
                     email_notifications: attrs.email_notifications,
                     push_notifications: attrs.push_notifications
