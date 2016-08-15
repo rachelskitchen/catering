@@ -76,6 +76,11 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
             this.listenTo(this.options.customer.get('rewardCards'), "add remove reset", function() {
                 self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
             });
+
+            this.listenTo(this.options.customer, 'onUserAddressCreated', function(address) {
+                address.set('selected', true);
+                this.controlAddress(null, this.model.get('dining_option'));
+            }, this);
         },
         render: function() {
             var settings = App.Data.settings.get('settings_system'),
