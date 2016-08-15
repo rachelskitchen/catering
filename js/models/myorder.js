@@ -2605,7 +2605,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         getCustomerData: function() {
             var checkout = this.checkout.toJSON(),
                 customer = App.Data.customer.toJSON(),
-                contactName = customer.first_name + ' ' + customer.last_name,
+                first_name = Backbone.$.trim(customer.first_name),
+                last_name = Backbone.$.trim(customer.last_name),
+                contactName = first_name + ' ' + last_name,
                 call_name = [],
                 payment_info = {};
 
@@ -2622,8 +2624,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             if (customer.email) {
                 payment_info.email = customer.email;
             }
-            payment_info.first_name = customer.first_name;
-            payment_info.last_name = customer.last_name;
+            payment_info.first_name = first_name;
+            payment_info.last_name = last_name;
 
             return {
                 call_name: call_name,
