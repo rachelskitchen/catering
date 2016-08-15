@@ -318,6 +318,15 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
+            var app = require('app');
+
+            // set cookie in directory mode
+            if (App.Data.dirMode && app.user_cookie && _.isNumber(app.cookie_expires_in)) {
+                App.Models.Customer.prototype.setCookie(app.user_cookie, app.cookie_expires_in);
+                delete app.user_cookie;
+                delete app.cookie_expires_in;
+            }
+
             var paymentProcessor = _.isObject(App.Settings.payment_processor) && PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
                 customer = App.Data.customer = new App.Models.Customer({
                     keepCookie: App.SettingsDirectory.remember_me
