@@ -32,8 +32,16 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
     'use strict';
 
     var cookieName = "user",
-        cookieDomain = "revelup.com",
+        cookiePath = "/",
+        cookieDomain;
+
+    // if hostname belongs to *.revelup.com need to set cookie only for "/weborder" path
+    if (/revelup\.com$/.test(location.hostname)) {
+        cookieDomain = "revelup.com";
         cookiePath = "/weborder";
+    } else {
+        cookieDomain = location.hostname;
+    }
 
     /**
      * @class
@@ -1632,8 +1640,34 @@ define(["backbone", "doc_cookies", "page_visibility"], function(Backbone, docCoo
             }
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
-
-            docCookies.setItem(cookieName, utf8_to_b64(JSON.stringify(data)), expires_in, cookiePath, cookieDomain, true);
+            this.setCookie(utf8_to_b64(JSON.stringify(data)), expires_in);
+        },
+        /**
+         * Sets cookie with user data.
+         *
+         * @param {string} data - cookie's value
+         * @param {number} expires_in - cookie's lifetime
+         */
+        setCookie: function(data, expires_in) {
+            Cookies.set(cookieName, data, {expires: expires_in, path: cookiePath, domain: cookieDomain, secure: true});
+        },
+        /**
+         * @returns {Object|undefined} An object containing cookie's data:
+         * ```
+         * {
+         *     value: <string>,
+         *     expires_in: <number>
+         * }
+         * ```
+         */
+        getCookieData: function() {
+            var value = Cookies.get(cookieName);
+            if (value) {
+                return {
+                    user_cookie: value,
+                    cookie_expires_in: this.get('keepCookie') ? this.get('expires_in') : 0
+                };
+            }
         },
         /**
          * Parse cookie and set customer attributes.
