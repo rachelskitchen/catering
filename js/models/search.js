@@ -68,33 +68,71 @@ define(['products'], function() {
              * @type {?Backbone.$.Deferred}
              * @default null
              */
-            status: null
+            status: null,
+            /**
+             * Number of pages (per App.SettingsDirectory.json_page_limit) can be loaded for the search pattern.
+             * @type {number}
+             * @default 0
+             */
+            num_pages: 0,
+            /**
+             * Current page index (starting from 1) currently loaded.
+             * @type {number}
+             * @default 0
+             */
+            cur_page: 0,
+            /**
+             * Number of products can be loaded for the search pattern.
+             * @type {number}
+             * @default 0
+             */
+            num_of_products: 0,
+            /**
+             * Last products page loaded sucessfully. It can only grow up, needed for accessing to caching pages.
+             * @type {number}
+             * @default 0
+             */
+            last_page_loaded: 0
         },
         /**
          * Initializes `status` attribute as Backbone.$.Deferred object
          */
-        initialize: function() {
-            this.set('status', Backbone.$.Deferred());
-        },
+       // initialize: function() {
+       //     this.set('status', Backbone.$.Deferred());
+       // },
         /**
          * Seeks products that match `pattern` attribute value.
          * @returns {Object} Deferred object.
          */
-        get_products: function() {
-            var self = this,
-                load = this.get('status'),
+        get_products: function(options) {
+            var self = this, cur_page, load,
                 pattern = this.get('pattern'),
-                results = new App.Collections.Products;
+                start_index = _.isObject(options) ? options.start_index : 0,
+                tmp_col = new App.Collections.Products;
 
-            results.onProductsError = function() {
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT); // user notification
-                load.resolve();
+            tmp_col.onProductsError = function() {
+                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
             }
-            results.get_products(undefined, pattern).then(function() {
-                self.set({products: results});
-                load.resolve();
-            });
 
+            cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
+            if (this.get('last_page_loaded') >= cur_page) {
+                load = $.Deferred().resolve();
+            } else {
+                load = tmp_col.get_products(undefined, {search: pattern, page: cur_page}).done(function() {
+                    if (!self.get('products')) {
+                       self.set({products: new App.Collections.Products});
+                    }
+                    self.get('products').add(tmp_col.models);
+                    self.set({
+                        num_pages: tmp_col.meta.num_pages,
+                        cur_page: cur_page,
+                        num_of_products: tmp_col.meta.count,
+                        last_page_loaded: cur_page
+                    });
+                });
+            }
+
+            this.set('status', load);
             return load;
         }
     });
@@ -178,7 +216,7 @@ define(['products'], function() {
                 self = this;
 
             this.add(search);
-            search.get_products().then(function() {
+            search.get_products().always(function() {
                 search.set('completed', true, {silent: true});
                 self.status = 'searchComplete';
                 self.trigger('onSearchComplete', search);
@@ -264,7 +302,7 @@ define(['products'], function() {
         /**
          * @returns {App.Models.Search} Search model.
          */
-        getSeachModel: function() {
+        getSearchModel: function() {
             var searchCollection = this.get('search'),
                 searchString = this.get('searchString');
             return searchCollection && searchString && searchCollection.findWhere({pattern: searchString});

@@ -689,7 +689,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * @type {string}
          * @default "sort"
          */
-        sortKey: "sort",
+        sortKey: "sort_value",
         /**
          * Sort order ("asc", "desc").
          * @type {string}
@@ -768,9 +768,10 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 return fetching;
             }
 
+            var test = false;
             Backbone.$.ajax({
                 type: "GET",
-                url: "/weborders/products/",
+                url: test ? "/weborders/products/test" : "/weborders/products/",
                 data: {
                     category: id_category,
                     establishment: settings.get("establishment"),
@@ -784,10 +785,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                     if (!_.isObject(data) || data.status != "OK") {
                         return self.onProductsError();
                     }
-                    var products = data.data;
+                    var products = data.data, category;
                     for (var i = 0; i < products.length; i++) {
                         if(products[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
                         products[i].compositeId = products[i].id + '_' + products[i].id_category;
+                        category = App.Data.categories.find({id: products[i].id_category});
+                        products[i].sort_value = category ? (category.get('sort') * 10000 + products[i].sort) : products[i].sort;
                         self.add(products[i]);
                     }
                     self.meta = data.meta;
@@ -795,6 +798,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 },
                 error: function() {
                     self.onProductsError();
+                    fetching.reject();
                 }
             });
 
@@ -917,7 +921,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         defaults: {
             parent_id: null,
             products: null,
-            has_next: true,
+            //has_next: true,
             num_pages: 1,
             cur_page: 1,
             last_page_loaded: 0
@@ -928,12 +932,11 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         get_products: function(options) {
             var self = this, cur_page,
                 start_index = _.isObject(options) ? options.start_index : 0;
-                //end_index = _.isObject(options) ? options.end_index : App.SettingsDirectory.view_page_size,
             if (!this.get('parent_id')) {
                 return undefined;
             }
 
-            cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1; //!!((start_index + 1) % App.SettingsDirectory.json_page_limit);
+            cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
             if (this.get('last_page_loaded') >= cur_page) {
                 return $.Deferred().resolve();
             }
@@ -941,15 +944,17 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 products = this.get('products');
 
             var tmp_col = new App.Collections.Products();
+            var parent_category = App.Data.parentCategories.find({id:this.get("parent_id")});
 
-            return tmp_col.get_products(ids, {page: cur_page}).then(function(){
+            return tmp_col.get_products(ids, {page: cur_page}).done(function(){
                 products.add(tmp_col.models); //it's to avoid sorting on total products collection
                 self.set({
                     num_pages: tmp_col.meta.num_pages,
-                    has_next: tmp_col.meta.has_next,
+                    //has_next: tmp_col.meta.has_next,
                     cur_page: cur_page,
                     num_of_products: tmp_col.meta.count,
-                    last_page_loaded: cur_page
+                    last_page_loaded: cur_page,
+                    name: parent_category ? parent_category.get('name') : ""
                 });
             });
         },
@@ -961,7 +966,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                     products.push(this.get('products').models[i]);
                 }
             }
-            //where({id_category: sub_id});
             return products;
         }
     });
@@ -974,13 +978,13 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
      * @returns {Object} Deferred object.
      */
     App.Models.ProductsBunch.init = function(id_parent_category) {
-        var product_load = $.Deferred();
+        var product_load;
         if (App.Data.products_bunches[id_parent_category] === undefined) {
             App.Data.products_bunches[id_parent_category] = new App.Models.ProductsBunch({parent_id: id_parent_category});
             product_load = App.Data.products_bunches[id_parent_category].get_products({start_index:1});
         }
         else {
-            product_load.resolve();
+            product_load = $.Deferred().resolve();
         }
         return product_load;
     };

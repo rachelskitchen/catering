@@ -316,16 +316,9 @@ define(["generator", "list"], function() {
         },
         initData: function() {
             var self = this,
+                ids = this.options.parent_category.get('ids').split(","),
                 parent_name = this.collection.parent_selected;
-            this.categories = this.collection.filter(function(model) {
-                return parent_name && model.get('parent_name') === parent_name;
-            });
-            this.ids = this.categories.map(function(model) {
-                return model.get('id');
-            });
-            //this.parent_category_id = this.categories.length ? this.categories[0].get('parent_id') : undefined;
-
-            self.ids.forEach(function(id) {
+            ids.forEach(function(id) {
                 var page_size = self.options.pageModel.get('page_size'),
                     start_index = (self.options.pageModel.get('cur_page') - 1) * page_size;
                 var products = self.options.products_bunch.get_subcategory_products(id, start_index, start_index + page_size);
@@ -341,15 +334,13 @@ define(["generator", "list"], function() {
         mod: 'products_pages',
         initialize: function() {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
-            this.initViews();
-            this.listenTo(this.pageModel, "change:cur_page", this.updatePageView, this);
             this.listenTo(this, 'loadStarted', this.showSpinner, this);
             this.listenTo(this, 'loadCompleted', this.hideSpinner, this);
+            this.initViews();
+            this.listenTo(this.pageModel, "change:cur_page", this.updatePageView, this);
         },
         initViews: function() {
-            this.pageModel = new Backbone.Model({cur_page: 1,
-                                                 page_count: 1,
-                                                 page_size: App.SettingsDirectory.view_page_size});
+            this.pageModel = new PagesCtrlModel({page_size: App.SettingsDirectory.view_page_size});
             var view = App.Views.GeneratorView.create('Pages', {
                 mod: 'Main',
                 model: this.pageModel,
@@ -357,26 +348,79 @@ define(["generator", "list"], function() {
             }, 'products_pages_controls' + this.options.root_cache_id);
             this.$('.products_pages_control').append(view.el);
             this.subViews.push(view);
-            this.updatePageView(1);
+            this.updatePageView({is_first: true});
         },
         updatePageView: function() {
+            var dfd, self = this;
+            var parent_id = this.options.parent_category.get('id');
+            for (var i = 1; i < this.subViews.length; i++) {
+                if (this.subViews[i])
+                    this.subViews[i].removeFromDOMTree();
+            }
+            if (App.Data.products_bunches[parent_id] == undefined) {
+                dfd = App.Models.ProductsBunch.init(parent_id);
+            } else {
+                var start_index = (this.pageModel.get('cur_page') - 1) * this.pageModel.get('page_size');
+                dfd = App.Data.products_bunches[parent_id].get_products({start_index: start_index});
+            }
+            self.trigger('loadStarted');
+            self.pageModel.disableControls();
+            dfd.always(function() {
+                var view = App.Views.GeneratorView.create('Categories', {
+                    el: $("<ul class='categories_table'></ul>"),
+                    mod: 'Products',
+                    products_bunch: App.Data.products_bunches[parent_id],
+                    model: self.model, //Model: Search or undefined
+                    collection: self.collection, //Collection: Categories
+                    pageModel: self.pageModel,
+                    parent_category: self.options.parent_category
+                }, 'products_pages' + self.options.root_cache_id + self.pageModel.get("cur_page"));
+                self.$('.categories_products_wrapper').append(view.el);
+                self.$(".categories_products_wrapper").scrollTop(0);
+                self.subViews.push(view);
+
+                var num_of_products = App.Data.products_bunches[parent_id].get('num_of_products');
+                var page_count = parseInt(num_of_products / App.SettingsDirectory.view_page_size) + !!(num_of_products % App.SettingsDirectory.view_page_size);
+                self.trigger('loadCompleted');
+                self.pageModel.set({page_count: page_count});
+                self.pageModel.enableControls();
+            });
+        },
+        showSpinner: function() {
+            trace("showSpinner==>");
+            $('.products_spinner').addClass('ui-visible');
+        },
+        hideSpinner: function() {
+            trace("hideSpinner==>");
+            var spinner = $('.products_spinner');
+            this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 0);
+        }
+    });
+
+    var CategoriesSearchPagesView = CategoriesProductsPagesView.extend({
+        name: 'categories',
+        mod: 'products_pages',
+        updatePageView: function(options) {
             var dfd, self = this;
             for (var i = 1; i < this.subViews.length; i++) {
                 if (this.subViews[i])
                     this.subViews[i].removeFromDOMTree();
             }
-
-            if (App.Data.products_bunches[this.options.parent_id] == undefined) {
-                dfd = App.Models.ProductsBunch.init(this.options.parent_id);
+            var search = this.options.model;
+            var is_first = options ? options.is_first : false;
+            if (is_first) {
+                dfd = $.Deferred().resolve(); //the first page of products is already loaded by router
             } else {
                 var start_index = (this.pageModel.get('cur_page') - 1) * this.pageModel.get('page_size');
-                dfd = App.Data.products_bunches[this.options.parent_id].get_products({start_index: start_index});
+                dfd = search.get_products({start_index: start_index});
             }
-            dfd.then(function() {
+
+            self.trigger('loadStarted');
+            self.pageModel.disableControls();
+            dfd.always(function() {
                 var view = App.Views.GeneratorView.create('Categories', {
                     el: $("<ul class='categories_table'></ul>"),
-                    mod: 'Products',
-                    products_bunch: App.Data.products_bunches[self.options.parent_id],
+                    mod: 'SearchResults',
                     model: self.model, //Model: Search or undefined
                     collection: self.collection, //Collection: Categories
                     pageModel: self.pageModel,
@@ -384,32 +428,134 @@ define(["generator", "list"], function() {
                 self.$('.categories_products_wrapper').append(view.el);
                 self.$(".categories_products_wrapper").scrollTop(0);
                 self.subViews.push(view);
-                self.trigger('loadCompleted');
-                self.status = 'loadCompleted';
 
-                var num_of_products = App.Data.products_bunches[self.options.parent_id].get('num_of_products');
+                var num_of_products = search.get('num_of_products');
                 var page_count = parseInt(num_of_products / App.SettingsDirectory.view_page_size) + !!(num_of_products % App.SettingsDirectory.view_page_size);
-                //self.pageModel.setNumOfPages(num_of_products);
+                self.trigger('loadCompleted');
                 self.pageModel.set({page_count: page_count});
+                self.pageModel.enableControls();
             });
-            //setTimeout(function() {
-                self.trigger('loadStarted');
-                self.status = 'loadStarted';
-            //}, 0);
-            /*if(view.status == 'loadCompleted') {
+        }
+    });
+
+    var CategoriesSearchResultsView = CategoriesProductsView.extend({
+        name: 'categories',
+        mod: 'products',
+        initData: function() {
+            var self = this,
+                categories = App.Data.categories,
+                id = categories.selected;
+
+            var page_size = self.options.pageModel.get('page_size'),
+                start_index = (self.options.pageModel.get('cur_page') - 1) * page_size;
+
+            this.addItem( get_products_portion(start_index, page_size),
+                new Backbone.Model({
+                    parent_name: _loc.CATEGORIES_SEARCH,
+                    name: this.model.get('pattern'),
+                    description: '',
+                    active: true,
+                    timetables: null
+                }));
+
+            categories.trigger('onSearchComplete', this.model);
+            this.searchComplete = true;
+
+            function get_products_portion(start_index, page_size) {
+                var portion = new App.Collections.Products();
+                var products = self.model.get('products');
+                portion.add( products.models.slice(start_index, start_index + page_size) );
+                return portion;
+            }
+        }
+    });
+
+    var CategoriesMainProductsView = App.Views.ListView.extend({
+        name: 'categories',
+        mod: 'main_products',
+        initialize: function() {
+            App.Views.ListView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.collection, 'change:parent_selected', this.update_table);
+            this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
+            // this.$('.categories_products_wrapper').contentarrow();
+            this.$('.products_spinner').css('position', 'absolute').spinner();
+            this.listenTo(this.options.search, 'onSearchStart', this.showSearchSpinner, this);
+            this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);
+            this.listenTo(App.Data.categories, 'onRestore', this.hideSpinner, this);
+        },
+        update_table: function(model, categoryName) {
+           var isCategories = typeof categoryName != 'undefined',
+                mod = isCategories ? 'ProductsPages' : 'SearchPages',
+                searchModel = isCategories ? undefined : model,
+                cache_id = isCategories ? categoryName : model.get('pattern');
+
+            // if search pattern is empty
+            if (!isCategories && !cache_id) {
+                return;
+            }
+
+            var parentCategory = isCategories ? App.Data.parentCategories.findWhere({name: categoryName}) : undefined;
+
+            // if search result and result is empty
+            if(searchModel && (!searchModel.get('products')))
+                return;
+
+            this.subViews.forEach(function(view) {
+                this.stopListening(view);
+            }, this);
+            this.subViews.removeFromDOMTree();
+            var view = App.Views.GeneratorView.create('Categories', {
+                mod: mod,
+                model: searchModel,
+                collection: this.collection,
+                //parent_id: parentCategory ? parentCategory.get('id') : undefined,
+                parent_category: parentCategory,
+                root_cache_id: cache_id,
+            }, 'products_' + cache_id);
+            this.subViews.push(view);
+            this.$('.categories_products_pages_wrap').append(view.el);
+            //this.$(".categories_products_pages_wrap").scrollTop(0);
+            /*this.listenTo(view, 'loadStarted', this.showSpinner, this);
+            this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
+            if(view.status == 'loadCompleted') {
                 this.hideSpinner(0);
             } else if(view.status == 'loadStarted') {
                 this.showSpinner();
             }*/
         },
         showSpinner: function() {
-            trace("showSpinner==>");
+            trace("showSearchSpinner==>");
             this.$('.products_spinner').addClass('ui-visible');
         },
-        hideSpinner: function() {
-             trace("hideSpinner==>");
+        hideSpinner: function(delay) {
+             trace("hideSearchSpinner==>");
             var spinner = this.$('.products_spinner');
-            this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 0);
+            this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
+        },
+        showSearchSpinner: function() {
+            if (this.options.search.status != 'searchComplete') {
+                clearTimeout(this.spinnerTimeout);
+                this.showSpinner();
+            }
+        },
+        remove: function() {
+            // this.$('.categories_products_wrapper').contentarrow('destroy');
+            App.Views.ListView.prototype.remove.apply(this, arguments);
+        }
+    });
+
+    var PagesCtrlModel = Backbone.Model.extend({
+        defaults: {
+            cur_page: 1,
+            page_count: 1,
+            controls_enable: true,
+            page_size: undefined
+        },
+        enableControls: function() {
+            this.set('controls_enable', true);
+        },
+        disableControls: function() {
+            this.set('controls_enable', false);
         }
     });
 
@@ -418,7 +564,9 @@ define(["generator", "list"], function() {
         mod: 'main',
         bindings: {
             ".cur_page": "text: cur_page",
-            ".last_page": "text: page_count"
+            ".last_page": "text: page_count",
+            ".arrow-left": "enabled: controls_enable",
+            ".arrow-right": "enabled: controls_enable"
         },
         events: {
             "click .arrow-left": 'page_left',
@@ -445,100 +593,6 @@ define(["generator", "list"], function() {
         }
     });
 
-    var CategoriesSearchResultsView = CategoriesProductsView.extend({
-        name: 'categories',
-        mod: 'products',
-        initData: function() {
-            var self = this,
-                categories = App.Data.categories,
-                id = categories.selected;
-
-            this.addItem(this.model.get('products'),
-                new Backbone.Model({
-                    parent_name: _loc.CATEGORIES_SEARCH,
-                    name: this.model.get('pattern'),
-                    description: '',
-                    active: true,
-                    timetables: null
-                }));
-
-            categories.trigger('onSearchComplete', this.model);
-            this.searchComplete = true;
-        }
-    });
-
-    var CategoriesMainProductsView = App.Views.ListView.extend({
-        name: 'categories',
-        mod: 'main_products',
-        initialize: function() {
-            App.Views.ListView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.collection, 'change:parent_selected', this.update_table);
-            this.listenTo(this.options.search, 'onSearchComplete', this.update_table, this);
-            // this.$('.categories_products_wrapper').contentarrow();
-            this.$('.products_spinner').css('position', 'absolute').spinner();
-            this.listenTo(this.options.search, 'onSearchStart', this.showSearchSpinner, this);
-            this.listenTo(this.options.search, 'onSearchComplete', this.hideSpinner, this);
-            this.listenTo(App.Data.categories, 'onRestore', this.hideSpinner, this);
-        },
-        update_table: function(model, categoryName) {
-           var isCategories = typeof categoryName != 'undefined',
-                mod = isCategories ? 'ProductsPages' : 'SearchResults',
-                data = isCategories ? undefined : model,
-                cache_id = isCategories ? categoryName : model.get('pattern');
-
-            // if search pattern is empty
-            if (!isCategories && !cache_id) {
-                return;
-            }
-
-            // !!!  TBD, exclude the call to getParentSelected !!!
-            var parentCategory = isCategories ? this.collection.getParentSelected() : undefined;
-
-            // if search result and result is empty
-            if(data && (!data.get('products')))
-                return;
-
-            this.subViews.forEach(function(view) {
-                this.stopListening(view);
-            }, this);
-            this.subViews.removeFromDOMTree();
-            var view = App.Views.GeneratorView.create('Categories', {
-                mod: mod,
-                model: data,
-                collection: this.collection,
-                parent_id: parentCategory ? parentCategory.parent_id : undefined,
-                root_cache_id: cache_id,
-            }, 'products_' + cache_id);
-            this.subViews.push(view);
-            this.$('.categories_products_pages_wrap').append(view.el);
-            //this.$(".categories_products_pages_wrap").scrollTop(0);
-            /*this.listenTo(view, 'loadStarted', this.showSpinner, this);
-            this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
-            if(view.status == 'loadCompleted') {
-                this.hideSpinner(0);
-            } else if(view.status == 'loadStarted') {
-                this.showSpinner();
-            }*/
-        },
-        showSpinner: function() {
-            this.$('.products_spinner').addClass('ui-visible');
-        },
-        hideSpinner: function(delay) {
-            var spinner = this.$('.products_spinner');
-            this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
-        },
-        showSearchSpinner: function() {
-            if (this.options.search.status != 'searchComplete') {
-                clearTimeout(this.spinnerTimeout);
-                this.showSpinner();
-            }
-        },
-        remove: function() {
-            // this.$('.categories_products_wrapper').contentarrow('destroy');
-            App.Views.ListView.prototype.remove.apply(this, arguments);
-        }
-    });
-
     return new (require('factory'))(function() {
         App.Views.CategoriesView = {};
         App.Views.CategoriesView.CategoriesSliderItemView = CategoriesSliderItemView;
@@ -548,6 +602,7 @@ define(["generator", "list"], function() {
         App.Views.CategoriesView.CategoriesMainProductsView = CategoriesMainProductsView;
         App.Views.CategoriesView.CategoriesSearchResultsView = CategoriesSearchResultsView;
         App.Views.CategoriesView.CategoriesProductsPagesView = CategoriesProductsPagesView;
+        App.Views.CategoriesView.CategoriesSearchPagesView = CategoriesSearchPagesView;
         App.Views.PagesView = {}
         App.Views.PagesView.PagesMainView = PagesMainView;
     });
