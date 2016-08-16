@@ -203,7 +203,7 @@ define(["main_router"], function(main_router) {
                         name: _loc.SEARCH_RESULTS.replace(/%s/g, value)
                     });
                     productsAttr = productSet.get('products');
-                    (searchModel = model.getSeachModel()) && searchModel.get('status').then(function() {
+                    (searchModel = model.getSearchModel()) && searchModel.get('status').then(function() {
                         productsAttr.reset(searchModel.get('products').map(function(product) {
                             return _.extend(product.toJSON(), {
                                 filterResult: true

@@ -41,16 +41,6 @@ define(['categories'], function(Backbone) {
                     this.parent_selected = parent_selected;
                     this.trigger('change:parent_selected', this, parent_selected);
                 }
-            },
-            getParentSelected: function() {
-                var self = this;
-                var category = this.find(function(model) {
-                    return self.parent_selected && model.get('parent_name') === self.parent_selected;
-                });
-                return category ? {
-                    parent_name: category.get('parent_name'),
-                    parent_id: category.get('parent_id')
-                } : undefined;
             }
         });
 

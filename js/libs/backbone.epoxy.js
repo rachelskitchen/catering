@@ -249,6 +249,20 @@
       }
       return false;
     }
+
+    var initial_toJSON = Backbone.Collection.prototype.toJSON;
+    Backbone.Collection.prototype.toJSON = function(key) {
+        if (typeof key !== 'string') {
+           return initial_toJSON.apply(this, arguments);
+        }
+        var output = {};
+        for (var i = 0; i < this.length; i++) {
+            if (typeof key == 'string') { //the call is like someCollection.toJSON('name')
+                output[i + ":" + this.at(i).get(key)] = this.at(i).toJSON();
+            }
+        }
+        return output;
+    }
   }
 
   // Calls method implementations of a super-class object:
