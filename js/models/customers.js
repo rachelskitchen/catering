@@ -1140,7 +1140,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 success: function(data) {
                     if (_.isObject(data)) {
                         address.set(data, {parse: true});
-                        this.trigger('onUserAddressCreated', address);
+                        this.trigger('onUserAddressCreated');
                     }
                 },
                 error: function(jqXHR) {
