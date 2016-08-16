@@ -2272,11 +2272,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 get_parameters = App.Data.get_parameters,
                 skin = App.Data.settings.get('skin'),
                 total = myorder.total.get_all(),
-                tip = myorder.total.get('tip').get('tipTotal'),
+                tip = myorder.total.get('tip'),
                 items = [],
                 order_info = {},
                 payment_info = {
-                    tip: parseFloat(tip.toFixed(10)),
+                    tip: total.tip,
+                    tip_percent: tip.get('amount') == true ? tip.get('percent') : undefined,
                     type: payment_type
                 },
                 order = {
