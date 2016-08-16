@@ -333,14 +333,21 @@ define(["generator", "list"], function() {
         name: 'categories',
         mod: 'products_pages',
         initialize: function() {
+            this.pageModel = new PagesCtrlModel({page_size: App.SettingsDirectory.view_page_size});
+            _.extend(this.bindingSources, {
+                pageModel: this.pageModel
+            });
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this, 'loadStarted', this.showSpinner, this);
             this.listenTo(this, 'loadCompleted', this.hideSpinner, this);
             this.initViews();
             this.listenTo(this.pageModel, "change:cur_page", this.updatePageView, this);
         },
+        bindings: {
+            ".products_pages_control": "classes:{hide: equal(pageModel_page_count,1)}",
+            ".categories_products_wrapper": "classes:{full_size: equal(pageModel_page_count,1)}"
+        },
         initViews: function() {
-            this.pageModel = new PagesCtrlModel({page_size: App.SettingsDirectory.view_page_size});
             var view = App.Views.GeneratorView.create('Pages', {
                 mod: 'Main',
                 model: this.pageModel,
@@ -387,11 +394,11 @@ define(["generator", "list"], function() {
             });
         },
         showSpinner: function() {
-            trace("showSpinner==>");
+            //trace("showSpinner==>");
             $('.products_spinner').addClass('ui-visible');
         },
         hideSpinner: function() {
-            trace("hideSpinner==>");
+            //trace("hideSpinner==>");
             var spinner = $('.products_spinner');
             this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 0);
         }
@@ -401,12 +408,12 @@ define(["generator", "list"], function() {
         name: 'categories',
         mod: 'products_pages',
         updatePageView: function(options) {
-            var dfd, self = this;
+            var dfd, self = this,
+                search = this.model;
             for (var i = 1; i < this.subViews.length; i++) {
                 if (this.subViews[i])
                     this.subViews[i].removeFromDOMTree();
             }
-            var search = this.options.model;
             var is_first = options ? options.is_first : false;
             if (is_first) {
                 dfd = $.Deferred().resolve(); //the first page of products is already loaded by router
@@ -421,7 +428,7 @@ define(["generator", "list"], function() {
                 var view = App.Views.GeneratorView.create('Categories', {
                     el: $("<ul class='categories_table'></ul>"),
                     mod: 'SearchResults',
-                    model: self.model, //Model: Search or undefined
+                    model: search, //Model: Search or undefined
                     collection: self.collection, //Collection: Categories
                     pageModel: self.pageModel,
                 }, 'products_pages' + self.options.root_cache_id + self.pageModel.get("cur_page"));
@@ -508,27 +515,18 @@ define(["generator", "list"], function() {
                 mod: mod,
                 model: searchModel,
                 collection: this.collection,
-                //parent_id: parentCategory ? parentCategory.get('id') : undefined,
                 parent_category: parentCategory,
                 root_cache_id: cache_id,
             }, 'products_' + cache_id);
             this.subViews.push(view);
             this.$('.categories_products_pages_wrap').append(view.el);
-            //this.$(".categories_products_pages_wrap").scrollTop(0);
-            /*this.listenTo(view, 'loadStarted', this.showSpinner, this);
-            this.listenTo(view, 'loadCompleted', this.hideSpinner, this);
-            if(view.status == 'loadCompleted') {
-                this.hideSpinner(0);
-            } else if(view.status == 'loadStarted') {
-                this.showSpinner();
-            }*/
         },
         showSpinner: function() {
-            trace("showSearchSpinner==>");
+            //trace("showSearchSpinner==>");
             this.$('.products_spinner').addClass('ui-visible');
         },
         hideSpinner: function(delay) {
-             trace("hideSearchSpinner==>");
+            //trace("hideSearchSpinner==>");
             var spinner = this.$('.products_spinner');
             this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
         },
