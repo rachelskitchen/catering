@@ -77,8 +77,7 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                 self.options.customer.trigger('change:rewardCards'); //it's to update binding value customer_rewardCards
             });
 
-            this.listenTo(this.options.customer, 'onUserAddressCreated', function(address) {
-                address.set('selected', true);
+            this.listenTo(this.options.customer, 'onUserAddressCreated onUserAddressUpdate', function() {
                 this.controlAddress(null, this.model.get('dining_option'));
             }, this);
         },
