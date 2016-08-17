@@ -873,13 +873,13 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
      * @returns {Object} Deferred object.
      */
     App.Collections.Products.init = function(id_category) {
-        var product_load = $.Deferred();
+        var product_load;
 
         if (App.Data.products[id_category] === undefined) {
             App.Data.products[id_category] = new App.Collections.Products();
             product_load = App.Data.products[id_category].get_products(id_category);
         } else {
-            product_load.resolve();
+            product_load = $.Deferred().resolve();
         }
 
         return product_load;
@@ -892,7 +892,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
      * @param {Array} ids - array containing categories ids.
      * @returns {Object} Deferred object.
      */
-    App.Collections.Products.get_slice_products = function(ids) {
+/*    App.Collections.Products.get_slice_products = function(ids) {
         var c_id,
             product_load = $.Deferred(),
             tmp_model = new App.Collections.Products();
@@ -915,13 +915,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         }
 
         return product_load;
-    };
+    }; */
 
     App.Models.ProductsBunch = Backbone.Model.extend({
         defaults: {
             parent_id: null,
             products: null,
-            //has_next: true,
             num_pages: 1,
             cur_page: 1,
             last_page_loaded: 0
@@ -950,11 +949,18 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 products.add(tmp_col.models); //it's to avoid sorting on total products collection
                 self.set({
                     num_pages: tmp_col.meta.num_pages,
-                    //has_next: tmp_col.meta.has_next,
                     cur_page: cur_page,
                     num_of_products: tmp_col.meta.count,
                     last_page_loaded: cur_page,
                     name: parent_category ? parent_category.get('name') : ""
+                });
+
+                //copy products into App.Data.products
+                ids.forEach(function(id_category) {
+                    if (!App.Data.products[id_category]) {
+                        App.Data.products[id_category] = new App.Collections.Products();
+                    }
+                    App.Data.products[id_category].add(tmp_col.where({id_category: id_category}), {silent: true});
                 });
             });
         },

@@ -504,11 +504,12 @@ define(["main_router"], function(main_router) {
 
                 // load content block for categories
                 if (!categories.receiving) {
-                    categories.receiving = categories.get_categories().then(function() {
-                        App.Data.parentCategories.add(App.Data.categories.getParents());
-                        dfd.resolve();
-                    });
+                    categories.receiving = categories.get_categories();
                 }
+                categories.receiving.then(function() {
+                    App.Data.parentCategories.add(App.Data.categories.getParents());
+                    dfd.resolve();
+                });
 
                 if (!App.Data.searchLine) {
                     App.Data.searchLine = new App.Models.SearchLine({

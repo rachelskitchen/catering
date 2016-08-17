@@ -2680,19 +2680,35 @@ function objectsDiff(a, b, props)
 *  Debug unresolved deferred object(s). It is used in dev=true mode only.
 */
 function traceDeferredObjects() {
+    var StackClass = function(){}
+    StackClass.prototype.print = function() {
+        for (var k in this) {
+            if (this.hasOwnProperty(k))
+                console.log( this[k].stack );
+        }
+    }
+    StackClass.prototype.num = function() {
+        var counter = 0;
+        for (var k in this) {
+            if (this.hasOwnProperty(k))
+                counter++;
+        }
+        return counter;
+    }
+
     var jQueryDeferredFunc = $.Deferred;
     $.Deferred = function() {
-        if (!_.isObject(App.stackDeferred))
-            App.stackDeferred = {};
+        if (!_.isObject(App.deferreds))
+            App.deferreds = new StackClass;
 
         var key = (new Date).getTime() * 1000 + Math.floor(Math.random() * 0x100);
         var e = new Error;
 
         var dfd = jQueryDeferredFunc.apply(this, arguments);
         //trace(key, " => new dfd !");
-        App.stackDeferred[key] = { dfd: dfd, stack: e.stack };
+        App.deferreds[key] = { dfd: dfd, stack: e.stack };
         dfd.always(function() {
-            delete App.stackDeferred[key];
+            delete App.deferreds[key];
             //trace(key, " => dfd done");
         });
         return dfd;

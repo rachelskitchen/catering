@@ -319,6 +319,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             product_load.then(function() {
                 product = App.Data.products[id_category].get_product(id_product);
+                if (!product) {
+                    console.error("Myorder: add_empty, product is not found!", id_category, id_product);
+                }
                 product.get_child_products().then(product_child_load.resolve);
             });
 
@@ -819,6 +822,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             });
             return $.when(product_load, modifier_load).then(function() {
                 product = App.Data.products[id_category].get_product(id_product);
+                if (!product) {
+                    console.error("MyorderCombo: add_empty, product is not found!", id_category, id_product);
+                }
                 product.set({is_gift: false, // no gifts for combos
                              max_price: 0}, // turn off max price feature for combo
                              {silent: true});
