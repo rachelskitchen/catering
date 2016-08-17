@@ -164,6 +164,8 @@ define(['backbone', 'factory'], function(Backbone) {
         hideAlertMessage: function(id) {
             var func1 = function() {
                 if (App.Views.Generator.enableCache) {
+                    var customClass = this.model.get('customClass');
+                    customClass && this.$el.removeClass(customClass);
                     this.removeFromDOMTree(); // remove the view from the DOM tree
                 } else {
                     this.remove(); // remove the view

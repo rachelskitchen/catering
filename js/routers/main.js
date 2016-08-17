@@ -300,6 +300,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     local_theme = app.get['local_theme'] == "true" ? true : false;
                 if (App.skin != App.Skins.WEBORDER_MOBILE
                     && App.skin != App.Skins.DIRECTORY_MOBILE
+                    && App.skin != App.Skins.DIRECTORY
                     && App.skin != App.Skins.WEBORDER
                     && App.skin != App.Skins.RETAIL) {
                     local_theme = true;
@@ -309,6 +310,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 server_color_schemes[ App.Skins.RETAIL ] = 'retail-desktop-colors';
                 server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
                 server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
+                server_color_schemes[ App.Skins.DIRECTORY ] = 'directory-desktop-colors';
 
                 if (local_theme == true) {
                     var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
@@ -1027,7 +1029,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             });
 
             function readTermsOfUse() {
-                App.Data.errors.alert(_loc.PROFILE_TOU, false, false, {
+                var errors = App.Data.errors;
+
+                errors.alert(_loc.PROFILE_TOU, false, false, {
                     isConfirm: true,
                     typeIcon: '',
                     confirm: {
@@ -1036,10 +1040,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     },
                     customClass: 'popup-full-height',
                     customView: new App.Views.ProfileView.ProfileTermsOfUseView({
-                        className: 'profile-terms-of-use text-left'
+                        className: 'profile-terms-of-use text-left',
+
                     }),
                     callback: function(res) {
                         customer.set('terms_accepted', res);
+                        setTimeout(errors.set.bind(errors, 'customClass', errors.defaults.customClass), 0);
                     }
                 });
             }
@@ -1121,7 +1127,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 mainModel.trigger('loadCompleted');
             }
         },
-        setProfileEditContent: function(doNotChangeMod) {
+        setProfileEditContent: function() {
             this.profileEditData = this.profileEditData || {};
 
             var self = this,
@@ -1237,34 +1243,17 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             if (promises.length) {
-                if (doNotChangeMod) {
-                    App.Data.mainModel.set({
-                        content: {
-                            modelName: 'Profile',
-                            mod: 'Edit',
-                            model: customer,
-                            updateAction: update,
-                            updateBtn: updateBtn,
-                            ui: ui,
-                            className: 'profile-edit'
-                        }
-                    });
-                } else {
-                    App.Data.mainModel.set({
-                        mod: 'Profile',
-                        className: 'profile-container',
-                        profile_title: _loc.PROFILE_EDIT_TITLE,
-                        profile_content: {
-                            modelName: 'Profile',
-                            mod: 'Edit',
-                            model: customer,
-                            updateAction: update,
-                            updateBtn: updateBtn,
-                            ui: ui,
-                            className: 'profile-edit text-center'
-                        }
-                    });
-                }
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Edit',
+                        model: customer,
+                        updateAction: update,
+                        updateBtn: updateBtn,
+                        ui: ui,
+                        className: 'profile-edit'
+                    }
+                });
 
                 window.setTimeout(function() {
                     var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email change:email_notifications change:push_notifications',

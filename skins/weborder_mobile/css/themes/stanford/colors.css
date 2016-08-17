@@ -68,7 +68,8 @@
   color: #13B21A;
 }
 /* [input_background] Text fields background */
-.input-colors {
+.input-colors,
+.establishments .select-wrapper {
   background: #FFFFFF;
 }
 /* [input_border] Text fields border */
@@ -103,6 +104,15 @@
 .establishments[class] .select-wrapper::after {
   color: #000000;
 }
+.profile-edit .profile-form input:disabled {
+  color: rgba(0, 0, 0, 0.4);
+}
+.checkout input.pikaday:focus {
+  color: transparent;
+  /* hide the blinking cursor */
+  text-shadow: 0px 0px 0px #000000;
+  /* show input text only */
+}
 .input-control .ctrl-wrapper::after {
   color: rgba(0, 0, 0, 0.3);
 }
@@ -119,6 +129,10 @@ select:-moz-focusring {
 #popup_content[id].info::before {
   color: #8C1515;
 }
+.establishments[class] select:-moz-focusring {
+  color: transparent;
+  text-shadow: 0 0 0 #8C1515;
+}
 /* [title_text] Text color for item's name etc */
 .title-text,
 #googlemaps_popup > div:first-child,
@@ -131,8 +145,12 @@ select:-moz-focusring {
 /* [regular_text] Regular text, custom menu, item price in list */
 .regular-text,
 #googlemaps_popup > div,
-#popup_container[id] {
+#popup_container[id],
+.modifier .tooltip::before {
   color: #838385;
+}
+.modifier .tooltip {
+  background: #838385;
 }
 /* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
 .alternate-text,
@@ -156,6 +174,9 @@ select:-moz-focusring {
 .attention-text,
 .required::before {
   color: #E73939;
+}
+.attention-bg[class] {
+  background: #E73939;
 }
 /* [list_background] cell bg, table bg */
 #section > div,
@@ -196,6 +217,10 @@ select:-moz-focusring {
 }
 .list > li::after {
   color: #CECECE;
+}
+.profile-menu-links a:not(:last-child)::after,
+.toolbar {
+  background: #CECECE;
 }
 /* [list_subheader] credit cards edition */
 .list-subheader {
@@ -250,7 +275,12 @@ ul.reward-selection > li,
 }
 .reward-selection__item_selected,
 .stanford-plan.active {
-  background: rgba(140, 21, 21, 0.3);
+  background: -webkit-gradient(linear, left top, left bottom, color-stop(0, rgba(140, 21, 21, 0.3)), color-stop(1, rgba(102, 15, 15, 0.3)));
+  background: -o-linear-gradient(bottom, rgba(140, 21, 21, 0.3) 0%, rgba(102, 15, 15, 0.3) 100%);
+  background: -moz-linear-gradient(bottom, rgba(140, 21, 21, 0.3) 0%, rgba(102, 15, 15, 0.3) 100%);
+  background: -webkit-linear-gradient(bottom, rgba(140, 21, 21, 0.3) 0%, rgba(102, 15, 15, 0.3) 100%);
+  background: -ms-linear-gradient(bottom, rgba(140, 21, 21, 0.3) 0%, rgba(102, 15, 15, 0.3) 100%);
+  background: linear-gradient(to bottom, rgba(140, 21, 21, 0.3) 0%, rgba(102, 15, 15, 0.3) 100%);
 }
 .modifier .mdf_split::before {
   color: #8C1515;
@@ -272,10 +302,6 @@ ul.reward-selection > li,
 .profile-menu .close.alternate-button:active {
   background: transparent;
   color: inherit;
-}
-/* [toolbar] Toolbar with payment button, footer background */
-.toolbar {
-  background: #D0D0D0;
 }
 /* [warning_icon] Warning icon in popup */
 #popup_content[id].warning::before {
@@ -299,18 +325,6 @@ ul.reward-selection > li,
   background-size: 20em 20em;
   background-repeat: no-repeat;
   background-position: 50%;
-}
-/** establishments styles **/
-.establishments[class] {
-  background: rgba(0, 0, 0, 0.7);
-}
-/** popup alert styles **/
-#popup_alert[id] {
-  background: rgba(0, 0, 0, 0.7);
-}
-/** grey background **/
-.profile-menu.shown {
-  background-color: rgba(0, 0, 0, 0.3);
 }
 /* [checkbox] checked checkbox background */
 .modifier input:checked + .input,
@@ -336,4 +350,11 @@ ul.reward-selection > li,
 }
 .select-wrapper input {
   background: transparent;
+}
+/* [shadow_background] shadow background */
+#main-spinner,
+#popup_alert[id],
+.establishments[class],
+.profile-menu.shown {
+  background: rgba(0, 0, 0, 0.6);
 }
