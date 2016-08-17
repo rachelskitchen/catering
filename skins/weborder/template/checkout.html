@@ -69,6 +69,7 @@
         </div>
     </div>
     <% } %>
+    <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
     <div class="states-box address-edit fl-left item">
         <div class="label required optional-text"><%= _lp.PROFILE_STATE %></div>
         <div class="select-wrapper">
@@ -79,10 +80,13 @@
             </select>
         </div>
     </div>
+    <% } %>
+    <% if(typeof province == 'string') { %>
     <div class="province-box address-edit fl-left item">
         <div class="label required optional-text"><%= _lp.PROFILE_PROVINCE %></div>
         <input type="text" name="province" class="input ios-safari-caret size1">
     </div>
+    <% } %>
     <div class="address-edit fl-left item">
         <div class="label required optional-text"><% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %></div>
         <input type="text" name="zipcode" class="input ios-safari-caret size4">
