@@ -3,7 +3,6 @@
     -ms-user-select: none;
     -o-user-select: none;
     -webkit-user-select: none;
-    background-color: rgba(0, 0, 0, 0.6);
     display: table;
     font-family: 'helveticaneue', 'helvetica neue', 'texgyreherosregular', 'helvetica', 'tahoma', 'geneva', 'arial', sans-serif;
     font-weight: normal;
@@ -24,7 +23,6 @@
     appearance: none;
     background-color: transparent;
     border: none;
-    color: #686868;
     cursor: pointer;
     float: left;
     font-size: 16px;
@@ -33,43 +31,30 @@
     padding: 0 25px 0 10px;
     width: 100%;
 }
-.establishments select:-moz-focusring {
-    color: transparent;
-    text-shadow: 0 0 0 #686868;
-}
 .establishments select::-ms-expand {
     display: none;
 }
 .establishments button {
-    background-color: rgba(247,247,247,1);
-    border-color: #a9a9a9;
     border-radius: 15px;
     border-style: solid;
     border-width: 2px;
-    color: #646464;
     cursor: pointer;
     font-size: 14.4px;
     font-weight: bold;
     line-height: 2em;
     outline: none;
     padding: 0 2em;
-    text-shadow: 0 0 2px #fff;
 }
 .establishments button > span {
     width: 13em;
 }
 .establishments .select-wrapper {
-    background: #fcfcfc;
-    border-color: #cecece;
     border-radius: 20px;
     border-style: solid;
     border-width: 1px;
     display: inline-block;
     height: 22px;
     overflow: hidden;
-}
-.establishments .select-wrapper:hover {
-    border-color: #66ccff;
 }
 .establishments .select-wrapper:after {
     background-color: inherit;
@@ -96,7 +81,6 @@
     margin-bottom: 1em;
 }
 .establishments > div div:nth-child(1) {
-    color: #fff;
     font-size: 19.2px;
     font-weight: bold;
     text-shadow: none;
@@ -133,7 +117,6 @@
     position: fixed;
     top: 0;
     left: 0;
-    background: rgba(0,0,0,.8);
 }
 
 .establishments[class] > div div:nth-child(1) {
