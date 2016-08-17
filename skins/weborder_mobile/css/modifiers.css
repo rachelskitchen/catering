@@ -148,8 +148,6 @@ span.tooltip {
     -ms-border-radius: 0.2em 0.2em 0.2em 0.2em;
     -o-border-radius: 0.2em 0.2em 0.2em 0.2em;
     border-radius: 0.2em 0.2em 0.2em 0.2em;
-    background: #222;
-    color: #fff;
     text-shadow: none !important;
     display: block;
     font-size: 0.8em;
@@ -168,7 +166,7 @@ span.tooltip {
 span.tooltip:before {
     border-top: 0.6em solid transparent;
     border-bottom: 0.6em solid transparent;
-    border-right: 0.6em solid #222;
+    border-right: 0.6em solid;
     content: ' ';
     display: block;
     height: 0;

@@ -759,7 +759,7 @@ define(["main_router"], function(main_router) {
                 cart: carts.main
             });
 
-            var promises = this.setProfileEditContent(true);
+            var promises = this.setProfileEditContent();
 
             if (!promises.length) {
                 return this.navigate('index', true);
@@ -775,7 +775,7 @@ define(["main_router"], function(main_router) {
                 cart: carts.main
             });
 
-            var promises = this.setProfilePaymentsContent(true);
+            var promises = this.setProfilePaymentsContent();
 
             if (!promises.length) {
                 return this.navigate('index', true);
