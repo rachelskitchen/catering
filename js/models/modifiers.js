@@ -1128,13 +1128,13 @@ define(["backbone"], function(Backbone) {
      * @returns {Object} Deferred object.
      */
     App.Collections.ModifierBlocks.init = function(id_product) {
-        var modifier_load = $.Deferred();
+        var modifier_load;
 
         if (App.Data.modifiers[id_product] === undefined ) {
             App.Data.modifiers[id_product] = new App.Collections.ModifierBlocks;
             modifier_load = App.Data.modifiers[id_product].get_modifiers(id_product);
         } else {
-            modifier_load.resolve();
+            modifier_load = $.Deferred().resolve();
         }
 
         return modifier_load;
@@ -1147,13 +1147,13 @@ define(["backbone"], function(Backbone) {
      * @returns {Object} Deferred object.
      */
     App.Collections.ModifierBlocks.init_quick_modifiers = function() {
-        var fetching = $.Deferred();
+        var fetching;
 
         if (App.Data.quickModifiers === undefined) {
             App.Data.quickModifiers = new App.Collections.ModifierBlocks;
             fetching = App.Data.quickModifiers.get_quick_modifiers();
         } else {
-            fetching.resolve();
+            fetching = $.Deferred().resolve();
         }
 
         return fetching;
