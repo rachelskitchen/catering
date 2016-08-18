@@ -58,7 +58,11 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             line2: {
                 deps: ['_system_settings_address'],
                 get: function(address) {
-                    return address.city + ', ' + address.getRegion() + ' ' + address.postal_code;
+                    var address_line = address.city + ', ';
+                        address_line += address.getRegion() ? address.getRegion() + ' ' : '';
+                        address_line += address.postal_code;
+
+                    return address_line;
                 }
             },
             galleryViewData: {
