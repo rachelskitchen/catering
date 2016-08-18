@@ -321,7 +321,7 @@ define(["generator", "list"], function() {
             ids.forEach(function(id) {
                 var page_size = self.options.pageModel.get('page_size'),
                     start_index = (self.options.pageModel.get('cur_page') - 1) * page_size;
-                var products = self.options.products_bunch.get_subcategory_products(id, start_index, start_index + page_size);
+                var products = self.options.products_bunch.get_subcategory_products(id, start_index, page_size);
                 if (products.length) {
                     self.addItem(new App.Collections.Products(products), App.Data.categories.get(id));
                 }
@@ -333,7 +333,7 @@ define(["generator", "list"], function() {
         name: 'categories',
         mod: 'products_pages',
         initialize: function() {
-            this.pageModel = new PagesCtrlModel({page_size: App.SettingsDirectory.view_page_size});
+            this.pageModel = new App.Models.PagesCtrl;
             _.extend(this.bindingSources, {
                 pageModel: this.pageModel
             });
@@ -387,9 +387,8 @@ define(["generator", "list"], function() {
                 self.subViews.push(view);
 
                 var num_of_products = App.Data.products_bunches[parent_id].get('num_of_products');
-                var page_count = parseInt(num_of_products / App.SettingsDirectory.view_page_size) + !!(num_of_products % App.SettingsDirectory.view_page_size);
                 self.trigger('loadCompleted');
-                self.pageModel.set({page_count: page_count});
+                self.pageModel.calcPages(num_of_products);
                 self.pageModel.enableControls();
             });
         },
@@ -437,9 +436,8 @@ define(["generator", "list"], function() {
                 self.subViews.push(view);
 
                 var num_of_products = search.get('num_of_products');
-                var page_count = parseInt(num_of_products / App.SettingsDirectory.view_page_size) + !!(num_of_products % App.SettingsDirectory.view_page_size);
                 self.trigger('loadCompleted');
-                self.pageModel.set({page_count: page_count});
+                self.pageModel.calcPages(num_of_products);
                 self.pageModel.enableControls();
             });
         }
@@ -539,21 +537,6 @@ define(["generator", "list"], function() {
         remove: function() {
             // this.$('.categories_products_wrapper').contentarrow('destroy');
             App.Views.ListView.prototype.remove.apply(this, arguments);
-        }
-    });
-
-    var PagesCtrlModel = Backbone.Model.extend({
-        defaults: {
-            cur_page: 1,
-            page_count: 1,
-            controls_enable: true,
-            page_size: undefined
-        },
-        enableControls: function() {
-            this.set('controls_enable', true);
-        },
-        disableControls: function() {
-            this.set('controls_enable', false);
         }
     });
 

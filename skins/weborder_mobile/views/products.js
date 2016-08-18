@@ -132,7 +132,7 @@ define(["products_view"], function(products_view) {
         tagName: 'li',
         bindings: {
             ':el': 'toggle: active',
-            '.title': 'text: name',
+            '.title': 'text: name', //'text: format("$1 sort $2", name, sort)',
             '.desc': 'text: description, toggle: not(_system_settings_hide_products_description)',
             '.price': 'text: select(sold_by_weight, weightFormat(price), currencyFormat(price))'
         },

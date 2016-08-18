@@ -250,12 +250,12 @@
       return false;
     }
 
-    Backbone.Collection.prototype.toJS = function(key) {
+    Backbone.Collection.prototype.toJS = function(key, key2) {
       if (typeof key === 'string' && key.length > 0) {
           var output = {};
           for (var i = 0; i < this.length; i++) {
               if (typeof key == 'string') { //the call is like someCollection.toJSON('name')
-                  output[i + ":" + this.at(i).get(key)] = this.at(i).toJSON();
+                  output[i + ":" + this.at(i).get(key) + ":" + this.at(i).get(key2)] = this.at(i).toJSON();
               }
           }
           return output;

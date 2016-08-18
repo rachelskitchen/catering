@@ -701,7 +701,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * @type {Function}
          * @default App.Collections.CollectionSort.prototype.strategies.sortNumbers
          */
-        comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
+        //We are going to get sorted arrays from BE, so don't sort it on FE.
+        //Fathermore sort_value not good for sorting for the case when some categories have the same sort attr.
+        //comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
         /**
          * Item constructor.
          * @type {Function}
@@ -917,6 +919,31 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         return product_load;
     }; */
 
+    App.Models.PagesCtrl = Backbone.Model.extend({
+        defaults: {
+            cur_page: 1,
+            page_count: 1,
+            controls_enable: true,
+            page_size: undefined
+        },
+        initialize: function(opt) {
+            if (!_.isObject(opt) || !opt.page_size) {
+                this.set('page_size', App.SettingsDirectory.view_page_size);
+            }
+        },
+        enableControls: function() {
+            this.set('controls_enable', true);
+        },
+        disableControls: function() {
+            this.set('controls_enable', false);
+        },
+        calcPages: function(num_of_products) {
+            var page_count = parseInt(num_of_products / this.get('page_size') + !!(num_of_products % this.get('page_size')));
+            this.set({page_count: page_count});
+            return this;
+        }
+    });
+
     App.Models.ProductsBunch = Backbone.Model.extend({
         defaults: {
             parent_id: null,
@@ -931,13 +958,13 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         get_products: function(options) {
             var self = this, cur_page,
                 start_index = _.isObject(options) ? options.start_index : 0;
-            if (!this.get('parent_id')) {
-                return undefined;
-            }
 
             cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
             if (this.get('last_page_loaded') >= cur_page) {
                 return $.Deferred().resolve();
+            }
+            if (!this.get('parent_id')) {
+                return $.Deferred().rejected();
             }
             var ids = App.Data.parentCategories.getSubsIds(this.get('parent_id')),
                 products = this.get('products');
@@ -964,8 +991,13 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 });
             });
         },
-        get_subcategory_products: function(sub_id, start_index, end_index) {
-            var products = [];
+    /*    getNextPage: function() {
+            var cur_page = this.get('last_page_loaded');
+            return this.get_products({start_index: cur_page * App.SettingsDirectory.json_page_limit});
+        }, */
+        get_subcategory_products: function(sub_id, start_index, count) {
+            var products = [],
+                end_index = start_index + count;
             end_index = end_index <= this.get('products').length ? end_index : this.get('products').length;
             for (var i = start_index; i < end_index; i++) {
                 if (this.get('products').models[i].get("id_category") == sub_id) {
@@ -987,7 +1019,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         var product_load;
         if (App.Data.products_bunches[id_parent_category] === undefined) {
             App.Data.products_bunches[id_parent_category] = new App.Models.ProductsBunch({parent_id: id_parent_category});
-            product_load = App.Data.products_bunches[id_parent_category].get_products({start_index:1});
+            product_load = App.Data.products_bunches[id_parent_category].get_products({start_index:0});
         }
         else {
             product_load = $.Deferred().resolve();

@@ -46,7 +46,7 @@ define(["main_router"], function(main_router) {
             "": "index",
             "index": "index",
             "search/:search": "search",
-            "products/:ids": "products",
+            "products/:parent_id": "products",
             "modifiers/:id_category(/:id_product)": "modifiers",
             "combo_product/:id_category(/:id_product)": "combo_product",
             "upsell_product/:id_category(/:id_product)": "upsell_product",
@@ -508,16 +508,13 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        products: function(ids) {
-            var self = this,
-                _ids = JSON.parse('[' + ids + ']'),
-                fetched;
+        products: function(parent_id) {
+            var self = this, parentCategory;
+            parent_id = parseInt(parent_id);
 
-            if(typeof this.products.fetched == 'undefined') {
-                this.products.fetched = {};
+            if (!parent_id) {
+                this.navigate('index', true);
             }
-
-            fetched = this.products.fetched;
 
             this.prepare('products', function() {
                 App.Data.header.set({
@@ -531,31 +528,23 @@ define(["main_router"], function(main_router) {
                     footer: footerModes.None
                 });
 
-                // load categories and products
-                $.when(this.initCategories(), App.Collections.Products.get_slice_products(_ids)).then(function() {
-                    var parentCategory = App.Data.parentCategories.findWhere({ids: ids}),
-                        subs,
+                this.initCategories().then(function() {
+                    return App.Models.ProductsBunch.init(parent_id);
+                }).then(function(){
+                    var parentCategory = App.Data.parentCategories.findWhere({id: parent_id}),
+                        products_bunch = App.Data.products_bunches[parent_id],
                         content;
 
-                    if(parentCategory) {
-                        subs = parentCategory.get('subs');
-                    } else {
+                    if (!parentCategory) {
                         return self.navigate('index', true);
                     }
-
-                    !fetched[ids] && subs.each(function(category) {
-                        var products = App.Data.products[category.get('id')];
-                        category.get('products').reset(products ? products.toJSON() : []);
-                    });
-
-                    fetched[ids] = true;
-
                     content = [{
                         modelName: 'Categories',
                         model: parentCategory,
+                        products_bunch: products_bunch,
                         mod: 'Main',
                         cacheId: true,
-                        cacheIdUniq: ids
+                        cacheIdUniq: parent_id
                     }];
 
                     self.promotions && content.unshift(self.promotions);
@@ -591,8 +580,6 @@ define(["main_router"], function(main_router) {
                     header: headerModes.Modifiers,
                     footer: footerModes.None
                 });
-
-
 
                 if(isEditMode) {
                     originOrder = order.clone();
