@@ -680,8 +680,8 @@ define(["backbone", "async"], function(Backbone) {
                 "saved_gift_cards": true,
                 "saved_reward_cards": true,
                 "default_location": { lat: 37.77837116836659, lon: -122.41963882471924 }, //San Francisco
-                "view_page_size": 30,
-                "json_page_limit": 30
+                "view_page_size": 10,
+                "json_page_limit": 10
             };
 
             self.loadCustomerSettings = $.Deferred();
@@ -692,6 +692,9 @@ define(["backbone", "async"], function(Backbone) {
                 success: function(data) {
                     if (_.isObject(data)) {
                         $.extend(true, settings, data);
+                    }
+                    if (App.skin == App.Skins.WEBORDER_MOBILE) {
+                        (settings.view_page_size < 12) && (settings.view_page_size = 12);
                     }
                     settings.json_page_limit < settings.view_page_size && (settings.json_page_limit = settings.view_page_size);
                     settings.json_page_limit = parseInt(settings.json_page_limit / settings.view_page_size) * settings.view_page_size; // make json_page_size to be a multiple of view_page_size
