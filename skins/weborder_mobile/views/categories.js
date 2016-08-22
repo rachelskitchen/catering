@@ -78,8 +78,9 @@ define(["categories_view"], function(categories_view) {
                 _subs: this.model.get('subs')
             });
             this.last_index = 0;
-            this.add_subs_products();
-            //trace("products_bunch: NumOfProducts = ", this.options.products_bunch.get('num_of_products'), " cur_products = ", this.options.products_bunch.get('products').length);
+            this.add_products();
+            //var products =  this.options.searchModel.get('products');
+            //trace("searchModel: NumOfProducts = ", this.options.searchModel.get('num_of_products'), " cur_products = ", products ? products.length : undefined);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.start();
         },
@@ -106,28 +107,47 @@ define(["categories_view"], function(categories_view) {
             }
             this.timeout = setTimeout(function() {
                 if (scrollTop >= scrollHeight - (next_page_koeff * page_height)) {
-                    self.options.products_bunch.get_products({ start_index: self.last_index }).then(function() {
-                        trace("bunch updated ", self.options.products_bunch.get('parent_id'), self.options.products_bunch.get('products').length);
-                        trace("scroll params: ", scrollTop, scrollHeight, 1.5 * page_height);
+                    self.options.searchModel.get_products({ start_index: self.last_index }).then(function() {
+                        trace("bunch updated ", self.options.searchModel.get('parent_id'), self.options.searchModel.get('products').length);
+                        //trace("scroll params: ", scrollTop, scrollHeight, 1.5 * page_height);
                         if (scrollTop >= scrollHeight - (1.5 * page_height)) {
-                            self.add_subs_products();
+                            self.add_products();
                         }
                     });
                 }
                 delete self.timeout;
             }, 100);
         },
-        add_subs_products: function() {
+        add_products: function() {
             var self = this,
                 page_size = App.SettingsDirectory.view_page_size;
             this.model.get('subs').each(function(category){
                 var id = category.get('id');
-                var products = self.options.products_bunch.get_subcategory_products(id, self.last_index, page_size);
+                var products = self.options.searchModel.get_subcategory_products(id, self.last_index, page_size);
                 category.get('products').add(products);
-                //trace("self.last_index = ", self.last_index, products.length);
                 self.last_index += products.length;
             });
             trace("SUM last_index = ", this.last_index);
+        }
+    });
+
+    var CategoriesSearchView = CategoriesMainView.extend({
+        name: 'categories',
+        mod: 'main',
+        add_products: function() {
+            var self = this,
+                page_size = App.SettingsDirectory.view_page_size,
+                products = self.options.searchModel.get('products');
+
+            if (!products || !products.length) {
+                return;
+            }
+
+            var productsArray = products.models.slice(this.last_index, this.last_index + page_size);
+            var category = this.model.get('subs').at(0);
+            category.get('products').add(productsArray);
+            self.last_index += productsArray.length;
+            trace("SUM last_index = ", this.last_index, category.get('products').length);
         }
     });
 
@@ -136,5 +156,6 @@ define(["categories_view"], function(categories_view) {
         App.Views.CategoriesView.CategoriesMainView = CategoriesMainView;
         App.Views.CategoriesView.CategoriesParentsView = CategoriesParentsView;
         App.Views.CategoriesView.CategoryParentsItemView = CategoryParentsItemView;
+        App.Views.CategoriesView.CategoriesSearchView = CategoriesSearchView;
     });
 });
