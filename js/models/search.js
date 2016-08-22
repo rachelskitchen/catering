@@ -95,12 +95,6 @@ define(['products'], function() {
             last_page_loaded: 0
         },
         /**
-         * Initializes `status` attribute as Backbone.$.Deferred object
-         */
-       // initialize: function() {
-       //     this.set('status', Backbone.$.Deferred());
-       // },
-        /**
          * Seeks products that match `pattern` attribute value.
          * @returns {Object} Deferred object.
          */

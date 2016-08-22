@@ -484,20 +484,26 @@ define(["main_router"], function(main_router) {
                 this.listenToOnce(this, 'route', this.stopListening.bind(this, App.Data.search, 'onSearchComplete', showResults));
 
                 // perform search
-                App.Data.search.search(decodeURIComponent(search));
+                this.initCategories().then(function() {
+                    App.Data.search.search(decodeURIComponent(search));
+                });
 
                 function showResults(searchModel) {
                     var category = new App.Models.Category({
                         name: _loc.SEARCH_RESULTS + ': ' + searchModel.get('pattern'),
-                        products: searchModel.get('products') || (new App.Collections.Products())
+                        products: new App.Collections.Products()
+                    });
+                    var model = new Backbone.Model({
+                        subs: new Backbone.Collection(category)
                     });
 
                     App.Data.mainModel.set({
                         contentClass: '',
                         content: {
                             modelName: 'Categories',
-                            model: category,
-                            mod: 'Item',
+                            model: model,
+                            searchModel: searchModel,
+                            mod: 'Search',
                             tagName: 'div',
                             cacheId: true,
                             cacheIdUniq: search
@@ -541,7 +547,7 @@ define(["main_router"], function(main_router) {
                     content = [{
                         modelName: 'Categories',
                         model: parentCategory,
-                        products_bunch: products_bunch,
+                        searchModel: products_bunch,
                         mod: 'Main',
                         cacheId: true,
                         cacheIdUniq: parent_id
