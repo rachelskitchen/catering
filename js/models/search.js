@@ -94,6 +94,9 @@ define(['products'], function() {
              */
             last_page_loaded: 0
         },
+        initialize: function() {
+           this.set('status', Backbone.$.Deferred());
+        },
         /**
          * Seeks products that match `pattern` attribute value.
          * @returns {Object} Deferred object.
@@ -108,15 +111,27 @@ define(['products'], function() {
                 App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
             }
 
+            if (!this.load_dfd) {
+                this.load_dfd = {};
+            }
+
             cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
-            if (this.get('last_page_loaded') >= cur_page) {
-                load = $.Deferred().resolve();
+            trace("last_page_loaded:", this.get('last_page_loaded'), 'cur_page = ', cur_page);
+
+            if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page]) {
+                trace("get products rejected!", cur_page);
+                return $.Deferred().resolve("already_processed");
             } else {
+                trace("getting products from backend ....", cur_page);
                 load = tmp_col.get_products(undefined, {search: pattern, page: cur_page}).done(function() {
                     if (!self.get('products')) {
                        self.set({products: new App.Collections.Products});
                     }
+
+                    console.log(tmp_col.toJS('name', 'sort_value'));
+
                     self.get('products').add(tmp_col.models);
+
                     self.set({
                         num_pages: tmp_col.meta.num_pages,
                         cur_page: cur_page,
@@ -124,10 +139,10 @@ define(['products'], function() {
                         last_page_loaded: cur_page
                     });
                 });
+                this.load_dfd[cur_page] = load;
+                self.set('status', load);
+                return load;
             }
-
-            this.set('status', load);
-            return load;
         }
     });
 
