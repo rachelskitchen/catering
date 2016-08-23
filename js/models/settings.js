@@ -680,8 +680,8 @@ define(["backbone", "async"], function(Backbone) {
                 "saved_gift_cards": true,
                 "saved_reward_cards": true,
                 "default_location": { lat: 37.77837116836659, lon: -122.41963882471924 }, //San Francisco
-                "view_page_size": 10,
-                "json_page_limit": 10
+                "view_page_size": 12,
+                "json_page_limit": 24
             };
 
             self.loadCustomerSettings = $.Deferred();

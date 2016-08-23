@@ -894,7 +894,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
      * @param {Array} ids - array containing categories ids.
      * @returns {Object} Deferred object.
      */
-/*    App.Collections.Products.get_slice_products = function(ids) {
+    App.Collections.Products.get_slice_products = function(ids) {
         var c_id,
             product_load = $.Deferred(),
             tmp_model = new App.Collections.Products();
@@ -917,7 +917,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         }
 
         return product_load;
-    }; */
+    };
 
     App.Models.PagesCtrl = Backbone.Model.extend({
         defaults: {
@@ -959,20 +959,23 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             var self = this, cur_page,
                 start_index = _.isObject(options) ? options.start_index : 0;
 
+            if (!this.load_dfd) {
+                this.load_dfd = {};
+            }
+
             cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
-            if (this.get('last_page_loaded') >= cur_page) {
-                return $.Deferred().resolve();
+            if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page]) {
+                return $.Deferred().resolve("already_processed");
             }
             if (!this.get('parent_id')) {
-                return $.Deferred().rejected();
+                return $.Deferred().reject();
             }
             var ids = App.Data.parentCategories.getSubsIds(this.get('parent_id')),
                 products = this.get('products');
 
             var tmp_col = new App.Collections.Products();
             var parent_category = App.Data.parentCategories.find({id:this.get("parent_id")});
-
-            return tmp_col.get_products(ids, {page: cur_page}).done(function(){
+            this.load_dfd[cur_page] = tmp_col.get_products(ids, {page: cur_page}).done(function(){
                 products.add(tmp_col.models); //it's to avoid sorting on total products collection
                 self.set({
                     num_pages: tmp_col.meta.num_pages,
@@ -990,12 +993,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                     App.Data.products[id_category].add(tmp_col.where({id_category: id_category}), {silent: true});
                 });
             });
+            return this.load_dfd[cur_page];
         },
-    /*    getNextPage: function() {
-            var cur_page = this.get('last_page_loaded');
-            return this.get_products({start_index: cur_page * App.SettingsDirectory.json_page_limit});
-        }, */
-        get_subcategory_products: function(sub_id, start_index, count) {
+    /*  get_subcategory_products: function(sub_id, start_index, count) {
             var products = [],
                 end_index = start_index + count;
             end_index = end_index <= this.get('products').length ? end_index : this.get('products').length;
@@ -1003,6 +1003,19 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 if (this.get('products').models[i].get("id_category") == sub_id) {
                     products.push(this.get('products').models[i]);
                 }
+            }
+            return products;
+        }, */
+        get_subcategory_products: function(start_index, count) {
+            var products = {}, sub_id,
+                end_index = start_index + count;
+            end_index = end_index <= this.get('products').length ? end_index : this.get('products').length;
+            for (var i = start_index; i < end_index; i++) {
+                sub_id = this.get('products').models[i].get("id_category");
+                if (!products[sub_id]) {
+                   products[sub_id] = [];
+                }
+                products[sub_id].push(this.get('products').models[i]);
             }
             return products;
         }

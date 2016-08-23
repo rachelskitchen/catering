@@ -316,16 +316,14 @@ define(["generator", "list"], function() {
         },
         initData: function() {
             var self = this,
-                ids = this.options.parent_category.get('ids').split(","),
-                parent_name = this.collection.parent_selected;
-            ids.forEach(function(id) {
-                var page_size = self.options.pageModel.get('page_size'),
-                    start_index = (self.options.pageModel.get('cur_page') - 1) * page_size;
-                var products = self.options.products_bunch.get_subcategory_products(id, start_index, page_size);
-                if (products.length) {
-                    self.addItem(new App.Collections.Products(products), App.Data.categories.get(id));
+                page_size = self.options.pageModel.get('page_size'),
+                start_index = (self.options.pageModel.get('cur_page') - 1) * page_size;
+            var products = self.options.products_bunch.get_subcategory_products(start_index, page_size);
+            for (var sub_id in products) {
+                if (products[sub_id].length) {
+                    self.addItem(new App.Collections.Products(products[sub_id]), App.Data.categories.get(sub_id));
                 }
-            });
+            }
         }
     });
 

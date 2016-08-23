@@ -53,7 +53,7 @@
             "css": ["categories", "products"],
             "views": ["categories", "products"],
             "templates": ["categories", "products"],
-            "core": ["categories", "search", "products"]
+            "core": ["categories", "search", "products", "subcategories"]
         },
         "checkout": {
             "css": ["checkout", "pikaday", "stanfordcard"],
