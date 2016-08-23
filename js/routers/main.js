@@ -310,7 +310,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 server_color_schemes[ App.Skins.RETAIL ] = 'retail-desktop-colors';
                 server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
                 server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
-                server_color_schemes[ App.Skins.DIRECTORY ] = 'directory-desktop-colors';
+                server_color_schemes[ App.Skins.DIRECTORY ] = 'directory-colors';
 
                 if (local_theme == true) {
                     var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
