@@ -78,7 +78,8 @@
 }
 
 /* [input_background] Text fields background */
-.input-colors {
+.input-colors,
+.establishments .select-wrapper {
     .resolve-background(@input_background);
 }
 
@@ -116,6 +117,15 @@
    .resolve-color(@input_text);
 }
 
+.profile-edit .profile-form input:disabled {
+    .resolve-color-alpha(@input_text, 40%);
+}
+
+.checkout input.pikaday:focus {
+    color: transparent; /* hide the blinking cursor */
+    text-shadow: 0px 0px 0px @input_text; /* show input text only */
+}
+
 .input-control .ctrl-wrapper::after {
     .resolve-color-alpha(@input_text, 30%);
 }
@@ -135,6 +145,11 @@ select:-moz-focusring {
     .resolve-color(@primary_text);
 }
 
+.establishments[class] select:-moz-focusring {
+    color: transparent;
+    text-shadow: 0 0 0 @primary_text;
+}
+
 /* [title_text] Text color for item's name etc */
 .title-text,
 #googlemaps_popup > div:first-child,
@@ -149,8 +164,13 @@ select:-moz-focusring {
 /* [regular_text] Regular text, custom menu, item price in list */
 .regular-text,
 #googlemaps_popup > div,
-#popup_container[id] {
+#popup_container[id],
+.modifier .tooltip::before {
     .resolve-color(@regular_text);
+}
+
+.modifier .tooltip {
+    .resolve-background(@regular_text);
 }
 
 /* [alternate_text] Text color for solid buttons, checkboxes (checkout, subtotal and etc) */
@@ -223,6 +243,11 @@ select:-moz-focusring {
 
 .list > li::after {
     .resolve-color(@list_separator);
+}
+
+.profile-menu-links a:not(:last-child)::after,
+.toolbar {
+    .resolve-background(@list_separator);
 }
 
 /* [list_subheader] credit cards edition */
@@ -309,11 +334,6 @@ ul.reward-selection > li,
     color: inherit;
 }
 
-/* [toolbar] Toolbar with payment button, footer background */
-.toolbar {
-    .resolve-background(@toolbar);
-}
-
 /* [warning_icon] Warning icon in popup */
 #popup_content[id].warning::before {
     .resolve-color(@warning_icon);
@@ -339,21 +359,6 @@ ul.reward-selection > li,
     background-size: 20em 20em;
     background-repeat: no-repeat;
     background-position: 50%;
-}
-
-/** establishments styles **/
-.establishments[class] {
-    background: rgba(0,0,0,.7);
-}
-
-/** popup alert styles **/
-#popup_alert[id] {
-    background: rgba(0,0,0,.7);
-}
-
-/** grey background **/
-.profile-menu.shown {
-    background-color: rgba(0, 0, 0, 0.3);
 }
 
 /* [checkbox] checked checkbox background */
@@ -384,4 +389,12 @@ ul.reward-selection > li,
 
 .select-wrapper input {
     background: transparent;
+}
+
+/* [shadow_background] shadow background */
+#main-spinner,
+#popup_alert[id],
+.establishments[class],
+.profile-menu.shown {
+    .resolve-background-alpha(@shadow_background, 60%);
 }
