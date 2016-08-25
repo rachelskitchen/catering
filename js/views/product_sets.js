@@ -68,7 +68,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 get: function(cur_qty_to_add) {
                     var data=[],
                         is_selected = this.model.get('selected');
-                    //trace(this.model.get("product").get("name"), "cur_qty_to_add =", max_quantity, "is_selected=", is_selected, "qty=", this.model.get('quantity'));
+                    // trace(this.model.get("product").get("name"), "cur_qty_to_add =", max_quantity, "is_selected=", is_selected, "qty=", this.model.get('quantity'));
                     var max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
                     for (var i = 1; i <= max_quantity; i++) {
                         data.push({
@@ -93,7 +93,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         reinit_new_model: function() {
             //this.model (reference) for this view has been changed, so reinit the view.
-            this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});;
+            this.model = this.options.productSet.get('order_products').findWhere({id_product: this.model.get('id_product')});
             this.stopListening();
             this.startListening();
             this.applyBindings();
@@ -133,7 +133,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 combo_child: true,
                 real: this.model,
                 action: 'update',
-                action_callback: function() {
+                action_callback: function(status) {
                     //return back to the combo root product view:
                     App.Data.mainModel.set('popup', {
                             modelName: 'MyOrder',
@@ -157,13 +157,17 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 checked = el.attr('checked') == "checked" ? false : true,
                 exactAmount = productSet.get('maximum_amount');
 
-            if(checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
+            if (checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
                 return;
             }
+
             this.model.set('selected', checked);
             if (!checked) {
-                this.model.set('quantity', 1, {silent: true});
+                productSet.get('order_products').where({selected: false}).forEach(function(product) {
+                    product.set('quantity', 1, {silent: true});
+                });
             }
+
             this.$('.input').attr('checked', checked ? 'checked' : false);
             if (checked && this.model.check_order().status != 'OK') {
                 this.$(".customize").click();
@@ -177,6 +181,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 this.$(".mdf_quantity").css("display", "inline-block");
                 this.$('.mdf_quantity option:selected').removeAttr('selected');
                 quantity = this.model.get('quantity');
+
                 if (quantity > 0) {
                     this.$(".mdf_quantity select").val(quantity);
                 }
