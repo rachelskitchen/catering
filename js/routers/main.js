@@ -1275,7 +1275,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 self.navigate('index', true);
             }
         },
-        setProfilePaymentsContent: function(doNotChangeMod) {
+        setProfilePaymentsContent: function() {
             var promises = this.getProfilePaymentsPromises(),
                 customer = App.Data.customer,
                 mainModel = App.Data.mainModel,
@@ -1284,40 +1284,20 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             preparatoryActions();
 
             if (promises.length) {
-                if (doNotChangeMod) {
-                     App.Data.mainModel.set({
-                        content: {
-                            modelName: 'Profile',
-                            mod: 'Payments',
-                            model: customer,
-                            changeToken: changeToken,
-                            ui: new Backbone.Model({show_response: false}),
-                            removeToken: removeToken,
-                            unlinkGiftCard: unlinkGiftCard,
-                            unlinkRewardCard: unlinkRewardCard,
-                            myorder: App.Data.myorder,
-                            className: 'profile-edit'
-                        }
-                    });
-                } else {
-                    App.Data.mainModel.set({
-                        mod: 'Profile',
-                        className: 'profile-container',
-                        profile_title: _loc.PAYMENT_METHODS,
-                        profile_content: {
-                            modelName: 'Profile',
-                            mod: 'Payments',
-                            model: customer,
-                            changeToken: changeToken,
-                            ui: new Backbone.Model({show_response: false}),
-                            removeToken: removeToken,
-                            unlinkGiftCard: unlinkGiftCard,
-                            unlinkRewardCard: unlinkRewardCard,
-                            myorder: App.Data.myorder,
-                            className: 'profile-edit text-center'
-                        }
-                    });
-                }
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Payments',
+                        model: customer,
+                        changeToken: changeToken,
+                        ui: new Backbone.Model({show_response: false}),
+                        removeToken: removeToken,
+                        unlinkGiftCard: unlinkGiftCard,
+                        unlinkRewardCard: unlinkRewardCard,
+                        myorder: App.Data.myorder,
+                        className: 'profile-edit'
+                    }
+                });
 
                 window.setTimeout(function() {
                     self.listenTo(customer, 'onLogout', logout);
