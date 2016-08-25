@@ -133,7 +133,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 combo_child: true,
                 real: this.model,
                 action: 'update',
-                action_callback: function(status) {
+                action_callback: function() {
                     //return back to the combo root product view:
                     App.Data.mainModel.set('popup', {
                             modelName: 'MyOrder',
