@@ -77,6 +77,7 @@
     }
   Backbone.View.extend = Backbone.Model.extend = Backbone.Collection.extend = function(new_proto) {
       var new_class =  BackboneExtendFunc.apply(this, arguments);
+      new_proto.defaults && typeof new_proto.defaults == 'object' && (new_class.prototype.defaults =  _.extend({}, this.prototype.defaults, new_proto.defaults));
       new_proto.events && typeof new_proto.events == 'object' && (new_class.prototype.events =  _.extend({}, this.prototype.events, new_proto.events));
       new_proto.bindings && typeof new_proto.bindings == 'object' && (new_class.prototype.bindings =  _.extend({}, this.prototype.bindings, new_proto.bindings));
       new_proto.computeds && typeof new_proto.computeds == 'object' && (new_class.prototype.computeds =  _.extend({}, this.prototype.computeds, new_proto.computeds));
@@ -250,12 +251,13 @@
       return false;
     }
 
-    Backbone.Collection.prototype.toJS = function(key, key2) {
-      if (typeof key === 'string' && key.length > 0) {
+    Backbone.Collection.prototype.toJS = function(key1, key2) {
+      if (typeof key1 === 'string' && key1.length > 0) {
           var output = {};
           for (var i = 0; i < this.length; i++) {
-              if (typeof key == 'string') { //the call is like someCollection.toJSON('name')
-                  output[i + ":" + this.at(i).get(key) + ":" + this.at(i).get(key2)] = this.at(i).toJSON();
+              if (typeof key1 == 'string') { //the call is like someCollection.toJSON('name')
+                  val_key2 = key2 ? ("|" + this.at(i).get(key2)) : "";
+                  output[i + "|" + this.at(i).get(key1) + val_key2] = this.at(i).toJSON();
               }
           }
           return output;

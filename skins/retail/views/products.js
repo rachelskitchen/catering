@@ -27,38 +27,51 @@ define(["products_view"], function(products_view) {
         tagName: 'li',
         className: 'product-item',
         bindings: {
-            ':el': 'attr: {tabindex: 0}, classes: {hide: not(filterResult)}'
+            ':el': 'attr: {tabindex: 0, disabled: not(active)}, classes: {hide: not(filterResult)}'
         }
     });
 
     var ProductListView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'list',
-        itemView: ProductListItemView,
         bindings: {
             '.products-set-title': 'text: name',
-            '.products': 'collection: $collection, itemView: "itemView"',
+            '.products': 'collection: $collection, itemView: "createItemView"',
             '.loading': 'toggle: equal(status, "pending")'
+        },
+        createItemView: function(options) {
+            return App.Views.GeneratorView.create('Product', {
+                mod: 'ListItem',
+                model: options.model
+            }, options.model.get("compositeId"));
         }
     });
 
     var ProductCategoryListView = App.Views.FactoryView.extend({
         name: 'product',
         mod: 'category_list',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.model, "change:value", this.updatePageView, this);
+        },
+        updatePageView: function() {
+            this.model.get('value').loadProductsPage();//loading first page
+        },
         bindings: {
             '.products-box': 'updateContent: productSet',
-            '.sort-menu': 'updateContent: sortItemsView'
+            '.sort-menu': 'updateContent: sortItemsView',
+            '.pages_ctrl_container': 'updateContent: PagesCtrlView'
         },
         computeds: {
             productSet: {
                 deps: ['value'],
-                get: function(value) {
+                get: function(productSet) {
                     return {
                         name: 'Product',
                         mod: 'List',
-                        model: value,
-                        collection: value.get('products'),
-                        viewId: value.id,
+                        model: productSet,
+                        collection: productSet.get('products_page'),
+                        viewId: productSet.id,
                         subViewIndex: 0
                     };
                 }
@@ -72,6 +85,19 @@ define(["products_view"], function(products_view) {
                     el: this.$('.sort-menu'),
                     viewId: sortItems.id,
                     subViewIndex: 1
+                }
+            },
+            PagesCtrlView: {
+                deps: ['value'],
+                get: function(productSet) {
+                    return {
+                        name: 'Pages',
+                        mod: 'Main',
+                        model: productSet.pageModel,
+                        className: "products_pages_control",
+                        viewId: productSet.get('id'),
+                        subViewIndex: 2
+                    }
                 }
             }
         }

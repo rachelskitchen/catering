@@ -703,7 +703,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         //We are going to get sorted arrays from BE, so don't sort it on FE.
         //Fathermore sort_value not good for sorting for the case when some categories have the same sort attr.
-        //comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
+        comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
         /**
          * Item constructor.
          * @type {Function}
@@ -724,6 +724,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         initialize: function() {
             this.listenTo(this, 'change:active', this.check_active);
+            if (App.skin == App.Skins.WEBORDER && App.skin == App.Skins.WEBORDER_MOBILE) {
+                this.comparator = undefined; //no sorting for weborder and weborder_mobile the products come already sorted from Backend
+            }
         },
         /**
          * Seeks product by id.
@@ -792,7 +795,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                         if(products[i].is_gift && settings.get('skin') === 'mlb') continue; // mlb skin does not support gift cards (bug #9395)
                         products[i].compositeId = products[i].id + '_' + products[i].id_category;
                         category = App.Data.categories.find({id: products[i].id_category});
-                        products[i].sort_value = category ? (category.get('sort') * 10000 + products[i].sort) : products[i].sort;
+                        products[i].sort_value = category ? (category.get('sort') * 100000 + products[i].sort) : products[i].sort;
+                        products[i].filterResult = true;
                         self.add(products[i]);
                     }
                     self.meta = data.meta;
@@ -947,16 +951,18 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
     App.Models.ProductsBunch = Backbone.Model.extend({
         defaults: {
             parent_id: null,
+            ids: null,
+            name: "",
             products: null,
-            num_pages: 1,
-            cur_page: 1,
+            num_of_products: 0,
             last_page_loaded: 0
         },
         initialize: function(){
-            this.set('products', new Backbone.Collection);
+            this.set('products', new App.Collections.Products);
         },
         get_products: function(options) {
             var self = this, cur_page,
+                ids = _.isObject(options) ? options.ids : undefined,
                 start_index = _.isObject(options) ? options.start_index : 0;
 
             if (!this.load_dfd) {
@@ -967,22 +973,20 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page]) {
                 return $.Deferred().resolve("already_processed");
             }
-            if (!this.get('parent_id')) {
-                return $.Deferred().reject();
+            if (Array.isArray(this.get('ids'))) {
+                ids = this.get('ids');
+            } else {
+                ids = App.Data.parentCategories.getSubsIds(this.get('parent_id'));
             }
-            var ids = App.Data.parentCategories.getSubsIds(this.get('parent_id')),
-                products = this.get('products');
 
             var tmp_col = new App.Collections.Products();
-            var parent_category = App.Data.parentCategories.find({id:this.get("parent_id")});
+            //var parent_category = App.Data.parentCategories.find({id:this.get("parent_id")});
             this.load_dfd[cur_page] = tmp_col.get_products(ids, {page: cur_page}).done(function(){
-                products.add(tmp_col.models); //it's to avoid sorting on total products collection
+                self.get('products').add(tmp_col.models);
                 self.set({
-                    num_pages: tmp_col.meta.num_pages,
-                    cur_page: cur_page,
                     num_of_products: tmp_col.meta.count,
                     last_page_loaded: cur_page,
-                    name: parent_category ? parent_category.get('name') : ""
+                    //name: parent_category ? parent_category.get('name') : ""
                 });
 
                 //copy products into App.Data.products
@@ -995,17 +999,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             });
             return this.load_dfd[cur_page];
         },
-    /*  get_subcategory_products: function(sub_id, start_index, count) {
-            var products = [],
-                end_index = start_index + count;
-            end_index = end_index <= this.get('products').length ? end_index : this.get('products').length;
-            for (var i = start_index; i < end_index; i++) {
-                if (this.get('products').models[i].get("id_category") == sub_id) {
-                    products.push(this.get('products').models[i]);
-                }
-            }
-            return products;
-        }, */
         get_subcategory_products: function(start_index, count) {
             var products = {}, sub_id,
                 end_index = start_index + count;
@@ -1017,6 +1010,11 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 }
                 products[sub_id].push(this.get('products').models[i]);
             }
+            return products;
+        },
+        getPortion: function(start_index, count) {
+            var products = [];
+            products = this.get('products').slice(start_index, start_index + count);
             return products;
         }
     });

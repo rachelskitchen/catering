@@ -70,9 +70,47 @@ define(["list", "generator"], function(list_view) {
         }
     });
 
+    App.Views.CorePagesView = {};
+    App.Views.CorePagesView.CorePagesMainView = App.Views.FactoryView.extend({
+        name: 'pages',
+        mod: 'main',
+        bindings: {
+            ":el": "classes:{hide: equal(page_count,1)}",
+            ".cur_page": "text: cur_page",
+            ".last_page": "text: page_count",
+            ".arrow-left": "enabled: controls_enable",
+            ".arrow-right": "enabled: controls_enable"
+        },
+        events: {
+            "click .arrow-left": 'page_left',
+            "click .arrow-right": 'page_right'
+        },
+        page_left: function() {
+            var cur_page = this.model.get("cur_page");
+            if (cur_page > 1) {
+                cur_page--;
+            } else {
+                return;
+            }
+            this.model.set("cur_page", cur_page);
+        },
+        page_right: function() {
+            var cur_page = this.model.get("cur_page"),
+                page_count = this.model.get("page_count");
+            if (cur_page < page_count) {
+                cur_page++;
+            } else {
+                return;
+            }
+            this.model.set("cur_page", cur_page);
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.CategoriesView = {};
         App.Views.CategoriesView.CategoriesItemView = App.Views.CoreCategoriesView.CoreCategoriesItemView;
         App.Views.CategoriesView.CategoriesMainView = App.Views.CoreCategoriesView.CoreCategoriesMainView;
+        App.Views.PagesView = {}
+        App.Views.PagesView.PagesMainView = App.Views.CorePagesView.CorePagesMainView;
     });
 });
