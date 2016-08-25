@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["generator", "list"], function() {
+define(["generator", "list", "categories_view"], function() {
     'use strict';
 
     var CategoriesSliderItemView = App.Views.ItemView.extend({
@@ -380,14 +380,13 @@ define(["generator", "list"], function() {
                     pageModel: self.pageModel,
                     parent_category: self.options.parent_category
                 }, 'products_pages' + self.options.root_cache_id + self.pageModel.get("cur_page"));
-                self.$('.categories_products_wrapper').append(view.el);
-                self.$(".categories_products_wrapper").scrollTop(0);
+                self.$('.categories_products_wrapper').append(view.el).scrollTop(0);
                 self.subViews.push(view);
 
                 var num_of_products = App.Data.products_bunches[parent_id].get('num_of_products');
-                self.trigger('loadCompleted');
                 self.pageModel.calcPages(num_of_products);
                 self.pageModel.enableControls();
+                self.trigger('loadCompleted');
             });
         },
         showSpinner: function() {
@@ -429,14 +428,13 @@ define(["generator", "list"], function() {
                     collection: self.collection, //Collection: Categories
                     pageModel: self.pageModel,
                 }, 'products_pages' + self.options.root_cache_id + self.pageModel.get("cur_page"));
-                self.$('.categories_products_wrapper').append(view.el);
-                self.$(".categories_products_wrapper").scrollTop(0);
+                self.$('.categories_products_wrapper').append(view.el).scrollTop(0);
                 self.subViews.push(view);
 
                 var num_of_products = search.get('num_of_products');
-                self.trigger('loadCompleted');
                 self.pageModel.calcPages(num_of_products);
                 self.pageModel.enableControls();
+                self.trigger('loadCompleted');
             });
         }
     });
@@ -538,42 +536,7 @@ define(["generator", "list"], function() {
         }
     });
 
-    var PagesMainView = App.Views.FactoryView.extend({
-        name: 'pages',
-        mod: 'main',
-        bindings: {
-            ".cur_page": "text: cur_page",
-            ".last_page": "text: page_count",
-            ".arrow-left": "enabled: controls_enable",
-            ".arrow-right": "enabled: controls_enable"
-        },
-        events: {
-            "click .arrow-left": 'page_left',
-            "click .arrow-right": 'page_right'
-        },
-        page_left: function() {
-            var cur_page = this.model.get("cur_page");
-            if (cur_page > 1) {
-                cur_page--;
-            } else {
-                return;
-            }
-            this.model.set("cur_page", cur_page);
-        },
-        page_right: function() {
-            var cur_page = this.model.get("cur_page"),
-                page_count = this.model.get("page_count");
-            if (cur_page < page_count) {
-                cur_page++;
-            } else {
-                return;
-            }
-            this.model.set("cur_page", cur_page);
-        }
-    });
-
     return new (require('factory'))(function() {
-        App.Views.CategoriesView = {};
         App.Views.CategoriesView.CategoriesSliderItemView = CategoriesSliderItemView;
         App.Views.CategoriesView.CategoriesSliderView = CategoriesSliderView;
         App.Views.CategoriesView.CategoriesProductsItemView = CategoriesProductsItemView;
@@ -582,7 +545,5 @@ define(["generator", "list"], function() {
         App.Views.CategoriesView.CategoriesSearchResultsView = CategoriesSearchResultsView;
         App.Views.CategoriesView.CategoriesProductsPagesView = CategoriesProductsPagesView;
         App.Views.CategoriesView.CategoriesSearchPagesView = CategoriesSearchPagesView;
-        App.Views.PagesView = {}
-        App.Views.PagesView.PagesMainView = PagesMainView;
     });
 });

@@ -83,7 +83,7 @@ define(['products', 'filters'], function() {
      *     var categoryProducts = new App.Models.categoryProducts({id: '1,2,3,4'});
      * });
      */
-    App.Models.CategoryProducts = Backbone.Model.extend(
+    App.Models.CategoryProducts = App.Models.ProductsBunch.extend(
     /**
      * @lends Backbone.Model.prototype
      */
@@ -235,6 +235,49 @@ define(['products', 'filters'], function() {
         }
     });
 
+    App.Models.CategoryProductsPages = App.Models.CategoryProducts.extend({
+        defaults: {
+            products_page: null,
+        },
+        initialize: function() {
+            App.Models.CategoryProducts.prototype.initialize.apply(this, arguments);
+            this.pageModel = new App.Models.PagesCtrl;
+            this.listenTo(this.pageModel, "change:cur_page", this.loadProductsPage, this);
+            this.listenTo(this.get('products'), "sort", this.updateProducts, this);
+            this.set('products_page', new App.Collections.Products());
+            this.set('products_page', new (App.Collections.Products.extend({comparator: undefined})));
+        },
+        updateProducts: function() {
+            var page_size = this.pageModel.get('page_size'),
+                start_index = (this.pageModel.get('cur_page') - 1) * page_size;
+
+            var products = this.getPortion(start_index, page_size);
+
+            products = _.map(products, function(product){
+                if (product.get('is_combo') || product.get('has_upsell')) {
+                    product.set('active', false, {silent: true});
+                }
+                return product;
+            });
+            this.get('products_page').reset(products, {ignoreFilters: true});
+
+        },
+        loadProductsPage: function() {
+            var dfd, self = this;
+            var start_index = (this.pageModel.get('cur_page') - 1) * this.pageModel.get('page_size');
+            this.set('status', "pending");
+            this.pageModel.disableControls();
+
+            dfd = this.get_products({start_index: start_index});
+            dfd.always(function() {
+                self.pageModel.calcPages(self.get('num_of_products'));
+                self.pageModel.enableControls();
+                self.set('status', "resolved");
+                App.Data.sortItems.sortCollection(self.get('products'));
+            });
+        }
+    });
+
     /**
      * @class
      * @classdesc Represents products sets.
@@ -254,8 +297,8 @@ define(['products', 'filters'], function() {
         /**
          * Item's constructor.
          * @type {Function}
-         * @default App.Models.CategoryProducts
+         * @default App.Models.CategoryProductsPages
          */
-        model: App.Models.CategoryProducts
+        model: App.Models.CategoryProductsPages
     });
 });

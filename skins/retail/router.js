@@ -107,7 +107,7 @@ define(["main_router"], function(main_router) {
                 App.Data.searchLine = new App.Models.SearchLine({search: new App.Collections.Search()});
                 App.Data.cart = new Backbone.Model({visible: false});
                 App.Data.categorySelection = new App.Models.CategorySelection();
-                App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProducts()});
+                App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProductsPages()});
                 App.Data.productsSets = new App.Collections.ProductsSets();
                 App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
 
@@ -1135,12 +1135,12 @@ define(["main_router"], function(main_router) {
             } else {
                 productSet = App.Data.productsSets.add({id: key});
                 productSet.set('name', name);
+                productSet.set('ids', ids);
             }
-
             App.Data.curProductsSet.set('value', productSet);
 
             // get items
-            !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
+        /*    !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
                 var products = [],
                     productsAttr = productSet.get('products');
 
@@ -1169,6 +1169,7 @@ define(["main_router"], function(main_router) {
                 // Apply a sort method specified by user and listen to its further changes
                 App.Data.sortItems.sortCollection(productsAttr);
             });
+        */
         },
         /**
          * Creates App.Data.sortItem collection.
@@ -1180,7 +1181,7 @@ define(["main_router"], function(main_router) {
                     id: 1,
                     name: _loc.SORT_BY_DEFAULT,
                     sortStrategy: 'sortNumbers',
-                    sortKey: 'sort',
+                    sortKey: 'sort_value',
                     sortOrder: 'asc',
                     selected: true
                 },

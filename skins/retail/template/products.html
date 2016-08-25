@@ -1,6 +1,8 @@
 <script type="text/template" id="product_list-template">
     <h2 class="products-set-title header-text primary-border"></h2>
-    <ul class="products"></ul>
+    <div class="products_wrap">
+        <ul class="products"></ul>
+    </div>
     <div class="loading shadow-bg">
         <div class="ui-spinner animate-spin"></div>
     </div>
@@ -23,7 +25,20 @@
 
 <script type="text/template" id="product_category_list-template">
     <div class="sort-menu fl-right"></div>
+    <div class="pages_ctrl_container fl-right"></div>
     <div class="products-box"></div>
+</script>
+
+<script type="text/template" id="pages_main-template">
+    <div class='pages_control_wrapper'>
+      <div class='pages_control'>
+        <span class="link arrow-left">&lsaquo;</span>&nbsp;
+        <span><span class="text cur_page"></span></span>
+        <span class="text">of</span>
+        <span class="text last_page"></span>&nbsp;
+        <span class="link arrow-right">&rsaquo;</span>
+      </div>
+    </div>
 </script>
 
 <script type="text/template" id="product_images-template">

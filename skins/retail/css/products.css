@@ -5,16 +5,26 @@
     left: 190px;
     right: 0;
     overflow-x: hidden;
-    overflow-y: auto;
+    overflow-y: hidden;
 }
 
 .products-view .products-set-title {
-    min-height: 16px;
+    height: 16px;
     padding: 12px 22px 11px;
     border-bottom-width: 1px;
     border-bottom-style: solid;
     font-size: inherit;
     word-break: break-word;
+}
+
+.products-view .products_wrap {
+    position: absolute;
+    top: 40px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
 }
 
 .products-view .products {
@@ -119,6 +129,41 @@
 
 .product_info .btn {
     padding: 13px 10px;
+}
+
+.products_pages_control .pages_control_wrapper {
+   text-align: center;
+   margin-top: 9px;
+}
+.products_pages_control .pages_control {
+    display: inline-block;
+}
+.products_pages_control .pages_control > span {
+    display: inline-block;
+    line-height: 22px;
+    vertical-align: top;
+    margin-right: 8px;
+}
+.products_pages_control .pages_control .link {
+    font-size: 24px;
+    font-family: "Tahoma", "Arial", sans-serif;
+    line-height: 20px;
+}
+.products_pages_control .pages_control .arrow-left {
+    padding-left: 16px;
+}
+.products_pages_control .pages_control .arrow-right {
+    padding-right: 16px;
+}
+.products_pages_control .pages_control .cur_page {
+    border: 1px solid;
+    padding: 4px 4px 4px 4px;
+    border-radius: 2px;
+}
+/* TODO : move it to colors css */
+.products_pages_control .pages_control .cur_page {
+    color: #8A780C;
+    border-color: #8A780C;
 }
 
 @media only screen and (max-width: 1440px) {
