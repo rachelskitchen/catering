@@ -120,8 +120,10 @@ define(["backbone"], function(Backbone) {
          * @returns {?number} Amount that need to be added to order to allow 'Delivery' feature.
          */
         getRemainingAmount: function(subtotal) {
-            // Get correct delivery charge
-            var charges = this.get('charges'),
+            // Get correct delivery charge and service fee
+            var service_fee = App.Data.myorder.get_service_fee_charge(),
+                items_total = subtotal - service_fee,
+                charges = this.get('charges'),
                 charge = 0;
 
             if (charges) {
@@ -130,8 +132,8 @@ define(["backbone"], function(Backbone) {
                         min = obj.min_threshold,
                         max = obj.max_threshold;
 
-                    if (subtotal > min && (subtotal <= max || max === null)) {
-                        charge = (obj.type === 1) ? (subtotal/100 * obj.amount) : obj.amount;
+                    if (items_total > min && (items_total <= max || max === null)) {
+                        charge = (obj.type === 1) ? (items_total/100 * obj.amount) : obj.amount;
                     }
                 }
             }
