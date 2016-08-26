@@ -390,7 +390,7 @@ define(["checkout_view"], function(checkout_view) {
                         self.tokens.reset(customer.payments.models);
                         customer.payments.ignoreSelectedToken = self.token.get('ignoreSelectedToken');
                         customer.payments.listenTo(self.token, 'change:ignoreSelectedToken', function(model, value) {
-                            customer.payments.ignoreSelectedToken = value;
+                            this.ignoreSelectedToken = value;
                         });
                     }
                     if (customer.giftCards) {
