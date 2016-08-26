@@ -404,4 +404,20 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             this.restoreDependencyGraph();
         }
     });
+
+    // Adds/updates new class. Every update removes previous class.
+    Backbone.Epoxy.binding.addHandler('updateClass', {
+        init: function($el, value, bindings) {
+            this.previousValue = value;
+            $el.addClass(value);
+        },
+        set: function($el, value) {
+            $el.removeClass(this.previousValue);
+            $el.addClass(value);
+            this.previousValue = value;
+        },
+        clean: function() {
+            delete this.previousValue;
+        }
+    });
 });
