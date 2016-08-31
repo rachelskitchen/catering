@@ -390,11 +390,9 @@ define(["generator", "list", "categories_view"], function() {
             });
         },
         showSpinner: function() {
-            //trace("showSpinner==>");
             $('.products_spinner').addClass('ui-visible');
         },
         hideSpinner: function() {
-            //trace("hideSpinner==>");
             var spinner = $('.products_spinner');
             this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), 0);
         }
@@ -516,11 +514,9 @@ define(["generator", "list", "categories_view"], function() {
             this.$('.categories_products_pages_wrap').append(view.el);
         },
         showSpinner: function() {
-            //trace("showSearchSpinner==>");
             this.$('.products_spinner').addClass('ui-visible');
         },
         hideSpinner: function(delay) {
-            //trace("hideSearchSpinner==>");
             var spinner = this.$('.products_spinner');
             this.spinnerTimeout = setTimeout(spinner.removeClass.bind(spinner, 'ui-visible'), delay >= 0 ? delay : 500);
         },

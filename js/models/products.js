@@ -761,9 +761,10 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * @param {string} search - search pattern (used in retail skin).
          * @returns {Object} Deferred object.
          */
-        get_products: function(id_category, options) {
+        get_products: function(options) {
             var self = this,
                 settings = App.Data.settings,
+                id_category = _.isObject(options) ? options.id_category : undefined,
                 search = _.isObject(options) ? options.search : undefined,
                 page = _.isObject(options) ? options.page : undefined,
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
@@ -773,10 +774,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 return fetching;
             }
 
-            var test = false;
             Backbone.$.ajax({
                 type: "GET",
-                url: test ? "/weborders/products/test" : "/weborders/products/",
+                url: "/weborders/products/",
                 data: {
                     category: id_category,
                     establishment: settings.get("establishment"),
@@ -883,41 +883,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
 
         if (App.Data.products[id_category] === undefined) {
             App.Data.products[id_category] = new App.Collections.Products();
-            product_load = App.Data.products[id_category].get_products(id_category);
+            product_load = App.Data.products[id_category].get_products({id_category: id_category});
         } else {
             product_load = $.Deferred().resolve();
-        }
-
-        return product_load;
-    };
-
-    /**
-     * Loads products for several categories in one request.
-     * @static
-     * @alias App.Collections.Products.get_slice_products
-     * @param {Array} ids - array containing categories ids.
-     * @returns {Object} Deferred object.
-     */
-    App.Collections.Products.get_slice_products = function(ids) {
-        var c_id,
-            product_load = $.Deferred(),
-            tmp_model = new App.Collections.Products();
-
-        c_id = ids.filter(function(id_category) {
-            return App.Data.products[id_category] === undefined;
-        });
-
-        if (c_id.length) {
-            tmp_model.get_products(c_id).then(function() {
-                c_id.forEach(function(id_category) {
-                    var products = new App.Collections.Products();
-                    products.add(tmp_model.where({id_category: id_category}));
-                    App.Data.products[id_category] = products;
-                });
-                product_load.resolve();
-            });
-        } else {
-            product_load.resolve();
         }
 
         return product_load;
@@ -948,13 +916,48 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         }
     });
 
-    App.Models.ProductsBunch = Backbone.Model.extend({
+   /**
+     * @class
+     * @classdesc Represents a model for producs lookup by search pattern or by categories ids.
+     * @alias App.Models.ProductsBunch
+     * @augments Backbone.Model
+     */
+    App.Models.ProductsBunch = Backbone.Model.extend(
+    /**
+     * @lends App.Models.ProductsBunch.prototype
+     */
+    {
         defaults: {
             parent_id: null,
-            ids: null,
-            name: "",
+             /**
+             * Lookup categories ids.
+             * @type {?array}
+             * @default null
+             */
+            ids: undefined,
+             /**
+             * Lookup string.
+             * @type {?string}
+             * @default undefined
+             */
+            pattern: undefined,
+            /**
+             * Found products.
+             * @type {?App.Collections.Products}
+             * @default undefined
+             */
             products: null,
+            /**
+             * Number of products can be loaded for the search pattern.
+             * @type {number}
+             * @default 0
+             */
             num_of_products: 0,
+            /**
+             * Last products page loaded sucessfully. It can only grow up, needed for accessing to caching pages.
+             * @type {number}
+             * @default 0
+             */
             last_page_loaded: 0
         },
         initialize: function(){
@@ -962,8 +965,16 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         },
         get_products: function(options) {
             var self = this, cur_page,
-                ids = _.isObject(options) ? options.ids : undefined,
-                start_index = _.isObject(options) ? options.start_index : 0;
+                ids = this.get('ids'),
+                pattern = this.get('pattern'),
+                start_index = _.isObject(options) ? options.start_index : 0,
+                tmp_col = new App.Collections.Products();
+
+            if (pattern) { //search case only:
+                tmp_col.onProductsError = function() {
+                    App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
+                }
+            }
 
             if (!this.load_dfd) {
                 this.load_dfd = {};
@@ -973,24 +984,16 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page]) {
                 return $.Deferred().resolve("already_processed");
             }
-            if (Array.isArray(this.get('ids'))) {
-                ids = this.get('ids');
-            } else {
-                ids = App.Data.parentCategories.getSubsIds(this.get('parent_id'));
-            }
 
-            var tmp_col = new App.Collections.Products();
-            //var parent_category = App.Data.parentCategories.find({id:this.get("parent_id")});
-            this.load_dfd[cur_page] = tmp_col.get_products(ids, {page: cur_page}).done(function(){
+            this.load_dfd[cur_page] = tmp_col.get_products({search: pattern, id_category: ids, page: cur_page}).done(function(){
                 self.get('products').add(tmp_col.models);
                 self.set({
                     num_of_products: tmp_col.meta.count,
                     last_page_loaded: cur_page,
-                    //name: parent_category ? parent_category.get('name') : ""
                 });
 
                 //copy products into App.Data.products
-                ids.forEach(function(id_category) {
+                ids && ids.forEach(function(id_category) {
                     if (!App.Data.products[id_category]) {
                         App.Data.products[id_category] = new App.Collections.Products();
                     }
@@ -998,6 +1001,16 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 });
             });
             return this.load_dfd[cur_page];
+        },
+        getPortion: function(start_index, count, options) {
+            var products = [],
+                ignoreFilters = _.isObject(options) ? options.ignoreFilters : true;
+
+            products = this.get('products').filter(function(model){
+                return ignoreFilters ? true : model.get("filterResult") == true;
+            }).slice(start_index, start_index + count);
+
+            return products;
         },
         get_subcategory_products: function(start_index, count) {
             var products = {}, sub_id,
@@ -1010,11 +1023,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 }
                 products[sub_id].push(this.get('products').models[i]);
             }
-            return products;
-        },
-        getPortion: function(start_index, count) {
-            var products = [];
-            products = this.get('products').slice(start_index, start_index + count);
             return products;
         }
     });
@@ -1029,7 +1037,10 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
     App.Models.ProductsBunch.init = function(id_parent_category) {
         var product_load;
         if (App.Data.products_bunches[id_parent_category] === undefined) {
-            App.Data.products_bunches[id_parent_category] = new App.Models.ProductsBunch({parent_id: id_parent_category});
+            App.Data.products_bunches[id_parent_category] = new App.Models.ProductsBunch({
+                parent_id: id_parent_category,
+                ids: App.Data.parentCategories.getSubsIds(id_parent_category)
+            });
             product_load = App.Data.products_bunches[id_parent_category].get_products({start_index:0});
         }
         else {

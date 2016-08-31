@@ -252,3 +252,7 @@ body,
 .checkout-page .step.active {
   color: #FFFFFF;
 }
+.products_pages_control .pages_control .cur_page {
+  color: #8A780C;
+  border-color: #8A780C;
+}

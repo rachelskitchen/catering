@@ -29,6 +29,9 @@ body,
 .attention-text[class] {
   color: #D0021B;
 }
+.attention-bg[class] {
+  background: #D0021B;
+}
 /* [special_text] special text (modifier price) */
 .special-text[class] {
   color: #2EBC1C;
@@ -228,4 +231,8 @@ body,
   background-repeat: no-repeat;
   background-position: 0 0;
   background-color: transparent;
+}
+.products_pages_control .pages_control .cur_page {
+  color: #8A780C;
+  border-color: #8A780C;
 }

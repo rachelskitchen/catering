@@ -127,10 +127,10 @@
     padding: 4px 4px 4px 4px;
     border-radius: 2px;
 }
-.products_pages_control .pages_control .cur_page {
+/*.products_pages_control .pages_control .cur_page {
     color: #8A780C;
     border-color: #8A780C;
-}
+}*/
 .categories_table .category_description {
     min-height: 40px;
     padding: 15px 13px;

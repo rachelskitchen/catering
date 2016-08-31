@@ -104,7 +104,9 @@ define(["main_router"], function(main_router) {
                 // set header, cart, main models
                 App.Data.header = new App.Models.HeaderModel();
                 App.Data.categories = new App.Collections.Categories();
-                App.Data.searchLine = new App.Models.SearchLine({search: new App.Collections.Search()});
+                App.Data.searchLine = new (App.Models.SearchLine.extend({
+                    initialize: function() {} //no change:searchString event listener
+                }));
                 App.Data.cart = new Backbone.Model({visible: false});
                 App.Data.categorySelection = new App.Models.CategorySelection();
                 App.Data.curProductsSet = new Backbone.Model({value: new App.Models.CategoryProductsPages()});
@@ -199,23 +201,13 @@ define(["main_router"], function(main_router) {
 
                 if (!productSet) {
                     productSet = App.Data.productsSets.add({
-                        id: key,
-                        name: _loc.SEARCH_RESULTS.replace(/%s/g, value)
-                    });
-                    productsAttr = productSet.get('products');
-                    (searchModel = model.getSearchModel()) && searchModel.get('status').then(function() {
-                        productsAttr.reset(searchModel.get('products').map(function(product) {
-                            return _.extend(product.toJSON(), {
-                                filterResult: true
-                            });
-                        }));
-                        setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
-                        // Apply a sort method specified by user and listen to its further changes
-                        App.Data.sortItems.sortCollection(productsAttr);
-                    });
+                            id: key,
+                            name: _loc.SEARCH_RESULTS.replace(/%s/g, value),
+                            pattern: value
+                        });
                 }
 
-                App.Data.curProductsSet.set('value', productSet);
+                App.Data.curProductsSet.set('value', productSet); //the first page should be loaded on change:searchString event in SearchLine model
                 App.Data.categorySelection.set('subCategory', App.Data.categorySelection.defaults.subCategory, {doNotUpdateState: true});
             });
 
@@ -1138,38 +1130,6 @@ define(["main_router"], function(main_router) {
                 productSet.set('ids', ids);
             }
             App.Data.curProductsSet.set('value', productSet);
-
-            // get items
-        /*    !isCached && App.Collections.Products.get_slice_products(ids).then(function() {
-                var products = [],
-                    productsAttr = productSet.get('products');
-
-                ids.forEach(function(id) {
-                    var items = App.Data.products[id],
-                        last = Math.max.apply(Math, items.pluck('sort')),
-                        floatNumber = Math.pow(10, String(last).length);
-                    items.each(function(item) {
-                        var product = item.toJSON();
-                        // need to exclude 'is_combo' and 'has_upsell' product
-                        if (product.is_combo || product.has_upsell) {
-                            return;
-                        }
-                        // add product with new sort value
-                        products.push(_.extend(product, {
-                            filterResult: true,
-                            sort: Number(App.Data.categories.get(id).get('sort')) + product.sort / floatNumber
-                        }));
-                    });
-                });
-
-                // set products and resolve status
-                productsAttr.reset(products, {ignoreFilters: ignoreFilters});
-                setTimeout(productSet.set.bind(productSet, 'status', 'resolved'), 500);
-
-                // Apply a sort method specified by user and listen to its further changes
-                App.Data.sortItems.sortCollection(productsAttr);
-            });
-        */
         },
         /**
          * Creates App.Data.sortItem collection.
