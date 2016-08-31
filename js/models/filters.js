@@ -128,10 +128,6 @@ define(['backbone'], function() {
             else if (uid.match(/\.open_now\./))
                 setting = 'open_now_filter';
 
-            if (!setting) {
-                console.warn("Unexpected dismatch for: ", uid);
-            }
-
             if (setting && !set_dir[setting])
                 return false
             else
@@ -515,6 +511,11 @@ define(['backbone'], function() {
         getData: function() {
             return this.map(function(filter) {
                 return filter.getData();
+            });
+        },
+        isSomeSelected: function() {
+            return this.some(function(model){
+                return model.get('filterItems').findWhere({'selected': true});
             });
         }
     });

@@ -160,11 +160,6 @@
     padding: 4px 4px 4px 4px;
     border-radius: 2px;
 }
-/* TODO : move it to colors css */
-.products_pages_control .pages_control .cur_page {
-    color: #8A780C;
-    border-color: #8A780C;
-}
 
 @media only screen and (max-width: 1440px) {
     .product_info .img_wrapper {

@@ -79,8 +79,6 @@ define(["categories_view"], function(categories_view) {
             });
             this.last_index = 0;
             this.add_products();
-            var products =  this.options.searchModel.get('products');
-            trace("searchModel: NumOfProducts = ", this.options.searchModel.get('num_of_products'), " cur_products = ", products ? products.length : undefined);
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.start();
         },
@@ -113,21 +111,15 @@ define(["categories_view"], function(categories_view) {
                 scrollTop = evt.target.scrollTop,
                 next_page_koeff = 1.5;
 
-            trace("scroll params: ", scrollTop, scrollHeight, page_height, " calc: ", scrollHeight - (next_page_koeff * page_height) );
+            //trace("scroll params: ", scrollTop, scrollHeight, page_height, " calc: ", scrollHeight - (next_page_koeff * page_height) );
             if (scrollTop > 0 && scrollTop >= scrollHeight - (next_page_koeff * page_height)) {
-                trace("------- CHECK GET PRODUCTS ------ ", self.last_index);
                 self.options.searchModel.get_products({ start_index: self.last_index }).always(function(status) {
-                    trace("searchModel updated ", self.options.searchModel.get('parent_id'), self.options.searchModel.get('products').length);
+                    //trace("searchModel updated ", self.options.searchModel.get('parent_id'), self.options.searchModel.get('products').length);
                     self.add_products();
                     show_spinner = false;
                     if (status != "already_processed") {
                         self.hideSpinner();
                     }
-                    trace("always ==>", status);
-                }).done(function(){
-                    //trace("done ==>");
-                }).fail(function(status){
-                    //trace("fail ==>", status);
                 });
                 if (show_spinner) {
                    self.showSpinner();
@@ -144,20 +136,13 @@ define(["categories_view"], function(categories_view) {
                 category.get('products').add(products[sub_id]);
                 self.last_index += products[sub_id].length;
             }
-            trace("SUM last_index = ", this.last_index, " of ", this.options.searchModel.get('num_of_products'));
+            //trace("SUM last_index = ", this.last_index, " of ", this.options.searchModel.get('num_of_products'));
         },
         showSpinner: function() {
-            //trace("show spinnner ==>");
             $('#products-spinner').show();
-            //this.hideSpinner(App.Data.settings.get('timeout'));//to prevent spinning while network errors happen
         },
         hideSpinner: function(delay) {
             $('#products-spinner').hide();
-            /*var spinner = $('#products-spinner');
-            if (this.hideTimeout) {
-                clearTimeout(this.hideTimeout);
-            }
-            this.hideTimeout = setTimeout(spinner.hide.bind(spinner), delay ? delay : 0);*/
         }
     });
 
@@ -177,11 +162,9 @@ define(["categories_view"], function(categories_view) {
             var category = this.model.get('subs').at(0);
             category.get('products').add(productsArray);
             self.last_index += productsArray.length;
-            trace("SUM last_index = ", this.last_index, category.get('products').length, " of ", this.options.searchModel.get('num_of_products'));
+            //trace("SUM last_index = ", this.last_index, category.get('products').length, " of ", this.options.searchModel.get('num_of_products'));
         }
     });
-
-
 
     return new (require('factory'))(categories_view.initViews.bind(categories_view), function() {
         App.Views.CategoriesView.CategoriesItemView = CategoriesItemView;

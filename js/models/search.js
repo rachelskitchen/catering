@@ -31,7 +31,7 @@ define(['products'], function() {
 
     /**
      * @class
-     * @classdesc Represents a model for producs lookup.
+     * @classdesc Represents a model for producs lookup, currently it's just an alias for App.Models.ProductsBunch.
      * @alias App.Models.Search
      * @augments Backbone.Model
      * @example
@@ -40,111 +40,7 @@ define(['products'], function() {
      *     var search = new App.Models.Search();
      * });
      */
-    App.Models.Search = Backbone.Model.extend(
-    /**
-     * @lends App.Models.Search.prototype
-     */
-    {
-        /**
-         * Contains attributes with default values.
-         * @type {object}
-         * @enum
-         */
-        defaults: {
-            /**
-             * Lookup string.
-             * @type {?string}
-             * @default null
-             */
-            pattern: null,
-            /**
-             * Found products.
-             * @type {?App.Collections.Products}
-             * @default null
-             */
-            products: null,
-            /**
-             * Found products.
-             * @type {?Backbone.$.Deferred}
-             * @default null
-             */
-            status: null,
-            /**
-             * Number of pages (per App.SettingsDirectory.json_page_limit) can be loaded for the search pattern.
-             * @type {number}
-             * @default 0
-             */
-            num_pages: 0,
-            /**
-             * Current page index (starting from 1) currently loaded.
-             * @type {number}
-             * @default 0
-             */
-            cur_page: 0,
-            /**
-             * Number of products can be loaded for the search pattern.
-             * @type {number}
-             * @default 0
-             */
-            num_of_products: 0,
-            /**
-             * Last products page loaded sucessfully. It can only grow up, needed for accessing to caching pages.
-             * @type {number}
-             * @default 0
-             */
-            last_page_loaded: 0
-        },
-        initialize: function() {
-           this.set('status', Backbone.$.Deferred());
-        },
-        /**
-         * Seeks products that match `pattern` attribute value.
-         * @returns {Object} Deferred object.
-         */
-        get_products: function(options) {
-            var self = this, cur_page, load,
-                pattern = this.get('pattern'),
-                start_index = _.isObject(options) ? options.start_index : 0,
-                tmp_col = new App.Collections.Products;
-
-            tmp_col.onProductsError = function() {
-                App.Data.errors.alert(MSG.PRODUCTS_EMPTY_RESULT);
-            }
-
-            if (!this.load_dfd) {
-                this.load_dfd = {};
-            }
-
-            cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
-            trace("last_page_loaded:", this.get('last_page_loaded'), 'cur_page = ', cur_page);
-
-            if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page]) {
-                trace("get products rejected!", cur_page);
-                return $.Deferred().resolve("already_processed");
-            } else {
-                trace("getting products from backend ....", cur_page);
-                load = tmp_col.get_products(undefined, {search: pattern, page: cur_page}).done(function() {
-                    if (!self.get('products')) {
-                       self.set({products: new App.Collections.Products});
-                    }
-
-                    console.log(tmp_col.toJS('name', 'sort_value'));
-
-                    self.get('products').add(tmp_col.models);
-
-                    self.set({
-                        num_pages: tmp_col.meta.num_pages,
-                        cur_page: cur_page,
-                        num_of_products: tmp_col.meta.count,
-                        last_page_loaded: cur_page
-                    });
-                });
-                this.load_dfd[cur_page] = load;
-                self.set('status', load);
-                return load;
-            }
-        }
-    });
+    App.Models.Search = App.Models.ProductsBunch;
 
     /**
      * @class
@@ -221,7 +117,7 @@ define(['products'], function() {
                 return this.trigger('onSearchComplete', cache[0]);
             }
 
-            var search = new App.Models.Search({pattern: pattern}),
+            var search = new this.model({pattern: pattern}),
                 self = this;
 
             this.add(search);

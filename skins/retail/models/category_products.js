@@ -107,12 +107,6 @@ define(['products', 'filters'], function() {
              */
             status: 'pending',
             /**
-             * Products set.
-             * @type {?App.Collections.Products}
-             * @default null
-             */
-            products: null,
-            /**
              * Products set's name.
              * @type {string}
              * @default ''
@@ -133,7 +127,7 @@ define(['products', 'filters'], function() {
                 filters = new App.Collections.Filters();
             this.set('products', products);
             this.set('filters', filters);
-            this.listenTo(products, 'reset', this.updateFilters);
+            this.listenTo(products, 'reset add remove', this.updateFilters);
         },
         /**
          * Updates `filters` collection depending on `attribute1`, `attribute2` values of products.
@@ -235,7 +229,8 @@ define(['products', 'filters'], function() {
         }
     });
 
-    App.Models.CategoryProductsPages = App.Models.CategoryProducts.extend({
+    App.Models.CategoryProductsPages = App.Models.CategoryProducts.extend(
+    {
         defaults: {
             products_page: null,
         },
@@ -244,14 +239,15 @@ define(['products', 'filters'], function() {
             this.pageModel = new App.Models.PagesCtrl;
             this.listenTo(this.pageModel, "change:cur_page", this.loadProductsPage, this);
             this.listenTo(this.get('products'), "sort", this.updateProducts, this);
-            this.set('products_page', new App.Collections.Products());
+            this.listenTo(this.get('filters'), 'onFiltered', this.onFiltered.bind(this, {flow: 'filtering'}));
             this.set('products_page', new (App.Collections.Products.extend({comparator: undefined})));
         },
-        updateProducts: function() {
+        updateProducts: function(opt) {
             var page_size = this.pageModel.get('page_size'),
-                start_index = (this.pageModel.get('cur_page') - 1) * page_size;
+                start_index = (this.pageModel.get('cur_page') - 1) * page_size,
+                ignoreFilters = App.Data.categoriesTree.get(this.get('id')) ? true : false; //ignore filtering for root categories selections
 
-            var products = this.getPortion(start_index, page_size);
+            var products = this.getPortion(start_index, page_size, {ignoreFilters: ignoreFilters});
 
             products = _.map(products, function(product){
                 if (product.get('is_combo') || product.get('has_upsell')) {
@@ -259,8 +255,7 @@ define(['products', 'filters'], function() {
                 }
                 return product;
             });
-            this.get('products_page').reset(products, {ignoreFilters: true});
-
+            this.get('products_page').reset(products, {ignoreFilters: ignoreFilters});
         },
         loadProductsPage: function() {
             var dfd, self = this;
@@ -270,11 +265,25 @@ define(['products', 'filters'], function() {
 
             dfd = this.get_products({start_index: start_index});
             dfd.always(function() {
-                self.pageModel.calcPages(self.get('num_of_products'));
-                self.pageModel.enableControls();
-                self.set('status', "resolved");
+                self.onFiltered();
                 App.Data.sortItems.sortCollection(self.get('products'));
+                self.set('status', "resolved");
+                self.pageModel.enableControls();
             });
+        },
+        onFiltered: function(opt) {
+            var is_filtering = _.isObject(opt) ? opt.flow == 'filtering' : false,
+                cur_page = this.pageModel.get('cur_page'),
+                isFiltersSelected = this.get('filters').isSomeSelected();
+            var filtered = this.get('products').filter(function(model){
+                return model.get("filterResult") == true;
+            });
+            this.pageModel.calcPages(isFiltersSelected ? filtered.length : this.get('num_of_products'));
+            if (cur_page > this.pageModel.get('page_count')) {
+                cur_page = this.pageModel.get('page_count') > 1 ? this.pageModel.get('page_count') : 1;
+                this.pageModel.set('cur_page', cur_page);
+            }
+            is_filtering && this.updateProducts(); //otherwise updateProducts will be called after the collection is sorted
         }
     });
 
