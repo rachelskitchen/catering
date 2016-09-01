@@ -95,7 +95,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                 el: $('<li class="product"></li>'),
                 mod: 'ListItem',
                 model: model
-            }, 'product_' + model.cid);
+            }, 'product_' + model.get("compositeId"));
             noDesc && view.$el.addClass('short');
             noImg && view.$el.addClass('no-image');
             App.Views.ListView.prototype.addItem.call(this, view, this.$('.products'), model.escape('sort'));

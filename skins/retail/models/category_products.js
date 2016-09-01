@@ -240,7 +240,7 @@ define(['products', 'filters'], function() {
             this.listenTo(this.pageModel, "change:cur_page", this.loadProductsPage, this);
             this.listenTo(this.get('products'), "sort", this.updateProducts, this);
             this.listenTo(this.get('filters'), 'onFiltered', this.onFiltered.bind(this, {flow: 'filtering'}));
-            this.set('products_page', new (App.Collections.Products.extend({comparator: undefined})));
+            this.set('products_page', new App.Collections.Products);
         },
         updateProducts: function(opt) {
             var page_size = this.pageModel.get('page_size'),

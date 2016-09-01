@@ -697,14 +697,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         sortOrder: "asc", //or "desc"
         /**
-         * Comparator function.
-         * @type {Function}
-         * @default App.Collections.CollectionSort.prototype.strategies.sortNumbers
-         */
-        //We are going to get sorted arrays from BE, so don't sort it on FE.
-        //Fathermore sort_value not good for sorting for the case when some categories have the same sort attr.
-        comparator: App.Collections.CollectionSort.prototype.strategies.sortNumbers,
-        /**
          * Item constructor.
          * @type {Function}
          * @default App.Models.Product
