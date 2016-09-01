@@ -92,6 +92,7 @@ define(['backbone_extensions'], function() {
                 collection.sortStrategy = this.get('sortStrategy');
                 collection.sortOrder = this.get('sortOrder');
                 collection.sortKey = this.get('sortKey');
+                collection.comparator = collection.strategies[collection.sortStrategy];
                 collection.sort();
             }
         }
