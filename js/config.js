@@ -455,7 +455,12 @@ define({
          * @type {string}
          * @description The actual path of [geolocation]{@link module:geolocation} module.
          */
-        geolocation: 'js/models/geolocation'
+        geolocation: 'js/models/geolocation',
+        /**
+         * @type {string}
+         * @description The actual path of [orders]{@link module:orders} module.
+         */
+        orders: 'js/models/orders'
     },
     /**
      * A waiting time of a module loading.
@@ -515,7 +520,7 @@ define({
             deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
-            deps: ["backbone", "js_cookie", "page_visibility", "giftcard"]
+            deps: ["backbone", "js_cookie", "page_visibility", "giftcard", "orders"]
         },
         "errors" : {
             deps: ["backbone"]
@@ -674,6 +679,9 @@ define({
             deps: ['backbone']
         },
         'geolocation': {
+            deps: ['backbone']
+        },
+        'orders': {
             deps: ['backbone']
         }
     },
