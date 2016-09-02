@@ -28,7 +28,7 @@
  * @requires module:page_visibility
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], function(Backbone, FB, Cookies, page_visibility) {
+define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "orders"], function(Backbone, FB, Cookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -199,7 +199,25 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
 
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
+
+            /**
+             * Gift cards assigned to the customer.
+             * @member
+             * @alias App.Models.Customer#giftCards
+             * @type {App.Collections.GiftCards}
+             * @default instance of {@link App.Collections.GiftCards}
+             */
             this.giftCards = new App.Collections.GiftCards;
+
+            /**
+             * Customer's orders.
+             * @member
+             * @alias App.Models.Customer#orders
+             * @type {App.Collections.Orders}
+             * @default instance of {@link App.Collections.Orders}
+             */
+            this.orders = new App.Collections.Orders;
+            this.initOrders();
         },
         /**
          * Facebook SDK initialization
@@ -791,6 +809,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             this.getAddresses();
             this.initGiftCards();
             this.setRewardCards();
+            this.initOrders();
             this.trigger('onLogin');
         },
         /**
@@ -833,6 +852,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             this.removePayments();
             this.removeGiftCards();
             this.removeRewardCards();
+            this.removeOrders();
             this.trigger('onLogout');
         },
         /**
@@ -2278,6 +2298,50 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          */
         getOrderAddress: function(address) {
             return this.get('addresses').getOrderAddress(address);
+        },
+        /**
+         * Calls {@link App.Models.Customer#getOrders getOrders()} method if user is authorized.
+         */
+        initOrders: function() {
+            this.isAuthorized() && this.getOrders();
+        },
+        /**
+         * Receives orders from server.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getOrders: function() {
+            if (!this.orders) {
+                return console.error("Orders have not been initialized yet");
+            }
+
+            var self = this,
+                req = this.orders.get_orders(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            /**
+             * Orders request.
+             * @member
+             * @alias App.Models.Customer#ordersRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.ordersRequest = req;
+
+            return req;
+        },
+        /**
+         * If {@link App.Models.Customer#ordersRequest ordersRequest} exists then the method aborts and deletes it.
+         * Resets customer {@link App.Models.Customer#ordersRequest orders}.
+         */
+        removeOrders: function() {
+            this.ordersRequest && this.ordersRequest.abort();
+            delete this.ordersRequest;
+            this.orders.reset();
         }
     });
 
