@@ -61,11 +61,6 @@
     padding: 0;
 }
 
-.checkout input.pikaday:focus {
-    color: transparent; /* hide the blinking cursor */
-    text-shadow: 0px 0px 0px #000; /* show input text only */
-}
-
 /**/
 .checkout-short {
     margin-top: 2em;

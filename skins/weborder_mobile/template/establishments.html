@@ -1,12 +1,12 @@
 <script type='text/template' id='establishments_main-template'>
     <div class='establishments'>
         <div>
-            <div> <%= CHOOSE_BRAND %> </div>
+            <div class="alternate-text"> <%= CHOOSE_BRAND %> </div>
             <div class='establishments_select select-wrapper'> </div>
             <% if (storeDefined) { %>
-                <div> <button type="button" name="back" class="back_btn"> <span class="clip"> <%= BACK_BUTTON %> </span> </button> </div>
+                <div> <button type="button" name="back" class="back_btn regular_button"> <span class="clip"> <%= BACK_BUTTON %> </span> </button> </div>
             <% } %>
-            <div> <button type="button" name="proceed" class="proceed_btn"> <span class="clip"> <%= PROCEED_BUTTON %> </span> </button> </div>
+            <div> <button type="button" name="proceed" class="proceed_btn regular_button"> <span class="clip"> <%= PROCEED_BUTTON %> </span> </button> </div>
         </div>
         <% if (showFooter) { %>
             <footer>

@@ -32,8 +32,16 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
     'use strict';
 
     var cookieName = "user",
-        cookieDomain = "revelup.com",
+        cookiePath = "/",
+        cookieDomain;
+
+    // if hostname belongs to *.revelup.com need to set cookie only for "/weborder" path
+    if (/revelup\.com$/.test(location.hostname)) {
+        cookieDomain = "revelup.com";
         cookiePath = "/weborder";
+    } else {
+        cookieDomain = location.hostname;
+    }
 
     /**
      * @class
@@ -185,10 +193,6 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
         initialize: function() {
             // Facebook SDK initialization
             this.FB_init();
-
-            // trim for `first_name`, `last_name`
-            this.listenTo(this, 'change:first_name', this._trimValue.bind(this, 'first_name'));
-            this.listenTo(this, 'change:last_name', this._trimValue.bind(this, 'last_name'));
 
             // set customer data from cookie
             this.setCustomerFromCookie();
@@ -907,8 +911,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 data: JSON.stringify({
                     email: attrs.email,
                     password: attrs.password,
-                    first_name: attrs.first_name,
-                    last_name: attrs.last_name,
+                    first_name: Backbone.$.trim(attrs.first_name),
+                    last_name: Backbone.$.trim(attrs.last_name),
                     phone_number: attrs.phone,
                     address: _.isObject(address) ? address : undefined,
                     email_notifications: attrs.email_notifications,
@@ -1028,8 +1032,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 headers: this.getAuthorizationHeader(),
                 data: JSON.stringify(_.isObject(data) ? data : {
                     email: attrs.email,
-                    first_name: attrs.first_name,
-                    last_name: attrs.last_name,
+                    first_name: Backbone.$.trim(attrs.first_name),
+                    last_name: Backbone.$.trim(attrs.last_name),
                     phone_number: attrs.phone,
                     email_notifications: attrs.email_notifications,
                     push_notifications: attrs.push_notifications
@@ -1698,7 +1702,34 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             delete data.addresses;
 
             var expires_in = this.get('keepCookie') ? data.token.expires_in : 0;
-            Cookies.set(cookieName, utf8_to_b64(JSON.stringify(data)), {expires: expires_in, path: cookiePath, domain: cookieDomain, secure: true});
+            this.setCookie(utf8_to_b64(JSON.stringify(data)), expires_in);
+        },
+        /**
+         * Sets cookie with user data.
+         *
+         * @param {string} data - cookie's value
+         * @param {number} expires_in - cookie's lifetime
+         */
+        setCookie: function(data, expires_in) {
+            Cookies.set(cookieName, data, {expires: expires_in, path: cookiePath, domain: cookieDomain, secure: true});
+        },
+        /**
+         * @returns {Object|undefined} An object containing cookie's data:
+         * ```
+         * {
+         *     value: <string>,
+         *     expires_in: <number>
+         * }
+         * ```
+         */
+        getCookieData: function() {
+            var value = Cookies.get(cookieName);
+            if (value) {
+                return {
+                    user_cookie: value,
+                    cookie_expires_in: this.get('keepCookie') ? this.get('expires_in') : 0
+                };
+            }
         },
         /**
          * Parse cookie and set customer attributes.
