@@ -76,16 +76,16 @@ define(['products', 'filters'], function() {
      * @class
      * @classdesc Represents category's products set.
      * @alias App.Models.CategoryProducts
-     * @augments Backbone.Model
+     * @augments App.Models.ProductsBunch
      * @example
      * // create a category's products model
      * require(['models/category_products'], function() {
-     *     var categoryProducts = new App.Models.categoryProducts({id: '1,2,3,4'});
+     *     var categoryProducts = new App.Models.CategoryProducts({ids: '1,2,3,4'});
      * });
      */
     App.Models.CategoryProducts = App.Models.ProductsBunch.extend(
     /**
-     * @lends Backbone.Model.prototype
+     * @lends App.Models.CategoryProducts.prototype
      */
     {
         /**
@@ -229,11 +229,40 @@ define(['products', 'filters'], function() {
         }
     });
 
+    /**
+     * @class
+     * @classdesc Describes the behavior of category's products sets paging.
+     * @alias App.Models.CategoryProductsPages
+     * @augments App.Models.CategoryProducts
+     * @example
+     * // create a category's products model
+     * require(['models/category_products'], function() {
+     *     var categoryProducts = new App.Models.CategoryProducts({id: '1,2,3,4', ids: [1, 2, 3, 4]});
+     *     // or for search:
+     *     var searchProducts new App.Models.CategoryProducts({id: 'p', pattern: 'p'});
+     * });
+     */
     App.Models.CategoryProductsPages = App.Models.CategoryProducts.extend(
+    /**
+     * @lends App.Models.CategoryProductsPages.prototype
+     */
     {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
+            /**
+             * Contains a collection of products {@link App.Collections.Products} for the current page
+             * @type {object}
+             * @default null
+             */
             products_page: null,
         },
+         /**
+         * Initializes a CategoryProductsPages instance. Sets events listening callbacks.
+         */
         initialize: function() {
             App.Models.CategoryProducts.prototype.initialize.apply(this, arguments);
             this.pageModel = new App.Models.PagesCtrl;
@@ -242,7 +271,10 @@ define(['products', 'filters'], function() {
             this.listenTo(this.get('filters'), 'onFiltered', this.onFiltered.bind(this, {flow: 'filtering'}));
             this.set('products_page', new App.Collections.Products);
         },
-        updateProducts: function(opt) {
+        /**
+         * Prepares the current page 'products_page' to be viewed after that.
+         */
+        updateProducts: function() {
             var page_size = this.pageModel.get('page_size'),
                 start_index = (this.pageModel.get('cur_page') - 1) * page_size,
                 ignoreFilters = App.Data.categoriesTree.get(this.get('id')) ? true : false; //ignore filtering for root categories selections
@@ -257,6 +289,9 @@ define(['products', 'filters'], function() {
             });
             this.get('products_page').reset(products, {ignoreFilters: ignoreFilters});
         },
+        /**
+         * Loads the next page of the products.
+         */
         loadProductsPage: function() {
             var dfd, self = this;
             var start_index = (this.pageModel.get('cur_page') - 1) * this.pageModel.get('page_size');
@@ -271,6 +306,9 @@ define(['products', 'filters'], function() {
                 self.pageModel.enableControls();
             });
         },
+        /**
+         * Filters products and recalculates the number of pages available.
+         */
         onFiltered: function(opt) {
             var is_filtering = _.isObject(opt) ? opt.flow == 'filtering' : false,
                 cur_page = this.pageModel.get('cur_page'),
@@ -300,7 +338,7 @@ define(['products', 'filters'], function() {
      */
     App.Collections.ProductsSets = Backbone.Collection.extend(
     /**
-     * @lends Backbone.Collection.prototype
+     * @lends App.Collections.ProductsSets.prototype
      */
     {
         /**

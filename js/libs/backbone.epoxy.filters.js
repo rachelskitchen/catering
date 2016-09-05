@@ -31,6 +31,10 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
         return pattern == value;
     });
 
+    Backbone.Epoxy.binding.addFilter('less', function(pattern, value) {
+        return pattern < value;
+    });
+
     Backbone.Epoxy.binding.addFilter('strictEqual', function(pattern, value) {
         return pattern === value;
     });

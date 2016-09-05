@@ -17,7 +17,7 @@
             "css": ["categories", "search_line", "promotions"],
             "views": ["categories", "subcategories", "stanfordcard", "search_line"],
             "templates": ["categories", "subcategories", "search_line"],
-            "core": ["categories", "subcategories", "search"]
+            "core": ["categories", "subcategories", "search", "pages_control", "pages_control_view"]
         },
         "about": {
             "templates": ["store_info"],

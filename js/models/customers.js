@@ -474,7 +474,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             !_.isBoolean(this.get('push_notifications')) && err.push(_loc.PROFILE_PUSH_NOTIFICATIONS) && atts.push('push_notifications');
 
             this.trigger('onCheckSignUpData', atts);
-            
+
             if (err.length) {
                 return {
                     status: "ERROR_EMPTY_FIELDS",
@@ -2543,7 +2543,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
         },
         /**
          * Returns the default profile address.
-         * @returns {?@link App.Models.CustomerAddress}
+         * @returns {@link App.Models.CustomerAddress}
          *   - the default address, if it exists
          *   - undefined otherwise
          */
@@ -2552,7 +2552,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
         },
         /**
          * Returns the selected address.
-         * @returns {?@link App.Models.CustomerAddress}
+         * @returns {@link App.Models.CustomerAddress}
          *   - the selected address, if it exists
          *   - undefined otherwise
          */

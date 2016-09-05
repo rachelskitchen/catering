@@ -455,7 +455,17 @@ define({
          * @type {string}
          * @description The actual path of [geolocation]{@link module:geolocation} module.
          */
-        geolocation: 'js/models/geolocation'
+        geolocation: 'js/models/geolocation',
+         /**
+         * @type {string}
+         * @description The actual path of [pages_control]{@link module:pages_control} module.
+         */
+        pages_control: 'js/models/pages_control',
+         /**
+         * @type {string}
+         * @description The actual path of [pages_control_view]{@link module:pages_control_view} module.
+         */
+        pages_control_view: 'js/views/pages_control'
     },
     /**
      * A waiting time of a module loading.
@@ -675,6 +685,12 @@ define({
         },
         'geolocation': {
             deps: ['backbone']
+        },
+        'pages_control' : {
+            deps: ['backbone']
+        },
+        'pages_control_view' : {
+            deps: ['factory']
         }
     },
     /**
