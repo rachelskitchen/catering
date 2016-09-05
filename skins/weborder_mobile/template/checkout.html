@@ -130,7 +130,7 @@
 <script type="text/template" id="checkout_address-template">
     <div class="address-selection checkout-short-right"></div>
 
-    <div class="address-edit checkout checkout-lines">
+    <div class="address-edit checkout checkout-lines font-size2">
         <% if(isShippingServices) { %>
             <div class="select-wrapper input-colors">
                 <select class="country" id="countries">
@@ -149,6 +149,7 @@
         <div class="required">
             <input type="text" placeholder="<%= _lp.PROFILE_CITY %>" name="city" class="ios-safari-caret input-colors">
         </div>
+        <% if(country == 'US' && state && states instanceof Object && Object.keys(states).length > 0) { %>
         <div class="states-box select-wrapper shipping-state input-colors">
             <select class="states">
             <% for(var i in states) { %>
@@ -156,9 +157,12 @@
             <% } %>
             </select>
         </div>
+        <% } %>
+        <% if(typeof province == 'string') { %>
         <div class="province-box required province">
            <input type="text" placeholder="<%= _lp.PROFILE_PROVINCE %>" name="province" value="<%= province %>" class="ios-safari-caret input-colors">
         </div>
+        <% } %>
         <div class="required">
             <input type="text" placeholder="<% if(country == 'US') {print(_lp.PROFILE_ZIP_CODE);} else {print(_lp.PROFILE_POSTAL_CODE);} %>" name="zipcode" class="ios-safari-caret input-colors">
         </div>

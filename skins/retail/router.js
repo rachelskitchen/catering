@@ -954,7 +954,7 @@ define(["main_router"], function(main_router) {
                         modelName: 'Main',
                         mod: 'Done',
                         model: App.Data.mainModel,
-                        customer: App.Data.customer,
+                        customer: App.Data.customer.clone(),
                         checkout: App.Data.myorder.checkout,
                         other_options: other_dining_options || new Backbone.Collection(),
                         className: 'main-done'
@@ -985,7 +985,7 @@ define(["main_router"], function(main_router) {
                 cart: carts.main
             });
 
-            var promises = this.setProfileEditContent(true);
+            var promises = this.setProfileEditContent();
 
             if (!promises.length) {
                 return this.navigate('index', true);
@@ -1001,7 +1001,7 @@ define(["main_router"], function(main_router) {
                 cart: carts.main
             });
 
-            var promises = this.setProfilePaymentsContent(true);
+            var promises = this.setProfilePaymentsContent();
 
             if (!promises.length) {
                 return this.navigate('index', true);

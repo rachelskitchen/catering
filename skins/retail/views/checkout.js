@@ -36,7 +36,7 @@ define(["checkout_view"], function(checkout_view) {
             '.order-type': 'updateContent: orderTypeView',
             '.personal-box': 'updateContent: mainView',
             '.payment-methods-box': 'updateContent: paymentMethodsView, classes: {hide: not(hasGrandTotal(total_grandTotal))}',
-            '.choose-cc-box': 'updateContent: chooseCreditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)), not(hasGrandTotal(total_grandTotal))), "inline-block": not(paymentMethods_credit_card_dialog)}',
+            '.choose-cc-box': 'updateContent: chooseCreditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), not(length($tokens)), not(hasGrandTotal(total_grandTotal))), "inline-block": not(paymentMethods_credit_card_dialog)}',            
             '.cc-box': 'updateContent: creditCardView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal))), "inline-block": not(paymentMethods_credit_card_dialog)}',
             '.billing-address-box': 'updateContent: billingAddressView, classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), select(length($tokens), token_selected, false), not(hasGrandTotal(total_grandTotal)))}',
             '.choose-gift-card-box': 'updateContent: chooseGiftCardView, classes: {hide: any(not(equal(paymentMethods_selected, "gift_card")), not(length($giftCards)), not(hasGrandTotal(total_grandTotal)))}',
@@ -62,12 +62,12 @@ define(["checkout_view"], function(checkout_view) {
             '.other-customer-phone': 'text: customer_phone',
             '.other-customer-email': 'text: customer_email',
             '.other-dining-options-box': 'updateContent: otherDiningOptionsView',
-            '.billing-summary-credit-card': 'classes: {hide: not(equal(paymentMethods_selected, "credit_card_button"))}',
+            '.billing-summary-credit-card': 'classes: {hide: any(not(equal(paymentMethods_selected, "credit_card_button")), all(not(token_selected), not(paymentMethods_credit_card_dialog)))}',
             '.credit-card-last-digits': 'text: select(token_selected, token_last_digits, creditCardLastDigits)',
             '.credit-card-exp-date': 'text: select(token_selected, "", creditCardExpDate)',
             '.credit-card-type': 'text: select(token_selected, token_card_type, ""), classes: {hide: equal(token_card_type, "")}',
             '.billing-summary-gift-card': 'classes: {hide: not(equal(paymentMethods_selected, "gift_card"))}',
-            '.gift-card-number': 'text: giftcard_cardNumber',
+            '.gift-card-number': 'text: giftCardNumber',
             '.billing-summary-stanford-card': 'classes: {hide: not(equal(paymentMethods_selected, "stanford"))}',
             '.stanford-card-number': 'text: stanfordCardNumber',
             '.billing-summary-paypal': 'classes: {hide: not(equal(paymentMethods_selected, "paypal"))}',
@@ -286,6 +286,12 @@ define(["checkout_view"], function(checkout_view) {
                     return ', ' + month + '/' + year.slice(-2);
                 }
             },
+            giftCardNumber: {
+                deps: ['giftcard_cardNumber', 'giftCard_selected', 'giftCard_cardNumber'],
+                get: function(giftCardNewNumber, isGiftCardSelected, giftCardSelectedNumber) {
+                    return isGiftCardSelected ? giftCardSelectedNumber : giftCardNewNumber;
+                }
+            },
             stanfordCardNumber: {
                 deps: ['paymentMethods_stanford'],
                 get: function(stanford) {
@@ -330,12 +336,16 @@ define(["checkout_view"], function(checkout_view) {
             'click .to-step-1': 'toStep1',
             'click .to-step-2': 'toStep2',
             'click .to-step-3': 'toStep3',
+            'click .edit-step-1': 'toStep1',
+            'click .edit-step-2': 'toStep2',
             'click .submit': 'submit'
         },
         onEnterListeners: {
             '.to-step-1': 'toStep1',
             '.to-step-2': 'toStep2',
             '.to-step-3': 'toStep3',
+            '.edit-step-1': 'toStep1',
+            '.edit-step-2': 'toStep2',
             '.submit': 'submit'
         },
         initialize: function() {
@@ -348,7 +358,7 @@ define(["checkout_view"], function(checkout_view) {
                 card_type: "",
                 ignoreSelectedToken: false
             });
-            this.giftCard = new Backbone.Model({selected: false});
+            this.giftCard = new Backbone.Model({selected: false, cardNumber: null});
             _.extend(this.bindingSources, {
                 token: this.token,           // indicates any token is selected or not
                 tokens: this.tokens,         // tokens
@@ -380,12 +390,16 @@ define(["checkout_view"], function(checkout_view) {
                         self.tokens.reset(customer.payments.models);
                         customer.payments.ignoreSelectedToken = self.token.get('ignoreSelectedToken');
                         customer.payments.listenTo(self.token, 'change:ignoreSelectedToken', function(model, value) {
-                            customer.payments.ignoreSelectedToken = value;
+                            this.ignoreSelectedToken = value;
                         });
                     }
                     if (customer.giftCards) {
                         customer.giftCards.selectFirstItem();
-                        self.giftCard.set('selected', true);
+                        var selectedGiftCard = customer.giftCards.getSelected();
+                        self.giftCard.set({
+                            selected: true,
+                            cardNumber: selectedGiftCard ? selectedGiftCard.get('cardNumber') : null
+                        });
                         self.giftCards.reset(customer.giftCards.models);
                     }
                 });
@@ -396,7 +410,7 @@ define(["checkout_view"], function(checkout_view) {
                 paymentsExist: false,
                 selected: false
             });
-            this.giftCard.set('selected', false);
+            this.giftCard.set({ selected: false, cardNumber: null });
             this.tokens.reset();
             this.giftCards.reset();
         },
@@ -416,14 +430,29 @@ define(["checkout_view"], function(checkout_view) {
             });
         },
         toStep3: function() {
-            var ui = this.getBinding('$ui'),
+            var customer = this.options.customer,
+                ui = this.getBinding('$ui'),
                 self = this;
-            this.collection.check_order({
+
+            self.grandTotalActions();
+
+            var options = {
                 order: true,
                 checkout: true,
                 customer: true
-            }, function() {
-                self.grandTotalActions();
+            };
+
+            switch (this.getBinding('paymentMethods_selected')) {
+                case 'credit_card_button':
+                    options.card = customer.doPayWithToken() ? false : this.getBinding('paymentMethods_credit_card_dialog');
+                    break;
+
+                case 'gift_card':
+                    options.giftcard = !customer.doPayWithGiftCard();
+                    break;
+            }
+
+            this.collection.check_order(options, function() {
                 ui.set('step', 3);
             });
         },

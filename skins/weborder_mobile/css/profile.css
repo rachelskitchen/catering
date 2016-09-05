@@ -306,7 +306,6 @@
     display: block;
     position: relative;
     padding: .8em 0 .8em 1.8em;
-    color: #838385;
     text-align: left;
 }
 
@@ -405,9 +404,6 @@
 .profile-edit .profile-form input {
     width: 100%;
 }
-.profile-edit .profile-form input:disabled {
-    color: #999;
-}
 .profile-edit .gift-cards-box input {
     margin-bottom: 0.1em;
 }
@@ -434,7 +430,6 @@
     margin: 0 -0.9em;
     padding: 0 .8em;
     line-height: 2.8em;
-    color: #FFFFFF;
     opacity: 1;
     -webkit-transition: margin .5s ease-out, opacity 1s ease-out;
     -moz-transition: margin .5s ease-out, opacity 1s ease-out;
@@ -493,7 +488,6 @@
     top: -0.05rem;
     width: 1px;
     height: 1rem;
-    background-color: #CECECE;
 }
 
 /* landscape */

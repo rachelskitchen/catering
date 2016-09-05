@@ -345,23 +345,9 @@ define(["done_view", "generator"], function(done_view) {
         }
     });
 
-    var MainProfileView = App.Views.CoreMainView.CoreMainProfileView.extend({
-        bindings: {
-            '#header .title': 'text: profile_title'
-        },
-        render: function() {
-            App.Views.CoreMainView.CoreMainProfileView.prototype.render.apply(this, arguments);
-            SpinnerView.prototype.createSpinner.call(this);
-            return this;
-        }
-    });
-
-    _.defaults(MainProfileView.prototype, SpinnerView.prototype);
-
     return new (require('factory'))(done_view.initViews.bind(done_view), function() {
         App.Views.MainView.MainMainView = MainMainView;
         App.Views.MainView.MainMaintenanceView = MainMaintenanceView;
         App.Views.MainView.MainDoneView = MainDoneView;
-        App.Views.MainView.MainProfileView = MainProfileView;
     });
 });

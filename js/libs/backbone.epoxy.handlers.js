@@ -318,6 +318,9 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
             };
 
             this.setPosition = function(pos) {
+                if (!$el.is(':focus')) {
+                    return;
+                }
                 // Using Selection API for input[type=number] throws exception in some browsers (Chrome)
                 // ("Browser Compatibility" at https://developer.mozilla.org/en-US/docs/Web/API/HTMLInputElement/setSelectionRange)
                 try {
@@ -399,6 +402,22 @@ define(['backbone', 'backbone_epoxy'], function(Backbone) {
 
             // Restore cached dependency graph configuration
             this.restoreDependencyGraph();
+        }
+    });
+
+    // Adds/updates new class. Every update removes previous class.
+    Backbone.Epoxy.binding.addHandler('updateClass', {
+        init: function($el, value, bindings) {
+            this.previousValue = value;
+            $el.addClass(value);
+        },
+        set: function($el, value) {
+            $el.removeClass(this.previousValue);
+            $el.addClass(value);
+            this.previousValue = value;
+        },
+        clean: function() {
+            delete this.previousValue;
         }
     });
 });

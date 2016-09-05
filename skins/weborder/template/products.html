@@ -5,7 +5,7 @@
 <script type="text/template" id="product_list_item-template">
     <div class="product_list_item primary-border s<%= price_length %>">
         <% if(!hide_images) { %>
-        <div class="product_image text-center fl-left">
+        <div class="product_image text-center fl-left <% if(isDefaultImage) print('no-photo'); %>">
             <img src="<%= image %>" alt="logo for <%= name %>[<%= id %>]" class="img <% if(/safari/i.test(navigator.userAgent) && !/chrome/i.test(navigator.userAgent)) print('safaris'); %>">
         </div>
         <% } %>

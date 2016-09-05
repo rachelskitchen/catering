@@ -300,6 +300,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     local_theme = app.get['local_theme'] == "true" ? true : false;
                 if (App.skin != App.Skins.WEBORDER_MOBILE
                     && App.skin != App.Skins.DIRECTORY_MOBILE
+                    && App.skin != App.Skins.DIRECTORY
                     && App.skin != App.Skins.WEBORDER
                     && App.skin != App.Skins.RETAIL) {
                     local_theme = true;
@@ -309,6 +310,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 server_color_schemes[ App.Skins.RETAIL ] = 'retail-desktop-colors';
                 server_color_schemes[ App.Skins.WEBORDER_MOBILE ] = 'weborder-mobile-colors';
                 server_color_schemes[ App.Skins.DIRECTORY_MOBILE ] = 'directory-mobile-colors';
+                server_color_schemes[ App.Skins.DIRECTORY ] = 'directory-colors';
 
                 if (local_theme == true) {
                     var color_scheme = typeof system_settings.color_scheme == 'string' ? system_settings.color_scheme.toLowerCase().replace(/\s/g, '_') : null;
@@ -350,6 +352,15 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
          * Init App.Data.customer
          */
         initCustomer: function() {
+            var app = require('app');
+
+            // set cookie in directory mode
+            if (App.Data.dirMode && app.user_cookie && _.isNumber(app.cookie_expires_in)) {
+                App.Models.Customer.prototype.setCookie(app.user_cookie, app.cookie_expires_in);
+                delete app.user_cookie;
+                delete app.cookie_expires_in;
+            }
+
             var paymentProcessor = _.isObject(App.Settings.payment_processor) && PaymentProcessor.getPaymentProcessor(PAYMENT_TYPE.CREDIT),
                 customer = App.Data.customer = new App.Models.Customer({
                     keepCookie: App.SettingsDirectory.remember_me
@@ -1018,7 +1029,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             });
 
             function readTermsOfUse() {
-                App.Data.errors.alert(_loc.PROFILE_TOU, false, false, {
+                var errors = App.Data.errors;
+
+                errors.alert(_loc.PROFILE_TOU, false, false, {
                     isConfirm: true,
                     typeIcon: '',
                     confirm: {
@@ -1027,10 +1040,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     },
                     customClass: 'popup-full-height',
                     customView: new App.Views.ProfileView.ProfileTermsOfUseView({
-                        className: 'profile-terms-of-use text-left'
+                        className: 'profile-terms-of-use text-left',
+
                     }),
                     callback: function(res) {
                         customer.set('terms_accepted', res);
+                        setTimeout(errors.set.bind(errors, 'customClass', errors.defaults.customClass), 0);
                     }
                 });
             }
@@ -1112,7 +1127,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 mainModel.trigger('loadCompleted');
             }
         },
-        setProfileEditContent: function(doNotChangeMod) {
+        setProfileEditContent: function() {
             this.profileEditData = this.profileEditData || {};
 
             var self = this,
@@ -1228,34 +1243,17 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             if (promises.length) {
-                if (doNotChangeMod) {
-                    App.Data.mainModel.set({
-                        content: {
-                            modelName: 'Profile',
-                            mod: 'Edit',
-                            model: customer,
-                            updateAction: update,
-                            updateBtn: updateBtn,
-                            ui: ui,
-                            className: 'profile-edit'
-                        }
-                    });
-                } else {
-                    App.Data.mainModel.set({
-                        mod: 'Profile',
-                        className: 'profile-container',
-                        profile_title: _loc.PROFILE_EDIT_TITLE,
-                        profile_content: {
-                            modelName: 'Profile',
-                            mod: 'Edit',
-                            model: customer,
-                            updateAction: update,
-                            updateBtn: updateBtn,
-                            ui: ui,
-                            className: 'profile-edit text-center'
-                        }
-                    });
-                }
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Edit',
+                        model: customer,
+                        updateAction: update,
+                        updateBtn: updateBtn,
+                        ui: ui,
+                        className: 'profile-edit'
+                    }
+                });
 
                 window.setTimeout(function() {
                     var basicDetailsEvents = 'change:first_name change:last_name change:phone change:email change:email_notifications change:push_notifications',
@@ -1277,7 +1275,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 self.navigate('index', true);
             }
         },
-        setProfilePaymentsContent: function(doNotChangeMod) {
+        setProfilePaymentsContent: function() {
             var promises = this.getProfilePaymentsPromises(),
                 customer = App.Data.customer,
                 mainModel = App.Data.mainModel,
@@ -1286,40 +1284,20 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             preparatoryActions();
 
             if (promises.length) {
-                if (doNotChangeMod) {
-                     App.Data.mainModel.set({
-                        content: {
-                            modelName: 'Profile',
-                            mod: 'Payments',
-                            model: customer,
-                            changeToken: changeToken,
-                            ui: new Backbone.Model({show_response: false}),
-                            removeToken: removeToken,
-                            unlinkGiftCard: unlinkGiftCard,
-                            unlinkRewardCard: unlinkRewardCard,
-                            myorder: App.Data.myorder,
-                            className: 'profile-edit'
-                        }
-                    });
-                } else {
-                    App.Data.mainModel.set({
-                        mod: 'Profile',
-                        className: 'profile-container',
-                        profile_title: _loc.PAYMENT_METHODS,
-                        profile_content: {
-                            modelName: 'Profile',
-                            mod: 'Payments',
-                            model: customer,
-                            changeToken: changeToken,
-                            ui: new Backbone.Model({show_response: false}),
-                            removeToken: removeToken,
-                            unlinkGiftCard: unlinkGiftCard,
-                            unlinkRewardCard: unlinkRewardCard,
-                            myorder: App.Data.myorder,
-                            className: 'profile-edit text-center'
-                        }
-                    });
-                }
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Payments',
+                        model: customer,
+                        changeToken: changeToken,
+                        ui: new Backbone.Model({show_response: false}),
+                        removeToken: removeToken,
+                        unlinkGiftCard: unlinkGiftCard,
+                        unlinkRewardCard: unlinkRewardCard,
+                        myorder: App.Data.myorder,
+                        className: 'profile-edit'
+                    }
+                });
 
                 window.setTimeout(function() {
                     self.listenTo(customer, 'onLogout', logout);
