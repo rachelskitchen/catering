@@ -10,14 +10,14 @@
             "model": ["main", "header", "filter", "category_products", "sort_items"],
             "templates": ["main", "header", "myorder", "total", "cart", "products", "modifiers", "quantity", "stanfordcard", "profile", "search_line", "rewards"],
             "views": ["main", "header", "myorder", "cart", "products", "modifiers", "quantity", "stanfordcard", "search_line", "profile"],
-            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "stanfordcard", "customers", "payments", "giftcard", "rewards", "rewards_view", "categories", "payment_methods", "geolocation"],
+            "core": ["generator", "total_view", "products", "modifiers", "jquery_numbermask", "search", "stanfordcard", "customers", "payments", "giftcard", "rewards", "rewards_view", "categories", "payment_methods", "geolocation", "pages_control"],
             "js" : ["jquery.contentarrow", "jquery.combobox"]
         },
         "index": {
             "css": ["categories", "filters", "sort", "promotions"],
             "views": ["products", "sort", "sidebar"],
             "templates": ["products", "filters", "tree", "sort", "sidebar"],
-            "core": ["tree", "categories_view"]
+            "core": ["tree", "categories_view", "pages_control_view"]
         },
         "modifiers": {
             "css": ["products", "quantity", "myorder", "card", "modifiers"],

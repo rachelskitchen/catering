@@ -342,8 +342,8 @@ define(["generator", "list", "categories_view"], function() {
             this.listenTo(this.pageModel, "change:cur_page", this.updatePageView, this);
         },
         bindings: {
-            ".products_pages_control": "classes:{hide: equal(pageModel_page_count,1)}",
-            ".categories_products_wrapper": "classes:{full_size: equal(pageModel_page_count,1)}"
+            ".products_pages_control": "classes:{hide: less(pageModel_page_count,2)}",
+            ".categories_products_wrapper": "classes:{full_size: less(pageModel_page_count,2)}"
         },
         initViews: function() {
             var view = App.Views.GeneratorView.create('Pages', {

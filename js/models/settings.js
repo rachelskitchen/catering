@@ -693,12 +693,7 @@ define(["backbone", "async"], function(Backbone) {
                     if (_.isObject(data)) {
                         $.extend(true, settings, data);
                     }
-                    if (App.skin == App.Skins.WEBORDER_MOBILE) {
-                         //if the num of products on the first page is less then 10 then no scrolling will be and new pages won't be loaded
-                        (settings.view_page_size < 14) && (settings.view_page_size = 14);
-                    }
-                    settings.json_page_limit < settings.view_page_size && (settings.json_page_limit = settings.view_page_size);
-                    settings.json_page_limit = parseInt(settings.json_page_limit / settings.view_page_size) * settings.view_page_size; // make json_page_size to be a multiple of view_page_size
+                    check_paging_values(settings);
                     self.set("settings_directory", settings);
                 },
                 error: function() {
@@ -712,6 +707,18 @@ define(["backbone", "async"], function(Backbone) {
                     self.loadCustomerSettings.resolve();
                 }
             });
+
+            function check_paging_values(settings) {
+                !settings.view_page_size && (settings.view_page_size = 1);
+                !settings.json_page_limit && (settings.json_page_limit = 1);
+                if (App.skin == App.Skins.WEBORDER_MOBILE) {
+                    //if the num of products on the first page is less then 10 then no scrolling will be and new pages won't be loaded
+                    (settings.view_page_size < 14) && (settings.view_page_size = 14);
+                }
+                settings.json_page_limit < settings.view_page_size && (settings.json_page_limit = settings.view_page_size);
+                settings.json_page_limit = parseInt(settings.json_page_limit / settings.view_page_size) * settings.view_page_size; // make json_page_size to be a multiple of view_page_size
+            }
+
             return self.loadCustomerSettings;
         },
         /**

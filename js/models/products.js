@@ -716,9 +716,6 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         initialize: function() {
             this.listenTo(this, 'change:active', this.check_active);
-            if (App.skin == App.Skins.WEBORDER && App.skin == App.Skins.WEBORDER_MOBILE) {
-                this.comparator = undefined; //no sorting for weborder and weborder_mobile the products come already sorted from Backend
-            }
         },
         /**
          * Seeks product by id.
@@ -749,8 +746,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          *     }
          * }
          * ```
-         * @param {number} id_category - category id or array of ids.
-         * @param {string} search - search pattern (used in retail skin).
+         * @param {object} options - should contain one of the following options:
+         * <pre>
+         *   id_category {number} - is category id or array of ids;
+         *   search {string} - search pattern;
+         *   page {string} - a page number (starting from 1) to be loaded.
+         * </pre>
          * @returns {Object} Deferred object.
          */
         get_products: function(options) {
@@ -761,9 +762,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 page = _.isObject(options) ? options.page : undefined,
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
 
-            if (id_category == undefined && search == undefined && !page) {
-                fetching.resolve();//this is the search request with an undefined pattern
-                return fetching;
+            if (!id_category && !search && !page) {
+                return fetching.resolve();
             }
 
             Backbone.$.ajax({
@@ -780,7 +780,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 dataType: "json",
                 success: function(data) {
                     if (!_.isObject(data) || data.status != "OK") {
-                        return self.onProductsError();
+                        self.onProductsError();
+                        return fetching.reject();
                     }
                     var products = data.data, category;
                     for (var i = 0; i < products.length; i++) {
@@ -883,44 +884,33 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         return product_load;
     };
 
-    App.Models.PagesCtrl = Backbone.Model.extend({
-        defaults: {
-            cur_page: 1,
-            page_count: 1,
-            controls_enable: true,
-            page_size: undefined
-        },
-        initialize: function(opt) {
-            if (!_.isObject(opt) || !opt.page_size) {
-                this.set('page_size', App.SettingsDirectory.view_page_size);
-            }
-        },
-        enableControls: function() {
-            this.set('controls_enable', true);
-        },
-        disableControls: function() {
-            this.set('controls_enable', false);
-        },
-        calcPages: function(num_of_products) {
-            var page_count = parseInt(num_of_products / this.get('page_size') + !!(num_of_products % this.get('page_size')));
-            this.set({page_count: page_count});
-            return this;
-        }
-    });
-
    /**
      * @class
      * @classdesc Represents a model for producs lookup by search pattern or by categories ids.
+     * ProductsBunch keep the collection of products which can be filled up with new objects portion loaded
+     * from BE. Every page being loaded is limited by BE Weborder_Settings json_page_limit param.
      * @alias App.Models.ProductsBunch
      * @augments Backbone.Model
+     * @params 'ids' or 'pattern' should be passed into an object constructor
+     * @example
+     * // Create an instance of ProductsBunch for categories' products paging.
+     * // Below 'ids' is an array of all subcategories of some category
+     *    var instance = new App.Models.ProductsBunch({ids: [2580, 2581, 2852]});
+     * @example
+     * // Create an instance of ProductsBunch for Search by a string pattern
+     *    var instance = new App.Models.ProductsBunch({pattern: 'p'}); // pattern is the pattern string
      */
     App.Models.ProductsBunch = Backbone.Model.extend(
     /**
      * @lends App.Models.ProductsBunch.prototype
      */
     {
+        /**
+         * Contains attributes with default values.
+         * @type {object}
+         * @enum
+         */
         defaults: {
-            parent_id: null,
              /**
              * Lookup categories ids.
              * @type {?array}
@@ -952,9 +942,19 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
              */
             last_page_loaded: 0
         },
+         /**
+         * Initializes 'products' collection
+         */
         initialize: function(){
             this.set('products', new App.Collections.Products);
         },
+         /**
+         * Get products from backend starting from offset start_index.
+         * @param {object} options - an object required, contains params of projects loading:
+         * <pre>
+         *   start_index {integer} - a required property of 'options' object, offset of products loading starting from 0.
+         * </pre>
+         */
         get_products: function(options) {
             var self = this, cur_page,
                 ids = this.get('ids'),
@@ -994,6 +994,17 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             });
             return this.load_dfd[cur_page];
         },
+         /**
+         * Get a portion of products previously loaded by get_products() method(s) starting from some offset specified.
+         * @param {integer} start_index - loading products offset starting from 0.
+         * @param {integer} count - the number of products (max) in a portion returned
+         * @param {object} options - an object of additional params:
+         * <pre>
+         *   ignoreFilters {boolean} - a property of 'options' object, true - ignores filtering,
+         *                             false - products are filtered before the portion will be returned.
+         * </pre>
+         * @returns {array} array of products portion.
+         */
         getPortion: function(start_index, count, options) {
             var products = [],
                 ignoreFilters = _.isObject(options) ? options.ignoreFilters : true;
@@ -1004,6 +1015,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
 
             return products;
         },
+        /**
+         * Get products portion grouped by categories starting from some offset specified.
+         * @param {integer} start_index - loading products offset starting from 0.
+         * @param {integer} count - the number of products (max) in a portion returned
+         * @returns {object} object containing one or several arrays identified by category id kyes
+         */
         get_subcategory_products: function(start_index, count) {
             var products = {}, sub_id,
                 end_index = start_index + count;

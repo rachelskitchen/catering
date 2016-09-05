@@ -31,7 +31,7 @@ define(['products'], function() {
 
     /**
      * @class
-     * @classdesc Represents a model for producs lookup, currently it's just an alias for App.Models.ProductsBunch.
+     * @classdesc Represents a model for producs lookup, currently it's just an alias for {@link App.Models.ProductsBunch}.
      * @alias App.Models.Search
      * @augments Backbone.Model
      * @example
