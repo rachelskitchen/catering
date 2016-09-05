@@ -232,7 +232,7 @@ define(["backbone"], function(Backbone) {
             if (!_.isObject(authorizationHeader)) {
                 return;
             }
-
+            var self = this;
             return Backbone.$.ajax({
                 url: '/weborders/v1/orders/',
                 method: 'GET',
@@ -246,7 +246,7 @@ define(["backbone"], function(Backbone) {
                 },
                 success: function(data) {
                     if (Array.isArray(data.data)) {
-                        this.reset(data.data);
+                        self.reset(data.data);
                     }
                 },        // to override global ajax success handler
                 error: new Function()           // to override global ajax error handler
