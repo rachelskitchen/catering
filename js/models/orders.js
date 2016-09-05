@@ -244,7 +244,11 @@ define(["backbone"], function(Backbone) {
                     page: 1,
                     limit: 30
                 },
-                success: new Function(),        // to override global ajax success handler
+                success: function(data) {
+                    if (Array.isArray(data.data)) {
+                        this.reset(data.data);
+                    }
+                },        // to override global ajax success handler
                 error: new Function()           // to override global ajax error handler
             });
         }
