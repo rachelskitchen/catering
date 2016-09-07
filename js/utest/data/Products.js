@@ -395,9 +395,10 @@ define([], function() {
             {
                 "id": 1,
                 "name": 'Test 1',
-                "category_id": 1,
+                "id_category": 12,
                 "timetables": null,
-                "is_gift": false
+                "is_gift": false,
+                "sort": 2
             }
         ],
         "getAttributeValues_items": [

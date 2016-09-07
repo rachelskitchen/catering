@@ -34,6 +34,8 @@ var tests_list = [
     'test_Total'
 ];
 
+//tests_list = ['test_Search'];
+
 if (!window._phantom) {
     for(var key in tests_list) {
        tests_list[key] = "../core/js/utest/" + tests_list[key];

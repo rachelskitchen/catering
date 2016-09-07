@@ -71,6 +71,7 @@
   };
 
   //EE dev: add inheritance way for Backbone
+
   var BackboneExtendFunc = Backbone.View.extend;
     if (Backbone.Model.extend != Backbone.Model.extend || Backbone.Model.extend != Backbone.Collection.extend) {
         console.error("Backbone 'extend' functions was changed.");
@@ -87,11 +88,23 @@
       return new_class;
   }
 
+  if (!window.getOption) {
+    window.getOption = function(options, key, defValue) {
+      if (!_.isObject(options) || options[key] === undefined || options[key] === null) {
+        return defValue;
+      } else {
+        return options[key];
+      }
+    }
+  } else {
+    console.error("Namespace collision: getOption");
+  }
+
   Backbone.Collection.prototype.clone = function() {
       var copy = new this.constructor();
       this.each(function(model, index) {
           //trace("collection: clone a model, index:", index);
-          copy.add(model.clone());
+          copy.add(model.clone(), {silent: true });
       });
       return copy;
   }
@@ -110,32 +123,60 @@
       return copy;
   }
 
-  Backbone.Model.prototype.update = function(newModel, opt) {
-      for (var key in newModel.attributes) {
-          var value = newModel.get(key);
-          if (value && value.update) {
-            //trace("update depper for key: ", key);
-            this.get(key).update(value, opt);
-          }
-          else {
-            this.set(key, value, opt);
-            //trace("update key: ", key);
+  function getLog(log_offset) {
+      return function log(msg) {
+          if (log_offset > 0) {
+             console.log( (new Array(log_offset + 1).join("  ")) + " > " + msg);
+          } else {
+             console.log(msg);
           }
       }
+  }
+
+  Backbone.Model.prototype.update = function(newModel, options) {
+      var log_offset = getOption(options, 'log_offset', 0),
+          log = getLog(log_offset);
+      for (var key in newModel.attributes) {
+          var value = newModel.get(key),
+              valueConstructor;
+          if (value && typeof value.update == 'function') {
+              //log("update dipper for key: " + key);
+              valueConstructor = Object.getPrototypeOf(value).constructor;
+              if(!(this.get(key) instanceof valueConstructor)) {
+                  //log("model update: prop constructed, key = " + key);
+                  this.set(key, new valueConstructor(), options);
+              }
+              this.get(key).update(value, _.extend({}, options, {log_offset: log_offset + 1}));
+          }
+          else {
+              //log("update key: " + key);
+              this.set(key, deepClone(value), options);
+          }
+      }
+
       return this;
   }
 
-  Backbone.Collection.prototype.update = function(newCollection, opt) {
+  Backbone.Collection.prototype.update = function(newCollection, options) {
       //
       // Assume that both collections have the same sorted models
       //
-      for (var key in newCollection.models) {
-          var value = newCollection.models[key];
-          if (value && value.update) {
-             this.models[key].update(value, opt);
-             //trace("update depper for key: ", key);
+      var log_offset = getOption(options, 'log_offset', 0),
+          log = getLog(log_offset);
+      for (var index = 0; index < newCollection.length; index++) {
+          var value = newCollection.models[index],
+              valueConstructor;
+          if (value && typeof value.update == 'function') {
+              //log("update collection's model for index: " + index);
+              if (!this.models[index]) {
+                  //log("creating the model for index: " + index);
+                  valueConstructor = Object.getPrototypeOf(value).constructor;
+                  this.add(new valueConstructor(), options);
+              }
+              this.models[index].update(value, _.extend({}, options, {log_offset: log_offset + 1}));
           }
       }
+
       return this;
   }
 

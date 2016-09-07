@@ -1,12 +1,12 @@
 define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts, child) {
 
     describe("App.Models.ChildProduct", function() {
-        
+
         var model, def, exJSON, prod, modif, exJSON2, prodCreate, childJSON;
-        
+
         beforeEach(function() {
             model = new App.Models.ChildProduct();
-            def = deepClone(child.def);   
+            def = deepClone(child.def);
             exJSON = deepClone(child.exJSON);
             exJSON2 = deepClone(child.exJSON2);
             childJSON = deepClone(child.childJSON);
@@ -28,13 +28,13 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
             expect(prod).toHaveBeenCalledWith(exJSON.product);
             expect(modif).toHaveBeenCalledWith(exJSON.modifiers);
         });
-        
+
         it('clone()', function() {
             model.addJSON(exJSON);
             var prodClon = spyOn(model.get('product'), 'clone').and.returnValue(new App.Models.Product),
                 modClon = spyOn(model.get('modifiers'), 'clone').and.returnValue(new App.Collections.ModifierBlocks),
                 clone = model.clone();
-                
+
             expect(clone.__proto__).toBe(model.__proto__);
             expect(clone.cid).not.toBe(model.cid);
             expect(prodClon).toHaveBeenCalled();
@@ -42,29 +42,30 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
             expect(clone.get('attributes')).not.toBe(model.get('attributes'));
             expect(clone.get('attributes')).toEqual(model.get('attributes'));
         });
-        
+
         it('update()', function() {
             model.addJSON(exJSON);
             var prodUp = spyOn(model.get('product'), 'update').and.returnValue(new App.Models.Product),
                 modUp = spyOn(model.get('modifiers'), 'update').and.returnValue(new App.Collections.ModifierBlocks),
                 clone = model.clone().addJSON(exJSON2);
-            
-            model.update(clone);                
-            
-            expect(prodUp).toHaveBeenCalledWith(clone.get('product'));
-            expect(modUp).toHaveBeenCalledWith(clone.get('modifiers'));
+
+            model.update(clone);
+
+            //expect(model.get('product')).not.toBe(clone.get('product'));
+            expect(model.get('product')).toEqual(clone.get('product'));
             expect(model.get('attributes')).not.toBe(clone.get('attributes'));
             expect(model.get('attributes')).toEqual(clone.get('attributes'));
+
         });
-        
+
         it('create()', function() {
              model.create(childJSON);
-             
+
              expect(modif).toHaveBeenCalledWith(childJSON.modifiers);
              expect(model.get('attributes')).not.toBe(childJSON.attributes);
              expect(model.get('attributes')).toEqual(childJSON.attributes);
         });
-        
+
         describe('get_attributes()', function() {
 
             it('active product', function() {
@@ -77,18 +78,18 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
                  expect(model.get_attributes()).toBe(false);
             });
         });
-        
+
         it('is_active()', function() {
              var obj = {};
              model.set('product', new App.Models.Product({active: obj}));
              expect(model.is_active()).toBe(obj);
         });
     });
-        
+
     describe("App.Collections.ChildProducts", function() {
-        
+
         var model, exJSON, add, clon, updat, exJSONCol2;
-        
+
         beforeEach(function() {
             model = new App.Collections.ChildProducts();
             exJSON = deepClone(child.exJSONCol);
@@ -98,6 +99,9 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
                 return new App.Models.ChildProduct({id: Math.random()*1000|0});
             }),
             updat = spyOn(App.Models.ChildProduct.prototype, 'update').and.returnValue(new App.Models.ChildProduct);
+
+            clon.calls.reset();
+            updat.calls.reset();
         });
 
         it('Environment', function() {
@@ -110,30 +114,30 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
             expect(add.calls.count()).toBe(2);
             expect(add.calls.mostRecent().args[0]).toBe(exJSON[1]);
         });
-        
+
         it('clone()', function() {
             model.addJSON(exJSON);
             var clone = model.clone();
-                
+
             expect(clone.__proto__).toBe(model.__proto__);
             expect(clone.length).toBe(model.length);
             expect(clon.calls.count()).toBe(2);
             expect(clon.calls.mostRecent().object).toBe(model.at(1));
         });
-        
+
         it('update()', function() {
             model.addJSON(exJSON);
-            
-            model.update(model);                
-            
+
+            model.update(model);
+
             expect(updat.calls.count()).toBe(2);
             expect(updat.calls.mostRecent().object).toBe(model.at(1));
             expect(updat.calls.mostRecent().args[0]).toBe(model.at(1));
-            
-            model.update(model.clone());
-            expect(clon.calls.count()).toBe(4);
+
+            model.clone();
+            expect(clon.calls.count()).toBe(2);
         });
-        
+
         it('get_product_id()', function() {
             var child = new App.Models.ChildProduct(),
                 product = new App.Models.Product({id: 176});
@@ -142,104 +146,104 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
             expect(model.get_product_id(176)).toBe(product);
             expect(model.get_product_id(177)).toBeUndefined();
         });
-        
+
         describe('get_product()', function() {
-            
+
             var get_not_find, get_find;
-            
+
             beforeEach(function() {
                 get_not_find = deepClone(child.get_not_find);
                 get_find = deepClone(child.get_find);
                 model.add(exJSON);
             });
-            
+
             it('both enable, both selected, not find', function() {
                 expect(model.get_product(get_not_find)).toBeUndefined();
             });
-            
+
             it('both enable, both selected, find', function() {
                 expect(model.get_product(get_find)).toBe(model.at(1).get('product'));
             });
-            
+
             it('both enable, one selected, not find', function() {
                 get_find.attribute_1_selected = null;
                 expect(model.get_product(get_find)).toBeUndefined();
             });
-            
+
             it('one enable, both selected, find', function() {
                 get_find.attribute_1_enable = false;
                 expect(model.get_product(get_find)).toBe(model.at(1).get('product'));
             });
-            
+
             it('one enable, one selected, find', function() {
                 get_find.attribute_1_enable = false;
                 get_find.attribute_1_selected = null;
                 expect(model.get_product(get_find)).toBe(model.at(1).get('product'));
             });
-            
+
             it('one enable, other selected, not find', function() {
                 get_find.attribute_1_enable = false;
                 get_find.attribute_2_selected = null;
                 expect(model.get_product(get_find)).toBeUndefined();
             });
-            
+
             it('one enable, one selected, find only one', function() {
                 get_find.attribute_2_enable = false;
                 expect(model.get_product(get_find)).toBe(model.at(0).get('product'));
             });
         });
-        
+
         describe('get_modifiers()', function() {
-            
+
             var get_not_find, get_find;
-            
+
             beforeEach(function() {
                 get_not_find = deepClone(child.get_not_find);
                 get_find = deepClone(child.get_find);
                 model.add(exJSON);
             });
-            
+
             it('both enable, both selected, not find', function() {
                 expect(model.get_modifiers(get_not_find)).toBeUndefined();
             });
-            
+
             it('both enable, both selected, find', function() {
                 expect(model.get_modifiers(get_find)).toBe(model.at(1).get('modifiers'));
             });
-            
+
             it('both enable, one selected, not find', function() {
                 get_find.attribute_1_selected = null;
                 expect(model.get_modifiers(get_find)).toBeUndefined();
             });
-            
+
             it('one enable, both selected, find', function() {
                 get_find.attribute_1_enable = false;
                 expect(model.get_modifiers(get_find)).toBe(model.at(1).get('modifiers'));
             });
-            
+
             it('one enable, one selected, find', function() {
                 get_find.attribute_1_enable = false;
                 get_find.attribute_1_selected = null;
                 expect(model.get_modifiers(get_find)).toBe(model.at(1).get('modifiers'));
             });
-            
+
             it('one enable, other selected, not find', function() {
                 get_find.attribute_1_enable = false;
                 get_find.attribute_2_selected = null;
                 expect(model.get_modifiers(get_find)).toBeUndefined();
             });
-            
+
             it('one enable, one selected, find only one', function() {
                 get_find.attribute_2_enable = false;
                 get_find.attribute_2_selected = null;
                 expect(model.get_modifiers(get_find)).toBe(model.at(0).get('modifiers'));
             });
         });
-        
+
         describe('get_attributes_list()', function() {
-            
+
             var attr, attr1, attr2, attr3, attrEx, attrEx2, attrEx3;
-            
+
             beforeEach(function() {
                 exJSON = deepClone(child.exJSON);
                 model.add(exJSON);
@@ -253,47 +257,47 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
                     return attr;
                 });
             });
-            
+
             it('whole attributes get', function() {
                 attr = attrEx;
                 expect(model.get_attributes_list()).toEqual(attr1);
             });
-            
+
             it('only first attribute defined', function() {
                 attr = attrEx2;
                 expect(model.get_attributes_list()).toEqual(attr2);
             });
-            
+
             it('only second attribute defined', function() {
                 attr = attrEx3;
                 expect(model.get_attributes_list()).toEqual(attr3);
-                
+
             });
         });
-        
+
         it('add_child()', function() {
             var create = spyOn(App.Models.ChildProduct.prototype, 'create').and.returnValue(new App.Models.ChildProduct),
                 obj = {};
-            
+
             expect(model.length).toBe(0);
             model.add_child(obj);
             expect(model.length).toBe(1);
             expect(create).toHaveBeenCalledWith(obj);
         });
-        
+
         describe('check_active()', function() {
-            
+
             var attr;
             beforeEach(function() {
                 model.add(new App.Models.ChildProduct());
                 model.add(new App.Models.ChildProduct());
             });
-            
+
             it('all inactive', function() {
                 spyOn(App.Models.ChildProduct.prototype, 'is_active').and.returnValue(false);
                 expect(model.check_active()).toBe(false);
             });
-            
+
             it('one active', function() {
                 spyOn(App.Models.ChildProduct.prototype, 'is_active').and.callFake(function() {
                     attr = !attr;
@@ -303,5 +307,5 @@ define(['childproducts', 'js/utest/data/ChildProducts'], function(childproducts,
             });
         });
     });
-    
+
 });
