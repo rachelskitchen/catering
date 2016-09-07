@@ -414,6 +414,111 @@
     width: 100%;
 }
 
+.profile-edit .orders {
+    padding: 0 25px;
+}
+
+.profile-edit .orders-box {
+    padding: 0 25px;
+    position: absolute;
+    top: 102px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.profile-edit .orders-item {
+    padding: 10px 0;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    overflow: hidden;
+}
+
+.profile-edit .orders-headers {
+    border-bottom-width: 2px;
+    border-bottom-style: solid;
+    text-transform: uppercase;
+    overflow: hidden;
+}
+
+.profile-edit .orders-empty {
+    padding: 20px 25px;
+}
+
+.profile-edit .created-at-col {
+    width: 200px;
+}
+
+.profile-edit .offset1 {
+    margin-left: 230px;
+}
+
+.profile-edit .show-items {
+    display: inline-block;
+    width: 15px;
+    position: relative;
+}
+
+.profile-edit .show-items::before {
+    content: '\f105';
+    font-family: 'FontAwesome';
+    font-size: 20px;
+    position: absolute;
+    top: -15px;
+    left: 0;
+}
+
+.profile-edit .show-items.collapse::before {
+    content: '\f107';
+}
+
+.profile-edit .subtotal,
+.profile-edit .qty {
+    width: 180px;
+}
+
+.profile-edit .animate-spin::before {
+    content: '\f021';
+    font-family: 'FontAwesome';
+}
+
+@media only screen and (max-width: 1380px) {
+    .profile-edit .subtotal,
+    .profile-edit .qty {
+        width: 130px;
+    }
+}
+
+@media only screen and (max-width: 1280px) {
+    .profile-edit .subtotal,
+    .profile-edit .qty {
+        width: 80px;
+    }
+
+    .profile-edit .created-at-col {
+        width: 150px;
+    }
+
+    .profile-edit .offset1 {
+        margin-left: 180px;
+    }
+}
+
+.profile-edit .btn {
+    width: 80px;
+    font-size: 14px;
+}
+
+.profile-edit .col {
+    padding: 16px 10px;
+}
+
+.profile-edit .subtotal-title {
+    margin-right: 100px;
+}
+
 .expand.expanded:before {
     content: '\f147';
     font-family: "FontAwesome";

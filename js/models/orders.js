@@ -173,7 +173,72 @@ define(["backbone"], function(Backbone) {
              * @type {number}
              * @default 0
              */
-            tip: 0
+            tip: 0,
+            /**
+             * Items quantity.
+             * @type {number}
+             * @default 0
+             */
+            items_qty: 0,
+            /**
+             * Order items.
+             * @type {Backbone.Collection}
+             * @default null
+             */
+            items: null
+        },
+        /**
+         * Initializes `items` attribute.
+         * Calculates `items_qty` attribute as algebraic addition of `opts.items[].qty` values.
+         */
+        initialize: function(opts) {
+            this.set('items', new Backbone.Collection);
+            if (_.isObject(opts) && Array.isArray(opts.items)) {
+                this.set('items_qty', opts.items.reduce(function(iter, item) {
+                    return _.isNumber(item.qty) && item.qty > 0 ? iter + item.qty : iter;
+                }, 0));
+            }
+        },
+        /**
+         * Receives order items from server. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "'/weborders/v1/order/<order id>/orderitems/'",
+         *     method: "GET",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"}
+         * }
+         * ```
+         * - If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * `App.Data.customer` emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        getItems: function(authorizationHeader) {
+            if (!_.isObject(authorizationHeader)) {
+                return;
+            }
+            var items = this.get('items');
+            return Backbone.$.ajax({
+                url: '/weborders/v1/order/' + this.get('id') + '/orderitems/',
+                method: 'GET',
+                headers: authorizationHeader,
+                contentType: 'application/json',
+                success: function(data) {
+                    if (Array.isArray(data.data)) {
+                        items.reset(data.data);
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
         }
     });
 
@@ -248,7 +313,7 @@ define(["backbone"], function(Backbone) {
                     if (Array.isArray(data.data)) {
                         self.reset(data.data);
                     }
-                },        // to override global ajax success handler
+                },
                 error: new Function()           // to override global ajax error handler
             });
         }

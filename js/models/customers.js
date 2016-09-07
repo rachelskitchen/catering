@@ -2335,6 +2335,28 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
             return req;
         },
         /**
+         * Receives order items from server.
+         *
+         * @param {App.Models.Order} order - an order model.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getOrderItems: function(order) {
+            if (!(order instanceof App.Models.Order)) {
+                return;
+            }
+
+            var self = this,
+                req = order.getItems(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            return req;
+        },
+        /**
          * If {@link App.Models.Customer#ordersRequest ordersRequest} exists then the method aborts and deletes it.
          * Resets customer {@link App.Models.Customer#ordersRequest orders}.
          */

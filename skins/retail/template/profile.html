@@ -28,9 +28,9 @@
     <div class="profile-separator optional-text text-center primary-border">
         <span class="primary-bg"><%= _lp.OR %></span>
     </div>
-    <div class="btn login-fb-btn text-center"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
-    <div class="forgot-password link text-center primary-text"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
-    <div class="btn login-btn text-center"><%= _lp.PROFILE_LOG_IN %></div>
+    <div class="btn login-fb-btn text-center" tabindex="0"><%= _lp.PROFILE_LOG_IN_FACEBOOK %></div>
+    <div class="forgot-password link text-center primary-text" tabindex="0"><%= _lp.PROFILE_FORGOT_PASSWORD %></div>
+    <div class="btn login-btn text-center" tabindex="0"><%= _lp.PROFILE_LOG_IN %></div>
 </script>
 
 <script type="text/template" id="profile_sign_up-template">
@@ -81,14 +81,15 @@
             </label>
         </li>
     </ul>
-    <div class="btn signup-btn text-center"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
+    <div class="btn signup-btn text-center" tabindex="0"><%= _lp.PROFILE_SIGN_UP_BUTTON %></div>
 </script>
 
 <script type="text/template" id="profile_menu-template">
     <ul class="profile-items regular-text">
-        <li class="profile-link profile-item"><%= _lp.PROFILE_EDIT_TITLE %></li>
-        <li class="payments-link profile-item"><%= _lp.PAYMENT_METHODS %></li>
-        <li class="logout-link profile-item"><%= _lp.PROFILE_LOG_OUT %></li>
+        <li class="profile-link profile-item" tabindex="0"><%= _lp.PROFILE_EDIT_TITLE %></li>
+        <li class="payments-link profile-item" tabindex="0"><%= _lp.PAYMENT_METHODS %></li>
+        <li class="past-orders profile-item" tabindex="0"><%= _lp.PROFILE_PAST_ORDERS %></li>
+        <li class="logout-link profile-item" tabindex="0"><%= _lp.PROFILE_LOG_OUT %></li>
     </ul>
 </script>
 
@@ -241,7 +242,7 @@
             <input type="email" class="email ios-safari-caret input " autocorrect="off" autocapitalize="none">
         </li>
     </ul>
-    <div class="btn reset-btn text-center"><%= _lp.PROFILE_CHANGE_PASSWORD %></div>
+    <div class="btn reset-btn text-center" tabindex="0"><%= _lp.PROFILE_CHANGE_PASSWORD %></div>
 </script>
 
 <script type="text/template" id="profile_payment_selection-template">
