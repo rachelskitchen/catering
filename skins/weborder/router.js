@@ -48,6 +48,7 @@ define(["main_router"], function(main_router) {
             "maintenance": "maintenance",
             "profile_edit": "profile_edit",
             "profile_payments": "profile_payments",
+            "past_orders": "past_orders",
             "establishment": "establishment",
             "*other": "index"
         },
@@ -781,6 +782,22 @@ define(["main_router"], function(main_router) {
                 return this.navigate('index', true);
             } else {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
+            }
+        },
+        past_orders: function() {
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var req = this.setPastOrdersContent();
+
+            if (!req) {
+                this.navigate('index', true);
+            } else {
+                req.always(this.change_page.bind(this));
             }
         },
         establishment: function() {

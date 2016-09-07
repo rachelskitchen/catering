@@ -1023,6 +1023,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     settings_link: new Function,
                     payments_link: profilePayments,
                     profile_link: profileEdit,
+                    orders_link: pastOrders,
                     my_promotions_link: myPromotions,
                     cacheId: true
                 }
@@ -1125,6 +1126,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function hideSpinner() {
                 mainModel.trigger('loadCompleted');
+            }
+
+            function pastOrders() {
+                self.navigate('past_orders', true);
+                customer.trigger('hidePanel');
             }
         },
         setProfileEditContent: function() {
@@ -1372,6 +1378,33 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
             }
+        },
+        setPastOrdersContent: function() {
+            var customer = App.Data.customer,
+                req = customer.ordersRequest,
+                self = this;
+
+            if (req) {
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Orders',
+                        model: customer,
+                        collection: customer.orders,
+                        className: 'profile-edit'
+                    }
+                });
+
+                window.setTimeout(function() {
+                    self.listenTo(customer, 'onLogout', logout);
+                }, 0);
+            }
+
+            return req;
+
+            function logout() {
+                self.navigate('index', true);
+            }
         }
     };
 
@@ -1391,6 +1424,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     settings_link: profile_settings,
                     payments_link: profile_payments,
                     profile_link: profile_edit,
+                    orders_link: pastOrders,
                     my_promotions_link: myPromotions,
                     close_link: close,
                     cacheId: true
@@ -1425,6 +1459,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function profile_payments() {
                 self.navigate('profile_payments', true);
+                close();
+            }
+
+            function pastOrders() {
+                self.navigate('past_orders', true);
                 close();
             }
 
@@ -1932,6 +1971,32 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
             }
+        },
+        setPastOrdersContent: function() {
+            var customer = App.Data.customer,
+                req = customer.ordersRequest,
+                content;
+
+            if (req) {
+                App.Data.header.set({
+                    page_title: _loc.PROFILE_PAST_ORDERS,
+                    back_title: _loc.BACK,
+                    back: window.history.back.bind(window.history)
+                });
+
+                content = {
+                    modelName: 'Profile',
+                    mod: 'Orders',
+                    model: customer,
+                    collection: customer.orders,
+                    className: 'profile-edit'
+                }
+            }
+
+            return {
+                req: req,
+                content: content
+            };
         }
     };
 

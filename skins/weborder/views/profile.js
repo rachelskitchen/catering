@@ -188,6 +188,19 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
+    var ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView.extend({
+        className: 'orders-item primary-border',
+        bindings: {
+            '.orders': 'toggle: length($collection)'
+        }
+    });
+
+    var ProfileOrdersView = App.Views.CoreProfileView.CoreProfileOrdersView.extend({
+        bindings: {
+            '.orders': 'toggle: length($collection)'
+        }
+    });
+
     function creditCardType(card_type) {
         var code = _.invert(ACCEPTABLE_CREDIT_CARD_TYPES)[card_type];
         return _loc.CREDIT_CARD_TYPES[code];
@@ -198,5 +211,7 @@ define(["profile_view"], function(profile_view) {
         App.Views.ProfileView.ProfileGiftCardsSelectionView = ProfileGiftCardsSelectionView;
         App.Views.ProfileView.ProfilePaymentsView = ProfilePaymentsView;
         App.Views.ProfileView.ProfileEditView = ProfileEditView;
+        App.Views.ProfileView.ProfileOrdersItemView = ProfileOrdersItemView;
+        App.Views.ProfileView.ProfileOrdersView = ProfileOrdersView;
     });
 });

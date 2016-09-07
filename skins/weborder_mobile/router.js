@@ -78,6 +78,7 @@ define(["main_router"], function(main_router) {
             "my_promotions": "promotions_my",
             "promotion/:id_promotion": "promotion_details",
             "profile_payments": "profile_payments",
+            "past_orders": "past_orders",
             "establishment": "establishment",
             "*other": "index"
         },
@@ -2170,6 +2171,21 @@ define(["main_router"], function(main_router) {
                     content: data.content
                 });
                 Backbone.$.when.apply(Backbone.$, data.promises).then(this.change_page.bind(this));
+            }
+        },
+        past_orders: function() {
+            var data = this.setPastOrdersContent();
+
+            if (!data.req) {
+                return this.navigate('index', true);
+            } else {
+                App.Data.mainModel.set({
+                    header: headerModes.Modifiers,
+                    footer: footerModes.None,
+                    contentClass: '',
+                    content: data.content
+                });
+                data.req.then(this.change_page.bind(this));
             }
         },
         showIsStudentQuestion: function(cancelCb) {
