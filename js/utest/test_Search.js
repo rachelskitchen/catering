@@ -6,55 +6,12 @@ define(['js/models/search'], function() {
 
         beforeEach(function() {
             model = new App.Models.Search();
-            def = {
-                pattern: null,
-                products: null
-            };
         });
 
         it('Environment', function() {
             expect(App.Models.Search).toBeDefined();
+            expect(App.Models.Search).toBe(App.Models.ProductsBunch);
         });
-
-        it('Create model', function() {
-            expect(model.toJSON()).toEqual(def);
-        });
-
-        describe('get_products()', function() {
-            var dfd,
-                products = [new Backbone.Model({name: 'product1'}), new Backbone.Model({name: 'product2'})],
-                result;
-
-            beforeEach(function() {
-                dfd = new Backbone.$.Deferred();
-            });
-
-            it('products are found', function() {
-                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                    this.add(products);
-                    return dfd;
-                });
-
-                result = model.get_products();
-                expect(result.state()).toBe('pending');
-
-                dfd.resolve();
-                expect(result.state()).toBe('resolved');
-            });
-
-            it('error', function() {
-                spyOn(App.Data.errors, 'alert');
-                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                    this.onProductsError();
-                    return dfd;
-                });
-
-                model.get_products();
-                expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.PRODUCTS_EMPTY_RESULT);
-            });
-
-        });
-
     });
 
     describe('App.Collections.Search', function() {
@@ -139,7 +96,7 @@ define(['js/models/search'], function() {
             def = {
                 searchString: '',
                 dummyString: '',
-                isShow: true,
+                collapsed : true,
                 search: null
             };
         });
@@ -163,7 +120,7 @@ define(['js/models/search'], function() {
 
             it('`searchString` is empty', function() {
                 model.updateSearch();
-                expect(searchModel.search).toHaveBeenCalledWith(null);
+                expect(searchModel.search).not.toHaveBeenCalledWith();
             });
 
             it('`searchString is set', function() {
@@ -176,13 +133,41 @@ define(['js/models/search'], function() {
         it('empty_search_line()', function() {
             model.set({
                 dummyString: 'string',
-                searchString: 'string'
-            }, {silent: true})
+                searchString: 'string',
+                search: new App.Collections.Search()
+            }, {silent: true});
 
             model.empty_search_line();
 
             expect(model.get('dummyString')).toBe('');
             expect(model.get('searchString')).toBe('');
+        });
+
+        describe('getSearchModel()', function() {
+            var searchCol, searchModel, pattern = 'p';
+
+            beforeEach(function() {
+                searchCol = new App.Collections.Search();
+                searchModel = new App.Models.Search({pattern: pattern});
+                searchCol.add( searchModel );
+                model.set({
+                    search: searchCol,
+                    searchString: 'some string'
+                }, {silent: true});
+            });
+
+            it('pattern doesn not exist', function() {
+                var search = model.getSearchModel();
+                expect(search).toBe(undefined);
+            });
+
+            it('pattern exists', function() {
+                model.set({
+                    searchString: pattern
+                }, {silent: true});
+                 var search = model.getSearchModel();
+                expect(search instanceof App.Models.Search).toBe(true);
+            });
         });
     });
 

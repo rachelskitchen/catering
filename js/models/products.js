@@ -323,20 +323,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * @param {App.Models.Product} newProduct - product model.
          * @returns {App.Models.Product} The model.
          */
-        update: function(newProduct) {
-            for(var key in newProduct.attributes) {
-                var value = newProduct.get(key),
-                    valueConstructor;
-                if (value && value.update) {
-                    valueConstructor = Object.getPrototypeOf(value).constructor;
-                    if(!(this.get(key) instanceof valueConstructor)) {
-                        this.set(key, new valueConstructor(), {silent: true});
-                    }
-                    this.get(key).update(value);
-                }
-                else { this.set(key, value, {silent: true}); }
-            }
-            return this;
+        update: function(newProduct, options) {
+            //set  {silent: true} for all updates:
+            return Backbone.Model.prototype.update.call(this, newProduct, _.extend({}, options, {silent: true}));
         },
         /**
          * Seeks a product. If `id` parameter is passed seeks a product by id (returns itself or child product).
@@ -763,7 +752,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 fetching = Backbone.$.Deferred(); // deferred for check if all product load;
 
             if (!id_category && !search && !page) {
-                return fetching.resolve();
+                return fetching.reject();
             }
 
             Backbone.$.ajax({

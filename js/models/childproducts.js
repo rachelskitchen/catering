@@ -132,13 +132,8 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
          *                                            corresponding attribute of the child product.
          * @returns {App.Models.ChildProduct} The updated child product.
          */
-        update: function(updated) {
-            for (var key in updated.attributes) {
-                var value = updated.get(key);
-                if (value && value.update) { this.get(key).update(value); }
-                else { this.set(key, deepClone(value), {silent: true}); }
-            }
-            return this;
+        update: function(updated, options) {
+            return Backbone.Model.prototype.update.call(this, updated, _.extend({}, options, {silent: true}));
         },
         /**
          * Sets JSON representation of child product attributes to actual values.
@@ -211,6 +206,9 @@ define(["backbone", 'products', 'modifiers'], function(Backbone) {
                 self.add(add);
             });
             return this;
+        },
+        update: function(updated, options) {
+            return Backbone.Collection.prototype.update.call(this, updated, _.extend({}, options, {silent: true}));
         },
         /**
          * Deeply clones the child products collection. Attribute data type is kept.

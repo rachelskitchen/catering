@@ -132,4 +132,15 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         }
     });
 
+    /*
+    *  Set multiline output for Jasmine
+    *  Use it after Jasmine tests processing completes.
+    */
+    window.jasmineLineBreaks = function() {
+        // This trick replaces the text from Jasmine marked by <br> into &#13;&#10;
+        $(".messages div").each(function(index, elem) {
+            $(elem).html($(elem).html().replace("&lt;br&gt;", "&#13;&#10;") );
+        });
+    }
+
 });

@@ -156,5 +156,21 @@ define(['subcategories'], function() {
             });
         });
 
+        describe('getSubsIds()', function() {
+            it('category with given id that does not exist', function() {
+                expect(model.getSubsIds('not existing id')).toEqual([]);
+            });
+
+            it('category with given id that exists', function() {
+                var model1 = new Backbone.Model({id: 'model1', active: false}),
+                    model2 = new Backbone.Model({id: 'model2', active: true});
+                model.add(new Backbone.Model({
+                    id: 'some id',
+                    subs: new Backbone.Collection([model1, model2])
+                }));
+                expect(model.getSubsIds('some id')).toEqual(['model2']);
+            });
+        });
+
     });
 });
