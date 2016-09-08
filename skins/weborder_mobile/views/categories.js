@@ -114,7 +114,7 @@ define(["categories_view"], function(categories_view) {
             //trace("scroll params: ", scrollTop, scrollHeight, page_height, " calc: ", scrollHeight - (next_page_koeff * page_height) );
             if (scrollTop > 0 && scrollTop >= scrollHeight - (next_page_koeff * page_height)) {
                 self.options.searchModel.get_products({ start_index: self.last_index }).always(function(status) {
-                    //trace("searchModel updated ", self.options.searchModel.get('parent_id'), self.options.searchModel.get('products').length);
+                    //trace("searchModel updated ", self.last_index,  self.options.searchModel.get('products').length);
                     self.add_products();
                     show_spinner = false;
                     if (status != "already_processed") {

@@ -962,7 +962,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             }
 
             cur_page = parseInt(start_index / App.SettingsDirectory.json_page_limit) + 1;
-            if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page]) {
+            if (this.get('last_page_loaded') >= cur_page || this.load_dfd[cur_page] ||
+                   (this.get('num_of_products') && this.get('num_of_products') <= start_index)) {
                 return $.Deferred().resolve("already_processed");
             }
 

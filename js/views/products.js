@@ -90,12 +90,13 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             var settings = App.Data.settings.get('settings_system'),
                 noImg = settings.hide_images,
                 noDesc = settings.hide_products_description,
-                view;
+                view,
+                root_cache_id = this.options.root_cache_id ? this.options.root_cache_id : "";
             view = App.Views.GeneratorView.create('Product', {
                 el: $('<li class="product"></li>'),
                 mod: 'ListItem',
                 model: model
-            }, 'product_' + model.get("compositeId"));
+            }, 'product_' + root_cache_id + "_" + model.get("compositeId"));
             noDesc && view.$el.addClass('short');
             noImg && view.$el.addClass('no-image');
             App.Views.ListView.prototype.addItem.call(this, view, this.$('.products'), model.escape('sort'));

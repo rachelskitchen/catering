@@ -282,7 +282,8 @@ define(["generator", "list", "categories_view"], function() {
             var model = this.model,
                 view = App.Views.GeneratorView.create('Product', {
                     mod: 'List',
-                    collection: this.collection
+                    collection: this.collection,
+                    root_cache_id: this.options.root_cache_id
                 }, model.cid + this.options.pageModel.get('cur_page'));
             this.$('.product_table').prepend(view.el);
             this.subViews.push(view);
@@ -309,7 +310,8 @@ define(["generator", "list", "categories_view"], function() {
                 collection: products,
                 model: category,
                 categories: this.collection,
-                pageModel: this.options.pageModel
+                pageModel: this.options.pageModel,
+                root_cache_id: this.options.root_cache_id
             }, category.cid + this.options.pageModel.get('cur_page'));
             App.Views.ListView.prototype.addItem.call(this, view, this.$el, category.escape('sort'));
             this.subViews.push(view);
@@ -378,7 +380,8 @@ define(["generator", "list", "categories_view"], function() {
                     model: self.model, //Model: Search or undefined
                     collection: self.collection, //Collection: Categories
                     pageModel: self.pageModel,
-                    parent_category: self.options.parent_category
+                    parent_category: self.options.parent_category,
+                    root_cache_id: self.options.root_cache_id
                 }, 'products_pages' + self.options.root_cache_id + self.pageModel.get("cur_page"));
                 self.$('.categories_products_wrapper').append(view.el).scrollTop(0);
                 self.subViews.push(view);
@@ -425,6 +428,7 @@ define(["generator", "list", "categories_view"], function() {
                     model: search, //Model: Search or undefined
                     collection: self.collection, //Collection: Categories
                     pageModel: self.pageModel,
+                    root_cache_id: self.options.root_cache_id,
                 }, 'products_pages' + self.options.root_cache_id + self.pageModel.get("cur_page"));
                 self.$('.categories_products_wrapper').append(view.el).scrollTop(0);
                 self.subViews.push(view);
