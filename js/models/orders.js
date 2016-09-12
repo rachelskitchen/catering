@@ -21,13 +21,103 @@
  */
 
 /**
- * Contains {@link App.Models.Order}, {@link App.Collections.Orders} constructors.
+ * Contains {@link App.Models.OrderItem}, {@link App.Collections.OrderItems},
+ * {@link App.Models.Order}, {@link App.Collections.Orders} constructors.
  * @module orders
  * @requires module:backbone
  * @see {@link module:config.paths actual path}
  */
 define(["backbone"], function(Backbone) {
     'use strict';
+
+    /**
+     * @class
+     * @classdesc Represents an order item.
+     * @alias App.Models.OrderItem
+     * @augments App.Models.Myorder
+     * @example
+     * // create an order item model
+     * require(['orders'], function() {
+     *     var orderItem = new App.Models.OrderItem();
+     * });
+     */
+    App.Models.OrderItem = App.Models.Myorder.extend(
+    /**
+     * @lends App.Models.OrderItem.prototype
+     */
+    {
+        /**
+         * Applies options via [addJSON()]{@link App.Models.Myorder#addJSON} method.
+         */
+        initialize: function(options) {
+            App.Models.Myorder.prototype.initialize.apply(this, arguments);
+            this.addJSON(options);
+        },
+        /**
+         * Makes reorder.
+         * @returns {Array} Array of attributes changed from order placement.
+         */
+        reorder: function() {
+            var product = this.get_product(),
+                modifiers = this.get_modifiers(),
+                changes = [];
+
+            // TODO ignore price change if modifier SIZE apllied
+
+            // make product reorder
+            changes.push.apply(changes, product.reorder());
+
+            // remove order item if product isn't available right now
+            if (changes.indexOf('available') && !product.get('available') && this.collection) {
+                this.collection.remove(this);
+            }
+
+            // make modifiers reorder
+            if (modifiers) {
+                changes.push.apply(changes, modifiers.reorder())
+                modifiers.enableFreeModifiers();
+            };
+
+            return changes;
+        }
+    });
+
+    /**
+     * @class
+     * @classdesc Represents an order items.
+     * @alias App.Collections.OrderItem
+     * @augments App.Models.Myorder
+     * @example
+     * // create order items model
+     * require(['orders'], function() {
+     *     var orderItem = new App.Models.OrderItem();
+     * });
+     */
+    App.Collections.OrderItems = Backbone.Collection.extend(
+    /**
+     * @lends App.Collections.OrderItems.prototype
+     */
+    {
+        /**
+         * Function constructor of item.
+         * @type {Backbone.Model}
+         * @default App.Models.OrderItem
+         */
+        model: App.Models.OrderItem,
+        /**
+         * Calls {@link App.Collections.OrderItem#reorder reorder()} method to each item.
+         * @returns {Array} Array of attributes changed from order placement.
+         */
+        reorder: function () {
+            var changes = [];
+
+            this.each(function(orderItem) {
+                changes.push.apply(changes, orderItem.reorder());
+            });
+
+            return changes;
+        }
+    });
 
     /**
      * @class
@@ -42,7 +132,7 @@ define(["backbone"], function(Backbone) {
      */
     App.Models.Order = Backbone.Model.extend(
     /**
-     * @lends Backbone.Model
+     * @lends App.Models.Order.prototype
      */
     {
         /**
@@ -192,7 +282,7 @@ define(["backbone"], function(Backbone) {
          * Calculates `items_qty` attribute as algebraic addition of `opts.items[].qty` values.
          */
         initialize: function(opts) {
-            this.set('items', new Backbone.Collection);
+            this.set('items', new App.Collections.OrderItems);
             if (_.isObject(opts) && Array.isArray(opts.items)) {
                 this.set('items_qty', opts.items.reduce(function(iter, item) {
                     return _.isNumber(item.qty) && item.qty > 0 ? iter + item.qty : iter;
@@ -239,6 +329,56 @@ define(["backbone"], function(Backbone) {
                 },
                 error: new Function()           // to override global ajax error handler
             });
+        },
+        /**
+         * Makes reorder.
+         */
+        reorder: function() {
+            var order = this.toJSON(),
+                items = this.get('items'),
+                settings = App.Settings,
+                myorder = App.Data.myorder,
+                checkout = myorder.checkout,
+                paymentMethods = App.Data.paymentMethods,
+                changes;
+
+            if (!items) {
+                return
+            }
+
+            // empty cart
+            myorder.empty_myorder();
+
+            // makes items reorder
+            changes = items.reorder();
+
+            if (changes.length) {
+                // TODO notify to user
+            }
+
+            // TODO delivery address recover.
+
+            // recover checkout
+            checkout.set({
+                notes: order.notes,
+                dining_option: settings.dining_options.indexOf(order.dining_option) > -1
+                            ? _.invert(DINING_OPTION)[order.dining_option]
+                            : settings.default_dining_option
+            });
+
+            // recover payment method
+            if (paymentMethods) {
+                paymentMethods.set({
+                    selected: getMethod(order.payment_type)
+                });
+            }
+
+            // add items
+            items.each(function(orderItem) {
+               myorder.add(orderItem.clone());
+            });
+
+            this.trigger('onReorder');
         }
     });
 
@@ -255,7 +395,7 @@ define(["backbone"], function(Backbone) {
      */
     App.Collections.Orders = Backbone.Collection.extend(
     /**
-     * @lends Backbone.Collection
+     * @lends App.Collections.Orders.prototype
      */
     {
         /**

@@ -233,7 +233,27 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
              * Combo product price
              * @type {number}
              */
-            has_upsell: false
+            has_upsell: false,
+            /**
+             * An object literal with actual values of main attributes which affect reorder ability:
+             * ```
+             * {
+             *    available: <boolean>,
+             *    cost: <string>,
+             *    is_cold: <boolean>,
+             *    is_gift: <boolean>,
+             *    price: <number>,
+             *    sold_by_weight: <boolean>,
+             *    tax: <number>,                 // tax rate
+             *    uom: <string>
+             * }
+             * ```
+             * It exists only if the product belongs to an order item in past orders.
+             * It's null for usual products in category, cart.
+             * @type {?object}
+             * @default null
+             */
+            actual_data: null
         },
         /**
          * Sets `img` as App.Data.settings.get("img_path") value, `checked_gift_cards` as `{}`,
@@ -651,6 +671,31 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         isUpsellProduct: function() {
             return this.get("has_upsell") === true;
+        },
+        /**
+         * Checks changes before make reorder. The product may change after order placement.
+         * Need to find out changed attibutes.
+         *
+         * @param {boolean} ignorePriceChange - indicates whether the product price should be excluded from checking.
+         *                                      'Size' modifier should be assigned to the product.
+         * @returns {Array} Array containing attributes changed from order placement.
+         */
+        reorder: function(ignorePriceChange) {
+            var changes = [],
+                actual_data = this.get('actual_data');
+
+            if (!_.isObject(actual_data)) {
+                return changes;
+            }
+
+            for (var key in actual_data) {
+                if (this.get(key) !== actual_data[key]) {
+                    this.set(key, actual_data[key]);
+                    (key != 'price' || !ignorePriceChange) && changes.push(key);
+                }
+            }
+
+            return changes;
         }
     });
 

@@ -29,6 +29,12 @@
 define(["backbone"], function(Backbone) {
     'use strict';
 
+    var CREDIT_CARD_BUTTON = 'credit_card_button',
+        GIFT_CARD = 'gift_card',
+        CASH = 'cash',
+        PAYPAL = 'paypal',
+        STANFORD = 'stanford';
+
     /**
      * @class
      * @classdesc Represents payment methods available for user.
@@ -62,7 +68,7 @@ define(["backbone"], function(Backbone) {
              * @type {Array}
              * @default ['credit_card_button', 'gift_card', 'cash', 'paypal', 'stanford']
              */
-            available_payments: ['credit_card_button', 'gift_card', 'cash', 'paypal', 'stanford']
+            available_payments: [CREDIT_CARD_BUTTON, GIFT_CARD, CASH, PAYPAL, STANFORD]
         },
         /**
          * Sets default payment method.
@@ -91,29 +97,54 @@ define(["backbone"], function(Backbone) {
          */
         onPay: function() {
             switch(this.get('selected')) {
-                case 'credit_card_button':
+                case CREDIT_CARD_BUTTON:
                     this.trigger('payWithCreditCard');
                     break;
 
-                case 'gift_card':
+                case GIFT_CARD:
                     this.trigger('payWithGiftCard');
                     break;
 
-                case 'paypal':
+                case PAYPAL:
                     this.trigger('payWithPayPal');
                     break;
 
-                case 'cash':
+                case CASH:
                     this.trigger('payWithCash');
                     break;
 
-                case 'stanford':
+                case STANFORD:
                     this.trigger('payWithStanfordCard');
                     break;
 
                 default:
                     break;
             }
+        },
+        /**
+         * @param {number} payment_type - payment type
+         * @returns {string} Payment method.
+         */
+        getMethod: function(payment_type) {
+            var method = '';
+            switch (payment_type) {
+                case PAYMENT_TYPE.CREDIT:
+                    method = CREDIT_CARD_BUTTON;
+                    break;
+                case PAYMENT_TYPE.PAYPAL:
+                    method = PAYPAL;
+                    break;
+                case PAYMENT_TYPE.NO_PAYMENT:
+                    method = CASH;
+                    break;
+                case PAYMENT_TYPE.GIFT:
+                    method = GIFT_CARD;
+                    break;
+                case PAYMENT_TYPE.STANFORD:
+                    method = STANFORD;
+                    break;
+            }
+            return method;
         }
     });
 });

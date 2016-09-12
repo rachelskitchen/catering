@@ -1233,6 +1233,17 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'terms_of_use'
     });
 
+    App.Views.CoreProfileView.CoreProfileOrderItemView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'order_item',
+        tagName: 'li',
+        bindings: {
+            '.name': 'text: product_name',
+            '.qty': 'text: quantity',
+            '.price': 'text: currencyFormat(product_price)'
+        }
+    })
+
     App.Views.CoreProfileView.CoreProfileOrdersItemView = App.Views.FactoryView.extend({
         name: 'profile',
         mod: 'orders_item',
@@ -1243,7 +1254,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.created-at': 'text: created_date',
             '.order-id': 'text: id',
             '.qty': 'text: items_qty',
-            '.subtotal': 'text: currencyFormat(subtotal)'
+            '.subtotal': 'text: currencyFormat(subtotal)',
+            '.animate-spin': 'classes: {hide: length($orderItems)}',
+            '.items': 'collection: $orderItems, itemView: "itemView"'
+        },
+        itemView: function(opts) {
+            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+                mod: 'OrderItem',
+                product: opts.model.get_product(),
+                modifiers: opts.model.get_modifiers()
+            }), opts.model.get('id'));
         },
         bindingSources: {
             ui: function() {
@@ -1263,6 +1283,9 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             if (!this.itemsReq) {
                 this.itemsReq = this.options.customer.getOrderItems(this.model);
             }
+        },
+        reorder: function() {
+            this.model.reorder();
         }
     });
 
@@ -1279,7 +1302,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             // It refers to new created object.
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
                 mod: 'OrdersItem',
-                customer: opts.collectionView.model
+                customer: opts.collectionView.model,
+                orderItems: opts.model.get('items')
             }), opts.model.get('id'));
         }
     });
@@ -1334,6 +1358,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         App.Views.ProfileView.ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView;
         App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView;
         App.Views.ProfileView.ProfileTermsOfUseView = App.Views.CoreProfileView.CoreProfileTermsOfUseView;
+        App.Views.ProfileView.ProfileOrderItemView = App.Views.CoreProfileView.CoreProfileOrderItemView;
         App.Views.ProfileView.ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView;
         App.Views.ProfileView.ProfileOrdersView = App.Views.CoreProfileView.CoreProfileOrdersView;
     });
