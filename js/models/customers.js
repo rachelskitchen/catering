@@ -174,6 +174,12 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
              */
             access_token: "",
             /**
+             * Facebook access token.
+             * @type {string}
+             * @default ""
+             */
+            fb_token: "",
+            /**
              * If `true` cookie uses max-age property. Otherwise cookie exists within browser session.
              * @type {boolean}
              * @default true
@@ -772,7 +778,10 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                     scope: '*',
                     instance: getInstanceName()
                 },
-                success: this.loginSuccessCallback,
+                success: function(data) {
+                    data.token.fb_token = access_token;
+                    this.loginSuccessCallback(data);
+                },
                 error: this.loginErrorCallback
             });
         },
@@ -1686,6 +1695,10 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 token_type: data.token.token_type,
                 expires_in: data.token.expires_in
             });
+
+            if (data.token.fb_token) {
+                this.set('fb_token', data.token.fb_token);
+            }
 
             this.clearPasswords();
         },
