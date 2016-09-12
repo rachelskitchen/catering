@@ -492,7 +492,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         bindings: {
             '.update-btn': 'classes: {disabled: updateBtn_disabled}',
             '.successful-update': 'classes: {visible: ui_show_response}',
-            '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}'
+            '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}',
+            '.account-password-container': 'toggle: toggleChangePassword'
+        },
+        computeds: {
+            toggleChangePassword: {
+                deps: ['fb_token'],
+                get: function(fb_token) {
+                    return !(typeof fb_token === 'string' && fb_token.length);
+                }
+            }
         },
         events: {
             'click .update-btn:not(.disabled)': setCallback('updateAction')
@@ -550,7 +559,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
             '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/, attr: {type: getFieldType(show_password)}',
             '.account-password-field': 'classes: {required: any(password, confirm_password)}',
-            '.show-password': 'text: getButtonText(show_password)'
+            '.show-password': 'text: getButtonText(show_password)',
+            '.account-password-container': 'toggle: toggleChangePassword'
         },
         bindingFilters: {
             getFieldType: function(show_password) {
@@ -558,6 +568,14 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             },
             getButtonText: function(show_password) {
                 return show_password ? _loc.PROFILE_HIDE_PASSWORD : _loc.PROFILE_SHOW_PASSWORD;
+            }
+        },
+        computeds: {
+            toggleChangePassword: {
+                deps: ['fb_token'],
+                get: function(fb_token) {
+                    return !(typeof fb_token === 'string' && fb_token.length);
+                }
             }
         },
         events: {
