@@ -203,16 +203,18 @@
 </script>
 
 <script type="text/template" id="profile_account_password-template">
-    <span class="profile-info account-password regular-text font-size3"><%= _lp.PROFILE_CHANGE_PASSWORD %></span>
-    <ul class="profile-form font-size2 text-center">
-        <li class="required account-password-input">
-            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_CURRENT_PASSWORD %>" class="current-password ios-safari-caret input-colors">
-        </li>
-        <li class="required account-password-input">
-            <input type="password" placeholder="<%= _lp.PROFILE_ENTER_NEW_PASSWORD %>" class="new-password ios-safari-caret input-colors">
-            <span class="show-password primary-text"><%= _lp.PROFILE_SHOW_PASSWORD %></span>
-        </li>
-    </ul>
+    <div class="account-password-container">
+        <span class="profile-info account-password regular-text font-size3"><%= _lp.PROFILE_CHANGE_PASSWORD %></span>
+        <ul class="profile-form font-size2 text-center">
+            <li class="required account-password-input">
+                <input type="password" placeholder="<%= _lp.PROFILE_ENTER_CURRENT_PASSWORD %>" class="current-password ios-safari-caret input-colors">
+            </li>
+            <li class="required account-password-input">
+                <input type="password" placeholder="<%= _lp.PROFILE_ENTER_NEW_PASSWORD %>" class="new-password ios-safari-caret input-colors">
+                <span class="show-password primary-text"><%= _lp.PROFILE_SHOW_PASSWORD %></span>
+            </li>
+        </ul>
+    </div>
 </script>
 
 <script type="text/template" id="profile_account_notifications-template">
