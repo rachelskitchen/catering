@@ -47,11 +47,14 @@ define(["backbone"], function(Backbone) {
      */
     {
         /**
-         * Applies options via [addJSON()]{@link App.Models.Myorder#addJSON} method.
+         * Applies options via [addJSON()]{@link App.Models.Myorder#addJSON} method, calculates `sum`.
          */
         initialize: function(options) {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
-            this.addJSON(options);
+            if (_.isObject(options)) {
+                this.addJSON(options);
+                this.set('sum', this.get_modelsum());
+            }
         },
         /**
          * Makes reorder.
@@ -334,8 +337,9 @@ define(["backbone"], function(Backbone) {
          * Makes reorder.
          */
         reorder: function() {
-            var order = this.toJSON(),
-                items = this.get('items'),
+            var _order = this.clone(),
+                order = _order.toJSON(),
+                items = _order.get('items'),
                 settings = App.Settings,
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout,
@@ -369,13 +373,13 @@ define(["backbone"], function(Backbone) {
             // recover payment method
             if (paymentMethods) {
                 paymentMethods.set({
-                    selected: getMethod(order.payment_type)
+                    selected: paymentMethods.getMethod(order.payment_type)
                 });
             }
 
             // add items
             items.each(function(orderItem) {
-               myorder.add(orderItem.clone());
+               myorder.add(orderItem);
             });
 
             this.trigger('onReorder');

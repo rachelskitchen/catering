@@ -1240,7 +1240,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         bindings: {
             '.name': 'text: product_name',
             '.qty': 'text: quantity',
-            '.price': 'text: currencyFormat(product_price)'
+            '.price': 'text: currencyFormat(sum)'
         }
     })
 
@@ -1261,8 +1261,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         itemView: function(opts) {
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
                 mod: 'OrderItem',
-                product: opts.model.get_product(),
-                modifiers: opts.model.get_modifiers()
+                product: opts.model.get_product()
             }), opts.model.get('id'));
         },
         bindingSources: {
@@ -1271,10 +1270,12 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             }
         },
         events: {
-            'click .show-items': 'showItems'
+            'click .show-items': 'showItems',
+            'click .btn': 'reorder'
         },
         onEnterListeners: {
-            '.show-items': 'showItems'
+            '.show-items': 'showItems',
+            '.btn': 'reorder'
         },
         showItems: function() {
             var ui = this.getBinding('$ui');

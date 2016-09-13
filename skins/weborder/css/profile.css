@@ -452,7 +452,11 @@
 }
 
 .profile-edit .offset1 {
-    margin-left: 230px;
+    margin-left: 220px;
+}
+
+.profile-edit .offset2 {
+    margin-right: 100px;
 }
 
 .profile-edit .show-items {
@@ -475,8 +479,14 @@
 }
 
 .profile-edit .subtotal,
+.profile-edit .price,
 .profile-edit .qty {
     width: 180px;
+}
+
+.profile-edit .animate-spin {
+    position: relative;
+    left: 10px;
 }
 
 .profile-edit .animate-spin::before {
@@ -484,8 +494,19 @@
     font-family: 'FontAwesome';
 }
 
+.profile-edit .order-items-box .item {
+    margin-right: 10px 0;
+    overflow: hidden;
+}
+
+.profile-edit .order-items-box .modifiers {
+    padding-top: 4px;
+    font-size: 12px;
+}
+
 @media only screen and (max-width: 1380px) {
     .profile-edit .subtotal,
+    .profile-edit .price,
     .profile-edit .qty {
         width: 130px;
     }
@@ -493,8 +514,9 @@
 
 @media only screen and (max-width: 1280px) {
     .profile-edit .subtotal,
+    .profile-edit .price,
     .profile-edit .qty {
-        width: 80px;
+        width: 70px;
     }
 
     .profile-edit .created-at-col {
@@ -502,7 +524,7 @@
     }
 
     .profile-edit .offset1 {
-        margin-left: 180px;
+        margin-left: 170px;
     }
 }
 
