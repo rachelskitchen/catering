@@ -417,9 +417,12 @@
 </script>
 
 <script type="text/template" id="profile_order_item-template">
-    <div class="name"></div>
-    <div class="qty"></div>
-    <div class="price"></div>
+    <div class="col fl-left">
+        <div class="name bold"></div>
+        <div class="modifiers optional-text"></div>
+    </div>
+    <div class="price col text-center offset2 fl-right"></div>
+    <div class="qty col text-center fl-right"></div>
 </script>
 
 <script type="text/template" id="profile_orders_item-template">
@@ -432,8 +435,8 @@
         <span class="order-id"></span>
     </div>
     <div class="btn text-center fl-right" tabindex="0"><%= _loc.PROFILE_REORDER %></div>
-    <div class="subtotal col text-center fl-right"></div>
-    <div class="qty col text-center fl-right"></div>
+    <div class="subtotal col text-center bold fl-right"></div>
+    <div class="qty col text-center bold fl-right"></div>
     <div class="order-items-box clear animate">
         <div class="animate-spin offset1"></div>
         <ul class="items offset1"></ul>
