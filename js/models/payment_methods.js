@@ -135,6 +135,7 @@ define(["backbone"], function(Backbone) {
                     method = PAYPAL;
                     break;
                 case PAYMENT_TYPE.NO_PAYMENT:
+                case null:
                     method = CASH;
                     break;
                 case PAYMENT_TYPE.GIFT:
