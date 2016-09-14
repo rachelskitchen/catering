@@ -26,13 +26,32 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
     var SidebarMainView = App.Views.FactoryView.extend({
         name: 'sidebar',
         mod: 'main',
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.listenTo(this.options.curProductsSet, 'change:value', this.filtersToggle);
+        },
+        filtersToggle: function(model, value) {
+            var $ui = this.getBinding('$ui');
+            $ui.set('has_filters', false); // reset animation state
+
+            this.listenToOnce(value, 'change', function() {
+                var hasSubcategories = Array.isArray(this.getBinding('categorySelection_subCategory')),
+                    hasFilters = Boolean(value.get('filters').length);
+
+                setTimeout(function() {
+                    $ui.set('has_filters', hasFilters && !hasSubcategories);
+                }, 250);
+            });
+        },
         bindings: {
             '.categories': 'updateContent: categories',
-            '.filters': 'updateContent: filtersSet, toggle: not(isArray(categorySelection_subCategory))'
+            '.filters': 'updateContent: filtersSet, toggle: ui_has_filters, classes: {animated: ui_has_filters, fadeInSlide: ui_has_filters}'
         },
-        bindingFilters: {
-            isArray: function(value) {
-                return Array.isArray(value);
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({
+                    has_filters: false
+                });
             }
         },
         computeds: {

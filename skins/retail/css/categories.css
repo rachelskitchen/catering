@@ -1,6 +1,6 @@
 .categories-tree {
     width: 189px;
-    border-width: 0 1px 1px 0;
+    border-width: 0 0 1px;
     border-style: solid;
 }
 
@@ -17,6 +17,11 @@
     cursor: pointer;
 }
 
+.tree-title.filter-title {
+    padding: 9px 11px;
+    text-transform: none;
+}
+
 .tree-title:focus .break-word {
     outline-width: 1px;
     outline-style: dotted;
@@ -28,12 +33,10 @@
 
 .categories-tree .break-word {
     display: block;
-    padding-right: 10px;
     word-break: break-word;
 }
 
 .categories-tree .tree-item {
-    margin: 12px 0;
     border-color: transparent;
     cursor: pointer;
 }
@@ -43,10 +46,10 @@
 }
 
 .categories-tree .subtree {
-    padding-left: 15px;
+    padding-left: 11px;
 }
 
-.categories-tree .subtree-icon::before {
+.subtree-icon::before {
     content: '\f078';
     font-family: 'FontAwesome';
     font-size: 8px;
@@ -71,13 +74,119 @@
     font-size: 13px;
     letter-spacing: 0.5px;
     vertical-align: middle;
+    margin: 0 -11px;
+    padding: 9px 11px;
+}
+
+.categories-tree .subtree .name {
+    margin-left: -22px;
+    padding-left: 33px;
 }
 
 .categories-tree .name.active {
     cursor: default;
+    background-color: #7a7d80;
 }
 
 .categories-tree .checkbox {
     margin-right: 6px;
     vertical-align: middle;
+}
+
+.categories .categories-tree .tree > .tree-item:not(:first-child) > .name {
+    padding-left: 22px;
+}
+
+.filters .filters-title {
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.filters .categories-tree .tree {
+    border: none;
+}
+
+.filters .categories-tree .name {
+    display: inline-block;
+}
+
+.animated {
+    -webkit-animation-duration: .75s;
+    -webkit-animation-fill-mode: both;
+    -moz-animation-duration: .75s;
+    -moz-animation-fill-mode: both;
+    -ms-animation-duration: .75s;
+    -ms-animation-fill-mode: both;
+    -o-animation-duration: .75s;
+    -o-animation-fill-mode: both;
+    animation-duration: .75s;
+    animation-fill-mode: both;
+}
+
+@-webkit-keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+}
+
+@-moz-keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+}
+
+@-ms-keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+}
+
+@-o-keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+}
+
+@keyframes fadeInSlide {
+    0% {
+        opacity: 0;
+        -webkit-transform: translateY(25px);
+    }
+
+    100% {
+        opacity: 1;
+        -webkit-transform: translateY(0);
+    }
+}
+
+.fadeInSlide {
+    -webkit-animation-name: fadeInSlide;
+    -moz-animation-name: fadeInSlide;
+    -ms-animation-name: fadeInSlide;
+    -o-animation-name: fadeInSlide;
+    animation-name: fadeInSlide;
 }
