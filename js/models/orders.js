@@ -370,8 +370,13 @@ define(["backbone"], function(Backbone) {
                 // create address for the order's dining option in addresses if it doesn't exist
                 addresses.getCheckoutAddress(dining_option);
                 // set values from order's delivery address
-                addresses.get(dining_option)
-                         .set(_.extend(addresses.getOrderAddress(order.delivery_address), {selected: true}));
+                addresses.get(dining_option).set(_.extend(
+                    addresses.getOrderAddress(order.delivery_address),
+                    {
+                        selected: true,
+                        isReorderAddress: true
+                    }
+                ));
             }
 
             // recover checkout
