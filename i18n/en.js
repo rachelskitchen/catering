@@ -666,6 +666,7 @@
         "PROFILE_PAST_ORDERS_SUBTITLE": "Reorder a favorite",
         "PROFILE_ORDER_NUMBER": "Order#",
         "PROFILE_REORDER": "Reorder",
+        "ORDER_CHANGED": "Modifications have been made to the previous order. Please review your items before checking out.",
         "FOOTER_TERMS_OF_SERVICE": "Terms of Service",
         "FOOTER_PRIVACY_POLICY": "Privacy Policy",
         'BILLING_ADDRESS_TITLE': 'Specify a card billing address',

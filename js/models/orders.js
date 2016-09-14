@@ -47,13 +47,16 @@ define(["backbone"], function(Backbone) {
      */
     {
         /**
-         * Applies options via [addJSON()]{@link App.Models.Myorder#addJSON} method, calculates `sum`.
+         * Applies options via [addJSON()]{@link App.Models.Myorder#addJSON} method, calculates `initial_price`, `sum`.
          */
         initialize: function(options) {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             if (_.isObject(options)) {
                 this.addJSON(options);
-                this.set('sum', this.get_modelsum());
+                this.set({
+                    initial_price: this.get_initial_price(),
+                    sum: this.get_modelsum()
+                });
             }
         },
         /**
@@ -63,12 +66,11 @@ define(["backbone"], function(Backbone) {
         reorder: function() {
             var product = this.get_product(),
                 modifiers = this.get_modifiers(),
+                sizeModifier = modifiers && modifiers.getSizeModel(),
                 changes = [];
 
-            // TODO ignore price change if modifier SIZE apllied
-
             // make product reorder
-            changes.push.apply(changes, product.reorder());
+            changes.push.apply(changes, product.reorder(!!sizeModifier));
 
             // remove order item if product isn't available right now
             if (changes.indexOf('available') && !product.get('available') && this.collection) {
@@ -335,6 +337,7 @@ define(["backbone"], function(Backbone) {
         },
         /**
          * Makes reorder.
+         * Emits `onReorder` event passing in parameters an array of attributes changed from order placement.
          */
         reorder: function() {
             var _order = this.clone(),
@@ -355,10 +358,6 @@ define(["backbone"], function(Backbone) {
 
             // makes items reorder
             changes = items.reorder();
-
-            if (changes.length) {
-                // TODO notify to user
-            }
 
             // TODO delivery address recover.
 
@@ -382,7 +381,7 @@ define(["backbone"], function(Backbone) {
                myorder.add(orderItem);
             });
 
-            this.trigger('onReorder');
+            this.trigger('onReorder', changes);
         }
     });
 
