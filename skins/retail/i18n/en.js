@@ -20,6 +20,7 @@
         'CART_CHECKOUT': 'Checkout',
         'CART_CHECKOUT_TITLE': 'Your Shopping Bag',
         'CART_PAY': 'Pay',
+        'FILTERS_TITLE': 'Filters',
         'CATEGORIES_TITLE': 'Category',
         'CATEGORIES_SEARCH': 'Search',
         'CATEGORIES_ALL': 'All',
