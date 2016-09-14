@@ -347,6 +347,10 @@ define(["backbone"], function(Backbone) {
                 myorder = App.Data.myorder,
                 checkout = myorder.checkout,
                 paymentMethods = App.Data.paymentMethods,
+                addresses = App.Data.customer.get('addresses'),
+                dining_option = settings.dining_options.indexOf(order.dining_option) > -1
+                    ? _.invert(DINING_OPTION)[order.dining_option]
+                    : settings.default_dining_option,
                 changes;
 
             if (!items) {
@@ -360,13 +364,18 @@ define(["backbone"], function(Backbone) {
             changes = items.reorder();
 
             // TODO delivery address recover.
+            if (_.isObject(order.delivery_address)) {
+                // create address for the order's dining option in addresses if it doesn't exist
+                addresses.getCheckoutAddress(dining_option);
+                // set values from order's delivery address
+                addresses.get(dining_option)
+                         .set(_.extend(order.delivery_address, {selected: true}));
+            }
 
             // recover checkout
             checkout.set({
                 notes: order.notes,
-                dining_option: settings.dining_options.indexOf(order.dining_option) > -1
-                            ? _.invert(DINING_OPTION)[order.dining_option]
-                            : settings.default_dining_option
+                dining_option: dining_option
             });
 
             // recover payment method
