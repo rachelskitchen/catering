@@ -2765,8 +2765,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          * @returns {object} address object.
          */
         getOrderAddress: function(address) {
-            var address = _.isObject(address) ? address :
-                this.getSelectedAddress() ? this.getSelectedAddress().toJSON() : null;
+            var selected = this.getSelectedAddress(),
+                address = _.isObject(address) ? address : selected ? selected.toJSON() : null;
 
             if (!address) {
                 return;
