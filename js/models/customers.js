@@ -2537,7 +2537,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          */
         isProfileAddress: function() {
             return !isNaN(this.get('id')) && !!this.get('customer');
-        },
+        }
     });
 
     /**
@@ -2593,7 +2593,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
             });
         },
         /**
-         * Coverts the array of addresses objects from API to model format.
+         * Converts the array of addresses objects from API to model format.
          * This method gets called when {parse: true} is passed to the collection constructor.
          * @param   {array} addresses
          * @param   {object} options
@@ -2602,6 +2602,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
         parse: function(addresses, options) {
             return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
         },
+        /**
+         * Emits `addressFieldsChanged` event passing the changed address model as parameter.
+         * This event fires when any of `street_1`, `street_2`, `city`, `state`, `province`,
+         * `country`, `zipcode`, `is_primary` attributes changes.
+         * `addressFieldsChanged` doesn't fire if either `state` or `country` changes to null.
+         * @param {App.Models.CustomerAddress} model - customer address
+         */
         onModelChange: function(model) {
             var changed = model.changedAttributes(),
                 keys = ['street_1', 'street_2', 'city', 'state', 'province', 'country', 'zipcode', 'is_primary'],
@@ -2610,7 +2617,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
                 });
 
             if (trigger) {
-                // default value is "" but select binging converts it to null
+                // default value is "" but select binding converts it to null
                 if ((_.isEqual(changed, {state: null}) || _.isEqual(changed, {country: null})) || _.isEqual(changed, {state: null, country: null})) {
                     return;
                 }
@@ -2681,14 +2688,16 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          * @returns {boolean}
          */
         isProfileAddressSelected: function() {
-            return this.getSelectedAddress() ? this.getSelectedAddress().isProfileAddress() : false;
+            var selected = this.getSelectedAddress();
+            return selected ? selected.isProfileAddress() : false;
         },
         /**
          * Checks whether the selected address is new (filled on checkout screen) and not from user profile.
          * @returns {Boolean} [description]
          */
         isNewAddressSelected: function() {
-            return this.getSelectedAddress() ? !this.getSelectedAddress().isProfileAddress() : false;
+            var selected = this.getSelectedAddress();
+            return selected ? !selected.isProfileAddress() : false;
         },
         /**
          * Get address set for shipping/delivery or default address set in backend.
