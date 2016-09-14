@@ -363,13 +363,15 @@ define(["backbone"], function(Backbone) {
             // makes items reorder
             changes = items.reorder();
 
-            // TODO delivery address recover.
+            // delivery address recover.
             if (_.isObject(order.delivery_address)) {
+                // reset addresses selection
+                addresses.invoke('set', {selected: false});
                 // create address for the order's dining option in addresses if it doesn't exist
                 addresses.getCheckoutAddress(dining_option);
                 // set values from order's delivery address
                 addresses.get(dining_option)
-                         .set(_.extend(order.delivery_address, {selected: true}));
+                         .set(_.extend(addresses.getOrderAddress(order.delivery_address), {selected: true}));
             }
 
             // recover checkout
