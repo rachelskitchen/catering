@@ -1238,9 +1238,23 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'order_item',
         tagName: 'li',
         bindings: {
-            '.name': 'text: product_name',
+            '.name': 'text: name',
             '.qty': 'text: quantity',
             '.price': 'text: currencyFormat(sum)'
+        },
+        computeds: {
+            name: function() {
+                var product = this.model.get_product(),
+                    modifiers = this.model.get_modifiers(),
+                    sizeModifier = modifiers && modifiers.getSizeModel(),
+                    name = product.get('name');
+
+                if (sizeModifier) {
+                    name = sizeModifier.get('name') + ' ' + name;
+                }
+
+                return name;
+            }
         }
     })
 
@@ -1260,8 +1274,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         itemView: function(opts) {
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
-                mod: 'OrderItem',
-                product: opts.model.get_product()
+                mod: 'OrderItem'
             }), opts.model.get('id'));
         },
         bindingSources: {
