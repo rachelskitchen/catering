@@ -108,12 +108,27 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
             // Once the customer is initialized need to set profile panel
             this.initProfilePanel();
-            // listen to 'onReorder' event
-            this.listenTo(App.Data.customer.orders, 'onReorder', function(changes) {
+
+            var orders = App.Data.customer.orders,
+                mainModel = App.Data.mainModel;
+
+            // listen to 'onReorderStarted' to show spinner
+            this.listenTo(orders, 'onReorderStarted', function() {
+                mainModel.trigger('showSpinner');
+            });
+
+            // listen to 'onReorderCompleted' event
+            this.listenTo(orders, 'onReorderCompleted', function(changes) {
                 this.navigate('checkout', true);
                 if (Array.isArray(changes) && changes.length) {
                     App.Data.errors.alert(_loc.ORDER_CHANGED);
                 }
+                mainModel.trigger('hideSpinner');
+            });
+
+            // listen to 'onReorderFailed' to hide spinner
+            this.listenTo(orders, 'onReorderFailed', function() {
+                mainModel.trigger('hideSpinner');
             });
         },
         /**
