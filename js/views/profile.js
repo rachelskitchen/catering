@@ -143,6 +143,9 @@ define(["factory"], function() {
             this.listenTo(this.model, 'onLogin', setCallback('forceProfile'));
 
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            //for debug:
+            //this.model.set({email: 'eegorov@revelsystems.com', password: ''});
         },
         bindings: {
             '.email': 'value: email, events: ["input"]',

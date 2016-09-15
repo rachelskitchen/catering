@@ -2715,4 +2715,17 @@ function traceDeferredObjects() {
         return dfd;
     }
 }
+/*
+*  Debug objects methods
+*  usage example: spyFunction(App.Data.customer.get('addresses'), 'add')
+*/
+function spyFunction(object, func_name) {
+    object[func_name] =
+        function() {
+            var e = new Error;
+            trace(e.stack);
+            trace("arguments are:", arguments);
+            object.constructor.prototype[func_name].apply(object, arguments);
+        }
+}
 

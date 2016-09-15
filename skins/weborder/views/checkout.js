@@ -92,7 +92,7 @@ define(["checkout_view"], function(checkout_view) {
             var orderDetails = this.$('.order-details'),
                 paymentInfo = this.$('.payment-info'),
                 order_type, pickup, main, paymentMethods, tips, discount, rewards,
-                chooseCreditCard, creditCard, chooseGiftCard, giftCard,
+                chooseCreditCard, creditCard, chooseGiftCard, giftCard, saveProfile,
                 stanfordCard, stanfordPlans, billingAddress;
 
             order_type = App.Views.GeneratorView.create('Checkout', {
@@ -109,6 +109,13 @@ define(["checkout_view"], function(checkout_view) {
                 className: 'fl-left'
             });
 
+            saveProfile = App.Views.GeneratorView.create('Checkout', {
+                checkout: this.collection.checkout,
+                model: this.options.customer,
+                mod: 'SaveProfile',
+                className: 'fl-left'
+            });
+
             main = App.Views.GeneratorView.create('Checkout', {
                 model: this.collection.checkout,
                 customer: this.options.customer,
@@ -117,10 +124,11 @@ define(["checkout_view"], function(checkout_view) {
                 className: 'clear overflow-hidden' // add overflow:hidden to fix Bug 45243
             });
 
-            this.subViews.push(order_type, pickup, main);
+            this.subViews.push(order_type, pickup, saveProfile, main);
 
             orderDetails.prepend(main.el);
             orderDetails.prepend(pickup.el);
+            orderDetails.prepend(saveProfile.el);
             orderDetails.prepend(order_type.el);
 
             paymentMethods = App.Views.GeneratorView.create('PaymentMethods', {
@@ -310,6 +318,13 @@ define(["checkout_view"], function(checkout_view) {
     var CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView.extend({
         name: 'checkout',
         mod: 'address',
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                change_addr: new Backbone.Model({selected: false})
+            });
+            this.options.customer.get('addresses').change_address = null;
+            App.Views.CoreCheckoutView.CoreCheckoutAddressView.prototype.initialize.apply(this, arguments);
+        },
         render: function() {
             App.Views.CoreCheckoutView.CoreCheckoutAddressView.prototype.render.apply(this, arguments);
 
@@ -323,6 +338,77 @@ define(["checkout_view"], function(checkout_view) {
             this.$('.address-selection').html(addressSelection.el);
 
             return this;
+        },
+        bindings: {
+            '.change_address_link': 'classes: {hide: hide_change_address_link}',
+            '.select_saved_address_link': 'classes: {hide: not(change_addr_selected)}',
+            '.address-selection': 'toggle: showAddressSelection_Second',
+        },
+        events: {
+            'click .change_address_link': 'changeAddressFields',
+            'click .select_saved_address_link': 'selectAddress'
+        },
+        computeds: {
+            hide_change_address_link: {
+                deps: ["change_addr_selected", "$addresses", "showAddressSelection", "viewModel_selected_address_changed"],
+                get: function(change_addr_selected, addresses, showAddressSelection) {
+                    var is_new_addr = addresses.isNewAddressSelected();
+                    //trace("change_addr_selected = ", change_addr_selected, "showAddressSelection=", showAddressSelection, "is_new_addr=", is_new_addr);
+                    return change_addr_selected || !showAddressSelection || is_new_addr;
+                }
+            },
+            toggleAddressEdit: {
+                deps: ['change_addr_selected', 'viewModel_selected_address_changed'],
+                get: function(change_addr_selected) {
+                    return change_addr_selected || !this.getBinding('isAuthorized') || !this.getBinding('customer_addresses').isProfileAddressSelected() || !this.getBinding('showAddressSelection');
+                }
+            },
+            showAddressSelection_Second: {
+                deps: ['showAddressSelection', 'change_addr_selected'],
+                get: function(showAddressSelection, change_addr_selected) {
+                    return showAddressSelection && !change_addr_selected;
+                }
+            }
+        },
+        changeAddressFields: function(e) {
+            var change_addr = this.getBinding('$change_addr'),
+                selected = change_addr.get('selected');
+            change_addr.set('selected', true);
+
+            var addresses = this.options.customer.get('addresses');
+            addresses.change_address = addresses.getSelectedAddress().clone();
+            addresses.trigger('update_model');
+        },
+        selectAddress: function(e) {
+            var change_addr = this.getBinding('$change_addr'),
+                selected = change_addr.get('selected');
+            change_addr.set('selected', false);
+
+            var addresses = this.options.customer.get('addresses');
+            addresses.change_address = null;
+            addresses.trigger('update_model');
+        },
+        updateAddress: function() {
+            App.Views.CoreCheckoutView.CoreCheckoutAddressView.prototype.updateAddress.apply(this, arguments);
+            var addresses = this.options.customer.get('addresses');
+            addresses.trigger('update_model');
+        }
+    });
+
+    var CheckoutSaveProfileView = App.Views.FactoryView.extend({
+        name: 'checkout',
+        mod: 'save_profile',
+        bindings: {
+            ':el': 'classes: {hide: not(showView)}',
+            '.checkbox': "checkedSpan: {value: save_profile, outer_elem: '.checkbox-outer'}"
+        },
+        computeds: {
+            showView: {
+                deps: ['addresses'],
+                get: function(addresses) {
+                    return false; //TBD: addresses.change_address || addresses.isNewAddressSelected();
+                }
+            }
         }
     });
 
@@ -331,5 +417,6 @@ define(["checkout_view"], function(checkout_view) {
         App.Views.CheckoutView.CheckoutPageView = CheckoutPageView;
         App.Views.CheckoutView.CheckoutRewardsCardView = CheckoutRewardsCardView;
         App.Views.CheckoutView.CheckoutAddressView = CheckoutAddressView;
+        App.Views.CheckoutView.CheckoutSaveProfileView = CheckoutSaveProfileView;
     });
 });
