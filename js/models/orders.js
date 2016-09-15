@@ -280,7 +280,13 @@ define(["backbone"], function(Backbone) {
              * @type {Backbone.Collection}
              * @default null
              */
-            items: null
+            items: null,
+            /**
+             * Items request (jqXHR).
+             * @type {?object}
+             * @default null
+             */
+            itemsRequest: null
         },
         /**
          * Initializes `items` attribute.
@@ -336,11 +342,26 @@ define(["backbone"], function(Backbone) {
             });
         },
         /**
+         * Sets items. Sends items request if `itemsRequest` value is null.
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} `itemsRequest`
+         */
+        setItems: function(authorizationHeader) {
+            var req = this.get('itemsRequest');
+            if (!req) {
+                req = this.getItems(authorizationHeader);
+                this.set('itemsRequest', req);
+            }
+            return req;
+        },
+        /**
          * Makes reorder.
          * Emits `onReorder` event passing in parameters an array of attributes changed from order placement.
+         * * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          */
-        reorder: function() {
-            var _order = this.clone(),
+        reorder: function(authorizationHeader) {
+            var self = this,
+                _order = this.clone(),
                 order = _order.toJSON(),
                 items = _order.get('items'),
                 settings = App.Settings,
@@ -357,47 +378,52 @@ define(["backbone"], function(Backbone) {
                 return
             }
 
-            // empty cart
-            myorder.empty_myorder();
+            // set items and make reorder
+            this.setItems(authorizationHeader).done(reorder);
 
-            // makes items reorder
-            changes = items.reorder();
+            function reorder() {
+                // empty cart
+                myorder.empty_myorder();
 
-            // delivery address recover.
-            if (_.isObject(order.delivery_address)) {
-                // reset addresses selection
-                addresses.invoke('set', {selected: false});
-                // create address for the order's dining option in addresses if it doesn't exist
-                addresses.getCheckoutAddress(dining_option);
-                // set values from order's delivery address
-                addresses.get(dining_option).set(_.extend(
-                    addresses.getOrderAddress(order.delivery_address),
-                    {
-                        selected: true,
-                        isReorderAddress: true
-                    }
-                ));
-            }
+                // makes items reorder
+                changes = items.reorder();
 
-            // recover checkout
-            checkout.set({
-                notes: order.notes,
-                dining_option: dining_option
-            });
+                // delivery address recover.
+                if (_.isObject(order.delivery_address)) {
+                    // reset addresses selection
+                    addresses.invoke('set', {selected: false});
+                    // create address for the order's dining option in addresses if it doesn't exist
+                    addresses.getCheckoutAddress(dining_option);
+                    // set values from order's delivery address
+                    addresses.get(dining_option).set(_.extend(
+                        addresses.getOrderAddress(order.delivery_address),
+                        {
+                            selected: true,
+                            isReorderAddress: true
+                        }
+                    ));
+                }
 
-            // recover payment method
-            if (paymentMethods) {
-                paymentMethods.set({
-                    selected: paymentMethods.getMethod(order.payment_type)
+                // recover checkout
+                checkout.set({
+                    notes: order.notes,
+                    dining_option: dining_option
                 });
+
+                // recover payment method
+                if (paymentMethods) {
+                    paymentMethods.set({
+                        selected: paymentMethods.getMethod(order.payment_type)
+                    });
+                }
+
+                // add items
+                items.each(function(orderItem) {
+                   myorder.add(orderItem);
+                });
+
+                self.trigger('onReorder', changes);
             }
-
-            // add items
-            items.each(function(orderItem) {
-               myorder.add(orderItem);
-            });
-
-            this.trigger('onReorder', changes);
         }
     });
 

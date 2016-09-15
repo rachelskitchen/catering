@@ -1280,13 +1280,10 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         showItems: function() {
             var ui = this.getBinding('$ui');
             ui.set('collapse', !ui.get('collapse'));
-            // get items
-            if (!this.itemsReq) {
-                this.itemsReq = this.options.customer.getOrderItems(this.model);
-            }
+            this.options.customer.getOrderItems(this.model);
         },
         reorder: function() {
-            this.model.reorder();
+            this.options.customer.reorder(this.model);
         }
     });
 
@@ -1295,8 +1292,19 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'orders',
         itemView: App.Views.CoreProfileView.CoreProfileOrderItemView,
         bindings: {
-            '.orders-empty': 'toggle: not(length($collection))',
+            '.orders-empty': 'toggle: noOrders',
             '.orders-list': 'collection: $collection, itemView: "itemView"'
+        },
+        computeds: {
+            noOrders: {
+                deps: ['$collection'],
+                get: function($collection) {
+                    var ordersRequest = this.model.ordersRequest;
+                    if (ordersRequest.state() != 'pending' && !$collection.length) {
+                        return true;
+                    }
+                }
+            }
         },
         itemView: function(opts) {
             // Do not use `this` keyword here.
