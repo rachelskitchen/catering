@@ -2346,7 +2346,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
             }
 
             var self = this,
-                req = order.getItems(this.getAuthorizationHeader());
+                req = order.setItems(this.getAuthorizationHeader());
 
             req.fail(function(jqXHR) {
                 if (jqXHR.status == 403) {
@@ -2355,6 +2355,19 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
             });
 
             return req;
+        },
+        /**
+         * Reorder.
+         *
+         * @param {App.Models.Order} order - an order model.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        reorder: function(order) {
+            if (!(order instanceof App.Models.Order)) {
+                return;
+            }
+
+            order.reorder(this.getAuthorizationHeader());
         },
         /**
          * If {@link App.Models.Customer#ordersRequest ordersRequest} exists then the method aborts and deletes it.
