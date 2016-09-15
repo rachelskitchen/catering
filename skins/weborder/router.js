@@ -114,7 +114,7 @@ define(["main_router"], function(main_router) {
 
             // listen to 'onReorderStarted' to show spinner
             this.listenTo(orders, 'onReorderStarted', function() {
-                mainModel.trigger('showSpinner');
+                mainModel.trigger('loadStarted');
             });
 
             // listen to 'onReorderCompleted' event
@@ -123,12 +123,12 @@ define(["main_router"], function(main_router) {
                 if (Array.isArray(changes) && changes.length) {
                     App.Data.errors.alert(_loc.ORDER_CHANGED);
                 }
-                mainModel.trigger('hideSpinner');
+                mainModel.trigger('loadCompleted');
             });
 
             // listen to 'onReorderFailed' to hide spinner
             this.listenTo(orders, 'onReorderFailed', function() {
-                mainModel.trigger('hideSpinner');
+                mainModel.trigger('loadCompleted');
             });
         },
         /**
