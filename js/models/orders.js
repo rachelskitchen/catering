@@ -356,14 +356,18 @@ define(["backbone"], function(Backbone) {
         },
         /**
          * Makes reorder.
-         * Emits `onReorder` event passing in parameters an array of attributes changed from order placement.
+         * Emits `onReorderStarted` event once this method gets called.
+         * Emits `onReorderCompleted` event passing in parameters an array of attributes changed from order placement.
+         * Emits `onReorderFailed` event if `itemsRequest` fails.
          * * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          */
         reorder: function(authorizationHeader) {
-            var self = this;
+            var self = this,
+                itemsRequest = this.setItems(authorizationHeader);
 
-            // set items and make reorder
-            this.setItems(authorizationHeader).done(reorder);
+            this.trigger('onReorderStarted');
+            itemsRequest.done(reorder);
+            itemsRequest.fail(this.trigger.bind(this, 'onReorderFailed'));
 
             function reorder() {
                 var _order = self.clone(),
@@ -423,7 +427,7 @@ define(["backbone"], function(Backbone) {
                    myorder.add(orderItem);
                 });
 
-                self.trigger('onReorder', changes);
+                self.trigger('onReorderCompleted', changes);
             }
         }
     });
