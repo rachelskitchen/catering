@@ -42,8 +42,19 @@
     </div>
 </script>
 
+<script type="text/template" id="checkout_save_profile-template">
+    <div class="save_profile checkbox-outer item">
+        <span class="checkbox primary-border"></span>
+        <span><%= _lp.CHECKOUT_SAVE_PROFILE %></span>
+    </div>
+</script>
+
 <script type="text/template" id="checkout_address-template">
     <div class="address-selection item fl-left"></div>
+
+    <div class="change_address_link fl-left item">
+        <div class="primary-text link"><%= _lp.CHECKOUT_CHANGE_ADDRESS %></div>
+    </div>
 
     <div class="address-edit fl-left item">
         <div class="label required optional-text"><%= _lp.CHECKOUT_ADDRESS %></div>
@@ -103,6 +114,10 @@
         </div>
     </div>
     <% } %>
+
+    <div class="select_saved_address_link fl-left item">
+        <div class="primary-text link"><%= _lp.CHECKOUT_SELECT_SAVED_ADDRESS %></div>
+    </div>
 </script>
 
 <script type="text/template" id="checkout_address_selection-template">

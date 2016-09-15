@@ -184,7 +184,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
              * @type {string}
              * @default "https://identity-dev.revelup.com/customers-auth/v1"
              */
-            serverURL: "https://identity-dev.revelup.com/customers-auth/v1"
+            serverURL: "https://identity-dev.revelup.com/customers-auth/v1",
+            /*
+            * Save changed/new addresses in the profile
+            * @type {boolean}
+            * @default false
+            */
+            save_profile: false
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -2588,7 +2594,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          *   - undefined otherwise
          */
         getSelectedAddress: function() {
-            return this.findWhere({selected: true});
+            return this.change_address || this.findWhere({selected: true});
         },
         /**
          * Checks whether the selected address is from user profile.
