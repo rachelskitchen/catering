@@ -220,6 +220,25 @@ define(["profile_view"], function(profile_view) {
         }
     });
 
+    var ProfilePastOrderView = App.Views.FactoryView.extend({
+        className: 'item',
+        bindings: {
+            '.modifiers': 'text: modifiers'
+        },
+        computeds: {
+            modifiers: function() {
+                var modifiers = this.model.get_modifiers(),
+                    items = [];
+
+                modifiers && modifiers.get_modifierList().forEach(function(modifier) {
+                    modifier.get('selected') && items.push(modifier.get('name'));
+                });
+
+                return items.length ? '+' + items.join(', +') : '';
+            }
+        }
+    });
+
     function creditCardType(card_type) {
         var code = _.invert(ACCEPTABLE_CREDIT_CARD_TYPES)[card_type];
         return _loc.CREDIT_CARD_TYPES[code];
