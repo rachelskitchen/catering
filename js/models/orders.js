@@ -360,28 +360,29 @@ define(["backbone"], function(Backbone) {
          * * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          */
         reorder: function(authorizationHeader) {
-            var self = this,
-                _order = this.clone(),
-                order = _order.toJSON(),
-                items = _order.get('items'),
-                settings = App.Settings,
-                myorder = App.Data.myorder,
-                checkout = myorder.checkout,
-                paymentMethods = App.Data.paymentMethods,
-                addresses = App.Data.customer.get('addresses'),
-                dining_option = settings.dining_options.indexOf(order.dining_option) > -1
-                    ? _.invert(DINING_OPTION)[order.dining_option]
-                    : settings.default_dining_option,
-                changes;
-
-            if (!items) {
-                return
-            }
+            var self = this;
 
             // set items and make reorder
             this.setItems(authorizationHeader).done(reorder);
 
             function reorder() {
+                var _order = self.clone(),
+                    order = _order.toJSON(),
+                    items = _order.get('items'),
+                    settings = App.Settings,
+                    myorder = App.Data.myorder,
+                    checkout = myorder.checkout,
+                    paymentMethods = App.Data.paymentMethods,
+                    addresses = App.Data.customer.get('addresses'),
+                    dining_option = settings.dining_options.indexOf(order.dining_option) > -1
+                        ? _.invert(DINING_OPTION)[order.dining_option]
+                        : settings.default_dining_option,
+                    changes;
+
+                if (!items) {
+                    return;
+                }
+
                 // empty cart
                 myorder.empty_myorder();
 
