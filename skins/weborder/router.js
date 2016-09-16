@@ -100,17 +100,18 @@ define(["main_router"], function(main_router) {
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
-        triggerInitializedEvent: function() {
-            App.Routers.RevelOrderingRouter.prototype.triggerInitializedEvent.apply(this, arguments);
-            App.Data.mainModel.set({customer: App.Data.customer});
-        },
         initCustomer: function() {
             App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+
+            var mainModel = App.Data.mainModel;
+
+            // Once the customer is initialized need to add it to App.Data.mainModel attributes
+            App.Data.mainModel.set({customer: App.Data.customer});
+
             // Once the customer is initialized need to set profile panel
             this.initProfilePanel();
 
-            var orders = App.Data.customer.orders,
-                mainModel = App.Data.mainModel;
+            var orders = App.Data.customer.orders;
 
             // listen to 'onReorderStarted' to show spinner
             this.listenTo(orders, 'onReorderStarted', function() {

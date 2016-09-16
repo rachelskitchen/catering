@@ -221,21 +221,49 @@ define(["profile_view"], function(profile_view) {
     });
 
     var ProfilePastOrderView = App.Views.FactoryView.extend({
-        className: 'item',
+        name: 'profile',
+        mod: 'past_order',
         bindings: {
-            '.modifiers': 'text: modifiers'
+            '.created-at': 'text: created_date',
+            '.subtotal': 'text: currencyFormat(subtotal)',
+            '.items': 'collection: $collection, itemView: "itemView"',
+            '.animate-spin': 'classes: {hide: itemsReceived}',
+            '.reorder': 'classes: {disabled: not(itemsReceived)}'
         },
         computeds: {
-            modifiers: function() {
-                var modifiers = this.model.get_modifiers(),
-                    items = [];
-
-                modifiers && modifiers.get_modifierList().forEach(function(modifier) {
-                    modifier.get('selected') && items.push(modifier.get('name'));
-                });
-
-                return items.length ? '+' + items.join(', +') : '';
+            itemsReceived: {
+                deps: ['$collection'],
+                get: function(collection) {
+                    var req = this.model.get('itemsRequest');
+                    return req && req.state() == 'resolved';
+                }
             }
+        },
+        events: {
+            'click .close': 'close',
+            'click .view-past-orders': 'viewPastOrders',
+            'click .reorder': 'reorder'
+        },
+        onEventListener:{
+            '.view-past-orders': 'viewPastOrders',
+            '.reorder': 'reorder'
+        },
+        itemView: function(opts) {
+            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+                mod: 'OrderItem'
+            }), opts.model.get('id'));
+        },
+        close: function() {
+            var ui = this.getBinding('$ui');
+            ui.set('showPastOrder', !ui.get('showPastOrder'))
+        },
+        viewPastOrders: function() {
+            App.Data.router.navigate('past_orders', true);
+            this.setBinding('ui_showPastOrder', false);
+        },
+        reorder: function() {
+            this.options.customer.reorder(this.model);
+            this.setBinding('ui_showPastOrder', false);
         }
     });
 
@@ -252,5 +280,6 @@ define(["profile_view"], function(profile_view) {
         App.Views.ProfileView.ProfileOrdersItemView = ProfileOrdersItemView;
         App.Views.ProfileView.ProfileOrdersView = ProfileOrdersView;
         App.Views.ProfileView.ProfileOrderItemView = ProfileOrderItemView;
+        App.Views.ProfileView.ProfilePastOrderView = ProfilePastOrderView;
     });
 });

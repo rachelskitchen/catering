@@ -1,5 +1,9 @@
 <script type="text/template" id="cart_main-template">
-    <h2 class="cart_title text-center secondary-border"> <%= _lp.CART_CART %> </h2>
+    <h2 class="cart_title text-center secondary-border">
+        <span class="title"><%= _lp.CART_CART %></span>
+        <span class="past-order-link link fl-right" tabindex="0">PAST ORDER</span>
+    </h2>
+    <div class="profile-past-order"></div>
     <div class="order-items"></div>
     <% if(_settings.online_orders) { %>
         <div class="btn btn-bottom btn-checkout text-center" tabindex="0">
