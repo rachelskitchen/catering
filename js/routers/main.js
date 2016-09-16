@@ -1391,7 +1391,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         mod: 'Orders',
                         model: customer,
                         collection: customer.orders,
-                        className: 'profile-edit'
+                        className: 'profile-orders'
                     }
                 });
 

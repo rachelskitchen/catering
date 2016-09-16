@@ -458,3 +458,20 @@
     </div>
     <div class="orders-empty"><%= _loc.PROFILE_PAST_ORDERS_EMPTY %></div>
 </script>
+
+<script type="text/template" id="profile_past_order-template">
+    <div class="close shadow-bg"></div>
+    <div class="past-order-details primary-bg">
+        <div class="created-at primary-border"></div>
+        <div class="animate-spin inline-block"></div>
+        <ul class="items"></ul>
+        <div class="subtotal-box primary-border bold">
+            <span class="bold">Subtotal</span>
+            <span class="subtotal bold fl-right"></span>
+        </div>
+        <div class="btns">
+            <div class="btn btn-half btn-secondary view-past-orders text-center border-box fl-left" tabindex="0">View Past Orders</div>
+            <div class="btn btn-half text-center reorder border-box fl-right" tabindex="0">Reorder</div>
+        </div>
+    </div>
+</script>

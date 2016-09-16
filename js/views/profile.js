@@ -1313,7 +1313,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 deps: ['$collection'],
                 get: function($collection) {
                     var ordersRequest = this.model.ordersRequest;
-                    if (ordersRequest.state() != 'pending' && !$collection.length) {
+                    if (ordersRequest && ordersRequest.state() == 'resolved' && !$collection.length) {
                         return true;
                     }
                 }

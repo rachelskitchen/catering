@@ -82,6 +82,7 @@
       new_proto.computeds && typeof new_proto.computeds == 'object' && (new_class.prototype.computeds =  _.extend({}, this.prototype.computeds, new_proto.computeds));
       new_proto.onEnterListeners && typeof new_proto.onEnterListeners == 'object' && (new_class.prototype.onEnterListeners =  _.extend({}, this.prototype.onEnterListeners, new_proto.onEnterListeners));
       new_proto.bindingFilters && typeof new_proto.bindingFilters == 'object' && (new_class.prototype.bindingFilters =  _.extend({}, this.prototype.bindingFilters, new_proto.bindingFilters));
+      new_proto.bindingSources && typeof new_proto.bindingSources == 'object' && (new_class.prototype.bindingSources =  _.extend({}, this.prototype.bindingSources, new_proto.bindingSources));
       new_class.mixed = mixins.mixed;
       return new_class;
   }

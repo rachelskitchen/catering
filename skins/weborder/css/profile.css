@@ -414,11 +414,11 @@
     width: 100%;
 }
 
-.profile-edit .orders {
+.profile-orders .orders {
     padding: 0 25px;
 }
 
-.profile-edit .orders-box {
+.profile-orders .orders-box {
     padding: 0 25px;
     position: absolute;
     top: 102px;
@@ -429,43 +429,43 @@
     overflow-y: auto;
 }
 
-.profile-edit .orders-item {
+.profile-orders .orders-item {
     padding: 10px 0;
     border-bottom-width: 1px;
     border-bottom-style: solid;
     overflow: hidden;
 }
 
-.profile-edit .orders-headers {
+.profile-orders .orders-headers {
     border-bottom-width: 2px;
     border-bottom-style: solid;
     text-transform: uppercase;
     overflow: hidden;
 }
 
-.profile-edit .orders-empty {
+.profile-orders .orders-empty {
     padding: 20px 25px;
 }
 
-.profile-edit .created-at-col {
+.profile-orders .created-at-col {
     width: 200px;
 }
 
-.profile-edit .offset1 {
+.profile-orders .offset1 {
     margin-left: 220px;
 }
 
-.profile-edit .offset2 {
+.profile-orders .offset2 {
     margin-right: 100px;
 }
 
-.profile-edit .show-items {
+.profile-orders .show-items {
     display: inline-block;
     width: 15px;
     position: relative;
 }
 
-.profile-edit .show-items::before {
+.profile-orders .show-items::before {
     content: '\f105';
     font-family: 'FontAwesome';
     font-size: 20px;
@@ -474,40 +474,41 @@
     left: 0;
 }
 
-.profile-edit .show-items.collapse::before {
+.profile-orders .show-items.collapse::before {
     content: '\f107';
 }
 
-.profile-edit .subtotal,
-.profile-edit .price,
-.profile-edit .qty {
+.profile-orders .subtotal,
+.profile-orders .price,
+.profile-orders .qty {
     width: 180px;
 }
 
-.profile-edit .animate-spin {
+.profile-orders .animate-spin {
     position: relative;
     left: 10px;
 }
 
-.profile-edit .animate-spin::before {
+.profile-orders .animate-spin::before,
+.profile-past-order .animate-spin::before {
     content: '\f021';
     font-family: 'FontAwesome';
 }
 
-.profile-edit .order-items-box .item {
+.profile-orders .order-items-box .item {
     margin-right: 10px 0;
     overflow: hidden;
 }
 
-.profile-edit .order-items-box .modifiers {
+.profile-orders .order-items-box .modifiers {
     padding-top: 4px;
     font-size: 12px;
 }
 
 @media only screen and (max-width: 1380px) {
-    .profile-edit .subtotal,
-    .profile-edit .price,
-    .profile-edit .qty {
+    .profile-orders.subtotal,
+    .profile-orders .price,
+    .profile-orders .qty {
         width: 130px;
     }
 }
@@ -519,25 +520,25 @@
         width: 70px;
     }
 
-    .profile-edit .created-at-col {
+    .profile-orders .created-at-col {
         width: 150px;
     }
 
-    .profile-edit .offset1 {
+    .profile-orders .offset1 {
         margin-left: 170px;
     }
 }
 
-.profile-edit .btn {
+.profile-orders .btn {
     width: 80px;
     font-size: 14px;
 }
 
-.profile-edit .col {
+.profile-orders .col {
     padding: 16px 10px;
 }
 
-.profile-edit .subtotal-title {
+.profile-orders .subtotal-title {
     margin-right: 100px;
 }
 
@@ -623,4 +624,82 @@
 
 .profile-terms-of-use p {
     margin: 0 0 15px;
+}
+
+.profile-past-order {
+    position: absolute;
+    left: 10px;
+    right: 10px;
+    z-index: 200;
+}
+
+.profile-past-order .close {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+}
+
+.profile-past-order .past-order-details {
+    position: relative;
+}
+
+.profile-past-order .created-at {
+    padding: 10px 0;
+    margin: 0 10px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.profile-past-order .item {
+    margin: 10px;
+    overflow: hidden;
+}
+
+.profile-past-order .created-at {
+    padding: 15px 0;
+    margin: 0 10px;
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+}
+
+.profile-past-order .modifiers {
+    font-size: 12px;
+}
+
+.profile-past-order .price {
+    min-width: 60px;
+    padding-left: 10px;
+    text-align: right;
+}
+
+.profile-past-order .qty {
+    min-width: 20px;
+}
+
+.profile-past-order .subtotal-box {
+    padding: 15px 0;
+    margin: 0 10px;
+    border-top-width: 1px;
+    border-top-style: solid;
+    font-size: 16px;
+}
+
+.profile-past-order .btns {
+    height: auto;
+    overflow: hidden;
+}
+
+#cart .profile-past-order .btn {
+    position: static;
+    left: auto;
+    right: auto;
+    top: auto;
+    bottom: auto;
+    margin: 0;
+}
+
+.profile-past-order .animate-spin {
+    margin: 10px 20px;
 }

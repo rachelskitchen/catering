@@ -184,7 +184,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
              * @type {string}
              * @default "https://identity-dev.revelup.com/customers-auth/v1"
              */
-            serverURL: "https://identity-dev.revelup.com/customers-auth/v1"
+            serverURL: "https://identity-dev.revelup.com/customers-auth/v1",
+            /**
+             * Past order.
+             * @type {?App.Models.Order}
+             * @default null
+             */
+            pastOrder: null
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -2323,6 +2329,11 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
                 }
             });
 
+            req.done(function() {
+                // set first order as past order
+                this.orders.length && self.set('pastOrder', this.orders.at(0));
+            });
+
             /**
              * Orders request.
              * @member
@@ -2376,6 +2387,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
         removeOrders: function() {
             this.ordersRequest && this.ordersRequest.abort();
             delete this.ordersRequest;
+            this.set('pastOrder', this.defaults.pastOrder);
             this.orders.reset();
         }
     });
