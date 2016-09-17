@@ -141,7 +141,7 @@
 <script type="text/template" id="profile_addresses-template">
     <ul class="addresses-list"></ul>
 
-    <div class="addresses__add primary-text link"><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
+    <div class="addresses__add primary-text link"><span class="expand"></span><%= _lp.PROFILE_ADD_NEW_ADDRESS %></div>
 </script>
 
 <script type="text/template" id="profile_address-template">
@@ -310,7 +310,7 @@
 
 <script type="text/template" id="profile_gift_card_selection-template">
     <span class="card-number"></span>
-    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+    <span class="balance-line">&mdash; <%= _lp.BALANCE %>: <span class="balance-value"></span></span>
 </script>
 
 <script type="text/template" id="profile_gift_cards_selection-template">
@@ -322,13 +322,13 @@
 
 <script type="text/template" id="profile_gift_card_edition-template">
     <span class="card-number"></span>
-    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+    <span class="balance-line">&mdash; <%= _lp.BALANCE %>: <span class="balance-value"></span></span>
     <div class="remove-btn cancel fl-right link"></div>
 </script>
 
 <script type="text/template" id="profile_gift_cards_edition-template">
     <ul class="gift-cards-list"></ul>
-    <div class="add_gift_card_title new-card primary-text link"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_GIFT_CARD %></div>
+    <div class="add_gift_card_title new-card primary-text link"><span class="plus_sign"></span><%= _lp.PROFILE_ADD_NEW_GIFT_CARD %></div>
     <div class="new_gift_card"></div>
 </script>
 
@@ -354,7 +354,7 @@
 
 <script type="text/template" id="profile_reward_cards_edition-template">
     <ul class="reward-cards-list"></ul>
-    <div class="add_reward_card_title new-card primary-text link"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_REWARD_CARD %></div>
+    <div class="add_reward_card_title new-card primary-text link"><span class="plus_sign"></span><%= _lp.PROFILE_ADD_NEW_REWARD_CARD %></div>
     <div class="new_reward_card"></div>
 </script>
 
@@ -431,10 +431,10 @@
         <span class="created-at"></span>
     </div>
     <div class="order-col col fl-left">
-        <span><%= _loc.PROFILE_ORDER_NUMBER %></span>
+        <span><%= _lp.PROFILE_ORDER_NUMBER %></span>
         <span class="order-id"></span>
     </div>
-    <div class="btn text-center fl-right" tabindex="0"><%= _loc.PROFILE_REORDER %></div>
+    <div class="btn text-center fl-right" tabindex="0"><%= _lp.PROFILE_REORDER %></div>
     <div class="subtotal col text-center bold fl-right"></div>
     <div class="qty col text-center bold fl-right"></div>
     <div class="order-items-box clear animate">
@@ -447,16 +447,16 @@
     <h2 class="category-title primary-border category-bg"><%= _lp.PROFILE_PAST_ORDERS %></h2>
     <div class="orders">
         <div class="orders-headers primary-border">
-            <div class="created-at-col col fl-left"><%= _loc.PAST_ORDERS_DATE_TITLE %></div>
-            <div class="order-col col fl-left"><%= _loc.PAST_ORDERS_ORDER_NUMBER_TITLE %></div>
-            <div class="subtotal subtotal-title col text-center fl-right"><%= _loc.PAST_ORDERS_TOTAL_TITLE %></div>
-            <div class="qty col text-center fl-right"><%= _loc.PAST_ORDERS_QUANTITY_TITLE %></div>
+            <div class="created-at-col col fl-left"><%= _lp.PAST_ORDERS_DATE_TITLE %></div>
+            <div class="order-col col fl-left"><%= _lp.PAST_ORDERS_ORDER_NUMBER_TITLE %></div>
+            <div class="subtotal subtotal-title col text-center fl-right"><%= _lp.PAST_ORDERS_TOTAL_TITLE %></div>
+            <div class="qty col text-center fl-right"><%= _lp.PAST_ORDERS_QUANTITY_TITLE %></div>
         </div>
         <div class="orders-box clear">
             <ul class="orders-list"></ul>
         </div>
     </div>
-    <div class="orders-empty"><%= _loc.PROFILE_PAST_ORDERS_EMPTY %></div>
+    <div class="orders-empty"><%= _lp.PROFILE_PAST_ORDERS_EMPTY %></div>
 </script>
 
 <script type="text/template" id="profile_past_order-template">
@@ -466,12 +466,12 @@
         <div class="animate-spin inline-block"></div>
         <ul class="items"></ul>
         <div class="subtotal-box primary-border bold">
-            <span class="bold">Subtotal</span>
+            <span class="bold"><%= _lp.TOTAL_SUBTOTAL %></span>
             <span class="subtotal bold fl-right"></span>
         </div>
         <div class="btns">
-            <div class="btn btn-half btn-secondary view-past-orders text-center border-box fl-left" tabindex="0">View Past Orders</div>
-            <div class="btn btn-half text-center reorder border-box fl-right" tabindex="0">Reorder</div>
+            <div class="btn btn-half btn-secondary view-past-orders text-center border-box fl-left" tabindex="0"><%= _lp.VIEW_PAST_ORDERS %></div>
+            <div class="btn btn-half text-center reorder border-box fl-right" tabindex="0"><%= _lp.PROFILE_REORDER %></div>
         </div>
     </div>
 </script>

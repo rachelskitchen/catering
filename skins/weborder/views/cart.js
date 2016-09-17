@@ -29,11 +29,11 @@ define(["cart_view"], function(cart_view) {
             '.past-order-link': 'toggle: pastOrderView, classes: {"alternate-text": ui_showPastOrder, active: ui_showPastOrder}',
             '.profile-past-order': 'updateContent: pastOrderView, toggle: ui_showPastOrder'
         },
-        bindingSources: _.extend(App.Views.CoreCartView.CoreCartMainView.prototype.bindingSources, {
+        bindingSources: {
             ui: function() {
                 return new Backbone.Model({showPastOrder: false});
             }
-        }),
+        },
         computeds: {
             pastOrderView: {
                 deps: ['customer_pastOrder'],
@@ -46,7 +46,7 @@ define(["cart_view"], function(cart_view) {
                             collection: pastOrder.get('items'),
                             ui: this.getBinding('$ui'),
                             customer: this.options.customer,
-                            subViewIndex: 0
+                            subViewIndex: 2
                         };
                     }
                 }

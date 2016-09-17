@@ -231,6 +231,8 @@
         'PAST_ORDERS_DATE_TITLE': 'Date Ordered',
         'PAST_ORDERS_ORDER_NUMBER_TITLE': 'Order# / Items',
         'PAST_ORDERS_QUANTITY_TITLE': 'Quantity',
-        'PAST_ORDERS_TOTAL_TITLE': 'Total'
+        'PAST_ORDERS_TOTAL_TITLE': 'Total',
+        'VIEW_PAST_ORDERS': 'View Past Orders',
+        'PAST_ORDER': 'Past Order'
     } // end of locale
 }); // end of module

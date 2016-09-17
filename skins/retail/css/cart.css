@@ -77,3 +77,19 @@
         width: 312px !important;
     }
 }
+
+#cart  .title,
+#cart .past-order-link {
+    letter-spacing: 1.8px;
+}
+
+#cart .past-order-link.active {
+    position: relative;
+    z-index: 201;
+}
+
+#cart .past-order-link::after {
+    content: '\f0d7';
+    font-family: 'FontAwesome';
+    padding-left: 3px;
+}

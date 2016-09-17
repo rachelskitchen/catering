@@ -2331,7 +2331,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
 
             req.done(function() {
                 // set first order as past order
-                this.orders.length && self.set('pastOrder', this.orders.at(0));
+                self.orders.length && self.set('pastOrder', this.orders.at(0));
             });
 
             /**
