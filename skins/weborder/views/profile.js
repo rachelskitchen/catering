@@ -248,6 +248,10 @@ define(["profile_view"], function(profile_view) {
             '.view-past-orders': 'viewPastOrders',
             '.reorder': 'reorder'
         },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.options.customer.getOrderItems(this.model);
+        },
         itemView: function(opts) {
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
                 mod: 'OrderItem'
