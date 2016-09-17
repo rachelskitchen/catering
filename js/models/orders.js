@@ -467,11 +467,13 @@ define(["backbone"], function(Backbone) {
          */
         model: App.Models.Order,
         /**
-         * Attribute used as comparator in sorting.
-         * @type {string}
-         * @default 'id'
+         * Function returning value used as sorting comparator.
+         * Orders as sorted by id value descending
+         * @type {Function}
          */
-        comparator: 'id',
+        comparator: function(model) {
+            return -model.get('id');
+        },
         /**
          * Receives orders from server. Sends request with following parameters:
          * ```
