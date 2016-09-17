@@ -73,7 +73,7 @@ define(["backbone"], function(Backbone) {
             changes.push.apply(changes, product.reorder(!!sizeModifier));
 
             // remove order item if product isn't available right now
-            if (changes.indexOf('available') && !product.get('available') && this.collection) {
+            if (changes.indexOf('active') && !product.get('active') && this.collection) {
                 this.collection.remove(this);
             }
 
@@ -381,7 +381,7 @@ define(["backbone"], function(Backbone) {
                     dining_option = settings.dining_options.indexOf(order.dining_option) > -1
                         ? _.invert(DINING_OPTION)[order.dining_option]
                         : settings.default_dining_option,
-                    changes;
+                    changes = [];
 
                 if (!items) {
                     return;
@@ -391,7 +391,7 @@ define(["backbone"], function(Backbone) {
                 myorder.empty_myorder();
 
                 // makes items reorder
-                changes = items.reorder();
+                changes.push.apply(changes, items.reorder());
 
                 // delivery address recover.
                 if (_.isObject(order.delivery_address)) {
@@ -409,17 +409,29 @@ define(["backbone"], function(Backbone) {
                     ));
                 }
 
+                // check dining_option
+                if (settings.dining_options.indexOf(order.dining_option) == -1) {
+                    changes.push('dining_option');
+                }
+
                 // recover checkout
                 checkout.set({
                     notes: order.notes,
                     dining_option: dining_option
                 });
 
-                // recover payment method
+
                 if (paymentMethods) {
-                    paymentMethods.set({
-                        selected: paymentMethods.getMethod(order.payment_type)
-                    });
+                    var paymentMethod = paymentMethods.getMethod(order.payment_type);
+                    // check paymentMethod
+                    if (settings.payment_processor[paymentMethod]) {
+                        // recover payment method
+                        paymentMethods.set({
+                            selected: paymentMethods.getMethod(order.payment_type)
+                        });
+                    } else {
+                        changes.push('paymentMethod');
+                    }
                 }
 
                 // add items

@@ -688,7 +688,15 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 return changes;
             }
 
-            for (var key in actual_data) {
+            // check 'active'
+            if (this.get('active') !== actual_data.available) {
+                this.set('active', actual_data.available);
+                changed.push('active');
+            }
+
+            var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax', 'price'];
+
+            for (var key in attrs) {
                 if (this.get(key) !== actual_data[key]) {
                     this.set(key, actual_data[key]);
                     (key != 'price' || !ignorePriceChange) && changes.push(key);

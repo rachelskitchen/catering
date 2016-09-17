@@ -266,16 +266,16 @@ define(["backbone"], function(Backbone) {
                 return changes;
             }
 
-            for (var key in actual_data) {
-                if (this.get(key) !== actual_data[key]) {
-                    this.set(key, actual_data[key]);
-                    changes.push(key);
-                }
+            // check price
+            if (this.get('price') !== actual_data.price) {
+                this.set('price', actual_data.price);
+                changes.push('price');
             }
 
             // if modifier is inactive right now
             // need to remove it from colection
             if (!actual_data.active && this.collection) {
+                changes.push('active');
                 this.collection.remove(this);
             }
 
