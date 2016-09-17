@@ -501,7 +501,7 @@
 }
 
 @media only screen and (max-width: 1380px) {
-    .profile-orders.subtotal,
+    .profile-orders .subtotal,
     .profile-orders .price,
     .profile-orders .qty {
         width: 130px;
@@ -509,9 +509,9 @@
 }
 
 @media only screen and (max-width: 1280px) {
-    .profile-edit .subtotal,
-    .profile-edit .price,
-    .profile-edit .qty {
+    .profile-orders .subtotal,
+    .profile-orders .price,
+    .profile-orders .qty {
         width: 70px;
     }
 

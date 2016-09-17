@@ -189,10 +189,7 @@ define(["profile_view"], function(profile_view) {
     });
 
     var ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView.extend({
-        className: 'orders-item primary-border',
-        bindings: {
-            '.orders': 'toggle: length($collection)'
-        }
+        className: 'orders-item primary-border'
     });
 
     var ProfileOrdersView = App.Views.CoreProfileView.CoreProfileOrdersView.extend({
