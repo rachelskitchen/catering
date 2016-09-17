@@ -24,11 +24,48 @@ define(["cart_view"], function(cart_view) {
     'use strict';
 
     var CartMainView = App.Views.CoreCartView.CoreCartMainView.extend({
+        bindings: {
+            '.cart_title': 'classes: {"text-left": pastOrderView, "text-center": not(pastOrderView)}',
+            '.past-order-link': 'toggle: pastOrderView, classes: {"alternate-text": ui_showPastOrder, active: ui_showPastOrder}',
+            '.profile-past-order': 'updateContent: pastOrderView, toggle: ui_showPastOrder'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({showPastOrder: false});
+            }
+        },
+        computeds: {
+            pastOrderView: {
+                deps: ['customer_pastOrder'],
+                get: function(pastOrder) {
+                    if (pastOrder) {
+                        return {
+                            name: 'Profile',
+                            mod: 'PastOrder',
+                            model: pastOrder,
+                            collection: pastOrder.get('items'),
+                            ui: this.getBinding('$ui'),
+                            customer: this.options.customer,
+                            subViewIndex: 2
+                        };
+                    }
+                }
+            }
+        },
         events: {
-            'click .hide-cart': 'hideCart'
+            'click .hide-cart': 'hideCart',
+            'click .past-order-link': 'showPastOrder'
+        },
+        onEnterListeners: {
+            '.hide-cart': 'hideCart',
+            '.past-order-link': 'showPastOrder'
         },
         hideCart: function() {
             this.model.set('visible', false);
+        },
+        showPastOrder: function() {
+            var ui = this.getBinding('$ui');
+            ui.set('showPastOrder', !ui.get('showPastOrder'));
         }
     });
 

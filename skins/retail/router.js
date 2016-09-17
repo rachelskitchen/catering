@@ -151,8 +151,35 @@ define(["main_router"], function(main_router) {
         },
         initCustomer: function() {
             App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+
+            var mainModel = App.Data.mainModel;
+
+            // Once the customer is initialized need to add it to App.Data.mainModel attributes
+            App.Data.mainModel.set({customer: App.Data.customer});
+
             // Once the customer is initialized need to set profile panel
             this.initProfilePanel();
+
+            var orders = App.Data.customer.orders;
+
+            // listen to 'onReorderStarted' to show spinner
+            this.listenTo(orders, 'onReorderStarted', function() {
+                mainModel.trigger('loadStarted');
+            });
+
+            // listen to 'onReorderCompleted' event
+            this.listenTo(orders, 'onReorderCompleted', function(changes) {
+                this.navigate('checkout', true);
+                if (Array.isArray(changes) && changes.length) {
+                    App.Data.errors.alert(_loc.ORDER_CHANGED);
+                }
+                mainModel.trigger('loadCompleted');
+            });
+
+            // listen to 'onReorderFailed' to hide spinner
+            this.listenTo(orders, 'onReorderFailed', function() {
+                mainModel.trigger('loadCompleted');
+            });
         },
         /**
          * Change page.
@@ -1028,10 +1055,10 @@ define(["main_router"], function(main_router) {
 
             var req = this.setPastOrdersContent();
 
-            if (!req.length) {
+            if (!req) {
                 return this.navigate('index', true);
             } else {
-                req.then(this.change_page.bind(this));
+                req.always(this.change_page.bind(this));
             }
         },
         createCategoriesTree: function() {
