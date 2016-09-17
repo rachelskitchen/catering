@@ -2331,7 +2331,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
 
             req.done(function() {
                 // set first order as past order
-                self.orders.length && self.set('pastOrder', this.orders.at(0));
+                self.orders.length && self.set('pastOrder', self.orders.at(0));
             });
 
             /**
@@ -2342,6 +2342,28 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
              * @default undefined
              */
             this.ordersRequest = req;
+
+            return req;
+        },
+        /**
+         * Receives order from server.
+         *
+         * @param {number} order_id - order id.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getOrder: function(order_id) {
+            if (!this.orders) {
+                return console.error("Orders have not been initialized yet");
+            }
+
+            var self = this,
+                req = this.orders.get_order(this.getAuthorizationHeader(), order_id);
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
 
             return req;
         },

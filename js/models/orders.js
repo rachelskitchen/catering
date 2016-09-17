@@ -455,6 +455,12 @@ define(["backbone"], function(Backbone) {
          */
         model: App.Models.Order,
         /**
+         * Attribute used as comparator in sorting.
+         * @type {string}
+         * @default 'id'
+         */
+        comparator: 'id',
+        /**
          * Receives orders from server. Sends request with following parameters:
          * ```
          * {
@@ -463,10 +469,10 @@ define(["backbone"], function(Backbone) {
          *     contentType: "application/json",
          *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
          *     data: {
-         *         establishment: 14,   // establishment id
-         *         web_order: true,     // filters only weborder
-         *         page: <number> ,     // page number
-         *         limit: <number>      // max orders number  in response
+         *         establishment: <number>,  // establishment id
+         *         web_order: true,          // filters only weborder
+         *         page: <number> ,          // page number
+         *         limit: <number>           // max orders number  in response
          *     }  // order json
          * }
          * ```
@@ -501,7 +507,54 @@ define(["backbone"], function(Backbone) {
                 },
                 success: function(data) {
                     if (Array.isArray(data.data)) {
-                        self.reset(data.data);
+                        self.add(data.data);
+                    }
+                },
+                error: new Function()           // to override global ajax error handler
+            });
+        },
+        /**
+         * Receives order from server. Sends request with following parameters:
+         * ```
+         * {
+         *     url: "/weborders/v1/orders/",
+         *     method: "GET",
+         *     contentType: "application/json",
+         *     headers: {Authorization: "Bearer XXXXXXXXXXXXX"},
+         *     data: {
+         *         order: <number>,   // order id
+         *     }
+         * }
+         * ```
+         * - If session is already expired or invalid token is used the server returns the following response:
+         * ```
+         * Status: 403
+         * {
+         *     "detail":"Authentication credentials were not provided."
+         * }
+         * ```
+         * `App.Data.customer` emits `onUserSessionExpired` event in this case. Method `App.Data.custromer.logout()` is automatically called in this case.
+         * ```
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {Object} jqXHR object.
+         */
+        get_order: function(authorizationHeader, order_id) {
+            if (!_.isObject(authorizationHeader)) {
+                return;
+            }
+            var self = this;
+            return Backbone.$.ajax({
+                url: '/weborders/v1/orders/',
+                method: 'GET',
+                headers: authorizationHeader,
+                contentType: 'application/json',
+                data: {
+                    order: order_id
+                },
+                success: function(data) {
+                    if (Array.isArray(data.data)) {
+                        self.add(data.data);
                     }
                 },
                 error: new Function()           // to override global ajax error handler
