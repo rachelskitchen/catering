@@ -359,7 +359,8 @@ define(["backbone"], function(Backbone) {
          * Emits `onReorderStarted` event once this method gets called.
          * Emits `onReorderCompleted` event passing in parameters an array of attributes changed from order placement.
          * Emits `onReorderFailed` event if `itemsRequest` fails.
-         * * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @returns {object} `itemsRequest` attribute's value.
          */
         reorder: function(authorizationHeader) {
             var self = this,
@@ -368,6 +369,8 @@ define(["backbone"], function(Backbone) {
             this.trigger('onReorderStarted');
             itemsRequest.done(reorder);
             itemsRequest.fail(this.trigger.bind(this, 'onReorderFailed'));
+
+            return itemsRequest;
 
             function reorder() {
                 var _order = self.clone(),
@@ -551,6 +554,7 @@ define(["backbone"], function(Backbone) {
          * ```
          *
          * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {number} order_id - order id
          * @returns {Object} jqXHR object.
          */
         get_order: function(authorizationHeader, order_id) {
@@ -573,6 +577,39 @@ define(["backbone"], function(Backbone) {
                 },
                 error: new Function()           // to override global ajax error handler
             });
+        },
+        /**
+         * Receives order from server if it isn't in the collection yet and calls its {@link App.Models.Order#reorder} method.
+         *
+         * @param {Object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
+         * @param {number} order_id - order id
+         * @return {Object} jQuery Deferred object.
+         */
+        reorder: function(authorizationHeader, order_id) {
+            var dfd = Backbone.$.Deferred(),
+                order = this.get(order_id),
+                self = this,
+                orderReq;
+
+            if (!order) {
+                // if the order isn't in the collection need to receive it from backend
+                orderReq = this.get_order(authorizationHeader, order_id);
+                orderReq.done(function() {
+                    order = self.get(order_id);
+                    reorder();
+                });
+                orderReq.fail(dfd.reject.bind(dfd));
+            } else {
+                reorder();
+            }
+
+            return dfd;
+
+            function reorder() {
+                var itemsReq = order.reorder();
+                itemsReq.done(dfd.resolve.bind(dfd));
+                itemsReq.fail(dfd.reject.bind(dfd));
+            }
         }
     });
 });

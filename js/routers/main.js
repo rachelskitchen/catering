@@ -2220,6 +2220,26 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // run history tracking
             this.triggerInitializedEvent();
+        },
+        reorder: function(order_id) {
+            var customer = App.Data.customer,
+                orders = customer.orders,
+                dfd = Backbone.$.Deferred(),
+                errors = App.Data.errors,
+                reorder;
+
+            if (customer.isAuthorized()) {
+                reorder = customer.reorder(order_id);
+                reorder.always(dfd.resolve.bind(dfd));
+                reorder.fail(function() {
+                    errors.alert(_loc.PROFILE_ORDER_NOT_FOUND.replace(/%s/, order_id));
+                });
+            } else {
+                errors.alert(_loc.PROFILE_PLEASE_LOG_IN);
+                dfd.resolve();
+            }
+
+            return dfd;
         }
     });
 

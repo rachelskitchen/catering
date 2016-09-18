@@ -44,7 +44,7 @@ define(["main_router"], function(main_router) {
             "modifiers/:id_category(/:id_product)": "modifiers",
             "about": "about",
             "map": "map",
-            "checkout": "checkout",
+            "checkout(/:order_id)": "checkout",
             "pay": "pay",
             "confirm": "confirm",
             "profile_edit": "profile_edit",
@@ -152,33 +152,26 @@ define(["main_router"], function(main_router) {
         initCustomer: function() {
             App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
 
-            var mainModel = App.Data.mainModel;
+            var mainModel = App.Data.mainModel,
+                customer = App.Data.customer;
 
             // Once the customer is initialized need to add it to App.Data.mainModel attributes
-            App.Data.mainModel.set({customer: App.Data.customer});
+            App.Data.mainModel.set({customer: customer});
 
             // Once the customer is initialized need to set profile panel
             this.initProfilePanel();
 
-            var orders = App.Data.customer.orders;
-
-            // listen to 'onReorderStarted' to show spinner
-            this.listenTo(orders, 'onReorderStarted', function() {
-                mainModel.trigger('loadStarted');
+            // 'onReorder' event emits when user click on 'Reorder' button
+            this.listenTo(customer, 'onReorder', function(order_id) {
+                this.navigate('checkout/' + order_id, true);
             });
 
-            // listen to 'onReorderCompleted' event
-            this.listenTo(orders, 'onReorderCompleted', function(changes) {
+            // 'onReorderCompleted' event emits when an order completes a reorder
+            this.listenTo(customer.orders, 'onReorderCompleted', function(changes) {
                 this.navigate('checkout', true);
                 if (Array.isArray(changes) && changes.length) {
                     App.Data.errors.alert(_loc.ORDER_CHANGED);
                 }
-                mainModel.trigger('loadCompleted');
-            });
-
-            // listen to 'onReorderFailed' to hide spinner
-            this.listenTo(orders, 'onReorderFailed', function() {
-                mainModel.trigger('loadCompleted');
             });
         },
         /**
@@ -870,12 +863,19 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        checkout: function() {
+        checkout: function(order_id) {
             App.Data.header.set('menu_index', null);
             this.prepare('checkout', function() {
                 var settings = App.Data.settings.get('settings_system'),
                     customer = App.Data.customer,
-                    addresses = customer.get('addresses');
+                    addresses = customer.get('addresses'),
+                    reorderReq;
+
+                order_id = Number(order_id);
+
+                if (order_id >= 0) {
+                    reorderReq = this.reorder(order_id);
+                }
 
                 this.listenTo(customer, 'change:access_token', function() {
                     // update shipping address on login/logout
@@ -938,7 +938,11 @@ define(["main_router"], function(main_router) {
                     customer.trigger('updateCheckoutGiftCards');
                 }
 
-                this.change_page();
+                if (reorderReq) {
+                    reorderReq.always(this.change_page.bind(this));
+                } else {
+                    this.change_page();
+                }
             });
         },
         /**

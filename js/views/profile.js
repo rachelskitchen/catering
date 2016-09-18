@@ -1296,7 +1296,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             this.options.customer.getOrderItems(this.model);
         },
         reorder: function() {
-            this.options.customer.reorder(this.model);
+            this.options.customer.trigger('onReorder', this.model.get('id'));
         }
     });
 

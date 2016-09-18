@@ -2392,15 +2392,30 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
         /**
          * Reorder.
          *
-         * @param {App.Models.Order} order - an order model.
-         * @returns {Object|undefined} jqXHR object.
+         * @param {number} order_id - order id
+         * @returns {Object} jQuery Deffered object.
          */
-        reorder: function(order) {
-            if (!(order instanceof App.Models.Order)) {
-                return;
+        reorder: function(order_id) {
+            var self = this,
+                dfd = Backbone.$.Deferred();
+
+            if (this.ordersRequest) {
+                this.ordersRequest.done(function() {
+                    var reorder = self.orders.reorder(self.getAuthorizationHeader(), order_id);
+                    reorder.done(dfd.resolve.bind(dfd));
+                    reorder.fail(dfd.reject.bind(dfd));
+                });
+                this.ordersRequest.fail(function(jqXHR) {
+                    if (jqXHR.status == 403) {
+                        self.onForbidden();
+                    }
+                    dfd.reject();
+                });
+            } else {
+                dfd.reject();
             }
 
-            order.reorder(this.getAuthorizationHeader());
+            return dfd;
         },
         /**
          * If {@link App.Models.Customer#ordersRequest ordersRequest} exists then the method aborts and deletes it.
