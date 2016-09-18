@@ -682,7 +682,7 @@ define({
             deps: ['backbone']
         },
         'orders': {
-            deps: ['backbone', 'myorder']
+            deps: ['backbone']
         }
     },
     /**
