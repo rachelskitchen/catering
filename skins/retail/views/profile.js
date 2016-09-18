@@ -273,7 +273,7 @@ define(["profile_view"], function(profile_view) {
             this.setBinding('ui_showPastOrder', false);
         },
         reorder: function() {
-            this.options.customer.reorder(this.model);
+            this.options.customer.trigger('onReorder', this.model.get('id'));
             this.setBinding('ui_showPastOrder', false);
         }
     });
