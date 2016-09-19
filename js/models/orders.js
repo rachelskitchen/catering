@@ -606,7 +606,7 @@ define(["backbone"], function(Backbone) {
             return dfd;
 
             function reorder() {
-                var itemsReq = order.reorder();
+                var itemsReq = order.reorder(authorizationHeader);
                 itemsReq.done(dfd.resolve.bind(dfd));
                 itemsReq.fail(dfd.reject.bind(dfd));
             }
