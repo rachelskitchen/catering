@@ -221,7 +221,7 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         }
     });
 
-    var ProfileOrderItemView = MyOrderListView.extend({
+    var ProfileOrderItemView = App.Views.MyOrderView.MyOrderListView.extend({
         className: 'order-item'
     });
 
