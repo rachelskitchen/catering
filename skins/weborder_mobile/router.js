@@ -2180,12 +2180,12 @@ define(["main_router"], function(main_router) {
                 return this.navigate('index', true);
             } else {
                 App.Data.mainModel.set({
-                    header: headerModes.Modifiers,
+                    header: headerModes.Cart,
                     footer: footerModes.None,
-                    contentClass: '',
+                    contentClass: 'primary-bg',
                     content: data.content
                 });
-                data.req.then(this.change_page.bind(this));
+                data.req.always(this.change_page.bind(this));
             }
         },
         showIsStudentQuestion: function(cancelCb) {

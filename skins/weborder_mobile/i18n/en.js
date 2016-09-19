@@ -221,6 +221,10 @@
         'PRODUCT_SETS_SELECT_1': 'Please choose your "',
         'PRODUCT_SETS_SELECT_2': '" options',
         'UPSELL_DONT_WANT_COMBO': 'I don\'t want a combo',
-        'PROFILE_DEFAULT_CARD': 'Default'
+        'PROFILE_DEFAULT_CARD': 'Default',
+        'ORDER_ITEMS': [
+            'Item',
+            'Items'
+        ]
     } // end of locale
 }); // end of module

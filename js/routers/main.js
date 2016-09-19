@@ -489,6 +489,13 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 });
             });
 
+            // 'onReorderCompleted' event emits when an order completes a reorder
+            this.listenTo(customer.orders, 'onReorderCompleted', function(changes) {
+                if (Array.isArray(changes) && changes.length) {
+                    App.Data.errors.alert(_loc.ORDER_CHANGED);
+                }
+            });
+
             function listenToCVVRequired() {
                 this.listenTo(customer, 'onCVVRequired', function(data) {
                     App.Data.errors.alert('', false, false, {
@@ -1991,7 +1998,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     mod: 'Orders',
                     model: customer,
                     collection: customer.orders,
-                    className: 'profile-edit'
+                    className: 'profile-orders'
                 }
             }
 
