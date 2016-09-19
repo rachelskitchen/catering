@@ -165,14 +165,6 @@ define(["main_router"], function(main_router) {
             this.listenTo(customer, 'onReorder', function(order_id) {
                 this.navigate('checkout/' + order_id, true);
             });
-
-            // 'onReorderCompleted' event emits when an order completes a reorder
-            this.listenTo(customer.orders, 'onReorderCompleted', function(changes) {
-                this.navigate('checkout', true);
-                if (Array.isArray(changes) && changes.length) {
-                    App.Data.errors.alert(_loc.ORDER_CHANGED);
-                }
-            });
         },
         /**
          * Change page.

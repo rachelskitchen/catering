@@ -203,6 +203,28 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         itemView: ProfileAddressView,
     });
 
+    var ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView.extend({
+        className: 'orders-item list-bg list-separator',
+        bindings: {
+            '.unit': 'text: getUnit(items_qty)'
+        },
+        bindingFilters: {
+            getUnit: function(qty) {
+                return qty == 1 ? _loc.ORDER_ITEMS[0] : _loc.ORDER_ITEMS[1];
+            }
+        },
+        events: {
+            'click .btn-reorder': 'reorder'
+        },
+        onEnterListeners: {
+            '.btn-reorder': 'reorder'
+        }
+    });
+
+    var ProfileOrderItemView = MyOrderListView.extend({
+        className: 'order-item'
+    });
+
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
         App.Views.ProfileView.ProfilePaymentsSelectionView = ProfilePaymentsSelectionView;
         App.Views.ProfileView.ProfilePaymentsEditionView = ProfilePaymentsEditionView;
@@ -213,5 +235,7 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         App.Views.ProfileView.ProfileRewardCardsEditionView = ProfileRewardCardsEditionView;
         App.Views.ProfileView.ProfileAddressView = ProfileAddressView;
         App.Views.ProfileView.ProfileAddressesView = ProfileAddressesView;
+        App.Views.ProfileView.ProfileOrdersItemView = ProfileOrdersItemView;
+        App.Views.ProfileView.ProfileOrderItemView = ProfileOrderItemView;
     });
 });
