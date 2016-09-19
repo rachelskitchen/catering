@@ -631,7 +631,7 @@ define(["main_router"], function(main_router) {
 
                 order_id = Number(order_id);
 
-                if (order_id >= 0) {
+                if (order_id > 0) {
                     reorderReq = this.reorder(order_id);
                 }
 
