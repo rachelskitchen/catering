@@ -139,7 +139,7 @@ define(["main_router"], function(main_router) {
             App.Routers.RevelOrderingRouter.prototype.initCustomer(this, arguments);
 
             // 'onReorder' event emits when user click on 'Reorder' button or 'Previous Order'
-            this.listenTo(customer, 'onReorder', function(order_id) {
+            this.listenTo(App.Data.customer, 'onReorder', function(order_id) {
                 this.navigate('cart/' + order_id, true);
             });
         },
