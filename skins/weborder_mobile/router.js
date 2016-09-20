@@ -50,7 +50,7 @@ define(["main_router"], function(main_router) {
             "modifiers/:id_category(/:id_product)": "modifiers",
             "combo_product/:id_category(/:id_product)": "combo_product",
             "upsell_product/:id_category(/:id_product)": "upsell_product",
-            "cart": "cart",
+            "cart(/:order_id)": "cart",
             "checkout" : "checkout",
             "confirm": "confirm",
             "payments": "payments",
@@ -383,13 +383,21 @@ define(["main_router"], function(main_router) {
                     App.Data.header.set('showMenuBtn',  false);
                 });
 
-                var content = [{
-                    modelName: 'Categories',
-                    collection: App.Data.parentCategories,
-                    mod: 'Parents',
-                    cacheId: true,
-                    className: 'content_scrollable'
-                }];
+                var content = [
+                    {
+                        modelName: 'Profile',
+                        mod: 'PastOrderContainer',
+                        model: App.Data.customer,
+                        cacheId: true
+                    },
+                    {
+                        modelName: 'Categories',
+                        collection: App.Data.parentCategories,
+                        mod: 'Parents',
+                        cacheId: true,
+                        className: 'content_scrollable'
+                    }
+                ];
 
 
                 /**
@@ -551,13 +559,21 @@ define(["main_router"], function(main_router) {
 
                     fetched[ids] = true;
 
-                    content = [{
-                        modelName: 'Categories',
-                        model: parentCategory,
-                        mod: 'Main',
-                        cacheId: true,
-                        cacheIdUniq: ids
-                    }];
+                    content = [
+                        {
+                            modelName: 'Profile',
+                            mod: 'PastOrderContainer',
+                            model: App.Data.customer,
+                            cacheId: true
+                        },
+                        {
+                            modelName: 'Categories',
+                            model: parentCategory,
+                            mod: 'Main',
+                            cacheId: true,
+                            cacheIdUniq: ids
+                        }
+                    ];
 
                     self.promotions && content.unshift(self.promotions);
 
@@ -897,12 +913,20 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        cart: function() {
+        cart: function(order_id) {
+            order_id = Number(order_id);
+
+            var isReorderNotStartPage = order_id && this.initialized;
+
             App.Data.header.set({
-                page_title: _loc.HEADER_MYORDER_PT,
-                back_title: _loc.MENU,
-                back: this.navigate.bind(this, 'index', true),
+                page_title: order_id ? _loc.PROFILE_ORDER_NUMBER + order_id : _loc.HEADER_MYORDER_PT,
+                back_title: isReorderNotStartPage ? _loc.BACK : _loc.MENU,
+                back: isReorderNotStartPage ? location.history.back.bind(location.history) : this.navigate.bind(this, 'index', true)
             });
+
+            if (order_id > 0) {
+                var reorderReq = this.reorder(order_id);
+            }
 
             this.prepare('cart', function() {
                 var isAuthorized = App.Data.customer.isAuthorized(),
@@ -918,6 +942,7 @@ define(["main_router"], function(main_router) {
                     footer:  {
                             total: App.Data.myorder.total,
                             mod: 'Cart',
+                            isReorder: Boolean(order_id),
                             className: 'footer'
                         },
                     contentClass: '',
@@ -939,7 +964,11 @@ define(["main_router"], function(main_router) {
                     ]
                 });
 
-                this.change_page();
+                if (reorderReq) {
+                    reorderReq.always(this.change_page.bind(this));
+                } else {
+                    this.change_page();
+                }
 
                 function setAction(cb) {
                     return function() {

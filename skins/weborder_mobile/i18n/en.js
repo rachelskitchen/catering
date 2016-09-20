@@ -225,6 +225,7 @@
         'ORDER_ITEMS': [
             'Item',
             'Items'
-        ]
+        ],
+        'PREVIOUS_ORDER': 'Previous Order'
     } // end of locale
 }); // end of module
