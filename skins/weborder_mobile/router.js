@@ -929,7 +929,7 @@ define(["main_router"], function(main_router) {
             App.Data.header.set({
                 page_title: order_id ? _loc.PROFILE_ORDER_NUMBER + order_id : _loc.HEADER_MYORDER_PT,
                 back_title: isReorderNotStartPage ? _loc.BACK : _loc.MENU,
-                back: isReorderNotStartPage ? location.history.back.bind(location.history) : this.navigate.bind(this, 'index', true)
+                back: isReorderNotStartPage ? window.history.back.bind(window.history) : this.navigate.bind(this, 'index', true)
             });
 
             if (order_id > 0) {
@@ -2215,7 +2215,9 @@ define(["main_router"], function(main_router) {
 
             if (!data.req) {
                 return this.navigate('index', true);
-            } else {
+            }
+
+            this.prepare('past_orders', function() {
                 App.Data.mainModel.set({
                     header: headerModes.Cart,
                     footer: footerModes.None,
@@ -2223,7 +2225,8 @@ define(["main_router"], function(main_router) {
                     content: data.content
                 });
                 data.req.always(this.change_page.bind(this));
-            }
+            });
+
         },
         showIsStudentQuestion: function(cancelCb) {
             var self = this,
