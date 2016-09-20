@@ -782,6 +782,17 @@ define(["main_router"], function(main_router) {
                             order.update(_order);
                         } else {
                             App.Data.myorder.add(_order);
+
+                            // Show notification
+                            var product = _order.get_product();
+
+							App.NotificationManager.create({
+                                model: new Backbone.Model({
+                                    image: product.get('image'),
+                                    title: 'Item added',
+                                    text: product.get('name')
+                                })
+                            });
                         }
                         cancel();
                     }
