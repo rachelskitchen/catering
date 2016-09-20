@@ -135,6 +135,14 @@ define(["main_router"], function(main_router) {
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
+        initCustomer: function() {
+            App.Routers.RevelOrderingRouter.prototype.initCustomer(this, arguments);
+
+            // 'onReorder' event emits when user click on 'Reorder' button or 'Previous Order'
+            this.listenTo(customer, 'onReorder', function(order_id) {
+                this.navigate('cart/' + order_id, true);
+            });
+        },
         paymentsHandlers: function() {
             var mainModel = App.Data.mainModel,
                 myorder = App.Data.myorder,
