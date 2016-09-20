@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view) {
+define(["profile_view", "giftcard_view", "./myorder"], function(profile_view) {
     'use strict';
 
     var ProfilePaymentSelectionView = App.Views.CoreProfileView.CoreProfilePaymentSelectionView.extend({
@@ -218,7 +218,7 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
         }
     });
 
-    var ProfileOrderItemView = App.Views.MyOrderView.MyOrderListView.extend({
+    var ProfileOrderItemView = App.Views.MyOrderView.MyOrderItemView.extend({
         className: 'order-item'
     });
 

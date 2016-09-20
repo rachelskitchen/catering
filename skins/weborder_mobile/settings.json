@@ -124,6 +124,9 @@
         "establishments": {
             "css": ["establishments"],
             "templates": ["establishments"]
+        },
+        "past_orders": {
+            "templates": ["myorder"]
         }
     }
 }
