@@ -695,7 +695,6 @@ define(["main_router"], function(main_router) {
                     this.change_page();
                 }
 
-
                 this.preparePromotions();
             });
         },

@@ -446,18 +446,15 @@
 </script>
 
 <script type="text/template" id="profile_past_order-template">
-    <div class="close shadow-bg"></div>
-    <div class="past-order-details primary-bg">
-        <div class="created-at primary-border"></div>
-        <div class="animate-spin inline-block"></div>
-        <ul class="items"></ul>
-        <div class="subtotal-box primary-border bold">
-            <span class="bold"><%= _lp.TOTAL_SUBTOTAL %></span>
-            <span class="subtotal bold fl-right"></span>
-        </div>
-        <div class="btns">
-            <div class="btn btn-half btn-secondary view-past-orders text-center border-box fl-left"><%= _lp.VIEW_PAST_ORDERS %></div>
-            <div class="btn btn-half text-center reorder border-box fl-right"><%= _lp.PROFILE_REORDER %></div>
+    <div>
+        <div class="subtotal font-size2 regular-text fl-right"></div>
+        <div class="title-text font-size1"><%= _lp.PREVIOUS_ORDER %></div>
+        <div class="items-block fl-clear">
+            <div class="animate-spin font-size2 regular-text"></div>
+            <div class="items font-size2 regular-text"></div>
         </div>
     </div>
+</script>
+
+<script type="text/template" id="profile_past_order_container-template">
 </script>

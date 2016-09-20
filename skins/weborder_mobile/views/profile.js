@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["profile_view", "giftcard_view"], function(profile_view) {
+define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view) {
     'use strict';
 
     var ProfilePaymentSelectionView = App.Views.CoreProfileView.CoreProfilePaymentSelectionView.extend({
@@ -215,14 +215,87 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         },
         events: {
             'click .btn-reorder': 'reorder'
-        },
-        onEnterListeners: {
-            '.btn-reorder': 'reorder'
         }
     });
 
     var ProfileOrderItemView = App.Views.MyOrderView.MyOrderListView.extend({
         className: 'order-item'
+    });
+
+    var ProfilePastOrderView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'past_order',
+        tagName: 'li',
+        bindings: {
+            '.subtotal': 'text: currencyFormat(subtotal)',
+            '.items': 'text: itemsList',
+            '.animate-spin': 'classes: {hide: itemsReceived}',
+            ':el': 'classes: {disabled: not(itemsReceived)}'
+        },
+        computeds: {
+            itemsReceived: {
+                deps: ['$collection'],
+                get: function(collection) {
+                    var req = this.model.get('itemsRequest');
+                    return req && req.state() == 'resolved';
+                }
+            },
+            itemsList: {
+                deps: ['$collection'],
+                get: function(collection) {
+                    var names = collection.map(function(item) {
+                        var product = item.get_product(),
+                            modifiers = item.get_modifiers(),
+                            sizeModifier = modifiers && modifiers.getSizeModel(),
+                            name = product ? product.get('name') : '';
+
+                        if (sizeModifier) {
+                            name = sizeModifier.get('name') + ' ' + name;
+                        }
+
+                        return name;
+                    });
+                    return names.join(', ');
+                }
+            }
+        },
+        events: {
+            'click': 'reorder'
+        },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+            this.options.customer.getOrderItems(this.model);
+        },
+        reorder: function() {
+            this.options.customer.trigger('onReorder', this.model.get('id'));
+        }
+    });
+
+    var ProfilePastOrderContainerView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'past_order_container',
+        tagName: 'ul',
+        className: 'list profile-past-order',
+        bindings: {
+            ':el': 'updateContent: pastOrderView, toggle: pastOrder'
+        },
+        computeds: {
+            pastOrderView: {
+                deps: ['pastOrder'],
+                get: function(pastOrder) {
+                    if (pastOrder) {
+                        return {
+                            name: 'Profile',
+                            mod: 'PastOrder',
+                            model: pastOrder,
+                            collection: pastOrder.get('items'),
+                            customer: this.model,
+                            subViewIndex: 0
+                        }
+                    }
+                }
+            }
+        }
     });
 
     return new (require('factory'))(profile_view.initViews.bind(profile_view), function() {
@@ -237,5 +310,7 @@ define(["profile_view", "giftcard_view"], function(profile_view) {
         App.Views.ProfileView.ProfileAddressesView = ProfileAddressesView;
         App.Views.ProfileView.ProfileOrdersItemView = ProfileOrdersItemView;
         App.Views.ProfileView.ProfileOrderItemView = ProfileOrderItemView;
+        App.Views.ProfileView.ProfilePastOrderView = ProfilePastOrderView;
+        App.Views.ProfileView.ProfilePastOrderContainerView = ProfilePastOrderContainerView;
     });
 });

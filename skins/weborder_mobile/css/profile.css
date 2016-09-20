@@ -562,3 +562,12 @@
 .profile-orders .btn-reorder {
     padding: 0.7em 0 0;
 }
+
+.profile-past-order .subtotal {
+    margin-top: 0.5em;
+}
+
+.profile-past-order .items-block {
+    display: block;
+    margin-top: 0.3em;
+}
