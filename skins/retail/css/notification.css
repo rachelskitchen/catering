@@ -1,0 +1,57 @@
+.notification-box {
+    position: fixed;
+    z-index: 99;
+    right: 32px;
+    top: 64px;
+    min-width: 300px;
+    max-width: 400px;
+    height: 70px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 2px;
+    transition: all ease .5s;
+    transform: translateX(1000px);
+}
+
+.notification-box.shown {
+    transform: translateX(0);
+}
+
+.notification-box .close {
+    position: absolute;
+    right: 22px;
+    top: 50%;
+    line-height: 1;
+    margin-top: -13px;
+    font-size: 26px;
+    cursor: pointer;
+}
+
+.notification-box .close:before {
+    content: '\f057';
+    font-family: "FontAwesome";
+}
+
+.notification-box .image {
+    display: block;
+    position: relative;
+    height: 100%;
+    margin-right: 8px;
+}
+
+.notification-box .content {
+    padding: 6px 65px 6px 8px;
+}
+
+.notification-box .title {
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    line-height: 1;
+    font-size: 10px;
+}
+
+.notification-box .text {
+    line-height: 1.25;
+    font-size: 16px;
+}
