@@ -30,19 +30,25 @@ define(['./notification'], function(notification_view) {
 		initialize: function() {
 			App.Views.FactoryView.prototype.initialize.apply(this, arguments);
 
-			var self = this;
-			setTimeout(function() {
-				self.close();
-			}, 4000);
-		},
-		render: function() {
-			App.Views.FactoryView.prototype.render.apply(this, arguments);
-			this.show();
+			// show notification box
+			setTimeout(this.show.bind(this), this.getBinding('delay_show'));
+
+			// hide notification box automatically
+			setTimeout(this.close.bind(this), this.getBinding('delay_hide'));
 		},
 		bindings: {
 			'.image': 'classes: {hide: not(getImage)}, attr: {src: getImage}',
 			'.title': 'toggle: getTitle, text: getTitle',
 			'.text': 'toggle: getText, text: getText'
+		},
+		bindingSources: {
+			delay: function() {
+				return new Backbone.Model({
+					show: 10,
+					hide: 5000,
+					close: 600
+				});
+			}
 		},
 		computeds: {
 			getImage: function() {
@@ -59,19 +65,11 @@ define(['./notification'], function(notification_view) {
 			'click .close': 'close'
 		},
 		show: function() {
-			var self = this;
-			setTimeout(function() {
-				self.$el.addClass('shown');
-			}, 10);
+			this.$el.addClass('shown');
 		},
 		close: function() {
-			var self = this;
-
 			this.$el.removeClass('shown');
-
-			setTimeout(function() {
-				self.remove();
-			}, 600);
+			setTimeout(this.remove.bind(this), this.getBinding('delay_close'));
 		}
 	});
 
