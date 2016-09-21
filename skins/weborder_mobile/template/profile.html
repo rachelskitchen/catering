@@ -110,6 +110,7 @@
         <ul class="profile-items font-size1 primary-text">
             <li class="profile-link private-btn list-separator"><%= _lp.PROFILE_EDIT_TITLE %></li>
             <li class="payments-link private-btn list-separator"><%= _lp.PAYMENT_METHODS %></li>
+            <li class="past-orders private-btn list-separator"><%= _lp.PROFILE_PAST_ORDERS %></li>
             <li class="settings-link private-btn list-separator"><%= _lp.SETTINGS %></li>
             <li class="login-row list-separator">
                 <span class="login-link"><%= _lp.PROFILE_LOG_IN %></span>
@@ -410,4 +411,82 @@
     <p>If it turns out that a particular term is not enforceable, this will not affect any other terms.</p>
     <p>The laws of California, U.S.A., excluding California’s conflict of laws rules, will apply to any disputes arising out of or relating to these terms or the Services. All claims arising out of or relating to these terms or the Services will be litigated exclusively in the federal or state courts of San Francisco County, California, USA, and you and Revel consent to personal jurisdiction in those courts.</p>
     <p>Any questions regarding these terms should be directed to the following:<br>Revel Systems, Inc., 170 Columbus Ave., 4th Floor, San Francisco, CA 94133</p>
+</script>
+
+<script type="text/template" id="profile_order_item-template">
+    <div>
+        <span class="cost font-size3 fl-right title-text">
+            <span class="item-sum"><%= currency_symbol %><%= product_sum %></span>
+        </span>
+        <% if(!sold_by_weight && !is_service_fee) { %>
+            <span class="qty font-size1 fl-left"><%= quantity %></span>
+        <% } %>
+            <span class="product-name name font-size1 title-text"><%= sizeModifier %> <%= name %></span>
+    </div>
+    <% _.each(attrs, function(attr) { %>
+    <div class="attrs font-size3 regular-text">
+        <span><%= attr.name %></span>:
+        <span><%= attr.value %></span>
+    </div>
+    <% }); %>
+    <ul class="modifier_place font-size3 regular-text">
+        <% if(sold_by_weight) { %>
+        <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
+        <% } %>
+        <% if(is_gift) { %>
+
+            <% if(planId && stanford_card_number) { %>
+                <li class="special"> *** <%= _lp.STANFORD_CARD_NUMBER %>: <%= stanford_card_number %> </li>
+            <% } else { %>
+                <li class="special"> *** <%= _lp.MYORDER_ADD_AMOUNT_TO %> <%= gift_card_number %> </li>
+            <% } %>
+        <% } %>
+        <% if(special) { %>
+        <li class="special">*** <%= special %></li>
+        <% } %>
+    </ul>
+    <% if(is_child_product != true) { %>
+    <div class="upsell_root_product_place"></div>
+    <div class="combo_products_place"></div>
+    <ul class="discount_place font-size3 regular-text"></ul>
+    <% } %>
+</script>
+
+<script type="text/template" id="profile_orders_item-template">
+    <div>
+        <span class="font-size1"><%= _lp.PROFILE_ORDER_NUMBER %></span>
+        <span class="order-id font-size1"></span>
+        <span class="created-at font-size3 fl-right"></span>
+    </div>
+    <div class="bottom-border list-separator">
+        <span class="show-items primary-text font-size3">
+            <span class="qty title-text"></span>
+            <span class="unit title-text"></span>
+        </span>
+        <span class="subtotal font-size3 fl-right"></span>
+    </div>
+    <div class="order-items-box bottom-border list-separator">
+        <div class="animate-spin font-size3"></div>
+        <ul class="items"></ul>
+    </div>
+    <span class="btn-reorder primary-text font-size4 fl-right"><%= _lp.PROFILE_REORDER %></span>
+</script>
+
+<script type="text/template" id="profile_orders-template">
+    <ul class="orders-list title-text"></ul>
+    <div class="orders-empty font-size1 title-text"><%= _lp.PROFILE_PAST_ORDERS_EMPTY %></div>
+</script>
+
+<script type="text/template" id="profile_past_order-template">
+    <div>
+        <div class="subtotal font-size2 regular-text fl-right"></div>
+        <div class="title-text font-size1"><%= _lp.PREVIOUS_ORDER %></div>
+        <div class="items-block fl-clear">
+            <div class="animate-spin font-size2 regular-text"></div>
+            <div class="items font-size2 regular-text"></div>
+        </div>
+    </div>
+</script>
+
+<script type="text/template" id="profile_past_order_container-template">
 </script>

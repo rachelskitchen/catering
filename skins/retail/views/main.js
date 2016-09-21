@@ -165,6 +165,7 @@ define(["done_view", "generator"], function(done_view) {
             return {
                 model: this.options.cartModel,
                 collection: this.options.cartCollection,
+                customer: this.options.customer,
                 className: 'cart',
                 modelName: 'Cart'
             };

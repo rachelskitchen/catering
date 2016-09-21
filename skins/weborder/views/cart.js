@@ -23,6 +23,47 @@
 define(["cart_view"], function(cart_view) {
     'use strict';
 
+    var CartMainView = App.Views.CoreCartView.CoreCartMainView.extend({
+        bindings: {
+            '.cart_title': 'classes: {"text-left": pastOrderView, "text-center": not(pastOrderView)}',
+            '.past-order-link': 'toggle: pastOrderView, classes: {"alternate-text": ui_showPastOrder, active: ui_showPastOrder}',
+            '.profile-past-order': 'updateContent: pastOrderView, toggle: ui_showPastOrder'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({showPastOrder: false});
+            }
+        },
+        computeds: {
+            pastOrderView: {
+                deps: ['customer_pastOrder'],
+                get: function(pastOrder) {
+                    if (pastOrder) {
+                        return {
+                            name: 'Profile',
+                            mod: 'PastOrder',
+                            model: pastOrder,
+                            collection: pastOrder.get('items'),
+                            ui: this.getBinding('$ui'),
+                            customer: this.options.customer,
+                            subViewIndex: 2
+                        };
+                    }
+                }
+            }
+        },
+        events: {
+            'click .past-order-link': 'showPastOrder'
+        },
+        onEnterListeners: {
+            '.past-order-link': 'showPastOrder'
+        },
+        showPastOrder: function() {
+            var ui = this.getBinding('$ui');
+            ui.set('showPastOrder', !ui.get('showPastOrder'));
+        }
+    });
+
     var CartCheckoutView = App.Views.CoreCartView.CoreCartCoreView.extend({
         name: 'cart',
         mod: 'checkout',
@@ -80,6 +121,7 @@ define(["cart_view"], function(cart_view) {
     });
 
     return new (require('factory'))(cart_view.initViews.bind(cart_view), function() {
+        App.Views.CartView.CartMainView = CartMainView;
         App.Views.CartView.CartCheckoutView = CartCheckoutView;
         App.Views.CartView.CartConfirmationView = CartConfirmationView;
     });
