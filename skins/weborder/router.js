@@ -42,12 +42,13 @@ define(["main_router"], function(main_router) {
             "index": "index",
             "about": "about",
             "map": "map",
-            "checkout": "checkout",
+            "checkout(/:order_id)": "checkout",
             "pay": "pay",
             "confirm": "confirm",
             "maintenance": "maintenance",
             "profile_edit": "profile_edit",
             "profile_payments": "profile_payments",
+            "past_orders": "past_orders",
             "establishment": "establishment",
             "*other": "index"
         },
@@ -100,14 +101,22 @@ define(["main_router"], function(main_router) {
 
             App.Routers.RevelOrderingRouter.prototype.initialize.apply(this, arguments);
         },
-        triggerInitializedEvent: function() {
-            App.Routers.RevelOrderingRouter.prototype.triggerInitializedEvent.apply(this, arguments);
-            App.Data.mainModel.set({customer: App.Data.customer});
-        },
         initCustomer: function() {
             App.Routers.RevelOrderingRouter.prototype.initCustomer.apply(this, arguments);
+
+            var mainModel = App.Data.mainModel,
+                customer = App.Data.customer;
+
+            // Once the customer is initialized need to add it to App.Data.mainModel attributes
+            App.Data.mainModel.set({customer: customer});
+
             // Once the customer is initialized need to set profile panel
             this.initProfilePanel();
+
+            // 'onReorder' event emits when user click on 'Reorder' button
+            this.listenTo(customer, 'onReorder', function(order_id) {
+                this.navigate('checkout/' + order_id, true);
+            });
         },
         /**
          * Change page.
@@ -606,11 +615,18 @@ define(["main_router"], function(main_router) {
                 }
             });
         },
-        checkout: function() {
+        checkout: function(order_id) {
             this.prepare('checkout', function() {
                 var settings = App.Data.settings.get('settings_system'),
                     customer = App.Data.customer,
-                    addresses = customer.get('addresses');
+                    addresses = customer.get('addresses'),
+                    reorderReq;
+
+                order_id = Number(order_id);
+
+                if (order_id > 0) {
+                    reorderReq = this.reorder(order_id);
+                }
 
                 this.listenTo(customer, 'change:access_token', function() {
                     // update shipping address on login/logout
@@ -674,7 +690,11 @@ define(["main_router"], function(main_router) {
                     customer.trigger('updateCheckoutGiftCards');
                 }
 
-                this.change_page();
+                if (reorderReq) {
+                    reorderReq.always(this.change_page.bind(this));
+                } else {
+                    this.change_page();
+                }
 
                 this.preparePromotions();
             });
@@ -782,6 +802,22 @@ define(["main_router"], function(main_router) {
                 return this.navigate('index', true);
             } else {
                 Backbone.$.when.apply(Backbone.$, promises).then(this.change_page.bind(this));
+            }
+        },
+        past_orders: function() {
+            App.Data.header.set('tab_index', null);
+            App.Data.mainModel.set({
+                mod: 'Main',
+                header: headers.main,
+                cart: carts.main
+            });
+
+            var req = this.setPastOrdersContent();
+
+            if (!req) {
+                this.navigate('index', true);
+            } else {
+                req.always(this.change_page.bind(this));
             }
         },
         establishment: function() {

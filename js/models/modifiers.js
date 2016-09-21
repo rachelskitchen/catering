@@ -109,7 +109,22 @@ define(["backbone"], function(Backbone) {
              * Modifier description
              * @type {?string}
              */
-            description: null
+            description: null,
+            /**
+             * An object literal with actual values of main attributes which affect reorder ability:
+             * ```
+             * {
+             *    active: <boolean>,
+             *    cost: <string>,
+             *    price: <number>
+             * }
+             * ```
+             * It exists only if the modifiers belongs to an order item in past orders.
+             * It's null for usual modifier.
+             * @type {?object}
+             * @default null
+             */
+            actual_data: null
         },
         /**
          * Sets `img` value as App.Data.settings.get('img_path').
@@ -236,6 +251,35 @@ define(["backbone"], function(Backbone) {
          */
         getSum: function() {
             return this.get('price') * this.get('quantity') * this.half_price_koeff();
+        },
+        /**
+         * Updates modifier to actual state checking reorder changes.
+         * The modifier may change after order placement.
+         * Need to find out changed attributes and apply actual values to them.
+         * @returns {Array} Array containing attributes changed from order placement.
+         */
+        reorder: function() {
+            var changes = [],
+                actual_data = this.get('actual_data');
+
+            if (!_.isObject(actual_data)) {
+                return changes;
+            }
+
+            // check price
+            if (this.get('price') !== actual_data.price) {
+                this.set('price', actual_data.price);
+                changes.push('price');
+            }
+
+            // if modifier is inactive right now
+            // need to remove it from colection
+            if (!actual_data.active && this.collection) {
+                changes.push('active');
+                this.collection.remove(this);
+            }
+
+            return changes;
         }
     });
 
@@ -373,6 +417,35 @@ define(["backbone"], function(Backbone) {
             this.each(function(modifier) {
                 modifier.removeFreeModifier();
             });
+        },
+        /**
+         * Checks changes in modifiers to make reorder.
+         * @param {number} amount_free - amount free.
+         * @param {boolean} isPrice - indicates whether amount free is dollars
+         * @returns {Array} Array of attributes changed from order placement.
+         */
+        reorder: function(amount_free, isPrice) {
+            var changes = [],
+                self = this;
+
+            this.where({selected: true}).forEach(function(modifier) {
+                var price = modifier.get('price'),   // should be before reorder() call
+                    result = modifier.reorder(),
+                    free_remain;
+
+                if (result.indexOf('active') > -1) {
+                    changes.push('active');
+                }
+
+                if (result.indexOf('price') > -1) {
+                    amount_free -= isPrice ? modifier.get('actual_data').price : 1;
+                    free_remain = amount_free >= 0 ? 0 : isPrice ? Math.abs(amount_free) : undefined;
+                    if(free_remain !== price)
+                        changes.push('price');
+                }
+            });
+
+            return changes;
         }
     });
 
@@ -754,6 +827,24 @@ define(["backbone"], function(Backbone) {
             var modifiers = this.get('modifiers');
                 modifiers && modifiers.removeFreeModifiers();
             this.set('amount_free_selected', []);
+        },
+        /**
+         * Checks modifiers before make reorder.
+         * @returns {Array} Result of {@link App.Collections.Modifiers#reorder} applied to `modifiers`.
+         */
+        reorder: function() {
+            return this.get('modifiers').reorder(this.get('amount_free'), this.get('amount_free_is_dollars'));
+        },
+        /**
+         * Changes `ignore_free_modifiers` to false and resets `amount_free_selected`.
+         * Used in reorder.
+         */
+        enableFreeModifiers: function() {
+            this.set({
+                ignore_free_modifiers: false,
+                amount_free_selected: []
+            });
+            this.initFreeModifiers();
         }
     });
 
@@ -1117,6 +1208,22 @@ define(["backbone"], function(Backbone) {
             this.each(function(modifierBlock) {
                 modifierBlock.removeFreeModifiers();
             });
+        },
+        /**
+         * Checks modifiers before make reorder.
+         * @returns {Array} Array of attributes changed from order placement.
+         */
+        reorder: function () {
+            return this.reduce(function(changes, modifierBlock) {
+                return changes.concat(modifierBlock.reorder());
+            }, []);
+        },
+        /**
+         * Calls {@link App.Models.ModifierBlock#enableFreeModifiers enableFreeModifiers()} method for each item.
+         * Used in reorder.
+         */
+        enableFreeModifiers: function() {
+            this.invoke('enableFreeModifiers');
         }
     });
 

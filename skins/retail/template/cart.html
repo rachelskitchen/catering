@@ -1,7 +1,11 @@
 <script type="text/template" id="cart_main-template">
-    <h2 class="cart_title header-underline text-center"> <%= _lp.CART_TITLE %> </h2>
+    <h2 class="cart_title header-underline text-center">
+        <span class="title"><%= _lp.CART_TITLE %></span>
+        <span class="past-order-link link fl-right" tabindex="0"><%= _lp.PAST_ORDER %></span>
+    </h2>
+    <div class="profile-past-order"></div>
     <div class="order-items"></div>
-    <div class="hide-cart link">&times;</div>
+    <div class="hide-cart link" tabindex="0">&times;</div>
     <% if(_settings.online_orders) { %>
     <div class="btn btn-bottom btn-checkout text-center" tabindex="0">
         <%= _lp.CART_CHECKOUT %>
