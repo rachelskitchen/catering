@@ -559,6 +559,18 @@
     overflow: hidden;
 }
 
+.profile-orders .order-item .qty {
+    padding: 0 0.6em;
+}
+
+.profile-orders .order-item .modifier_place {
+    margin-left: 4em;
+}
+
+.profile-orders .order-item .modifier_place > li {
+    margin: 0.4em 0;
+}
+
 .profile-orders .btn-reorder {
     padding: 0.7em 0 0;
 }

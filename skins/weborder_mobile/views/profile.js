@@ -221,6 +221,7 @@ define(["profile_view", "giftcard_view", "./myorder"], function(profile_view) {
     var ProfileOrderItemView = App.Views.MyOrderView.MyOrderItemView.extend({
         name: 'profile',
         mod: 'order_item',
+        tagName: 'li',
         className: 'order-item'
     });
 

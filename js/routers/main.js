@@ -1990,7 +1990,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 App.Data.header.set({
                     page_title: _loc.PROFILE_PAST_ORDERS,
                     back_title: _loc.BACK,
-                    back: window.history.back.bind(window.history)
+                    back: this.initialized ? window.history.back.bind(window.history) : this.navigate.bind(this, 'index')
                 });
 
                 content = {
@@ -1998,7 +1998,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     mod: 'Orders',
                     model: customer,
                     collection: customer.orders,
-                    className: 'profile-orders'
+                    className: 'profile-orders',
+                    cacheId: true
                 }
             }
 
