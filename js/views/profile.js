@@ -1274,7 +1274,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         },
         itemView: function(opts) {
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
-                mod: 'OrderItem'
+                mod: 'OrderItem',
+                order: this.model
             }), opts.model.get('id'));
         },
         bindingSources: {
