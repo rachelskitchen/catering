@@ -109,13 +109,37 @@ define(["backbone"], function(Backbone) {
              * Modifier description
              * @type {?string}
              */
-            description: null
+            description: null,
+            /**
+             * An object literal with actual values of main attributes which affect reorder ability:
+             * ```
+             * {
+             *    active: <boolean>,
+             *    cost: <string>,
+             *    price: <number>
+             * }
+             * ```
+             * It exists only if the modifiers belongs to an order item in past orders.
+             * It's null for usual modifier.
+             * @type {?object}
+             * @default null
+             */
+            actual_data: null,
+            /**
+             * Indicates whether a modifier item can be splitted
+             * @type {boolean}
+             * @default false
+             */
+            split: false
         },
         /**
          * Sets `img` value as App.Data.settings.get('img_path').
+         * Controls the modifier splitting ability.
          */
         initialize: function() {
             this.set('img', App.Data.settings.get('img_path'));
+            this.controlSplitAbility();
+            this.listenTo(this, 'change:qty_type', this.controlSplitAbility);
         },
         /**
          * Sets attributes using `data` object.
@@ -236,6 +260,44 @@ define(["backbone"], function(Backbone) {
          */
         getSum: function() {
             return this.get('price') * this.get('quantity') * this.half_price_koeff();
+        },
+        /**
+         * Updates modifier to actual state checking reorder changes.
+         * The modifier may change after order placement.
+         * Need to find out changed attributes and apply actual values to them.
+         * @returns {Array} Array containing attributes changed from order placement.
+         */
+        reorder: function() {
+            var changes = [],
+                actual_data = this.get('actual_data');
+
+            if (!_.isObject(actual_data)) {
+                return changes;
+            }
+
+            // check price
+            if (this.get('price') !== actual_data.price) {
+                this.set('price', actual_data.price);
+                changes.push('price');
+            }
+
+            // if modifier is inactive right now
+            // need to remove it from collection
+            if (!actual_data.active && this.collection) {
+                changes.push('active');
+                this.collection.remove(this);
+            }
+
+            return changes;
+        },
+        /**
+         * Checks the ability to split the modifier.
+         * If the modifier splitting is disallowed need to change `qty_type` to default value (full modifier).
+         */
+        controlSplitAbility: function() {
+            if (!this.get('split')) {
+                this.set('qty_type', this.defaults.qty_type);
+            }
         }
     });
 
@@ -269,6 +331,12 @@ define(["backbone"], function(Backbone) {
             return model.get('sort');
         },
         /**
+         * Indicates whether a modifier item can be splitted
+         * @type {boolean}
+         * @default false
+         */
+        split: false,
+        /**
          * Adds new items.
          * @param {Array} data - JSON representation of items
          * @returns {App.Collections.Modifiers} The collection.
@@ -276,7 +344,7 @@ define(["backbone"], function(Backbone) {
         addJSON: function(data) {
             var self = this;
             Array.isArray(data) && data.forEach(function(element) {
-                var modifier = new App.Models.Modifier();
+                var modifier = new App.Models.Modifier({split: self.split});
                 modifier.addJSON(element);
                 self.add(modifier);
             });
@@ -288,6 +356,7 @@ define(["backbone"], function(Backbone) {
          */
         clone: function() {
             var newModifiers = new App.Collections.Modifiers();
+            newModifiers.split = this.split;
             this.each(function(modifier) {
                newModifiers.add(modifier.clone()) ;
             });
@@ -300,6 +369,7 @@ define(["backbone"], function(Backbone) {
          */
         update: function(newModifiers) {
             var self = this;
+            this.split = newModifiers.split;
             newModifiers.each(function(modifier) {
                 var oldModifier = self.get(modifier);
                 if (oldModifier) {
@@ -373,6 +443,35 @@ define(["backbone"], function(Backbone) {
             this.each(function(modifier) {
                 modifier.removeFreeModifier();
             });
+        },
+        /**
+         * Checks changes in modifiers to make reorder.
+         * @param {number} amount_free - amount free.
+         * @param {boolean} isPrice - indicates whether amount free is dollars
+         * @returns {Array} Array of attributes changed from order placement.
+         */
+        reorder: function(amount_free, isPrice) {
+            var changes = [],
+                self = this;
+
+            this.where({selected: true}).forEach(function(modifier) {
+                var price = modifier.get('price'),   // should be before reorder() call
+                    result = modifier.reorder(),
+                    free_remain;
+
+                if (result.indexOf('active') > -1) {
+                    changes.push('active');
+                }
+
+                if (result.indexOf('price') > -1) {
+                    amount_free -= isPrice ? modifier.get('actual_data').price : 1;
+                    free_remain = amount_free >= 0 ? 0 : isPrice ? Math.abs(amount_free) : undefined;
+                    if(free_remain !== price)
+                        changes.push('price');
+                }
+            });
+
+            return changes;
         }
     });
 
@@ -416,7 +515,8 @@ define(["backbone"], function(Backbone) {
          * - `true` - 'Price' type.
          * - `false` - 'Quantity' type.
          * @property {Array} amount_free_selected=[] - array of modifiers that are considered as free
-         * @property {boolean} ignore_free_modifiers=false - disables 'Free Modifiers' feature
+         * @property {boolean} ignore_free_modifiers=false - disables 'Free Modifiers' feature,
+         * @property {boolean} split - indicates whether a modifier item can be splitted
          */
         defaults: function() {
             return {
@@ -435,28 +535,34 @@ define(["backbone"], function(Backbone) {
                 amount_free_is_dollars: false, // true - 'Price', false - 'Quantity', receive from server
                 amount_free_selected: [],
                 ignore_free_modifiers: false,
-                forced: false
+                forced: false,
+                split: false
             };
         },
         /**
          * Inits handlers for free modifiers.
          */
         initialize: function() {
-            this.listenTo(this, 'change:modifiers', function(model) {
-                var prevModifiers = model.previousAttributes().modifiers;
-                prevModifiers instanceof Backbone.Collection && this.stopListening(prevModifiers);
-                if (!App.Data.loadFromLocalStorage) {
-                    this.set('amount_free_selected', []);
-                    this.initFreeModifiers();
-                    this.listenToModifiers();
-                }
-            }, this);
+            this.listenTo(this, 'change:modifiers', this.onModifiersChange);
 
             this.set({
                 amount_free_selected: []
             });
 
             this.checkAmountFree();
+        },
+        /**
+         * Handles `modifiers` attribute change.
+         * @param {App.Models.ModifierBlock} model - the model
+         */
+        onModifiersChange: function(model) {
+            var prevModifiers = model.previousAttributes().modifiers;
+            prevModifiers instanceof Backbone.Collection && this.stopListening(prevModifiers);
+            if (!App.Data.loadFromLocalStorage) {
+                this.set('amount_free_selected', []);
+                this.initFreeModifiers();
+                this.listenToModifiers();
+            }
         },
         /**
          * Sets attributes values using `data` object. Converts `data.modifiers` array to {@link App.Collections.Modifiers}.
@@ -467,6 +573,7 @@ define(["backbone"], function(Backbone) {
             data.forced = data.minimum_amount > 0 ? true : false;
             this.set(data);
             var modifiers = new App.Collections.Modifiers();
+            modifiers.split = this.get('split');
             modifiers.addJSON(data.modifier || data.modifiers);
             this.set('modifiers', modifiers);
             this.checkAmountFree();
@@ -754,6 +861,24 @@ define(["backbone"], function(Backbone) {
             var modifiers = this.get('modifiers');
                 modifiers && modifiers.removeFreeModifiers();
             this.set('amount_free_selected', []);
+        },
+        /**
+         * Checks modifiers before make reorder.
+         * @returns {Array} Result of {@link App.Collections.Modifiers#reorder} applied to `modifiers`.
+         */
+        reorder: function() {
+            return this.get('modifiers').reorder(this.get('amount_free'), this.get('amount_free_is_dollars'));
+        },
+        /**
+         * Changes `ignore_free_modifiers` to false and resets `amount_free_selected`.
+         * Used in reorder.
+         */
+        enableFreeModifiers: function() {
+            this.set({
+                ignore_free_modifiers: false,
+                amount_free_selected: []
+            });
+            this.initFreeModifiers();
         }
     });
 
@@ -1117,6 +1242,22 @@ define(["backbone"], function(Backbone) {
             this.each(function(modifierBlock) {
                 modifierBlock.removeFreeModifiers();
             });
+        },
+        /**
+         * Checks modifiers before make reorder.
+         * @returns {Array} Array of attributes changed from order placement.
+         */
+        reorder: function () {
+            return this.reduce(function(changes, modifierBlock) {
+                return changes.concat(modifierBlock.reorder());
+            }, []);
+        },
+        /**
+         * Calls {@link App.Models.ModifierBlock#enableFreeModifiers enableFreeModifiers()} method for each item.
+         * Used in reorder.
+         */
+        enableFreeModifiers: function() {
+            this.invoke('enableFreeModifiers');
         }
     });
 
@@ -1134,7 +1275,7 @@ define(["backbone"], function(Backbone) {
             App.Data.modifiers[id_product] = new App.Collections.ModifierBlocks;
             modifier_load = App.Data.modifiers[id_product].get_modifiers(id_product);
         } else {
-            modifier_load = $.Deferred().resolve();
+            modifier_load = Backbone.$.Deferred().resolve();
         }
 
         return modifier_load;
@@ -1153,7 +1294,7 @@ define(["backbone"], function(Backbone) {
             App.Data.quickModifiers = new App.Collections.ModifierBlocks;
             fetching = App.Data.quickModifiers.get_quick_modifiers();
         } else {
-            fetching = $.Deferred().resolve();
+            fetching = Backbone.$.Deferred().resolve();
         }
 
         return fetching;

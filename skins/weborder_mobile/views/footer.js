@@ -39,7 +39,12 @@ define(["factory"], function(factory) {
 
     var FooterCartView = FooterMainView.extend({
         bindings: {
-            '.btn': 'text: format("$1: $2 - $3", _lp_TOTAL_SUBTOTAL, currencyFormat(total_subtotal), _lp_CHECKOUT)'
+            '.btn': 'text: format("$1: $2 - $3", _lp_TOTAL_SUBTOTAL, currencyFormat(total_subtotal), select(isReorder, _lp_PROFILE_REORDER, _lp_CHECKOUT))'
+        },
+        computeds: {
+            isReorder: function() {
+                return this.options.isReorder;
+            }
         }
     });
 

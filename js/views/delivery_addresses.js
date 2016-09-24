@@ -483,7 +483,9 @@ define(['backbone', 'factory'], function(Backbone) {
 
                 this.$('#addresses').html(optionsStr);
 
-                if (this.options.address_index == -1) { // default profile address should be selected
+                var selectedAddr = addresses.getSelectedAddress(),
+                    isReorderAddress = selectedAddr && selectedAddr.get('isReorderAddress');
+                if (this.options.address_index == -1 && !isReorderAddress) { // default profile address should be selected
                     var addr = addresses.get(options[0].value);
                     addr && addr.set('selected', true);
                     delete this.options.address_index;

@@ -11,7 +11,9 @@ define([], function() {
             "selected": false,
             "sort": null,
             "sum": null,
-            "description": null
+            "description": null,
+            "actual_data": null,
+            "split": false
         },
         "defaults_initialized": {
             "cost": null,
@@ -24,7 +26,9 @@ define([], function() {
             "selected": false,
             "sort": null,
             "sum": null,
-            "description": null
+            "description": null,
+            "actual_data": null,
+            "split": false
         },
         "ex0": {
             "id": 1223,
@@ -46,7 +50,9 @@ define([], function() {
             "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
             "quantity": 1,
             "qty_type": 0,
-            "description": null
+            "description": null,
+            "actual_data": null,
+            "split": false
         },
         "ex2": {
             "id": 122,
@@ -59,7 +65,9 @@ define([], function() {
             "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
             "quantity": 1,
             "qty_type": 0,
-            "description": null
+            "description": null,
+            "actual_data": null,
+            "split": false
         },
         "defBlock": {
             "id": null,
@@ -75,7 +83,8 @@ define([], function() {
             "admin_mod_key": "",
             "amount_free_is_dollars": false,
             "amount_free_selected": [],
-            "ignore_free_modifiers": false
+            "ignore_free_modifiers": false,
+            "split": false
         },
         "exBlock": {
             "id": 12,
@@ -92,7 +101,8 @@ define([], function() {
             "admin_mod_key": "",
             "amount_free_is_dollars": false,
             "amount_free_selected": [],
-            "ignore_free_modifiers": false
+            "ignore_free_modifiers": false,
+            "split": false
         },
         "exBlock2": {
             "id": 123,
@@ -109,7 +119,8 @@ define([], function() {
             "admin_mod_key": "",
             "amount_free_is_dollars": false,
             "amount_free_selected": [],
-            "ignore_free_modifiers": false
+            "ignore_free_modifiers": false,
+            "split": false
         },
         "exBlocks": [
             {
@@ -142,7 +153,8 @@ define([], function() {
                 "admin_mod_key": "",
                 "amount_free_is_dollars": false,
                 "amount_free_selected": [],
-                "ignore_free_modifiers": false
+                "ignore_free_modifiers": false,
+                "split": false
             }
         ],
         "exBlocks2": [
@@ -166,7 +178,9 @@ define([], function() {
                         "img": "test/some_image.jpg",
                         "quantity": 1,
                         "qty_type": 0,
-                        "description": null
+                        "description": null,
+                        "actual_data": null,
+                        "split": false
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -178,7 +192,8 @@ define([], function() {
                 "admin_mod_key": "SIZE",
                 "amount_free_is_dollars": false,
                 "amount_free_selected": [],
-                "ignore_free_modifiers": false
+                "ignore_free_modifiers": false,
+                "split": false
             },
             {
                 "id": 12,
@@ -200,7 +215,9 @@ define([], function() {
                         "img": "test/some_image.jpg",
                         "quantity": 1,
                         "qty_type": 0,
-                        "description": null
+                        "description": null,
+                        "actual_data": null,
+                        "split": false
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -212,7 +229,8 @@ define([], function() {
                 "admin_mod_key": "SPECIAL",
                 "amount_free_is_dollars": false,
                 "amount_free_selected": [],
-                "ignore_free_modifiers": false
+                "ignore_free_modifiers": false,
+                "split": false
             },
             {
                 "id": 3,
@@ -234,7 +252,9 @@ define([], function() {
                         "img": "test/some_image.jpg",
                         "quantity": 1,
                         "qty_type": 0,
-                        "description": null
+                        "description": null,
+                        "actual_data": null,
+                        "split": false
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -246,7 +266,8 @@ define([], function() {
                 "admin_mod_key": "",
                 "amount_free_is_dollars": false,
                 "amount_free_selected": [],
-                "ignore_free_modifiers": false
+                "ignore_free_modifiers": false,
+                "split": false
             },
             {
                 "id": 4,
@@ -268,7 +289,9 @@ define([], function() {
                         "img": "test/some_image.jpg",
                         "quantity": 1,
                         "qty_type": 0,
-                        "description": null
+                        "description": null,
+                        "actual_data": null,
+                        "split": false
                     }
                 ],
                 "img": "./skins/weborder/img/",
@@ -280,13 +303,36 @@ define([], function() {
                 "admin_mod_key": "",
                 "amount_free_is_dollars": false,
                 "amount_free_selected": [],
-                "ignore_free_modifiers": false
+                "ignore_free_modifiers": false,
+                "split": false
             }
         ],
         "load" : [
             {
                 "admin_mod_key": null,
                 "admin_modifier": false,
+                "amount_free": null,
+                "forced": false,
+                "id": 3,
+                "lock_amount": null,
+                "lock_enable": false,
+                "modifiers": [
+                    {
+                        "cost": null,
+                        "id": 58,
+                        "name": "1 pct",
+                        "price": 0,
+                        "sum": 0,
+                        "selected": false,
+                        "sort": 1
+                    }
+                ],
+                "name": "Milk Options",
+                "sort": 9
+            },
+            {
+                "admin_mod_key": "DISCOUNT",
+                "admin_modifier": true,
                 "amount_free": null,
                 "forced": false,
                 "id": 3,

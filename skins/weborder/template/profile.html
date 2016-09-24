@@ -91,6 +91,7 @@
     <ul class="profile-items text-left">
         <li class="profile-link menu-item"><%= _lp.PROFILE_EDIT_TITLE %></li>
         <li class="payments-link menu-item"><%= _lp.PAYMENT_METHODS %></li>
+        <li class="past-orders menu-item"><%= _lp.PROFILE_PAST_ORDERS %></li>
         <li class="logout-link menu-item"><%= _lp.PROFILE_LOG_OUT %></li>
     </ul>
 </script>
@@ -102,8 +103,10 @@
         <div class="col-left border-box fl-left">
             <h3 class="header-underline"><%= _lp.PROFILE_BASIC_DETAILS %></h3>
             <div class="basic-details-box"></div>
-            <h3 class="header-underline"><%= _lp.PROFILE_CHANGE_PASSWORD %></h3>
-            <div class="account-password-box"></div>
+            <div class="account-password-container">
+                <h3 class="header-underline"><%= _lp.PROFILE_CHANGE_PASSWORD %></h3>
+                <div class="account-password-box"></div>
+            </div>
             <h3 class="header-underline"><%= _lp.PROFILE_NOTIFICATIONS %></h3>
             <div class="account-notifications-box"></div>
         </div>
@@ -140,7 +143,7 @@
 <script type="text/template" id="profile_addresses-template">
     <ul class="addresses-list"></ul>
 
-    <div class="addresses__add primary-text link"><span class="expand"></span><%= _loc.PROFILE_ADD_NEW_ADDRESS %></div>
+    <div class="addresses__add primary-text link"><span class="expand"></span><%= _lp.PROFILE_ADD_NEW_ADDRESS %></div>
 </script>
 
 <script type="text/template" id="profile_address-template">
@@ -309,7 +312,7 @@
 
 <script type="text/template" id="profile_gift_card_selection-template">
     <span class="card-number"></span>
-    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+    <span class="balance-line">&mdash; <%= _lp.BALANCE %>: <span class="balance-value"></span></span>
 </script>
 
 <script type="text/template" id="profile_gift_cards_selection-template">
@@ -321,13 +324,13 @@
 
 <script type="text/template" id="profile_gift_card_edition-template">
     <span class="card-number"></span>
-    <span class="balance-line">&mdash; <%= _loc.BALANCE %>: <span class="balance-value"></span></span>
+    <span class="balance-line">&mdash; <%= _lp.BALANCE %>: <span class="balance-value"></span></span>
     <div class="remove-btn cancel fl-right link"></div>
 </script>
 
 <script type="text/template" id="profile_gift_cards_edition-template">
     <ul class="gift-cards-list"></ul>
-    <div class="add_gift_card_title new-card primary-text link"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_GIFT_CARD %></div>
+    <div class="add_gift_card_title new-card primary-text link"><span class="plus_sign"></span><%= _lp.PROFILE_ADD_NEW_GIFT_CARD %></div>
     <div class="new_gift_card"></div>
 </script>
 
@@ -353,7 +356,7 @@
 
 <script type="text/template" id="profile_reward_cards_edition-template">
     <ul class="reward-cards-list"></ul>
-    <div class="add_reward_card_title new-card primary-text link"><span class="plus_sign"></span><%= _loc.PROFILE_ADD_NEW_REWARD_CARD %></div>
+    <div class="add_reward_card_title new-card primary-text link"><span class="plus_sign"></span><%= _lp.PROFILE_ADD_NEW_REWARD_CARD %></div>
     <div class="new_reward_card"></div>
 </script>
 
@@ -413,4 +416,64 @@
     <p>If it turns out that a particular term is not enforceable, this will not affect any other terms.</p>
     <p>The laws of California, U.S.A., excluding California’s conflict of laws rules, will apply to any disputes arising out of or relating to these terms or the Services. All claims arising out of or relating to these terms or the Services will be litigated exclusively in the federal or state courts of San Francisco County, California, USA, and you and Revel consent to personal jurisdiction in those courts.</p>
     <p>Any questions regarding these terms should be directed to the following:<br>Revel Systems, Inc., 170 Columbus Ave., 4th Floor, San Francisco, CA 94133</p>
+</script>
+
+<script type="text/template" id="profile_order_item-template">
+    <div class="col fl-left">
+        <div class="name bold"></div>
+        <div class="modifiers optional-text"></div>
+    </div>
+    <div class="price col text-center offset2 fl-right"></div>
+    <div class="qty col text-center fl-right"></div>
+</script>
+
+<script type="text/template" id="profile_orders_item-template">
+    <div class="created-at-col col fl-left">
+        <span class="show-items primary-text link" tabindex="0"></span>
+        <span class="created-at"></span>
+    </div>
+    <div class="order-col col fl-left">
+        <span><%= _lp.PROFILE_ORDER_NUMBER %></span>
+        <span class="order-id"></span>
+    </div>
+    <div class="btn text-center fl-right" tabindex="0"><%= _lp.PROFILE_REORDER %></div>
+    <div class="subtotal col text-center bold fl-right"></div>
+    <div class="qty col text-center bold fl-right"></div>
+    <div class="order-items-box clear animate">
+        <div class="animate-spin offset1"></div>
+        <ul class="items offset1"></ul>
+    </div>
+</script>
+
+<script type="text/template" id="profile_orders-template">
+    <h2 class="category-title primary-border category-bg"><%= _lp.PROFILE_PAST_ORDERS %></h2>
+    <div class="orders">
+        <div class="orders-headers primary-border">
+            <div class="created-at-col col fl-left"><%= _lp.PAST_ORDERS_DATE_TITLE %></div>
+            <div class="order-col col fl-left"><%= _lp.PAST_ORDERS_ORDER_NUMBER_TITLE %></div>
+            <div class="subtotal subtotal-title col text-center fl-right"><%= _lp.PAST_ORDERS_TOTAL_TITLE %></div>
+            <div class="qty col text-center fl-right"><%= _lp.PAST_ORDERS_QUANTITY_TITLE %></div>
+        </div>
+        <div class="orders-box clear">
+            <ul class="orders-list"></ul>
+        </div>
+    </div>
+    <div class="orders-empty"><%= _lp.PROFILE_PAST_ORDERS_EMPTY %></div>
+</script>
+
+<script type="text/template" id="profile_past_order-template">
+    <div class="close shadow-bg"></div>
+    <div class="past-order-details primary-bg">
+        <div class="created-at primary-border"></div>
+        <div class="animate-spin inline-block"></div>
+        <ul class="items"></ul>
+        <div class="subtotal-box primary-border bold">
+            <span class="bold"><%= _lp.TOTAL_SUBTOTAL %></span>
+            <span class="subtotal bold fl-right"></span>
+        </div>
+        <div class="btns">
+            <div class="btn btn-half btn-secondary view-past-orders text-center border-box fl-left" tabindex="0"><%= _lp.VIEW_PAST_ORDERS %></div>
+            <div class="btn btn-half text-center reorder border-box fl-right" tabindex="0"><%= _lp.PROFILE_REORDER %></div>
+        </div>
+    </div>
 </script>
