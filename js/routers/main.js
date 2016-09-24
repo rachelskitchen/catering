@@ -489,6 +489,13 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 });
             });
 
+            // 'onReorderCompleted' event emits when an order completes a reorder
+            this.listenTo(customer.orders, 'onReorderCompleted', function(changes) {
+                if (Array.isArray(changes) && changes.length) {
+                    App.Data.errors.alert(_loc.ORDER_CHANGED);
+                }
+            });
+
             function listenToCVVRequired() {
                 this.listenTo(customer, 'onCVVRequired', function(data) {
                     App.Data.errors.alert('', false, false, {
@@ -670,6 +677,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         customer && customer.resetShippingServices();  // clear shipping service selected
                         giftcard && giftcard.reset();                  // clear Gift card data
                         stanfordCard && stanfordCard.clearData();      // clear Stanford card data
+                        // add order to past orders list
+                        customer && customer.isAuthorized() && customer.getOrder(myorder.paymentResponse.orderId);
                         break;
                     case 'error':
                         card && card.clearData(); // removal of information about credit card
@@ -1023,6 +1032,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     settings_link: new Function,
                     payments_link: profilePayments,
                     profile_link: profileEdit,
+                    orders_link: pastOrders,
                     my_promotions_link: myPromotions,
                     cacheId: true
                 }
@@ -1125,6 +1135,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function hideSpinner() {
                 mainModel.trigger('loadCompleted');
+            }
+
+            function pastOrders() {
+                self.navigate('past_orders', true);
+                customer.trigger('hidePanel');
             }
         },
         setProfileEditContent: function() {
@@ -1352,6 +1367,33 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
             }
+        },
+        setPastOrdersContent: function() {
+            var customer = App.Data.customer,
+                req = customer.ordersRequest,
+                self = this;
+
+            if (req) {
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'Orders',
+                        model: customer,
+                        collection: customer.orders,
+                        className: 'profile-orders profile-edit'
+                    }
+                });
+
+                window.setTimeout(function() {
+                    self.listenTo(customer, 'onLogout', logout);
+                }, 0);
+            }
+
+            return req;
+
+            function logout() {
+                self.navigate('index', true);
+            }
         }
     };
 
@@ -1371,6 +1413,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     settings_link: profile_settings,
                     payments_link: profile_payments,
                     profile_link: profile_edit,
+                    orders_link: pastOrders,
                     my_promotions_link: myPromotions,
                     close_link: close,
                     cacheId: true
@@ -1405,6 +1448,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function profile_payments() {
                 self.navigate('profile_payments', true);
+                close();
+            }
+
+            function pastOrders() {
+                self.navigate('past_orders', true);
                 close();
             }
 
@@ -1912,6 +1960,33 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
             }
+        },
+        setPastOrdersContent: function() {
+            var customer = App.Data.customer,
+                req = customer.ordersRequest,
+                content;
+
+            if (req) {
+                App.Data.header.set({
+                    page_title: _loc.PROFILE_PAST_ORDERS,
+                    back_title: _loc.BACK,
+                    back: this.initialized ? window.history.back.bind(window.history) : this.navigate.bind(this, 'index')
+                });
+
+                content = {
+                    modelName: 'Profile',
+                    mod: 'Orders',
+                    model: customer,
+                    collection: customer.orders,
+                    className: 'profile-orders',
+                    cacheId: true
+                }
+            }
+
+            return {
+                req: req,
+                content: content
+            };
         }
     };
 
@@ -2133,6 +2208,26 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // run history tracking
             this.triggerInitializedEvent();
+        },
+        reorder: function(order_id) {
+            var customer = App.Data.customer,
+                orders = customer.orders,
+                dfd = Backbone.$.Deferred(),
+                errors = App.Data.errors,
+                reorder;
+
+            if (customer.isAuthorized()) {
+                reorder = customer.reorder(order_id);
+                reorder.always(dfd.resolve.bind(dfd));
+                reorder.fail(function() {
+                    errors.alert(_loc.PROFILE_ORDER_NOT_FOUND.replace(/%s/, order_id));
+                });
+            } else {
+                errors.alert(_loc.PROFILE_PLEASE_LOG_IN);
+                dfd.resolve();
+            }
+
+            return dfd;
         }
     });
 

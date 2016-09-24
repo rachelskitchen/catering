@@ -465,7 +465,12 @@ define({
          * @type {string}
          * @description The actual path of [pages_control_view]{@link module:pages_control_view} module.
          */
-        pages_control_view: 'js/views/pages_control'
+        pages_control_view: 'js/views/pages_control',
+        /**
+         * @type {string}
+         * @description The actual path of [orders]{@link module:orders} module.
+         */
+        orders: 'js/models/orders'
     },
     /**
      * A waiting time of a module loading.
@@ -525,7 +530,7 @@ define({
             deps: ["underscore", "jquery", "cssua"]
         },
         "customers": {
-            deps: ["backbone", "js_cookie", "page_visibility", "giftcard"]
+            deps: ["backbone", "js_cookie", "page_visibility", "giftcard", "orders"]
         },
         "errors" : {
             deps: ["backbone"]
@@ -691,6 +696,9 @@ define({
         },
         'pages_control_view' : {
             deps: ['factory']
+        },
+        'orders': {
+            deps: ['backbone']
         }
     },
     /**

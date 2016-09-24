@@ -524,3 +524,62 @@
         margin-bottom: 0.6em;
     }
 }
+
+.profile-orders .orders-empty {
+    margin: 1em 0;
+}
+
+.profile-orders .bottom-border {
+    padding: 1.5em 0;
+    border-bottom-width: 1px;
+    border-bottom-style: dashed;
+}
+
+.profile-orders .show-items::after {
+    content: '\f107';
+    font-family: 'FontAwesome';
+}
+
+.profile-orders .show-items.collapse::after {
+    content: '\f106';
+}
+
+.profile-orders .animate-spin::before,
+.profile-past-order .animate-spin::before {
+    content: '\f021';
+    font-family: 'FontAwesome';
+}
+
+.profile-orders .orders-item {
+    padding: 2em;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 1em;
+    margin: 2.5em 0;
+    overflow: hidden;
+}
+
+.profile-orders .order-item .qty {
+    padding: 0 0.6em;
+}
+
+.profile-orders .order-item .modifier_place {
+    margin-left: 4em;
+}
+
+.profile-orders .order-item .modifier_place > li {
+    margin: 0.4em 0;
+}
+
+.profile-orders .btn-reorder {
+    padding: 0.7em 0 0;
+}
+
+.profile-past-order .subtotal {
+    margin-top: 0.5em;
+}
+
+.profile-past-order .items-block {
+    display: block;
+    margin-top: 0.3em;
+}

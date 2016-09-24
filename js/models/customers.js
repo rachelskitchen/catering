@@ -28,7 +28,7 @@
  * @requires module:page_visibility
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], function(Backbone, FB, Cookies, page_visibility) {
+define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "orders"], function(Backbone, FB, Cookies, page_visibility) {
     'use strict';
 
     var cookieName = "user",
@@ -174,6 +174,12 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
              */
             access_token: "",
             /**
+             * Facebook access token.
+             * @type {string}
+             * @default ""
+             */
+            fb_token: "",
+            /**
              * If `true` cookie uses max-age property. Otherwise cookie exists within browser session.
              * @type {boolean}
              * @default true
@@ -190,7 +196,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             * @type {boolean}
             * @default false
             */
-            save_profile: false
+            save_profile: false,
+            /**
+             * Past order.
+             * @type {?App.Models.Order}
+             * @default null
+             */
+            pastOrder: null
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -205,7 +217,25 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
 
             // set tracking of cookie change when user leaves/returns to current tab
             page_visibility.on(this.trackCookieChange.bind(this));
+
+            /**
+             * Gift cards assigned to the customer.
+             * @member
+             * @alias App.Models.Customer#giftCards
+             * @type {App.Collections.GiftCards}
+             * @default instance of {@link App.Collections.GiftCards}
+             */
             this.giftCards = new App.Collections.GiftCards;
+
+            /**
+             * Customer's orders.
+             * @member
+             * @alias App.Models.Customer#orders
+             * @type {App.Collections.Orders}
+             * @default instance of {@link App.Collections.Orders}
+             */
+            this.orders = new App.Collections.Orders;
+            this.initOrders();
         },
         /**
          * Facebook SDK initialization
@@ -778,7 +808,10 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                     scope: '*',
                     instance: getInstanceName()
                 },
-                success: this.loginSuccessCallback,
+                success: function(data) {
+                    data.token.fb_token = access_token;
+                    this.loginSuccessCallback(data);
+                },
                 error: this.loginErrorCallback
             });
         },
@@ -797,6 +830,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             this.getAddresses();
             this.initGiftCards();
             this.setRewardCards();
+            this.initOrders();
             this.trigger('onLogin');
         },
         /**
@@ -839,6 +873,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             this.removePayments();
             this.removeGiftCards();
             this.removeRewardCards();
+            this.removeOrders();
             this.trigger('onLogout');
         },
         /**
@@ -1693,6 +1728,10 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 expires_in: data.token.expires_in
             });
 
+            if (data.token.fb_token) {
+                this.set('fb_token', data.token.fb_token);
+            }
+
             this.clearPasswords();
         },
         /**
@@ -2284,6 +2323,128 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          */
         getOrderAddress: function(address) {
             return this.get('addresses').getOrderAddress(address);
+        },
+        /**
+         * Calls {@link App.Models.Customer#getOrders getOrders()} method if user is authorized.
+         */
+        initOrders: function() {
+            this.isAuthorized() && this.getOrders();
+        },
+        /**
+         * Receives orders from server.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getOrders: function() {
+            if (!this.orders) {
+                return console.error("Orders have not been initialized yet");
+            }
+
+            var self = this,
+                req = this.orders.get_orders(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            req.done(function() {
+                // set first order as past order
+                self.orders.length && self.set('pastOrder', self.orders.at(0));
+            });
+
+            /**
+             * Orders request.
+             * @member
+             * @alias App.Models.Customer#ordersRequest
+             * @type {Backbone.$.Deferred}
+             * @default undefined
+             */
+            this.ordersRequest = req;
+
+            return req;
+        },
+        /**
+         * Receives order from server.
+         *
+         * @param {number} order_id - order id.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getOrder: function(order_id) {
+            if (!this.orders) {
+                return console.error("Orders have not been initialized yet");
+            }
+
+            var self = this,
+                req = this.orders.get_order(this.getAuthorizationHeader(), order_id);
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            return req;
+        },
+        /**
+         * Receives order items from server.
+         *
+         * @param {App.Models.Order} order - an order model.
+         * @returns {Object|undefined} jqXHR object.
+         */
+        getOrderItems: function(order) {
+            if (!(order instanceof App.Models.Order)) {
+                return;
+            }
+
+            var self = this,
+                req = order.setItems(this.getAuthorizationHeader());
+
+            req.fail(function(jqXHR) {
+                if (jqXHR.status == 403) {
+                    self.onForbidden();
+                }
+            });
+
+            return req;
+        },
+        /**
+         * Reorder.
+         *
+         * @param {number} order_id - order id
+         * @returns {Object} jQuery Deffered object.
+         */
+        reorder: function(order_id) {
+            var self = this,
+                dfd = Backbone.$.Deferred();
+
+            if (this.ordersRequest) {
+                this.ordersRequest.done(function() {
+                    var reorder = self.orders.reorder(self.getAuthorizationHeader(), order_id);
+                    reorder.done(dfd.resolve.bind(dfd));
+                    reorder.fail(dfd.reject.bind(dfd));
+                });
+                this.ordersRequest.fail(function(jqXHR) {
+                    if (jqXHR.status == 403) {
+                        self.onForbidden();
+                    }
+                    dfd.reject();
+                });
+            } else {
+                dfd.reject();
+            }
+
+            return dfd;
+        },
+        /**
+         * If {@link App.Models.Customer#ordersRequest ordersRequest} exists then the method aborts and deletes it.
+         * Resets customer {@link App.Models.Customer#ordersRequest orders}.
+         */
+        removeOrders: function() {
+            this.ordersRequest && this.ordersRequest.abort();
+            delete this.ordersRequest;
+            this.set('pastOrder', this.defaults.pastOrder);
+            this.orders.reset();
         }
     });
 
@@ -2457,7 +2618,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          */
         isProfileAddress: function() {
             return !isNaN(this.get('id')) && !!this.get('customer');
-        },
+        }
     });
 
     /**
@@ -2513,7 +2674,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
             });
         },
         /**
-         * Coverts the array of addresses objects from API to model format.
+         * Converts the array of addresses objects from API to model format.
          * This method gets called when {parse: true} is passed to the collection constructor.
          * @param   {array} addresses
          * @param   {object} options
@@ -2522,6 +2683,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
         parse: function(addresses, options) {
             return _.map(addresses, App.Models.CustomerAddress.prototype.convertFromAPIFormat);
         },
+        /**
+         * Emits `addressFieldsChanged` event passing the changed address model as parameter.
+         * This event fires when any of `street_1`, `street_2`, `city`, `state`, `province`,
+         * `country`, `zipcode`, `is_primary` attributes changes.
+         * `addressFieldsChanged` doesn't fire if either `state` or `country` changes to null.
+         * @param {App.Models.CustomerAddress} model - customer address
+         */
         onModelChange: function(model) {
             var changed = model.changedAttributes(),
                 keys = ['street_1', 'street_2', 'city', 'state', 'province', 'country', 'zipcode', 'is_primary'],
@@ -2530,7 +2698,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
                 });
 
             if (trigger) {
-                // default value is "" but select binging converts it to null
+                // default value is "" but select binding converts it to null
                 if ((_.isEqual(changed, {state: null}) || _.isEqual(changed, {country: null})) || _.isEqual(changed, {state: null, country: null})) {
                     return;
                 }
@@ -2601,14 +2769,16 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          * @returns {boolean}
          */
         isProfileAddressSelected: function() {
-            return this.getSelectedAddress() ? this.getSelectedAddress().isProfileAddress() : false;
+            var selected = this.getSelectedAddress();
+            return selected ? selected.isProfileAddress() : false;
         },
         /**
          * Checks whether the selected address is new (filled on checkout screen) and not from user profile.
          * @returns {Boolean} [description]
          */
         isNewAddressSelected: function() {
-            return this.getSelectedAddress() ? !this.getSelectedAddress().isProfileAddress() : false;
+            var selected = this.getSelectedAddress();
+            return selected ? !selected.isProfileAddress() : false;
         },
         /**
          * Get address set for shipping/delivery or default address set in backend.
@@ -2676,8 +2846,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard"], fun
          * @returns {object} address object.
          */
         getOrderAddress: function(address) {
-            var address = _.isObject(address) ? address :
-                this.getSelectedAddress() ? this.getSelectedAddress().toJSON() : null;
+            var selected = this.getSelectedAddress(),
+                address = _.isObject(address) ? address : selected ? selected.toJSON() : null;
 
             if (!address) {
                 return;

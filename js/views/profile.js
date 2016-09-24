@@ -231,7 +231,16 @@ define(["factory"], function() {
             'click .settings-link:not(.disabled)': setCallback('settings_link'),
             'click .payments-link:not(.disabled)': setCallback('payments_link'),
             'click .profile-link:not(.disabled)': setCallback('profile_link'),
+            'click .past-orders:not(.disabled)': setCallback('orders_link'),
             'click .close': setCallback('close_link')
+        },
+        onEnterListeners: {
+            '.login-link': setCallback('login_link'),
+            '.logout-link': setCallback('logout_link'),
+            '.settings-link:not(.disabled)': setCallback('settings_link'),
+            '.payments-link:not(.disabled)': setCallback('payments_link'),
+            '.profile-link:not(.disabled)': setCallback('profile_link'),
+            '.past-orders:not(.disabled)': setCallback('orders_link')
         }
     });
 
@@ -495,7 +504,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         bindings: {
             '.update-btn': 'classes: {disabled: updateBtn_disabled}',
             '.successful-update': 'classes: {visible: ui_show_response}',
-            '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}'
+            '.profile-attention': 'classes: {stash: select(ui_show_attention, false, true)}',
+            '.account-password-container': 'toggle: toggleChangePassword'
+        },
+        computeds: {
+            toggleChangePassword: {
+                deps: ['fb_token'],
+                get: function(fb_token) {
+                    return !(typeof fb_token === 'string' && fb_token.length);
+                }
+            }
         },
         events: {
             'click .update-btn:not(.disabled)': setCallback('updateAction')
@@ -553,7 +571,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.current-password': 'value: password, events:["input"], pattern: /^.{0,255}$/',
             '.new-password': 'value: confirm_password, events:["input"], pattern: /^.{0,255}$/, attr: {type: getFieldType(show_password)}',
             '.account-password-field': 'classes: {required: any(password, confirm_password)}',
-            '.show-password': 'text: getButtonText(show_password)'
+            '.show-password': 'text: getButtonText(show_password)',
+            '.account-password-container': 'toggle: toggleChangePassword'
         },
         bindingFilters: {
             getFieldType: function(show_password) {
@@ -561,6 +580,14 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             },
             getButtonText: function(show_password) {
                 return show_password ? _loc.PROFILE_HIDE_PASSWORD : _loc.PROFILE_SHOW_PASSWORD;
+            }
+        },
+        computeds: {
+            toggleChangePassword: {
+                deps: ['fb_token'],
+                get: function(fb_token) {
+                    return !(typeof fb_token === 'string' && fb_token.length);
+                }
             }
         },
         events: {
@@ -635,6 +662,11 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             'click .login-link': controlLinks(false, true, false, false),
             'click .logged-as': controlLinks(false, false, true, false),
             'click .close': controlLinks(false, false, false, false)
+        },
+        onEnterListeners: {
+            '.signup-link': controlLinks(true, false, false, false),
+            '.login-link': controlLinks(false, true, false, false),
+            '.logged-as': controlLinks(false, false, true, false)
         },
         bindingSources: {
             ui: function() {
@@ -1222,6 +1254,104 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'terms_of_use'
     });
 
+    App.Views.CoreProfileView.CoreProfileOrderItemView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'order_item',
+        tagName: 'li',
+        bindings: {
+            '.name': 'text: name',
+            '.qty': 'text: quantity',
+            '.price': 'text: currencyFormat(sum)'
+        },
+        computeds: {
+            name: function() {
+                var product = this.model.get_product(),
+                    modifiers = this.model.get_modifiers(),
+                    sizeModifier = modifiers && modifiers.getSizeModel(),
+                    name = product.get('name');
+
+                if (sizeModifier) {
+                    name = sizeModifier.get('name') + ' ' + name;
+                }
+
+                return name;
+            }
+        }
+    })
+
+    App.Views.CoreProfileView.CoreProfileOrdersItemView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'orders_item',
+        tagName: 'li',
+        bindings: {
+            '.show-items': 'classes: {collapse: ui_collapse}',
+            '.order-items-box': 'classes: {hide: not(ui_collapse)}',
+            '.created-at': 'text: created_date',
+            '.order-id': 'text: id',
+            '.qty': 'text: items_qty',
+            '.subtotal': 'text: currencyFormat(subtotal)',
+            '.animate-spin': 'classes: {hide: length($orderItems)}',
+            '.items': 'collection: $orderItems, itemView: "itemView"'
+        },
+        itemView: function(opts) {
+            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+                mod: 'OrderItem',
+                order: opts.collectionView.model
+            }), opts.model.get('id'));
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({collapse: false});
+            }
+        },
+        events: {
+            'click .show-items': 'showItems',
+            'click .btn': 'reorder'
+        },
+        onEnterListeners: {
+            '.show-items': 'showItems',
+            '.btn': 'reorder'
+        },
+        showItems: function() {
+            var ui = this.getBinding('$ui');
+            ui.set('collapse', !ui.get('collapse'));
+            this.options.customer.getOrderItems(this.model);
+        },
+        reorder: function() {
+            this.options.customer.trigger('onReorder', this.model.get('id'));
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileOrdersView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'orders',
+        itemView: App.Views.CoreProfileView.CoreProfileOrderItemView,
+        bindings: {
+            '.orders-empty': 'toggle: noOrders',
+            '.orders-list': 'collection: $collection, itemView: "itemView"'
+        },
+        computeds: {
+            noOrders: {
+                deps: ['$collection'],
+                get: function($collection) {
+                    var ordersRequest = this.model.ordersRequest;
+                    if (ordersRequest && ordersRequest.state() == 'resolved' && !$collection.length) {
+                        return true;
+                    }
+                }
+            }
+        },
+        itemView: function(opts) {
+            // Do not use `this` keyword here.
+            // It refers to new created object.
+            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+                mod: 'OrdersItem',
+                customer: opts.collectionView.model,
+                orderItems: opts.model.get('items')
+            }), opts.model.get('id'));
+        }
+    });
+
     function controlLinks(showSignUp, showLogIn, showMenu, showPWDReset) {
         return function() {
             this.getBinding('$ui').set({
@@ -1272,5 +1402,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         App.Views.ProfileView.ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView;
         App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView;
         App.Views.ProfileView.ProfileTermsOfUseView = App.Views.CoreProfileView.CoreProfileTermsOfUseView;
+        App.Views.ProfileView.ProfileOrderItemView = App.Views.CoreProfileView.CoreProfileOrderItemView;
+        App.Views.ProfileView.ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView;
+        App.Views.ProfileView.ProfileOrdersView = App.Views.CoreProfileView.CoreProfileOrdersView;
     });
 });
