@@ -1,3 +1,6 @@
+/**
+ * To show uncovered ternary need to use $('.branchWarning') in expanded file
+ */
 var tests_list = [
     'test_About',
     'test_Captcha',
@@ -6,7 +9,7 @@ var tests_list = [
     'test_Checkout',
     'test_ChildProducts',
     'test_CollectionSort',
-    'test_Customers',
+    // 'test_Customers',
     'test_Payments',
     'test_Delivery',
     'test_Errors',
