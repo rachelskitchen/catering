@@ -124,13 +124,22 @@ define(["backbone"], function(Backbone) {
              * @type {?object}
              * @default null
              */
-            actual_data: null
+            actual_data: null,
+            /**
+             * Indicates whether a modifier item can be splitted
+             * @type {boolean}
+             * @default false
+             */
+            split: false
         },
         /**
          * Sets `img` value as App.Data.settings.get('img_path').
+         * Controls the modifier splitting ability.
          */
         initialize: function() {
             this.set('img', App.Data.settings.get('img_path'));
+            this.controlSplitAbility();
+            this.listenTo(this, 'change:qty_type', this.controlSplitAbility);
         },
         /**
          * Sets attributes using `data` object.
@@ -273,13 +282,22 @@ define(["backbone"], function(Backbone) {
             }
 
             // if modifier is inactive right now
-            // need to remove it from colection
+            // need to remove it from collection
             if (!actual_data.active && this.collection) {
                 changes.push('active');
                 this.collection.remove(this);
             }
 
             return changes;
+        },
+        /**
+         * Checks the ability to split the modifier.
+         * If the modifier splitting is disallowed need to change `qty_type` to default value (full modifier).
+         */
+        controlSplitAbility: function() {
+            if (!this.get('split')) {
+                this.set('qty_type', this.defaults.qty_type);
+            }
         }
     });
 
@@ -313,6 +331,12 @@ define(["backbone"], function(Backbone) {
             return model.get('sort');
         },
         /**
+         * Indicates whether a modifier item can be splitted
+         * @type {boolean}
+         * @default false
+         */
+        split: false,
+        /**
          * Adds new items.
          * @param {Array} data - JSON representation of items
          * @returns {App.Collections.Modifiers} The collection.
@@ -320,7 +344,7 @@ define(["backbone"], function(Backbone) {
         addJSON: function(data) {
             var self = this;
             Array.isArray(data) && data.forEach(function(element) {
-                var modifier = new App.Models.Modifier();
+                var modifier = new App.Models.Modifier({split: self.split});
                 modifier.addJSON(element);
                 self.add(modifier);
             });
@@ -332,6 +356,7 @@ define(["backbone"], function(Backbone) {
          */
         clone: function() {
             var newModifiers = new App.Collections.Modifiers();
+            newModifiers.split = this.split;
             this.each(function(modifier) {
                newModifiers.add(modifier.clone()) ;
             });
@@ -344,6 +369,7 @@ define(["backbone"], function(Backbone) {
          */
         update: function(newModifiers) {
             var self = this;
+            this.split = newModifiers.split;
             newModifiers.each(function(modifier) {
                 var oldModifier = self.get(modifier);
                 if (oldModifier) {
@@ -489,7 +515,8 @@ define(["backbone"], function(Backbone) {
          * - `true` - 'Price' type.
          * - `false` - 'Quantity' type.
          * @property {Array} amount_free_selected=[] - array of modifiers that are considered as free
-         * @property {boolean} ignore_free_modifiers=false - disables 'Free Modifiers' feature
+         * @property {boolean} ignore_free_modifiers=false - disables 'Free Modifiers' feature,
+         * @property {boolean} split - indicates whether a modifier item can be splitted
          */
         defaults: function() {
             return {
@@ -508,28 +535,34 @@ define(["backbone"], function(Backbone) {
                 amount_free_is_dollars: false, // true - 'Price', false - 'Quantity', receive from server
                 amount_free_selected: [],
                 ignore_free_modifiers: false,
-                forced: false
+                forced: false,
+                split: false
             };
         },
         /**
          * Inits handlers for free modifiers.
          */
         initialize: function() {
-            this.listenTo(this, 'change:modifiers', function(model) {
-                var prevModifiers = model.previousAttributes().modifiers;
-                prevModifiers instanceof Backbone.Collection && this.stopListening(prevModifiers);
-                if (!App.Data.loadFromLocalStorage) {
-                    this.set('amount_free_selected', []);
-                    this.initFreeModifiers();
-                    this.listenToModifiers();
-                }
-            }, this);
+            this.listenTo(this, 'change:modifiers', this.onModifiersChange);
 
             this.set({
                 amount_free_selected: []
             });
 
             this.checkAmountFree();
+        },
+        /**
+         * Handles `modifiers` attribute change.
+         * @param {App.Models.ModifierBlock} model - the model
+         */
+        onModifiersChange: function(model) {
+            var prevModifiers = model.previousAttributes().modifiers;
+            prevModifiers instanceof Backbone.Collection && this.stopListening(prevModifiers);
+            if (!App.Data.loadFromLocalStorage) {
+                this.set('amount_free_selected', []);
+                this.initFreeModifiers();
+                this.listenToModifiers();
+            }
         },
         /**
          * Sets attributes values using `data` object. Converts `data.modifiers` array to {@link App.Collections.Modifiers}.
@@ -540,6 +573,7 @@ define(["backbone"], function(Backbone) {
             data.forced = data.minimum_amount > 0 ? true : false;
             this.set(data);
             var modifiers = new App.Collections.Modifiers();
+            modifiers.split = this.get('split');
             modifiers.addJSON(data.modifier || data.modifiers);
             this.set('modifiers', modifiers);
             this.checkAmountFree();
@@ -1241,7 +1275,7 @@ define(["backbone"], function(Backbone) {
             App.Data.modifiers[id_product] = new App.Collections.ModifierBlocks;
             modifier_load = App.Data.modifiers[id_product].get_modifiers(id_product);
         } else {
-            modifier_load = $.Deferred().resolve();
+            modifier_load = Backbone.$.Deferred().resolve();
         }
 
         return modifier_load;
@@ -1260,7 +1294,7 @@ define(["backbone"], function(Backbone) {
             App.Data.quickModifiers = new App.Collections.ModifierBlocks;
             fetching = App.Data.quickModifiers.get_quick_modifiers();
         } else {
-            fetching = $.Deferred().resolve();
+            fetching = Backbone.$.Deferred().resolve();
         }
 
         return fetching;

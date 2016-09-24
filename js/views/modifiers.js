@@ -39,6 +39,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity)',
+            '.mdf_split': 'classes: {hide: not(split)}',
             '.mdf_split select': 'value: decimal(qty_type), change_split_modifier: qty_type'
         },
         bindingHandlers: {
