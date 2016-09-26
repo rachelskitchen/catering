@@ -39,7 +39,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 App.Views.FactoryView.prototype.initialize.apply(self, arguments);
                 self.updateAddress();
                 self.listenTo(App.Data.customer, 'change:access_token', self.updateAddress);
-                self.listenTo(App.Data.customer.get('addresses'), 'update_model', self.updateModel);
             });
         },
         initModel: function() {
@@ -82,22 +81,6 @@ define(['backbone', 'factory'], function(Backbone) {
 
             this.model = new Backbone.Model(model);
             this.prevValues = model;
-        },
-        updateModel: function() {
-            var model = this.options.customer.get('addresses').getSelectedAddress().toJSON();
-
-            var updatedAddressObj = {
-                street_1: model.street_1,
-                street_2: model.street_2,
-                city: model.city,
-                state: model.state,
-                province: model.province,
-                zipcode: model.zipcode,
-                country: model.country
-            };
-
-            //trace("updateModel =>", updatedAddressObj);
-            this.model.set(updatedAddressObj);
         },
         bindings: {
             'input[name="street_1"]': 'value: firstLetterToUpperCase(street_1), events: ["input"], trackCaretPosition: street_1',
@@ -150,7 +133,7 @@ define(['backbone', 'factory'], function(Backbone) {
             e.target.value = e.target.value.trim();
             if (this.prevValues[e.target.name] != e.target.value) {
                 this.prevValues[e.target.name] = e.target.value;
-                this.updateAddressData();
+                this.updateAddress();
             }
         },
         countryChange: function(e) {
@@ -171,11 +154,11 @@ define(['backbone', 'factory'], function(Backbone) {
             model.province = model.country == 'CA' ? '' : undefined;
             this.model.set(model);
 
-            this.updateAddressData();
+            this.updateAddress();
         },
         changeState: function(e) {
             this.model.set({'state': e.target.value, 'originalState': e.target.value});
-            this.updateAddressData();
+            this.updateAddress();
         },
         updateAddress: function() {
             var customer = this.options.customer,
@@ -200,13 +183,6 @@ define(['backbone', 'factory'], function(Backbone) {
                     addresses.add(selectedAddress);
                 }
             }
-        },
-        updateAddressData: function() {
-            var customer = this.options.customer,
-                addresses = customer.get('addresses'),
-                model = this.model.toJSON(),
-                updatedAddressObj,
-                selectedAddress = addresses.getSelectedAddress();
 
             updatedAddressObj = {
                 street_1: model.street_1,
@@ -228,7 +204,7 @@ define(['backbone', 'factory'], function(Backbone) {
             this.options.addresses = this.options.customer.get('addresses');
             _.extend(this.bindingSources, {
                 addresses: this.options.customer.get('addresses'),
-                viewModel: new Backbone.Model({selected_address_changed: null}) //dummi value
+                viewModel: new Backbone.Model({address_edit: null}) //dummi value
             });
 
             this.isShippingServices = this.options.checkout && this.options.checkout.get('dining_option') === 'DINING_OPTION_SHIPPING';
@@ -239,7 +215,7 @@ define(['backbone', 'factory'], function(Backbone) {
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
 
             this.listenTo(this.options.addresses, 'change:selected', function() {
-                self.bindingSources.viewModel.trigger('change:selected_address_changed');
+                self.bindingSources.viewModel.trigger('change:address_edit');
             });
         },
         bindings: {
@@ -270,6 +246,7 @@ define(['backbone', 'factory'], function(Backbone) {
                         var address = addr.toJSON();
                         return addr.isProfileAddress() && address.street_1 && address.city && address.country && address.zipcode
                             && (checkout_dining_option == 'DINING_OPTION_DELIVERY' ? address.country == App.Settings.address.country : true)
+                            && (checkout_dining_option == 'DINING_OPTION_CATERING' ? address.country == App.Settings.address.country : true)
                             && (address.country == 'US' ? address.state : true) && (address.country == 'CA' ? address.province : true);
                     }).length;
                 }
@@ -278,7 +255,7 @@ define(['backbone', 'factory'], function(Backbone) {
             *  Indicates whether the view shows or hides editable address fields
             */
             toggleAddressEdit: {
-                deps: ['viewModel_selected_address_changed'],
+                deps: ['viewModel_address_edit'],
                 get: function() {
                     return !this.getBinding('isAuthorized') || !this.getBinding('customer_addresses').isProfileAddressSelected() || !this.getBinding('showAddressSelection');
                 }
@@ -361,10 +338,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 myorder.update_cart_totals();
             }
         },
-        updateAddressData: function() {
-            App.Views.AddressView.prototype.updateAddressData.apply(this, arguments);
-            this.updateAddress();
-        },
         updateAddress: function() {
             App.Views.AddressView.prototype.updateAddress.apply(this, arguments);
             var dining_option = this.options.checkout.get('dining_option'),
@@ -384,7 +357,7 @@ define(['backbone', 'factory'], function(Backbone) {
         initialize: function() {
             this.options.addresses = this.options.customer.get('addresses');
             _.extend(this.bindingSources, {
-                addresses: this.options.customer.get('addresses'),
+                addresses: this.options.customer.get('addresses')
             });
             this.listenTo(this.options.customer, 'change:access_token', function(customer, value) {
                 if (!value) {
@@ -421,7 +394,7 @@ define(['backbone', 'factory'], function(Backbone) {
             }
         }),
         events: {
-            'change #addresses': 'changeSelection',
+            'change #addresses': 'changeSelection'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -440,7 +413,6 @@ define(['backbone', 'factory'], function(Backbone) {
                 addr = addresses.get(addressId);
             if (!addr) {
                 addr = new App.Models.CustomerAddress({id: addressId});
-                addresses.add(addr);
             }
             addr && addr.set('selected', true);
         },
@@ -465,7 +437,7 @@ define(['backbone', 'factory'], function(Backbone) {
                         return address && address.street_1 && address.city && address.country && address.zipcode
                             && (dining_option == 'DINING_OPTION_DELIVERY' ? address.country == App.Settings.address.country : true)
                             && (address.country == 'US' ? address.state : true) && (address.country == 'CA' ? address.province : true)
-                            ? {label: address.street_1, value: address.id} : undefined;
+                            ? {label: address.address, value: address.id} : undefined;
                     }
                     else {
                         return undefined;

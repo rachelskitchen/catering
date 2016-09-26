@@ -267,7 +267,7 @@ input[type="radio"]:checked + .radio::before,
     border-top-right-radius: 5em;
     border-bottom-right-radius: 5em;
     position: absolute;
-    top: 6px;
+    top: 5px;
     right: 5px;
     pointer-events: none;
     background: inherit;

@@ -52,11 +52,11 @@
 }
 
 .checkout-order-details .size2[class] {
-    width: 200px;
+    width: 230px;
 }
 
 .checkout-order-details .size3[class] {
-    width: 87px;
+    width: 316px;
 }
 
 .checkout-order-details .size4[class] {
@@ -71,7 +71,8 @@
 }
 
 .checkout-order-details .notes {
-    width: 466px;
+    width: 487px;
+    margin: 4px;
 }
 
 .checkout-order-details .payment-methods-label[class] {
@@ -162,20 +163,11 @@
     height: 100%;
 }
 
-.change_address_link,
-.select_saved_address_link {
-    line-height: 50px;
-    padding-top: 26px;
+.checkout-order-details .change_address_link {
+    margin-top: 31px;
+    padding: 14px 20px;
 }
 
-.change_address_link .link,
-.select_saved_address_link .link {
-    text-decoration: underline;
-    font-size: 1rem;
+#addresses {
+    min-width: 487px;
 }
-
-.save_profile {
-    font-size: 1rem;
-    line-height: 75px;
-}
-
