@@ -789,7 +789,7 @@ define(["main_router"], function(main_router) {
 							App.NotificationManager.create({
                                 model: new Backbone.Model({
                                     image: product.get('image'),
-                                    title: 'Item added',
+                                    title: _loc.CART_ITEM_ADDED,
                                     text: product.get('name')
                                 })
                             });
