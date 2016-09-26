@@ -110,7 +110,7 @@
     display: inline-block;
 }
 
-.animated {
+.filters.animated {
     -webkit-animation-duration: .75s;
     -webkit-animation-fill-mode: both;
     -moz-animation-duration: .75s;
