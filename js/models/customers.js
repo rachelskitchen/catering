@@ -191,12 +191,6 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
              * @default "https://identity-dev.revelup.com/customers-auth/v1"
              */
             serverURL: "https://identity-dev.revelup.com/customers-auth/v1",
-            /*
-            * Save changed/new addresses in the profile
-            * @type {boolean}
-            * @default false
-            */
-            save_profile: false,
             /**
              * Past order.
              * @type {?App.Models.Order}
@@ -2535,11 +2529,17 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
              */
             city: '',
             /**
-             * String representation of address.
+             * String representation of full address line.
              * @type {String}
              * @default ''
              */
             address: ''
+        },
+        /**
+         * Sets `address` attribute value.
+         */
+        initialize: function() {
+            this.set('address', this.toString());
         },
         /**
          * Converts the address objects from API to model format.
@@ -2762,7 +2762,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          *   - undefined otherwise
          */
         getSelectedAddress: function() {
-            return this.change_address || this.findWhere({selected: true});
+            return this.findWhere({selected: true});
         },
         /**
          * Checks whether the selected address is from user profile.
