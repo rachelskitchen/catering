@@ -428,10 +428,15 @@ define(['products', 'filters'], function() {
                     success: function(data) {
                         switch (data.status) {
                             case 'OK':
-                                products.forEach(function(product) {
-                                    var children = _.findWhere(data.data, {product: product.id});
-                                    product.set_child_products(children.data);
-                                });
+                                if (products.length === 1) {
+                                    products[0].set_child_products(data.data);
+                                }
+                                else {
+                                    products.forEach(function(product) {
+                                        var children = _.findWhere(data.data, {product: product.id});
+                                        product.set_child_products(children.data);
+                                    });
+                                }
                                 def.resolve();
                                 break;
                             default:
