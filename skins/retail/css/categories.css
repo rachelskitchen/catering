@@ -1,5 +1,4 @@
 .categories-tree {
-    width: 189px;
     border-width: 0 0 1px;
     border-style: solid;
 }
@@ -85,7 +84,6 @@
 
 .categories-tree .name.active {
     cursor: default;
-    background-color: #7a7d80;
 }
 
 .categories-tree .checkbox {
