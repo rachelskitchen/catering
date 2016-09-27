@@ -117,7 +117,13 @@ define(['products', 'filters'], function() {
              * @type {App.Collections.Filters}
              * @default null
              */
-            filters: null
+            filters: null,
+            /**
+             * Attributes filters.
+             * @type {boolean}
+             * @default false
+             */
+            isParentCategory: false
         },
         /**
          * Initializes `products` attribute as new instance of App.Collections.Products and `filters` attribute as new instance of App.Collections.Filters.
@@ -130,6 +136,12 @@ define(['products', 'filters'], function() {
             this.listenTo(products, 'reset add remove', this.updateFilters);
         },
         /**
+         * Checks current category is parent or not
+         */
+        setCategoryStatus: function() {
+            this.set('isParentCategory', (this.get('id') === this.defaults.id || String(this.get('id')).split(',').length > 1));
+        },
+        /**
          * Updates `filters` collection depending on `attribute1`, `attribute2` values of products.
          *
          * @param {Backbone.Collection} collection - products collection that provides attributes for filters
@@ -140,7 +152,7 @@ define(['products', 'filters'], function() {
                 return;
             }
 
-            var isParentCategory = Array.isArray(App.Data.categorySelection.get('subCategory')),
+            var isParentCategory = this.get('isParentCategory'),
                 filters = this.get('filters');
 
             if (isParentCategory) {
@@ -151,7 +163,6 @@ define(['products', 'filters'], function() {
             var products = this.get('products'),
                 attr1 = products.getAttributeValues(1),
                 attr2 = products.getAttributeValues(2),
-                // filters = this.get('filters'),
                 filtersData = [],
                 prop, filterItem;
 
@@ -285,9 +296,7 @@ define(['products', 'filters'], function() {
         updateProducts: function() {
             var page_size = this.pageModel.get('page_size'),
                 start_index = (this.pageModel.get('cur_page') - 1) * page_size,
-                isFiltersSelected = this.get('filters').isSomeSelected(),
-                isParentCategory = Array.isArray(App.Data.categorySelection.get('subCategory')),
-                ignoreFilters = isParentCategory || !isFiltersSelected;
+                ignoreFilters = this.get('isParentCategory');
 
             var products = this.getPortion(start_index, page_size, {ignoreFilters: ignoreFilters});
 
@@ -316,6 +325,7 @@ define(['products', 'filters'], function() {
                 var dfd = self.loadProductsChildren();
 
                 dfd.always(function() {
+                    self.setCategoryStatus();
                     self.updateFilters();
                     self.onFiltered();
                     App.Data.sortItems.sortCollection(self.get('products'));
@@ -413,7 +423,7 @@ define(['products', 'filters'], function() {
 
             // get products that have attributes
             var products = this.get('products').filter(function(model) {
-                return model.get('attribute_type') === 1 && !model.get('child_products');
+                return model.isParent() && !model.get('child_products');
             });
 
             if (products.length) {
