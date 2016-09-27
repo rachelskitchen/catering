@@ -98,7 +98,7 @@
         'MAIN_SECTION': 'Section',
         'MAIN_ROW': 'Row',
         'MAIN_SEAT': 'Seat',
-        'MAIN_REWARD_CARD_POINTS': 'Loyalty Card Points',
+        'MAIN_REWARD_CARD_POINTS': 'Loyalty Number Points',
         'MAIN_REWARD_CARD_VISITS': 'Points for Visits',
         'MAIN_REWARD_CARD_PURCHASES': 'Points for Purchases',
         'MAIN_TOTAL_AMOUNT_CHARGED': 'Total Amount Charged',
