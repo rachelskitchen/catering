@@ -503,7 +503,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             this.set('child_products', new App.Collections.ChildProducts);
 
             var child = this.get('child_products'),
-                inventory = App.Data.settings.get('settings_system').cannot_order_with_empty_inventory,
+                inventory = App.Settings.cannot_order_with_empty_inventory,
                 self = this;
 
             this.listenTo(child, 'change:active', this.update_active);

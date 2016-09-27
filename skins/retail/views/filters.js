@@ -57,15 +57,7 @@ define(["./tree"], function(tree_view) {
         itemView: FilterItemsView,
         bindings: {
             '.filters-list': 'collection: $collection, itemView: "itemView", toggle: not(ui_collapsed)',
-            '.tree-title': 'toggle: hasFilters'
-        },
-        computeds: {
-            hasFilters: {
-                deps: ['$collection'],
-                get: function(collection) {
-                    return Boolean(collection.length);
-                }
-            }
+            '.tree-title': 'toggle: length($collection)'
         },
         bindingSources: {
             ui: function() {
