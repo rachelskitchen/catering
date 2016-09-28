@@ -2539,7 +2539,12 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          * Sets `address` attribute value.
          */
         initialize: function() {
-            this.set('address', this.toString());
+            var self = this;
+            updateAddress();
+            this.listenTo(this, 'change', updateAddress);
+            function updateAddress() {
+                self.set('address', self.toString());
+            }
         },
         /**
          * Converts the address objects from API to model format.

@@ -183,7 +183,18 @@
 
     var RewardsCardProfileView = App.Views.CoreRewardsView.CoreRewardsCardView.extend({
         name: 'profile',
-        mod: 'rewardcard'
+        mod: 'rewardcard',
+        bindings: {
+            '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}'
+        },
+        bindingFilters: {
+            showLogo: function(url) {
+                if (typeof url != 'string') {
+                    return '';
+                }
+                return 'background-image: url(%s);'.replace('%s', url);
+            }
+        }
     });
 
     var RewardsItemApplicationView = App.Views.FactoryView.extend({

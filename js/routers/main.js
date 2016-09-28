@@ -931,8 +931,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             var customer = App.Data.customer,
                 promises = [],
                 paymentsDef = Backbone.$.Deferred(),
-                giftCardsDef = Backbone.$.Deferred(),
-                rewardCardsDef = Backbone.$.Deferred();
+                giftCardsDef = Backbone.$.Deferred();
 
             // payments are available
             if (customer.payments && customer.paymentsRequest) {
@@ -944,12 +943,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             if (customer.giftCards && customer.giftCardsRequest) {
                 customer.giftCardsRequest.always(giftCardsDef.resolve.bind(giftCardsDef));
                 promises.push(giftCardsDef);
-            }
-
-            // gift cards are available
-            if (customer.get('rewardCards') && customer.rewardCardsRequest) {
-                customer.rewardCardsRequest.always(rewardCardsDef.resolve.bind(rewardCardsDef));
-                promises.push(rewardCardsDef);
             }
 
             return promises;
@@ -1033,6 +1026,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     payments_link: profilePayments,
                     profile_link: profileEdit,
                     orders_link: pastOrders,
+                    loyalty_link: loyaltyProgram,
                     my_promotions_link: myPromotions,
                     cacheId: true
                 }
@@ -1139,6 +1133,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function pastOrders() {
                 self.navigate('past_orders', true);
+                customer.trigger('hidePanel');
+            }
+
+            function loyaltyProgram() {
+                self.navigate('loyalty_program', true);
                 customer.trigger('hidePanel');
             }
         },
@@ -1308,7 +1307,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         ui: new Backbone.Model({show_response: false}),
                         removeToken: removeToken,
                         unlinkGiftCard: unlinkGiftCard,
-                        unlinkRewardCard: unlinkRewardCard,
                         myorder: App.Data.myorder,
                         className: 'profile-edit'
                     }
@@ -1359,14 +1357,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
                 }
             }
-
-            function unlinkRewardCard(rewardCard) {
-                var req = customer.unlinkRewardCard(rewardCard);
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
-            }
         },
         setPastOrdersContent: function() {
             var customer = App.Data.customer,
@@ -1394,6 +1384,70 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             function logout() {
                 self.navigate('index', true);
             }
+        },
+        setLoyaltyProgramContent: function() {
+            var customer = App.Data.customer,
+                mainModel = App.Data.mainModel,
+                req = customer.get('rewardCards') && customer.rewardCardsRequest,
+                self = this;
+
+            if (req) {
+                App.Data.mainModel.set({
+                    content: {
+                        modelName: 'Profile',
+                        mod: 'RewardCardsEdition',
+                        model: customer,
+                        collection: customer.get('rewardCards'),
+                        unlinkRewardCard: unlinkRewardCard,
+                        linkRewardCard: linkRewardCard,
+                        className: 'profile-edit'
+                    }
+                });
+
+                window.setTimeout(function() {
+                    self.listenTo(customer, 'onLogout', logout);
+                }, 0);
+            }
+
+            return req;
+
+            function logout() {
+                self.navigate('index', true);
+            }
+
+            function unlinkRewardCard(rewardCard) {
+                var req = customer.unlinkRewardCard(rewardCard);
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                }
+            }
+
+            function linkRewardCard(rewardCard) {
+                var req = customer.linkRewardCard(rewardCard);
+
+                self.listenToOnce(rewardCard, 'onLinkError', onError);
+
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.done(function(data){
+                        if (data && data.status == 'OK') {
+                            App.Data.myorder.rewardsCard.selectRewardCard(rewardCard);
+                        }
+                    });
+                    req.error(onError);
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                    return req;
+                }
+
+                return req;
+
+                function onError(errorMsg) {
+                    if (errorMsg){
+                        App.Data.errors.alert(errorMsg);
+                    }
+                }
+            }
         }
     };
 
@@ -1414,6 +1468,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     payments_link: profile_payments,
                     profile_link: profile_edit,
                     orders_link: pastOrders,
+                    loyalty_link: loyaltyProgram,
                     my_promotions_link: myPromotions,
                     close_link: close,
                     cacheId: true
@@ -1453,6 +1508,11 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             function pastOrders() {
                 self.navigate('past_orders', true);
+                close();
+            }
+
+            function loyaltyProgram() {
+                self.navigate('loyalty_program', true);
                 close();
             }
 
