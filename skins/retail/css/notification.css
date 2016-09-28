@@ -65,5 +65,7 @@
 
 .notification-box .text {
     line-height: 1.25;
+    max-height: 2.5em;
+    overflow-y: hidden;
     font-size: 16px;
 }
