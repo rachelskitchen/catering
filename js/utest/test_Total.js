@@ -158,23 +158,10 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
 
         it('get_tip()', function() {
             var subtotalValue = 50,
-                tipValue = 12,
-                discountsValue = 2.5,
-                serviceFeeValue = 5,
-                myorder = App.Data.myorder;
-
-            App.Data.myorder = {
-                get_service_fee_charge: function() {
-                    return serviceFeeValue;
-                }
-            };
+                tipValue = 12;
 
             spyOn(total, 'get_subtotal').and.callFake(function() {
                 return subtotalValue;
-            });
-
-            spyOn(total, 'get_discounts_str').and.callFake(function() {
-                return discountsValue;
             });
 
             spyOn(tip, 'get_tip').and.callFake(function() {
@@ -185,10 +172,7 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
 
             expect(round_monetary_currency).toHaveBeenCalledWith(tipValue);
             expect(total.get_subtotal).toHaveBeenCalled();
-            expect(total.get_discounts_str).toHaveBeenCalled();
-            expect(tip.get_tip).toHaveBeenCalledWith(subtotalValue, discountsValue, serviceFeeValue);
-
-            App.Data.myorder = myorder;
+            expect(tip.get_tip).toHaveBeenCalledWith(subtotalValue);
         });
 
         it('get_grand()', function() {
