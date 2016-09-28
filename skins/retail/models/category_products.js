@@ -117,7 +117,13 @@ define(['products', 'filters'], function() {
              * @type {App.Collections.Filters}
              * @default null
              */
-            filters: null
+            filters: null,
+            /**
+             * Attributes filters.
+             * @type {boolean}
+             * @default false
+             */
+            isParentCategory: false
         },
         /**
          * Initializes `products` attribute as new instance of App.Collections.Products and `filters` attribute as new instance of App.Collections.Filters.
@@ -130,6 +136,12 @@ define(['products', 'filters'], function() {
             this.listenTo(products, 'reset add remove', this.updateFilters);
         },
         /**
+         * Checks current category is parent or not
+         */
+        setCategoryStatus: function() {
+            this.set('isParentCategory', (this.get('id') === this.defaults.id || String(this.get('id')).split(',').length > 1));
+        },
+        /**
          * Updates `filters` collection depending on `attribute1`, `attribute2` values of products.
          *
          * @param {Backbone.Collection} collection - products collection that provides attributes for filters
@@ -140,10 +152,17 @@ define(['products', 'filters'], function() {
                 return;
             }
 
+            var isParentCategory = this.get('isParentCategory'),
+                filters = this.get('filters');
+
+            if (isParentCategory) {
+                filters.reset();
+                return;
+            }
+
             var products = this.get('products'),
                 attr1 = products.getAttributeValues(1),
                 attr2 = products.getAttributeValues(2),
-                filters = this.get('filters'),
                 filtersData = [],
                 prop, filterItem;
 
@@ -180,7 +199,7 @@ define(['products', 'filters'], function() {
 
             filters.invalid = products.models;
             filters.valid = [];
-            filters.applyFilters('invalid')
+            filters.applyFilters('invalid');
 
             function mapFilterItem(uprefix, item) {
                 return {
@@ -277,7 +296,7 @@ define(['products', 'filters'], function() {
         updateProducts: function() {
             var page_size = this.pageModel.get('page_size'),
                 start_index = (this.pageModel.get('cur_page') - 1) * page_size,
-                ignoreFilters = App.Data.categoriesTree.get(this.get('id')) ? true : false; //ignore filtering for root categories selections
+                ignoreFilters = this.get('isParentCategory');
 
             var products = this.getPortion(start_index, page_size, {ignoreFilters: ignoreFilters});
 
@@ -287,6 +306,7 @@ define(['products', 'filters'], function() {
                 }
                 return product;
             });
+
             this.get('products_page').reset(products, {ignoreFilters: ignoreFilters});
         },
         /**
@@ -299,12 +319,20 @@ define(['products', 'filters'], function() {
             this.pageModel.disableControls();
 
             dfd = this.get_products({start_index: start_index});
-            dfd.always(function() {
-                self.onFiltered();
-                App.Data.sortItems.sortCollection(self.get('products'));
-                self.set('status', "resolved");
-                self.pageModel.enableControls();
-            });
+            dfd.always(getChildren);
+
+            function getChildren() {
+                var dfd = self.loadProductsChildren();
+
+                dfd.always(function() {
+                    self.setCategoryStatus();
+                    self.updateFilters();
+                    self.onFiltered();
+                    App.Data.sortItems.sortCollection(self.get('products'));
+                    self.set('status', "resolved");
+                    self.pageModel.enableControls();
+                });
+            }
         },
         /**
          * Filters products and recalculates the number of pages available.
@@ -313,15 +341,126 @@ define(['products', 'filters'], function() {
             var is_filtering = _.isObject(opt) ? opt.flow == 'filtering' : false,
                 cur_page = this.pageModel.get('cur_page'),
                 isFiltersSelected = this.get('filters').isSomeSelected();
+
+            if (isFiltersSelected) {
+                this.clarifyFilteredProducts();
+            }
+
             var filtered = this.get('products').filter(function(model){
                 return model.get("filterResult") == true;
             });
+
             this.pageModel.calcPages(isFiltersSelected ? filtered.length : this.get('num_of_products'));
             if (cur_page > this.pageModel.get('page_count')) {
                 cur_page = this.pageModel.get('page_count') > 1 ? this.pageModel.get('page_count') : 1;
                 this.pageModel.set('cur_page', cur_page);
             }
+
             is_filtering && this.updateProducts(); //otherwise updateProducts will be called after the collection is sorted
+        },
+        /**
+         * Receive filtered products according to its children
+         */
+        clarifyFilteredProducts: function() {
+            // get selected values of filters
+            var selectedFilters = [];
+
+            this.get('filters').forEach(function(filter) {
+                var filterTitle = filter.get('title');
+                selectedFilters[filterTitle] = [];
+
+                filter.getSelected().forEach(function(item) {
+                    selectedFilters[filterTitle].push(item.get('value'));
+                });
+            });
+
+            // clarify filtering results
+            this.get('products').forEach(function(product) {
+                var children = product.get('child_products');
+                if (children === null) {
+                    return;
+                }
+
+                var attr_1_name = product.get('attribute_1_name'),
+                    attr_2_name = product.get('attribute_2_name'),
+                    filter_1_values = (attr_1_name !== null && Boolean(selectedFilters[attr_1_name])) ? selectedFilters[attr_1_name] : null,
+                    filter_2_values = (attr_2_name !== null && Boolean(selectedFilters[attr_2_name])) ? selectedFilters[attr_2_name] : null;
+
+                var matches = children.filter(function(child) {
+                    var attrs = child.get('attributes'),
+                        attr_1_value = attrs.attribute_value_1_name,
+                        attr_2_value = attrs.attribute_value_2_name,
+                        attr_1_check = true,
+                        attr_2_check = true;
+
+                    if (attr_1_value && filter_1_values !== null && filter_1_values.length) {
+                        attr_1_check = Boolean(filter_1_values.indexOf(attr_1_value) > -1);
+                    }
+
+                    if (attr_2_value && filter_2_values !== null && filter_2_values.length) {
+                        attr_2_check = Boolean(filter_2_values.indexOf(attr_2_value) > -1);
+                    }
+
+                    return attr_1_check && attr_2_check;
+                });
+
+                product.set('filterResult', Boolean(matches.length));
+            });
+        },
+        /**
+         * Receives children of category products. Used parameters of request are:
+         * ```
+         * {
+         *     url: "/weborders/attributes/",
+         *     type: 'GET',
+         *     data: 'product=1&product=2&product=n'
+         * }
+         * ```
+         * @returns {Object} Deferred object.
+         */
+        loadProductsChildren: function() {
+            var def = Backbone.$.Deferred();
+
+            // get products that have attributes
+            var products = this.get('products').filter(function(model) {
+                return model.isParent() && !model.get('child_products');
+            });
+
+            if (products.length) {
+                // get products ids and convert it to query string
+                var queryString = products.map(function(model) {
+                    return 'product=' + model.id;
+                }).join('&');
+
+                Backbone.$.ajax({
+                    url: '/weborders/attributes/',
+                    data: queryString,
+                    success: function(data) {
+                        switch (data.status) {
+                            case 'OK':
+                                if (products.length === 1) {
+                                    products[0].set_child_products(data.data);
+                                }
+                                else {
+                                    products.forEach(function(product) {
+                                        var children = _.findWhere(data.data, {product: product.id});
+                                        product.set_child_products(children.data);
+                                    });
+                                }
+                                def.resolve();
+                                break;
+                            default:
+                                App.Data.errors.alert(MSG.ERROR_GET_CHILD_PRODUCTS, true); // user notification
+                                def.resolve();
+                        }
+                    }
+                });
+            }
+            else {
+                def.resolve();
+            }
+
+            return def;
         }
     });
 
