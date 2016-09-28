@@ -2146,7 +2146,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 var diff = myorder_fees.filter(function(obj){
                         return !_.findWhere(json.service_fees, {id: obj.id});
                     });
-                //remove all service fees from myorder which aren't present in the responce now
+                //remove all service fees from myorder which aren't present in the response now
                 myorder.remove(diff);
 
                 //we create new service fee if needed or update old one:
@@ -2172,6 +2172,12 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             } else {
                 myorder.discount.zero_discount();
             }
+
+            // bug #50857
+            myorder.total.get('tip').set({
+                discounts: json.discounts,
+                serviceFee: myorder.get_service_fee_charge()
+            });
 
             myorder.total.set({
                 subtotal: json.subtotal,
