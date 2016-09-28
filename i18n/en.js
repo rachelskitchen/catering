@@ -668,6 +668,7 @@
         "PROFILE_REORDER": "Reorder",
         "PROFILE_ORDER_NOT_FOUND": "Order #%s is not found",
         "PROFILE_PLEASE_LOG_IN": "Please log in to make a reorder",
+        "PROFILE_LOYALTY_PROGRAM": "Loyalty Program",
         "ORDER_CHANGED": "Modifications have been made to the previous order. Please review your items before checking out.",
         "FOOTER_TERMS_OF_SERVICE": "Terms of Service",
         "FOOTER_PRIVACY_POLICY": "Privacy Policy",

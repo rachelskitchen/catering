@@ -418,6 +418,16 @@ input[type="radio"]:checked + .radio::before,
     display: none;
 }
 
+.card-box {
+    width: 300px;
+    height: 160px;
+    margin-top: 20px;
+    border-width: 1px;
+    border-style: solid;
+    border-radius: 6px;
+    position: relative;
+}
+
 .popup {
     width: 100%;
     position: absolute;
