@@ -162,8 +162,7 @@ define(["tips_view"], function(tips_view) {
                 amount: true,
                 percent: percent
             });
-            var serviceFee = App.Data.myorder.get_service_fee_charge();
-            return tip.get_tip(subtotal, discounts_str, serviceFee);
+            return tip.get_tip(subtotal);
         }
     });
 

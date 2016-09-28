@@ -67,6 +67,12 @@ define(["backbone"], function(Backbone) {
          *
          * @prop {number} defaults.subtotal - last subtotal amount applied.
          * @default 0.
+         *
+         * @prop {number} defaults.discounts - discounts amount returned in /cart_totals/ response (order and item level).
+         * @default 0.
+         *
+         * @prop {number} defaults.serviceFee - amount of all service fees returned in /cart_totals/ response.
+         * @default 0.
          */
         defaults: {
             type: false, // tip in cash (false) or credit card (true)
@@ -76,6 +82,8 @@ define(["backbone"], function(Backbone) {
             percent: 0, // percent if amount true
             tipTotal: 0, // the result tip amount
             subtotal: 0, // last applied subtotal
+            discounts: 0, // discounts amount returned in /weborders/cart_totals/ request (order and item level)
+            serviceFee: 0 // amount of all service fees returned in /weborders/cart_totals/ request
         },
         /**
          * Adds listener to call `update_tip()` on attributes change.
@@ -87,17 +95,19 @@ define(["backbone"], function(Backbone) {
          * Sets new tips value to `tipTotal`.
          */
         update_tip: function() {
-            this.set("tipTotal", this.get_tip(this.get('subtotal'), App.Data.myorder.total.get_discounts_str(), App.Data.myorder.get_service_fee_charge()));
+            this.set("tipTotal", this.get_tip(this.get('subtotal')));
         },
         /**
          * @param {number} subtotal - subtotal amount to calculate percent.
          * @returns {number} tips amount.
          */
-        get_tip: function(subtotal, discounts, serviceFee) {
+        get_tip: function(subtotal) {
             var type = this.get('type'),
                 amount = this.get('amount'),
                 percent = this.get('percent') * 1,
-                sum = this.get('sum') * 1;
+                sum = this.get('sum') * 1,
+                discounts = this.get_discounts_str(),
+                serviceFee = this.get_service_fee_str();
 
             this.set('subtotal', subtotal);
 
@@ -129,6 +139,18 @@ define(["backbone"], function(Backbone) {
          */
         loadTip : function() {
             this.set(getData('tip'));
+        },
+        /**
+         * @returns {string} discounts amount formatted as a string (rounding is applied).
+         */
+        get_discounts_str: function() {
+            return round_monetary_currency(this.get('discounts'));
+        },
+        /**
+         * @returns {string} discounts amount formatted as a string (rounding is applied).
+         */
+        get_service_fee_str: function() {
+            return round_monetary_currency(this.get('serviceFee'));
         }
     });
 });
