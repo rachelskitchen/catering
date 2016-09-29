@@ -40,7 +40,6 @@ define(["./tree"], function(tree_view) {
         }
     });
 
-
     var FilterItemsView = App.Views.TreeView.TreeCategoriesView.extend({
         name: 'filter',
         mod: 'items',
@@ -57,7 +56,24 @@ define(["./tree"], function(tree_view) {
         mod: 'set',
         itemView: FilterItemsView,
         bindings: {
-            ':el': 'collection: $collection, itemView: "itemView"'
+            '.filters-list': 'collection: $collection, itemView: "itemView", toggle: not(ui_collapsed)',
+            '.tree-title': 'toggle: length($collection)'
+        },
+        bindingSources: {
+            ui: function() {
+                return new Backbone.Model({collapsed: false});
+            }
+        },
+        events: {
+            'click .tree-title': 'onClick'
+        },
+        onEnterListeners: {
+            '.tree-title': 'onClick'
+        },
+        onClick: function(event) {
+            event.stopPropagation();
+            var $ui = this.getBinding('$ui');
+            $ui.set('collapsed', !$ui.get('collapsed'));
         }
     });
 

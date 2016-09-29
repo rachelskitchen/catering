@@ -694,7 +694,7 @@ define(["main_router"], function(main_router) {
                             categoriesTree: App.Data.categoriesTree,
                             curProductsSet: App.Data.curProductsSet,
                             categorySelection: App.Data.categorySelection,
-                            className: 'left-sidebar'
+                            className: 'left-sidebar primary-border'
                         },
                         {
                             modelName: 'Product',
@@ -796,6 +796,17 @@ define(["main_router"], function(main_router) {
                             order.update(_order);
                         } else {
                             App.Data.myorder.add(_order);
+
+                            // Show notification
+                            var product = _order.get_product();
+
+							App.NotificationManager.create({
+                                model: new Backbone.Model({
+                                    image: product.get('image'),
+                                    title: _loc.CART_ITEM_ADDED,
+                                    text: product.get('name')
+                                })
+                            });
                         }
                         cancel();
                     }
@@ -1128,6 +1139,16 @@ define(["main_router"], function(main_router) {
                         });
                     }
                 }));
+
+                // add global "View all" item
+                data.push({
+                    id: [],
+                    parent_id: [],
+                    name: _loc.SUBCATEGORIES_VIEW_ALL,
+                    parent_name: _loc.SUBCATEGORIES_VIEW_ALL,
+                    sort: -1,
+                    items: []
+                });
 
                 // and reset 'tree' collection with adding new data
                 tree.reset(data);
