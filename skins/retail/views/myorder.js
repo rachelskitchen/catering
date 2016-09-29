@@ -34,6 +34,7 @@ define(["myorder_view"], function(myorder_view) {
             '.product_title': 'updateContent: titleViewData',
             '.product_desc': 'updateContent: descViewData',
             '.quantity_info': 'updateContent: qtyViewData',
+            '.product-instructions': 'updateContent: instructionsViewData'
         },
         computeds: {
             'attributesSelected': {
@@ -106,6 +107,19 @@ define(["myorder_view"], function(myorder_view) {
                         };
                     } else if (this.subViews[index]) {
                         this.subViews[index].remove();
+                    }
+                }
+            },
+            instructionsViewData: {
+                deps: ['_system_settings_special_requests_online'],
+                get: function(special_requests_online) {
+                    if (special_requests_online) {
+                        return {
+                            name: 'Instructions',
+                            mod: 'Modifiers',
+                            model: this.model,
+                            subViewIndex: 5
+                        }
                     }
                 }
             }
