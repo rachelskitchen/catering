@@ -2252,6 +2252,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.process_cart_totals(json);
 
                     expect(App.Models.Myorder.prototype.isServiceFee).not.toHaveBeenCalled();
+                    expect(model.total.get('tip').get('serviceFee')).toBe(0);
                 });
 
                 it('is undefined', function() {
@@ -2260,6 +2261,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.process_cart_totals(json);
 
                     expect(App.Models.Myorder.prototype.isServiceFee).toHaveBeenCalled();
+                    expect(model.total.get('tip').get('serviceFee')).toBe(0);
                 });
 
                 it('is array. Fee exists in collection', function() {
@@ -2274,6 +2276,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(model.models[1].get('product').get('price')).toBe(1);
                     expect(model.models[1].get('initial_price')).toBe(1);
                     expect(model.models[1].get('sum')).toBe(1);
+                    expect(model.total.get('tip').get('serviceFee')).toBe(json_serviceFee.service_fees[0].amount);
                 });
 
                 it('is array. Fee doesn\'t exist in collection', function() {
@@ -2282,6 +2285,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.process_cart_totals(json_serviceFee);
 
                     expect(model.add).toHaveBeenCalled();
+                    expect(model.total.get('tip').get('serviceFee')).toBe(0);
                 });
 
                 it('is array. Fee exists in collection but not in response', function() {
@@ -2290,6 +2294,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.process_cart_totals(json_serviceFee);
 
                     expect(model.add).toHaveBeenCalled();
+                    expect(model.total.get('tip').get('serviceFee')).toBe(0);
                 });
             });
 
