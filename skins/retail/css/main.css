@@ -374,9 +374,12 @@ input[type="radio"]:checked + .radio::before,
     left: 0;
     top: 0;
     bottom: 0;
+    width: 189px;
     overflow-x: hidden;
     overflow-y: auto;
-    padding-right: 10px;
+    margin-right: 10px;
+    border-width: 0 1px 0 0;
+    border-style: solid;
     z-index: 1;
 }
 

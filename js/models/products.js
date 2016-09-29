@@ -464,42 +464,19 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          */
         get_child_products: function() {
             var type = this.get('attribute_type'),
-                settings = App.Data.settings,
-                def = Backbone.$.Deferred();
+                def = Backbone.$.Deferred(),
+                self = this;
 
             if (type === 1 && !this.get('child_products')) {
-                this.set('child_products', new App.Collections.ChildProducts);
-                var child = this.get('child_products'),
-                    self = this;
-
                 Backbone.$.ajax({
                     url: "/weborders/attributes/",
                     data: {
                         product: this.get('id')
                     },
                     success: function(data) {
-                        var inventory = settings.get("settings_system").cannot_order_with_empty_inventory;
                         switch (data.status) {
                             case 'OK':
-                                self.listenTo(child, 'change:active', self.update_active);
-                                data.data.forEach(function(el) {
-                                    var image = true;
-
-                                    if(!inventory && el.product)
-                                        el.product.stock_amount = 999;
-
-                                    // copy image url from parent if it is not present for child product
-                                    if(el.product && !el.product.image) {
-                                        el.product.image = self.get('image');
-                                        image = false;
-                                    }
-
-                                    // copy images if they are not present and `image` property is not assigned originally for child product
-                                    if(el.product && !image && Array.isArray(el.product.images) && el.product.images.length == 0)
-                                        el.product.images = self.get('images').slice();
-
-                                    child.add_child(el);
-                                });
+                                self.set_child_products(data.data);
                                 def.resolve();
                                 break;
                             default:
@@ -513,6 +490,44 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             }
 
             return def;
+        },
+        /**
+         * Set children to its parent
+         * @param {Object} children - product children
+         */
+        set_child_products: function(children) {
+            if (typeof children !== 'object' || children === null || !(Object.keys(children).length)) {
+                return;
+            }
+
+            this.set('child_products', new App.Collections.ChildProducts);
+
+            var child = this.get('child_products'),
+                inventory = App.Settings.cannot_order_with_empty_inventory,
+                self = this;
+
+            this.listenTo(child, 'change:active', this.update_active);
+
+            children.forEach(function(item) {
+                var image = true;
+
+                if (!inventory && item.product) {
+                    item.product.stock_amount = 999;
+                }
+
+                // copy image url from parent if it is not present for child product
+                if (item.product && !item.product.image) {
+                    item.product.image = self.get('image');
+                    image = false;
+                }
+
+                // copy images if they are not present and `image` property is not assigned originally for child product
+                if (item.product && !image && Array.isArray(item.product.images) && item.product.images.length == 0) {
+                    item.product.images = self.get('images').slice();
+                }
+
+                child.add_child(item);
+            });
         },
         /**
          * Updates parent's `active` attribute. Checks if all children are inactive.
