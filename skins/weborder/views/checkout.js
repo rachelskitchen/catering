@@ -310,9 +310,6 @@ define(["checkout_view"], function(checkout_view) {
     var CheckoutAddressView = App.Views.CoreCheckoutView.CoreCheckoutAddressView.extend({
         name: 'checkout',
         mod: 'address',
-        bindings: {
-            '.change_address_link': 'classes: {hide: not(showAddressSelection)}'
-        },
         render: function() {
             App.Views.CoreCheckoutView.CoreCheckoutAddressView.prototype.render.apply(this, arguments);
 
