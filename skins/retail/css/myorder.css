@@ -41,6 +41,13 @@
     margin-top: 23px;
 }
 
+.myorder-item-customization .product-instructions textarea {
+    display: block;
+    width: 100%;
+    padding: 12px 10px;
+    font-size: inherit;
+}
+
 .order-items .order-item,
 .order-items .service-fee-item,
 .order-items .discount-item {
