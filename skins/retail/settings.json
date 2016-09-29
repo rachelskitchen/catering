@@ -22,8 +22,8 @@
         "modifiers": {
             "css": ["products", "quantity", "myorder", "card", "modifiers"],
             "views": ["products", "quantity", "myorder", "stanfordcard", "modifiers"],
-            "templates": ["modifiers", "products", "quantity", "myorder", "stanfordcard"],
-            "core": ["categories", "products", "modifiers"]
+            "templates": ["modifiers", "products", "quantity", "myorder", "stanfordcard", "instructions"],
+            "core": ["categories", "products", "modifiers", "instructions_view"]
         },
         "about": {
             "templates": ["store_info"],
