@@ -215,7 +215,8 @@ define(["factory"], function() {
             '.logout-link': 'toggle: access_token',
             '.logged-as': 'toggle: access_token, html: loggedAs(first_name)',
             '.private-btn': 'classes: {"primary-text": access_token, "regular-text": not(access_token), disabled: not(access_token)}',
-            '.payments-link': 'toggle: any(_settings_directory_saved_credit_cards, _settings_directory_saved_gift_cards)'
+            '.payments-link': 'toggle: any(_settings_directory_saved_credit_cards, _settings_directory_saved_gift_cards)',
+            '.loyalty-program': 'toggle: _system_settings_enable_reward_cards_collecting'
         },
         bindingFilters: {
             loggedAs: function(username) {
@@ -374,7 +375,7 @@ define(["factory"], function() {
             App.Data.errors.alert(
                 _loc.PROFILE_ADDRESS_DELETE,
                 false,
-                false,
+                true,
                 {
                     isConfirm: true,
                     callback: function(confirmed) {

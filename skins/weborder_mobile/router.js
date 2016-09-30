@@ -79,6 +79,7 @@ define(["main_router"], function(main_router) {
             "promotion/:id_promotion": "promotion_details",
             "profile_payments": "profile_payments",
             "past_orders": "past_orders",
+            "loyalty_program": "loyalty_program",
             "establishment": "establishment",
             "*other": "index"
         },
@@ -2220,7 +2221,22 @@ define(["main_router"], function(main_router) {
                 });
                 data.req.always(this.change_page.bind(this));
             });
+        },
+        loyalty_program: function() {
+            var data = this.setLoyaltyProgramContent();
 
+            if (!data.req || !App.Settings.enable_reward_cards_collecting) {
+                return this.navigate('index', true);
+            }
+
+            App.Data.mainModel.set({
+                header: headerModes.Modifiers,
+                footer: footerModes.None,
+                contentClass: 'primary-bg',
+                content: data.content
+            });
+
+            data.req.always(this.change_page.bind(this));
         },
         showIsStudentQuestion: function(cancelCb) {
             var self = this,
