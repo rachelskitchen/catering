@@ -879,8 +879,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         /**
-        * User notification.
-        */
+         * User notification.
+         */
         alertMessage: function() {
             var errors = App.Data.errors;
             App.Routers.MainRouter.prototype.prepare('errors', function() {
@@ -999,6 +999,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 stores.reset(_stores);
                 stores.request.resolve();
             }
+        },
+        /**
+         * Navigates to previous page or #index in case when current page is start page.
+         */
+        goToBack: function() {
+            this.initialized ? window.history.back() : this.navigate('index', true);
         }
     });
 
@@ -1416,11 +1422,18 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             function unlinkRewardCard(rewardCard) {
-                var req = customer.unlinkRewardCard(rewardCard);
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
+                App.Data.errors.alert(_loc.PROFILE_LOYALTY_NUMBER_REMOVE, false, true, {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            var req = customer.unlinkRewardCard(rewardCard);
+                            if (req) {
+                                mainModel.trigger('loadStarted');
+                                req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                            }
+                        }
+                    }
+                });
             }
 
             function linkRewardCard(rewardCard) {
@@ -1789,7 +1802,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             App.Data.header.set({
                 page_title: _loc.SETTINGS,
                 back_title: _loc.BACK,
-                back: window.history.back.bind(window.history),
+                back: this.goToBack.bind(this),
                 link: save,
                 link_title: _loc.SAVE
             });
@@ -2030,7 +2043,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 App.Data.header.set({
                     page_title: _loc.PROFILE_PAST_ORDERS,
                     back_title: _loc.BACK,
-                    back: this.initialized ? window.history.back.bind(window.history) : this.navigate.bind(this, 'index')
+                    back: this.goToBack.bind(this)
                 });
 
                 content = {
@@ -2040,13 +2053,114 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     collection: customer.orders,
                     className: 'profile-orders',
                     cacheId: true
-                }
+                };
             }
 
             return {
                 req: req,
                 content: content
             };
+        },
+        setLoyaltyProgramContent: function() {
+            var customer = App.Data.customer,
+                mainModel = App.Data.mainModel,
+                header = App.Data.header,
+                req = customer.get('rewardCards') && customer.rewardCardsRequest,
+                self = this,
+                rewardCard = null, // changes every time when user change new reward card in view
+                rewardCards,
+                content;
+
+            if (req) {
+                rewardCards = customer.get('rewardCards');
+
+                header.set({
+                    page_title: _loc.PROFILE_LOYALTY_PROGRAM,
+                    back_title: _loc.BACK,
+                    back: this.goToBack.bind(this),
+                    link: linkRewardCard,
+                    link_title: _loc.SAVE,
+                    enableLink: false
+                });
+
+                content = {
+                    modelName: 'Profile',
+                    mod: 'RewardCardsEdition',
+                    model: customer,
+                    collection: rewardCards,
+                    unlinkRewardCard: unlinkRewardCard,
+                    onRewardCardChanged: onRewardCardChanged,
+                    className: 'profile-edit text-center',
+                    cacheId: true
+                };
+
+                // enable header's link once user leaves a current page
+                window.setTimeout(function() {
+                    self.listenToOnce(self, 'route', header.set.bind(header, 'enableLink', true));
+                }, 0);
+            }
+
+            return {
+                req: req,
+                content: content
+            };
+
+            // `newRewardCard` is new RewardCard model created in view.
+            function onRewardCardChanged(newRewardCard) {
+                if (newRewardCard.check().status == 'OK') {
+                    header.set('enableLink', true);
+                    rewardCard = newRewardCard.clone();
+                } else {
+                    header.set('enableLink', false);
+                    rewardCard = null;
+                }
+            }
+
+            function unlinkRewardCard(rewardCard) {
+                App.Data.errors.alert(_loc.PROFILE_LOYALTY_NUMBER_REMOVE, false, true, {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            var req = customer.unlinkRewardCard(rewardCard);
+                            if (req) {
+                                mainModel.trigger('loadStarted');
+                                req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                            }
+                        }
+                    }
+                });
+            }
+
+            function linkRewardCard() {
+                if (!rewardCard) {
+                    return;
+                }
+
+                var req = customer.linkRewardCard(rewardCard);
+
+                self.listenToOnce(rewardCard, 'onLinkError', onError);
+
+                if (req) {
+                    mainModel.trigger('loadStarted');
+                    req.done(function(data){
+                        if (data && data.status == 'OK') {
+                            App.Data.myorder.rewardsCard.selectRewardCard(rewardCard);
+                            header.set('enableLink', false);
+                        }
+                    });
+                    req.error(onError);
+                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                    return req;
+                }
+
+                return req;
+
+                function onError(errorMsg) {
+                    if (errorMsg){
+                        App.Data.errors.alert(errorMsg);
+                    }
+                }
+            }
         }
     };
 

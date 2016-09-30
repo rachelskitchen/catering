@@ -96,9 +96,9 @@
         'HEADER_PROMOTION_PT': 'Promotion Details',
         'HEADER_PROMOTIONS_LIST_PT': 'Promotions List',
         'HEADER_PROMOTIONS_MY_PT': 'My Promotions',
-        'HEADER_REWARDS_CARD_PT': 'Loyalty Number',
+        'HEADER_REWARDS_CARD_PT': 'Loyalty #',
         'HEADER_REWARDS_CARD_BT': 'Cancel',
-        'HEADER_REWARDS_PT': 'Rewards',
+        'HEADER_REWARDS_PT': 'Loyalty Rewards',
         'HEADER_REWARDS_BT': 'Cancel',
         'INSTRUCTIONS_TITLE': 'Special Instructions',
         'INSTRUCTIONS_NOTE': 'E.g. no pickles! All requests are honored when possible. Adding certain ingredients may require further payment.',
@@ -226,6 +226,7 @@
             'Item',
             'Items'
         ],
-        'PREVIOUS_ORDER': 'Previous Order'
+        'PREVIOUS_ORDER': 'Previous Order',
+        'PROFILE_LOYALTY_PROGRAM_INFO': 'Add your Loyalty Number here to redeem points on purchases and view your Loyalty Points status!'
     } // end of locale
 }); // end of module

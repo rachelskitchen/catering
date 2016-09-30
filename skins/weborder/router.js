@@ -831,7 +831,7 @@ define(["main_router"], function(main_router) {
 
             var req = this.setLoyaltyProgramContent();
 
-            if (!req) {
+            if (!req || !App.Settings.enable_reward_cards_collecting) {
                 this.navigate('index', true);
             } else {
                 req.always(this.change_page.bind(this));
