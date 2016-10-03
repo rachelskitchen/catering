@@ -1077,23 +1077,16 @@ define(["main_router"], function(main_router) {
                 // need to convert categories collection to array of tree items.
                 data = _.toArray(_.mapObject(categories.groupBy('parent_id'), function(value, key) {
                     var sub_categories = _.pluck(value, 'id');
-                    if (sub_categories.length > 1) {
-                        // in this case a parent category is present as 'View All' subcategory
-                        return {
-                            id: sub_categories,                       // array of sub categories ids used to show all products
-                            parent_id: sub_categories,                // array of sub categories ids used to show all products
-                            name: value[0].get('parent_name'),        // parent category name
-                            parent_name: value[0].get('parent_name'), // parent category name
-                            sort: value[0].get('parent_sort'),        // parent category sort
-                            items: value.map(function(item) {
-                                return _.extend(item.toJSON(), {parent_id: sub_categories});
-                            }) // sub categories
-                        };
-                    } else {
-                        return _.extend(value[0].toJSON(), {
-                            sort: value[0].get('parent_sort')
-                        });
-                    }
+                    return {
+                        id: sub_categories,                       // array of sub categories ids used to show all products
+                        parent_id: sub_categories,                // array of sub categories ids used to show all products
+                        name: value[0].get('parent_name'),        // parent category name
+                        parent_name: value[0].get('parent_name'), // parent category name
+                        sort: value[0].get('parent_sort'),        // parent category sort
+                        items: value.map(function(item) {
+                            return _.extend(item.toJSON(), {parent_id: sub_categories});
+                        }) // sub categories
+                    };
                 }));
 
                 // and reset 'tree' collection with adding new data
