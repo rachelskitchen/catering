@@ -1973,6 +1973,9 @@ var MONERIS_RETURN_MESSAGE = {
 };
 MONERIS_RETURN_MESSAGE_DEFAULT = "Unknown error";
 
+var MONERIS_WRONG_CONFIGURATION = "Error in Merchant's Moneris Account configuration: transaction id is not present in pre-authorization response.";
+    MONERIS_WRONG_CONFIGURATION += " Please make sure that 'Directpost Configuration' > 'Configure Response Fields' > 'Return the txn_number' is enabled.";
+
 var MONERIS_PARAMS = {
     PAY: 'rvarPay',
     RESPONSE_ORDER_ID: 'response_order_id',
@@ -2018,8 +2021,16 @@ var MonerisPaymentProcessor = {
         if (pay_get_parameter) {
             var returnCode = Number(get_parameters.response_code);
             if(pay_get_parameter === 'true' && returnCode < MONERIS_RETURN_CODE.DECLINE) {
-                payment_info.transaction_id = get_parameters[MONERIS_PARAMS.TRANSACTION_ID];
-                payment_info.response_order_id = get_parameters[MONERIS_PARAMS.RESPONSE_ORDER_ID];
+                // Check transaction_id. It can be missed in case of wrong Moneris Configuration.
+                if (get_parameters[MONERIS_PARAMS.TRANSACTION_ID]) {
+                    payment_info.transaction_id = get_parameters[MONERIS_PARAMS.TRANSACTION_ID];
+                    payment_info.response_order_id = get_parameters[MONERIS_PARAMS.RESPONSE_ORDER_ID];
+                } else {
+                    setTimeout(function() {
+                        App.Data.errors.alert(MONERIS_WRONG_CONFIGURATION, true);
+                    }, 1000);
+                    throw new Error('Wrong Moneris Configuration: transaction id is missed');
+                }
             } else {
                 payment_info.errorMsg = MONERIS_RETURN_MESSAGE[returnCode];
                 if (!payment_info.errorMsg) {
