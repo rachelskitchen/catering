@@ -22,7 +22,8 @@ body,
 }
 /* [optional_text] optional text (additional info, modifier class instruction), input label */
 .optional-text[class],
-#alert .icon {
+#alert .icon,
+#popup_content.info::before {
   color: #9B9D9F;
 }
 /* [attention_text] attention text */
@@ -124,7 +125,8 @@ body,
 }
 /* [shadow_background] background behind popup window */
 .shadow-bg[class],
-#alert {
+#alert,
+#popup_alert {
   background: rgba(55, 59, 64, 0.6);
 }
 /* [shadow_profile_background] profile shadow  background */

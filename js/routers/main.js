@@ -487,6 +487,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                         customer.updateCustomer({coordinates: coordinates});
                     }
                 });
+                // if customer registered before email/push notifications were implemented
+                // need to ask whether he would like to receive these notifications.
+                !customer.get('accept_tou') && askAboutPromotionNotifications();
             });
 
             // 'onReorderCompleted' event emits when an order completes a reorder
@@ -538,6 +541,28 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 }
 
                 return messages.length ? messages.join(' ') : null;
+            }
+
+            function askAboutPromotionNotifications() {
+                App.Data.errors.alert(_loc.PROFILE_ACCEPT_TOU, false, true, {
+                        isConfirm: true,
+                        confirm: {
+                            ok: _loc.YES,
+                            cancel: _loc.NO_THANKS
+                        },
+                        callback: function(res) {
+                            res = Boolean(res);
+                            customer.set({
+                                email_notifications: res,
+                                push_notifications: res
+                            });
+                            customer.updateCustomer({
+                                accept_tou: true,
+                                email_notifications: res,
+                                push_notifications: res
+                            });
+                        }
+                    });
             }
         },
         /**
@@ -1348,20 +1373,33 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             function removeToken(token_id) {
-                var req = customer.removePayment(token_id);
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
+                App.Data.errors.alert(_loc.PROFILE_CREDIT_CARD_REMOVE, false, true, {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            var req = customer.removePayment(token_id);
+                            if (req) {
+                                mainModel.trigger('loadStarted');
+                                req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                            }
+                        }
+                    }
+                });
             }
 
             function unlinkGiftCard(giftCard) {
-                var req = customer.unlinkGiftCard(giftCard);
-
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
+                App.Data.errors.alert(_loc.PROFILE_GIFT_CARD_REMOVE, false, true, {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            var req = customer.unlinkGiftCard(giftCard);
+                            if (req) {
+                                mainModel.trigger('loadStarted');
+                                req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                            }
+                        }
+                    }
+                });
             }
         },
         setPastOrdersContent: function() {
@@ -1958,7 +1996,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 ui: new Backbone.Model({show_response: false}),
                 removeToken: removeToken,
                 unlinkGiftCard: unlinkGiftCard,
-                unlinkRewardCard: unlinkRewardCard,
                 className: 'profile-edit text-center',
                 myorder: App.Data.myorder
             });
@@ -2012,27 +2049,33 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 return req;
             }
             function removeToken(token_id) {
-                var req = customer.removePayment(token_id);
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
+                App.Data.errors.alert(_loc.PROFILE_CREDIT_CARD_REMOVE, false, true, {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            var req = customer.removePayment(token_id);
+                            if (req) {
+                                mainModel.trigger('loadStarted');
+                                req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                            }
+                        }
+                    }
+                });
             }
 
             function unlinkGiftCard(giftCard) {
-                var req = customer.unlinkGiftCard(giftCard);
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
-            }
-
-            function unlinkRewardCard(rewardCard) {
-                var req = customer.unlinkRewardCard(rewardCard);
-                if (req) {
-                    mainModel.trigger('loadStarted');
-                    req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
-                }
+                App.Data.errors.alert(_loc.PROFILE_GIFT_CARD_REMOVE, false, true, {
+                    isConfirm: true,
+                    callback: function(confirmed) {
+                        if (confirmed) {
+                            var req = customer.unlinkGiftCard(giftCard);
+                            if (req) {
+                                mainModel.trigger('loadStarted');
+                                req.always(mainModel.trigger.bind(mainModel, 'loadCompleted'));
+                            }
+                        }
+                    }
+                });
             }
         },
         setPastOrdersContent: function() {
