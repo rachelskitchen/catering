@@ -196,7 +196,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
              * @type {?App.Models.Order}
              * @default null
              */
-            pastOrder: null
+            pastOrder: null,
+            /**
+             * Indicates whether the customer is aware Terms of Usage.
+             * @type {boolean}
+             * @default false
+             */
+            accept_tou: false
         },
         /**
          * Adds validation listeners for `first_name`, `last_name` attributes changes.
@@ -1719,7 +1725,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
                 user_id: data.token.user_id,
                 access_token: data.token.access_token,
                 token_type: data.token.token_type,
-                expires_in: data.token.expires_in
+                expires_in: data.token.expires_in,
+                accept_tou: data.customer.accept_tou
             });
 
             if (data.token.fb_token) {
@@ -1806,7 +1813,8 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
                     last_name: attrs.last_name,
                     phone_number: attrs.phone,
                     email_notifications: attrs.email_notifications,
-                    push_notifications: attrs.push_notifications
+                    push_notifications: attrs.push_notifications,
+                    accept_tou: attrs.accept_tou
                 },
                 token: {
                     user_id: attrs.user_id,

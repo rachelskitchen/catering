@@ -155,7 +155,6 @@ define(["profile_view", "giftcard_view", "./myorder"], function(profile_view) {
     });
 
     var ProfileRewardCardEditionView = App.Views.CoreProfileView.CoreProfileRewardCardEditionView.extend({
-        className: 'list-subheader',
         bindings: {
             '.card-number': 'value: number'
         },
