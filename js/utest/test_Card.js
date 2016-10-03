@@ -31,7 +31,7 @@ define(['card'], function() {
                 billing_address: null,
                 use_profile_address: false,
                 use_checkout_address: false,
-                rememberCard: false
+                rememberCard: true
             };
         });
 
@@ -243,7 +243,7 @@ define(['card'], function() {
                     street_1: 'street_1',
                     state: 'state',
                     zipcode: 'zipcode',
-                    country_code: 'country_code'
+                    country_code: 'US'
                 };
 
                 get_billing_address = spyOn(window, 'get_billing_address').and.returnValue(billing_address);
