@@ -1077,6 +1077,7 @@ define(["main_router"], function(main_router) {
                 // need to convert categories collection to array of tree items.
                 data = _.toArray(_.mapObject(categories.groupBy('parent_id'), function(value, key) {
                     var sub_categories = _.pluck(value, 'id');
+                    // All subcategories are shown always even though a parent category has the only one subcategory - Bug 50941 (customer modernconcept.revelup.com)
                     return {
                         id: sub_categories,                       // array of sub categories ids used to show all products
                         parent_id: sub_categories,                // array of sub categories ids used to show all products
