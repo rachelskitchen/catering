@@ -1412,6 +1412,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
                 window.setTimeout(function() {
                     self.listenTo(customer, 'onLogout', logout);
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
                 }, 0);
             }
 
@@ -2096,7 +2097,9 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
                 // enable header's link once user leaves a current page
                 window.setTimeout(function() {
+                    self.listenTo(customer, 'onLogout', logout);
                     self.listenToOnce(self, 'route', header.set.bind(header, 'enableLink', true));
+                    self.listenToOnce(self, 'route', self.stopListening.bind(self, customer, 'onLogout', logout));
                 }, 0);
             }
 
@@ -2104,6 +2107,10 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 req: req,
                 content: content
             };
+
+            function logout() {
+                self.navigate('index', true);
+            }
 
             // `newRewardCard` is new RewardCard model created in view.
             function onRewardCardChanged(newRewardCard) {

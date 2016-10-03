@@ -183,7 +183,7 @@
         'REWARDS_ENTIRE_ORDER_DISCOUNT': 'off Entire Order',
         'REWARDS_ITEM_LEVEL_DISCOUNT': 'off All Eligible Items',
         'REWARDS_ITEM_LEVEL_REPRICE_DISCOUNT': 're-price for All Eligible Items',
-        'REWARDS_APPLY': 'Apply Reward',
+        'REWARDS_APPLY': 'Apply Reward(s)',
         'REWARDS_OFF': 'Off',
         'REWARDS_POINTS_REDEMPTION_AMOUNT': [
             'Point will be redeemed',
@@ -191,6 +191,24 @@
         ],
         'REWARDS_EMPTY_CART': 'Rewards can not be applied while your cart is empty.',
         'REWARDS_ENTER_CAPTCHA': 'Enter Captcha Characters',
+        'REWARDS_INFO_TITLE': 'Reward Points Info',
+        'REWARDS_INFO_MESSAGE': 'View your Loyalty #, Reward Goals and redeem your rewards!',
+        'REWARDS_SKIP': 'Skip, save points for later',
+        'REWARDS_ITEM_POINTS': [
+            'Item Point',
+            'Item Points'
+        ],
+        'REWARDS_VISIT_POINTS': [
+            'Visit Point',
+            'Visit Points'
+        ],
+        'REWARDS_PURCHASE_POINTS': [
+            'Purchase Point',
+            'Purchase Points',
+        ],
+        'REWARDS_ITEM_REWARDS': 'Item Rewards',
+        'REWARDS_VISIT_REWARDS': 'Visit Rewards',
+        'REWARDS_PURCHASE_REWARDS': 'Purchase Rewards',
         'CONFIRM_SUBMIT': 'Submit',
         'SEARCH_ENTER_STRING': 'Search',
         'PRODUCTS_NOT_FOUND': 'No products found',

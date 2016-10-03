@@ -432,9 +432,11 @@
 
 .profile-separator {
     position: relative;
-    height: 2px;
+    height: 0;
     margin: 1.4rem;
     font-size: 0;
+    border-width: 1px;
+    border-style: solid;
 }
 
 .profile-separator span {
