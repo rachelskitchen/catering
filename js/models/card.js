@@ -129,9 +129,9 @@ define(["backbone"], function(Backbone) {
             /**
              * Indicates whether to save this card for future payments.
              * @type {Boolean}
-             * @default false
+             * @default true
              */
-            rememberCard: false
+            rememberCard: true
         },
         initialize: function() {
             if (PaymentProcessor.isBillingAddressCard())
