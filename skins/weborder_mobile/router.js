@@ -1863,10 +1863,9 @@ define(["main_router"], function(main_router) {
             });
 
             App.Data.footer.set({
-                btn_title: _loc.CHECKOUT_APPLY,
+                btn_title: _loc.REWARDS_APPLY,
                 action: function() {
                     rewardsCard.update(clone);
-                    rewardsCard.trigger('beforeRedemptionApplied');
                     rewardsCard.trigger('onRedemptionApplied');
                 }
             });
@@ -1878,10 +1877,11 @@ define(["main_router"], function(main_router) {
                         modelName: 'Rewards',
                         mod: 'Info',
                         model: clone,
-                        className: 'rewards-info',
+                        className: 'rewards-info regular-text',
                         balance: clone.get('balance'),
                         rewards: clone.get('rewards'),
-                        discounts: clone.get('discounts')
+                        discounts: clone.get('discounts'),
+                        skip: this.goToBack.bind(this)
                     }]
                 });
 
