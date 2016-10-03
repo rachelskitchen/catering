@@ -267,6 +267,7 @@ define(["factory"], function() {
             }
         },
         bindings: {
+            '.remove-btn': 'classes: {hide: not(id)}',
             '.address__title-text': 'text: select(id, _loc.PROFILE_ADDRESS_DETAILS.replace("%s", modelIndex), _loc.PROFILE_NEW_ADDRESS)',
             '.expand': 'toggle: id, classes: {folded: ui_collapsed, expanded: not(ui_collapsed)}',
             '.address__header': 'classes: {collapsed: ui_collapsed}',
