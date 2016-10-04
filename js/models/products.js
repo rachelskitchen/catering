@@ -695,7 +695,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             // check 'active'
             if (this.get('active') !== actual_data.available) {
                 this.set('active', actual_data.available);
-                changed.push('active');
+                changes.push('active');
             }
 
             var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax', 'price'];
