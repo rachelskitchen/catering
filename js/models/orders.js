@@ -73,7 +73,7 @@ define(["backbone"], function(Backbone) {
             changes.push.apply(changes, product.reorder(!!sizeModifier));
 
             // remove order item if product isn't available right now
-            if (changes.indexOf('active') && !product.get('active') && this.collection) {
+            if (changes.indexOf('active') > -1 && !product.get('active') && this.collection) {
                 this.collection.remove(this);
             }
 
