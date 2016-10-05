@@ -410,7 +410,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         },
         /**
          * @param {number} [type=1] - attribute type (`1` or `2`).
-         * @returns {(Object|undefined)} If attribute type is disabled returns `undefined`. Otherwise, returns the following object:
+         * @returns {(Object|undefined)} If attribute type is disabled or attributes list is empty returns `undefined`.
+         *                               Otherwise, returns the following object:
          * ```
          * {
          *     name: name,          // attribute name
@@ -420,14 +421,21 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * ```
          */
         get_attribute: function(type) {
-            if(type != 1 && type != 2)
+            if (type != 1 && type != 2) {
                 type = 1;
+            }
 
-            if(!this.get('attribute_' + type + '_enable'))
+            if (!this.get('attribute_' + type + '_enable')) {
                 return;
+            }
 
-            var all_attrs = this.get_attributes_list(),
-                name = this.get('attribute_' + type + '_name'),
+            var all_attrs = this.get_attributes_list();
+
+            if (_.isEmpty(all_attrs)) {
+                return;
+            }
+
+            var name = this.get('attribute_' + type + '_name'),
                 selected = this.get('attribute_' + type + '_selected'),
                 value = all_attrs['attribute_' + type + '_all'][selected];
 
@@ -492,19 +500,19 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             return def;
         },
         /**
-         * Set children to its parent
-         * @param {Object} children - product children
+         * Set children to its parent.
+         * @param {Array} children - product's children array
          */
         set_child_products: function(children) {
-            if (typeof children !== 'object' || children === null || !(Object.keys(children).length)) {
+            if (!Array.isArray(children)) {
                 return;
             }
 
-            this.set('child_products', new App.Collections.ChildProducts);
-
-            var child = this.get('child_products'),
+            var child = new App.Collections.ChildProducts(),
                 inventory = App.Settings.cannot_order_with_empty_inventory,
                 self = this;
+
+            this.set('child_products', child);
 
             this.listenTo(child, 'change:active', this.update_active);
 
@@ -680,7 +688,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * Checks changes before make reorder. The product may change after order placement.
          * Need to find out changed attibutes.
          *
-         * @param {boolean} ignorePriceChange - indicates whether the product price should be excluded from checking.
+         * @param {boolean} [ignorePriceChange] - indicates whether the product price should be excluded from checking.
          *                                      'Size' modifier should be assigned to the product.
          * @returns {Array} Array containing attributes changed from order placement.
          */
@@ -700,7 +708,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
 
             var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax', 'price'];
 
-            for (var key in attrs) {
+            for (var it = 0, len = attrs.length; it < len; it++) {
+                var key = attrs[it];
                 if (this.get(key) !== actual_data[key]) {
                     this.set(key, actual_data[key]);
                     (key != 'price' || !ignorePriceChange) && changes.push(key);
