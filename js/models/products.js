@@ -500,19 +500,19 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             return def;
         },
         /**
-         * Set children to its parent
-         * @param {Object} children - product children
+         * Set children to its parent.
+         * @param {Array} children - product's children array
          */
         set_child_products: function(children) {
-            if (typeof children !== 'object' || children === null || !(Object.keys(children).length)) {
+            if (!Array.isArray(children)) {
                 return;
             }
 
-            this.set('child_products', new App.Collections.ChildProducts);
-
-            var child = this.get('child_products'),
+            var child = new App.Collections.ChildProducts(),
                 inventory = App.Settings.cannot_order_with_empty_inventory,
                 self = this;
+
+            this.set('child_products', child);
 
             this.listenTo(child, 'change:active', this.update_active);
 
@@ -688,7 +688,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * Checks changes before make reorder. The product may change after order placement.
          * Need to find out changed attibutes.
          *
-         * @param {boolean} ignorePriceChange - indicates whether the product price should be excluded from checking.
+         * @param {boolean} [ignorePriceChange] - indicates whether the product price should be excluded from checking.
          *                                      'Size' modifier should be assigned to the product.
          * @returns {Array} Array containing attributes changed from order placement.
          */
@@ -708,7 +708,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
 
             var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax', 'price'];
 
-            for (var key in attrs) {
+            for (var it = 0, len = attrs.length; it < len; it++) {
+                var key = attrs[it];
                 if (this.get(key) !== actual_data[key]) {
                     this.set(key, actual_data[key]);
                     (key != 'price' || !ignorePriceChange) && changes.push(key);

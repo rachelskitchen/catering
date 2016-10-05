@@ -545,6 +545,12 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                     selected: data2.attribute_2_selected
                 });
             });
+
+            it('atrributes list is empty', function() {
+                spyOn(model, 'get_attributes_list').and.returnValue({});
+                model.set('attribute_2_enable', true);
+                expect(model.get_attribute(2)).toBeUndefined();
+            });
         });
 
         describe('get_attributes()', function() {
@@ -614,12 +620,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                     return ajax;
                 });
 
-                spyOn(model, 'set').and.callFake(function(prop, value) {
-                    if(prop === 'child_products') {
-                        childPassed = value;
-                    }
-                    return Backbone.Model.prototype.set.apply(model, arguments);
-                });
+                spyOn(model, 'set_child_products');
 
                 spyOn(model, 'get').and.callFake(function(prop) {
                     if(prop === 'child_products' && childPassed) {
@@ -643,7 +644,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 model.set('attribute_type', 0);
                 model.get_child_products();
 
-                expect(model.set).not.toHaveBeenCalledWith('child_products');
+                expect(model.set_child_products).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
                 expect(def.state()).toBe('resolved');
             });
@@ -652,7 +653,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 model.set('attribute_type', 2);
                 model.get_child_products();
 
-                expect(model.set).not.toHaveBeenCalledWith('child_products');
+                expect(model.set_child_products).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
                 expect(def.state()).toBe('resolved');
             });
@@ -661,7 +662,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 model.addJSON(_.clone(data.addJSON_parent_with_child_products));
                 model.get_child_products();
 
-                expect(model.set).not.toHaveBeenCalledWith('child_products');
+                expect(model.set_child_products).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).not.toHaveBeenCalled();
                 expect(def.state()).toBe('resolved');
             });
@@ -671,7 +672,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 model.get_child_products();
                 ajax.reject();
 
-                expect(model.set).toHaveBeenCalledWith('child_products', childPassed);
+                expect(model.set_child_products).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).toHaveBeenCalled();
                 checkAjaxRequest();
                 expect(def.state()).toBe('pending');
@@ -685,104 +686,138 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 model.get_child_products();
                 ajax.resolve();
 
-                expect(model.set).toHaveBeenCalledWith('child_products', childPassed);
+                expect(model.set_child_products).not.toHaveBeenCalled();
                 expect(Backbone.$.ajax).toHaveBeenCalled();
                 checkAjaxRequest();
                 expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.ERROR_GET_CHILD_PRODUCTS, true);
                 expect(def.state()).toBe('resolved');
             });
 
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", "cannot_order_with_empty_inventory" is false', function() {
+            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK"', function() {
                 ajaxData = deepClone(data.get_child_products);
 
-                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = false;
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.stock_amount).toBe(999);
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", "cannot_order_with_empty_inventory" is true', function() {
-                ajaxData = deepClone(data.get_child_products);
-                var stockAmount = ajaxData.data[0].product.stock_amount;
-
-                App.Data.settings.get("settings_system").cannot_order_with_empty_inventory = true;
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.stock_amount).toBe(stockAmount);
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty', function() {
-                ajaxData = deepClone(data.get_child_products);
-                ajaxData.data[0].product.image = '';
-
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.image).toBe(model.get('image'));
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image exists', function() {
-                var image = '/test1111.png';
-                ajaxData = deepClone(data.get_child_products);
-                ajaxData.data[0].product.image = image;
-
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.image).toBe(image);
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image exists, response.data[i].product.images is null', function() {
-                var image = '/test1111.png';
-                ajaxData = deepClone(data.get_child_products);
-                ajaxData.data[0].product.image = image;
-                ajaxData.data[0].product.images = null;
-
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.images).toBe(null);
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty, response.data[i].product.images isn\'t array', function() {
-                ajaxData = deepClone(data.get_child_products);
-                ajaxData.data[0].product.image = '';
-                ajaxData.data[0].product.images = 12312;
-
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.images).toBe(12312);
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty, response.data[i].product.images is empty array', function() {
-                ajaxData = deepClone(data.get_child_products);
-                ajaxData.data[0].product.image = '';
-                ajaxData.data[0].product.images = [];
-                model.set('images', ['test1.png', 'test2.png']);
-
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.images).toEqual(model.get('images'));
-            });
-
-            it('`attribute_type` is 1 (parent product), `child_products` is null, response.status is "OK", response.data[i].product.image is empty, response.data[i].product.images is array (length > 0)', function() {
-                var images = ['test1.png', 'test2.png'];
-                ajaxData = deepClone(data.get_child_products);
-                ajaxData.data[0].product.image = '';
-                ajaxData.data[0].product.images = images;
-
-                successResponse(ajaxData.data);
-                expect(ajaxData.data[0].product.images).toEqual(images);
-            });
-
-            function checkAjaxRequest() {
-                expect(ajaxOpts.url).toBe(ajaxOptsPattern.url);
-            }
-
-            function successResponse(ajaxData) {
+                // successResponse(ajaxData.data);
                 model.addJSON(_.clone(data.addJSON_parent_without_child_products));
                 model.get_child_products();
                 ajax.resolve();
 
                 expect(Backbone.$.ajax).toHaveBeenCalled();
                 checkAjaxRequest();
-                expect(model.set).toHaveBeenCalledWith('child_products', childPassed);
-                expect(model.get).toHaveBeenCalledWith('child_products');
+                expect(model.set_child_products).toHaveBeenCalledWith(ajaxData.data);
+                expect(def.state()).toBe('resolved');
+            });
+
+            function checkAjaxRequest() {
+                expect(ajaxOpts.url).toBe(ajaxOptsPattern.url);
+            }
+        });
+
+        describe('set_child_products(children)', function() {
+            var model, child, initInventory, childrenArray;
+
+            beforeEach(function() {
+                model = new App.Models.Product();
+                // child = new App.Collections.ChildProducts;
+
+                childrenArray = deepClone(data.get_child_products).data;
+
+                spyOn(model, 'set').and.callFake(function(prop, value) {
+                    if(prop === 'child_products') {
+                        spyOn(value, 'add_child');
+                        child = value;
+                    }
+                    return Backbone.Model.prototype.set.apply(model, arguments);
+                });
+
+                spyOn(model, 'listenTo');
+                // spyOn(child, 'add_child');
+
+                initInventory = App.Settings.cannot_order_with_empty_inventory;
+            });
+
+            afterEach(function() {
+                App.Settings.cannot_order_with_empty_inventory = initInventory;
+            });
+
+            it('`children` is not array', function() {
+                [1, true, false, Infinity, 0, -1, undefined, null, NaN, '', 'asdasd', {asd:1}].forEach(function(value) {
+                    model.set_child_products(value);
+                    expect(model.set).not.toHaveBeenCalled();
+                    expect(model.listenTo).not.toHaveBeenCalled();
+                });
+            });
+
+            it('`children` is array, `system_settings.cannot_order_with_empty_inventory` is false', function() {
+                App.Settings.cannot_order_with_empty_inventory = false;
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.stock_amount).toBe(999);
+            });
+
+            it('`children` is array, `system_settings.cannot_order_with_empty_inventory` is true', function() {
+                var stockAmount = childrenArray[0].product.stock_amount;
+                App.Settings.cannot_order_with_empty_inventory = true;
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.stock_amount).toBe(stockAmount);
+            });
+
+            it('`children` is array, `children[i].product.image` is empty', function() {
+                childrenArray[0].product.image = '';
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.image).toBe(model.get('image'));
+            });
+
+            it('`children` is array, `children[i].product.image` is not empty', function() {
+                var image = '/test1111.png';
+                childrenArray[0].product.image = image;
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.image).toBe(image);
+            });
+
+            it('`children` is array, `children[i].product.images` is null', function() {
+                var image = '/test1111.png';
+                childrenArray[0].product.image = image;
+                childrenArray[0].product.images = null;
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.images).toBe(null);
+            });
+
+            it('`children` is array, `children[i].product.image` is empty, `children[i].product.images` isn\'t array', function() {
+                childrenArray[0].product.image = '';
+                childrenArray[0].product.images = 12312;
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.images).toBe(12312);
+            });
+
+            it('`children` is array, `children[i].product.image` is empty, `children[i].product.images` is empty array', function() {
+                childrenArray[0].product.image = '';
+                childrenArray[0].product.images = [];
+                model.set('images', ['test1.png', 'test2.png']);
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.images).toEqual(model.get('images'));
+            });
+
+            it('`children` is array, `children[i].product.image` is empty, `children[i].product.images` is array (length > 0)', function() {
+                var images = ['test1.png', 'test2.png'];
+                childrenArray[0].product.image = '';
+                childrenArray[0].product.images = images;
+                model.set_child_products(childrenArray);
+                successfulExpect();
+                expect(childrenArray[0].product.images).toEqual(images);
+            });
+
+            function successfulExpect() {
+                expect(model.set).toHaveBeenCalledWith('child_products', jasmine.any(App.Collections.ChildProducts));
                 expect(model.listenTo).toHaveBeenCalledWith(child, 'change:active', model.update_active);
-                Array.isArray(ajaxData) && ajaxData.forEach(function(item) {
+                Array.isArray(childrenArray) && childrenArray.forEach(function(item) {
                     expect(child.add_child).toHaveBeenCalledWith(item);
                 });
-                expect(def.state()).toBe('resolved');
             }
         });
 
@@ -1063,6 +1098,15 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
             }
         });
 
+        it('image()', function() {
+            var host = 1;
+            spyOn(window, 'addHost').and.returnValue(host);
+            spyOn(model, 'set');
+            model.image();
+            expect(window.addHost).toHaveBeenCalledWith(model.get('image'), App.Data.settings.get('host'));
+            expect(model.set).toHaveBeenCalledWith('image', host);
+        });
+
         describe('isParent()', function() {
             var model;
 
@@ -1160,6 +1204,159 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
 
             model.set('has_upsell', true);
             expect(model.isUpsellProduct()).toBe(true);
+        });
+
+        describe('reorder(ignorePriceChange)', function() {
+            it('`actual_data` is not object', function() {
+                expect(model.reorder()).toEqual([]);
+            });
+
+            it('`active` changed', function() {
+                model.set({
+                    actual_data: {
+                        available: false,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 5,
+                        price: 20
+                    },
+                    active: true,
+                    is_cold: false,
+                    is_gift: false,
+                    sold_by_weight: false,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder()).toEqual(['active']);
+                expect(model.get('active')).toBe(false);
+            });
+
+            it('`is_cold` changed', function() {
+                model.set({
+                    actual_data: {
+                        available: true,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 5,
+                        price: 20
+                    },
+                    available: true,
+                    is_cold: true,
+                    is_gift: false,
+                    sold_by_weight: false,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder()).toEqual(['is_cold']);
+                expect(model.get('is_cold')).toBe(false);
+            });
+
+            it('`is_gift` changed', function() {
+                model.set({
+                    actual_data: {
+                        available: true,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 5,
+                        price: 20
+                    },
+                    available: true,
+                    is_cold: false,
+                    is_gift: true,
+                    sold_by_weight: false,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder()).toEqual(['is_gift']);
+                expect(model.get('is_gift')).toBe(false);
+            });
+
+            it('`sold_by_weight` changed', function() {
+                model.set({
+                    actual_data: {
+                        available: true,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 5,
+                        price: 20
+                    },
+                    available: true,
+                    is_cold: false,
+                    is_gift: false,
+                    sold_by_weight: true,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder()).toEqual(['sold_by_weight']);
+                expect(model.get('sold_by_weight')).toBe(false);
+            });
+
+            it('`tax` changed', function() {
+                model.set({
+                    actual_data: {
+                        available: true,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 3,
+                        price: 20
+                    },
+                    available: true,
+                    is_cold: false,
+                    is_gift: false,
+                    sold_by_weight: false,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder()).toEqual(['tax']);
+                expect(model.get('tax')).toBe(3);
+            });
+
+            it('`price` changed, `ignorePriceChange` is true', function() {
+                model.set({
+                    actual_data: {
+                        available: true,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 5,
+                        price: 25
+                    },
+                    available: true,
+                    is_cold: false,
+                    is_gift: false,
+                    sold_by_weight: false,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder(true)).toEqual([]);
+                expect(model.get('price')).toBe(25);
+            });
+
+            it('`price` changed, `ignorePriceChange` is false', function() {
+                model.set({
+                    actual_data: {
+                        available: true,
+                        is_cold: false,
+                        is_gift: false,
+                        sold_by_weight: false,
+                        tax: 5,
+                        price: 25
+                    },
+                    available: true,
+                    is_cold: false,
+                    is_gift: false,
+                    sold_by_weight: false,
+                    tax: 5,
+                    price: 20
+                });
+                expect(model.reorder()).toEqual(['price']);
+                expect(model.get('price')).toBe(25);
+            });
         });
     });
 
@@ -1346,6 +1543,20 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 expect(collection.length).toBe(0);
             });
 
+            it('response.status is "OK", category is not specified', function() {
+                skin = 'weborder';
+                ajaxData = _.clone(data.get_products_without_gift_card);
+                ajaxData[0].id_category = 100500;
+                fetching = collection.get_products({id_category: id_category});
+                ajax.resolve();
+
+                checkAjaxRequest();
+                expect(fetching.state()).toBe('resolved');
+                expect(window.format_timetables).not.toHaveBeenCalled();
+                expect(collection.length).toBe(1);
+            });
+
+
             function successfulResponse() {
                 checkAjaxRequest();
                 expect(fetching.state()).toBe('resolved');
@@ -1365,38 +1576,6 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
             spyOn(App.Data.errors, 'alert');
             collection.onProductsError();
             expect(App.Data.errors.alert).toHaveBeenCalledWith(MSG.ERROR_PRODUCTS_LOAD, true);
-        });
-
-        describe('check_active(model)', function() {
-            var collection, product, categories;
-
-            beforeEach(function() {
-                collection = new App.Collections.Products();
-                product = new App.Models.Product();
-                collection.add(product);
-                categories = App.Data.categories;
-                App.Data.categories = {set_inactive: new Function()};
-
-                spyOn(App.Data.categories, 'set_inactive');
-            });
-
-            afterEach(function() {
-                App.Data.categories = categories;
-            });
-
-            it('all items are inactive', function() {
-                product.set('active', false);
-                collection.check_active(product);
-
-                expect(App.Data.categories.set_inactive).toHaveBeenCalledWith(product.get('id_category'));
-            });
-
-            it('at least one item is active', function() {
-                product.set('active', true);
-                collection.check_active(product);
-
-                expect(App.Data.categories.set_inactive).not.toHaveBeenCalled();
-            });
         });
 
         describe('check_active(model)', function() {
@@ -1554,155 +1733,163 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
             expect(model.get('products').constructor).toBe(App.Collections.Products);
         });
 
-        it('Get products, by categories ids, no start_index specified', function() {
-            var products = new App.Collections.Products;
-            App.SettingsDirectory.json_page_limit = 2;
-            model.set('ids', [1,3]);
-            spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                products.meta = {count: 10};
-                products.addJSON([data.defaults, data.product_with_image]);
-                return def;
-            });
-            spyOn(App.Collections, 'Products').and.returnValue(products);
-            var alert = spyOn(App.Data.errors, 'alert');
-
-            var ret_dfd = model.get_products();
-
-            ret_dfd.resolve();
-
-            expect(model.get('products').length).toBe(2);
-            expect(model.get('num_of_products')).toBe(10);
-            expect(model.get('last_page_loaded')).toBe(1);
-            expect(App.Data.errors.alert).not.toHaveBeenCalled();
-            expect(typeof App.Data.products[1]).toBe('object');
-            expect(typeof App.Data.products[3]).toBe('object');
+        it('initialize()', function() {
+            expect(model.get('products')).toEqual(jasmine.any(App.Collections.Products));
         });
 
-        it('Get products, by categories ids with start_index specified', function() {
-            var products = new App.Collections.Products;
-            App.SettingsDirectory.json_page_limit = 2;
-            model.set('ids', [1,3]);
-            spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                products.meta = {count: 10};
-                products.addJSON([data.defaults, data.product_with_image]);
-                return def;
-            });
-            spyOn(App.Collections, 'Products').and.returnValue(products);
+        describe('get_products(options)', function() {
+            it('by categories ids, no start_index specified', function() {
+                var products = new App.Collections.Products;
+                App.SettingsDirectory.json_page_limit = 2;
+                model.set('ids', [1,3]);
+                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
+                    products.meta = {count: 10};
+                    products.addJSON([data.defaults, data.product_with_image]);
+                    return def;
+                });
+                spyOn(App.Collections, 'Products').and.returnValue(products);
+                var alert = spyOn(App.Data.errors, 'alert');
 
-            var ret_dfd = model.get_products({start_index: 4});
+                var ret_dfd = model.get_products();
 
-            ret_dfd.resolve();
+                ret_dfd.resolve();
 
-            expect(model.get('products').length).toBe(2);
-            expect(model.get('num_of_products')).toBe(10);
-            expect(model.get('last_page_loaded')).toBe(3);
-            expect(typeof App.Data.products[1]).toBe('object');
-            expect(typeof App.Data.products[3]).toBe('object');
-        });
-
-        it('Get products, by search pattern with start_index specified', function() {
-            var products = new App.Collections.Products;
-            App.SettingsDirectory.json_page_limit = 2;
-            model.set('pattern', 'p');
-            spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                products.meta = {count: 10};
-                products.addJSON([data.defaults, data.product_with_image]);
-                return def;
-            });
-            spyOn(App.Collections, 'Products').and.returnValue(products);
-
-            var ret_dfd = model.get_products({start_index: 4});
-
-            ret_dfd.resolve();
-
-            expect(model.get('products').length).toBe(2);
-            expect(model.get('num_of_products')).toBe(10);
-            expect(model.get('last_page_loaded')).toBe(3);
-            expect(App.Data.products).toEqual([]);
-        });
-
-        it('Get products, by search pattern, ERROR occurred, spy alert', function() {
-            var products = new App.Collections.Products;
-            App.SettingsDirectory.json_page_limit = 2;
-            model.set('pattern', 'p');
-            spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                products.meta = {count: 10};
-                products.addJSON([data.defaults, data.product_with_image]);
-                return def;
+                expect(model.get('products').length).toBe(2);
+                expect(model.get('num_of_products')).toBe(10);
+                expect(model.get('last_page_loaded')).toBe(1);
+                expect(App.Data.errors.alert).not.toHaveBeenCalled();
+                expect(typeof App.Data.products[1]).toBe('object');
+                expect(typeof App.Data.products[3]).toBe('object');
             });
 
-            spyOn(App.Collections, 'Products').and.returnValue(products);
+            it('by categories ids with start_index specified', function() {
+                var products = new App.Collections.Products;
+                App.SettingsDirectory.json_page_limit = 2;
+                model.set('ids', [1,3]);
+                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
+                    products.meta = {count: 10};
+                    products.addJSON([data.defaults, data.product_with_image]);
+                    return def;
+                });
+                spyOn(App.Collections, 'Products').and.returnValue(products);
 
-            var alert = spyOn(App.Data.errors, 'alert');
+                var ret_dfd = model.get_products({start_index: 4});
 
-            var ret_dfd = model.get_products({start_index: 4}).fail(function(){
-                products.onProductsError();
+                ret_dfd.resolve();
+
+                expect(model.get('products').length).toBe(2);
+                expect(model.get('num_of_products')).toBe(10);
+                expect(model.get('last_page_loaded')).toBe(3);
+                expect(typeof App.Data.products[1]).toBe('object');
+                expect(typeof App.Data.products[3]).toBe('object');
             });
 
-            ret_dfd.reject();
+            it('by search pattern with start_index specified', function() {
+                var products = new App.Collections.Products;
+                App.SettingsDirectory.json_page_limit = 2;
+                model.set('pattern', 'p');
+                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
+                    products.meta = {count: 10};
+                    products.addJSON([data.defaults, data.product_with_image]);
+                    return def;
+                });
+                spyOn(App.Collections, 'Products').and.returnValue(products);
 
-            expect(App.Data.errors.alert).toHaveBeenCalled();
-            expect(model.get('products').length).toBe(0);
-            expect(model.get('num_of_products')).toBe(0);
-            expect(model.get('last_page_loaded')).toBe(0);
-            expect(App.Data.products).toEqual([]);
-        });
+                var ret_dfd = model.get_products({start_index: 4});
 
-        it('Get products, last_page_loaded > cur_page', function() {
-            var products = new App.Collections.Products;
-            App.SettingsDirectory.json_page_limit = 2;
-            model.set('pattern', 'p');
-            model.set('last_page_loaded', 5);
+                ret_dfd.resolve();
 
-            spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
-                products.meta = {count: 10};
-                products.addJSON([data.defaults, data.product_with_image]);
-                return def;
+                expect(model.get('products').length).toBe(2);
+                expect(model.get('num_of_products')).toBe(10);
+                expect(model.get('last_page_loaded')).toBe(3);
+                expect(App.Data.products).toEqual([]);
             });
 
-            spyOn(App.Collections, 'Products').and.returnValue(products);
+            it('by search pattern, ERROR occurred, spy alert', function() {
+                var products = new App.Collections.Products;
+                App.SettingsDirectory.json_page_limit = 2;
+                model.set('pattern', 'p');
+                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
+                    products.meta = {count: 10};
+                    products.addJSON([data.defaults, data.product_with_image]);
+                    return def;
+                });
 
-            var ret_dfd = model.get_products({start_index: 4});
+                spyOn(App.Collections, 'Products').and.returnValue(products);
 
-            expect(ret_dfd.state()).toEqual("resolved");
-            expect(model.get('products').length).toBe(0);
+                var alert = spyOn(App.Data.errors, 'alert');
+
+                var ret_dfd = model.get_products({start_index: 4}).fail(function(){
+                    products.onProductsError();
+                });
+
+                ret_dfd.reject();
+
+                expect(App.Data.errors.alert).toHaveBeenCalled();
+                expect(model.get('products').length).toBe(0);
+                expect(model.get('num_of_products')).toBe(0);
+                expect(model.get('last_page_loaded')).toBe(0);
+                expect(App.Data.products).toEqual([]);
+            });
+
+            it('last_page_loaded > cur_page', function() {
+                var products = new App.Collections.Products;
+                App.SettingsDirectory.json_page_limit = 2;
+                model.set('pattern', 'p');
+                model.set('last_page_loaded', 5);
+
+                spyOn(App.Collections.Products.prototype, 'get_products').and.callFake(function() {
+                    products.meta = {count: 10};
+                    products.addJSON([data.defaults, data.product_with_image]);
+                    return def;
+                });
+
+                spyOn(App.Collections, 'Products').and.returnValue(products);
+
+                var ret_dfd = model.get_products({start_index: 4});
+
+                expect(ret_dfd.state()).toEqual("resolved");
+                expect(model.get('products').length).toBe(0);
+            });
         });
 
-        it('getPortion(start_index, count, options)', function() {
-            var products = new App.Collections.Products;
-            var product = (new App.Models.Product).addJSON(data.product_with_image);
+        describe('getPortion(start_index, count, options)', function() {
+            it('common use case', function() {
+                var products = new App.Collections.Products;
+                var product = (new App.Models.Product).addJSON(data.product_with_image);
 
-            products.add([product.set('compositeId', 100001),
-                          product.clone().set('compositeId', 10002),
-                          product.clone().set('compositeId', 10003)]);
-            model.set('products', products);
+                products.add([product.set('compositeId', 100001),
+                              product.clone().set('compositeId', 10002),
+                              product.clone().set('compositeId', 10003)]);
+                model.set('products', products);
 
-            var portion = model.getPortion(0, 2, {ignoreFilters: true});
+                var portion = model.getPortion(0, 2, {ignoreFilters: true});
 
-            expect(portion.length).toBe(2);
-            expect(portion[0].constructor).toBe(App.Models.Product);
+                expect(portion.length).toBe(2);
+                expect(portion[0].constructor).toBe(App.Models.Product);
 
-            portion = model.getPortion(2, 10);
-            expect(portion.length).toBe(1);
-        });
+                portion = model.getPortion(2, 10);
+                expect(portion.length).toBe(1);
+            });
 
-        it('getPortion(start_index, count, options), ignoreFilter', function() {
-            var products = new App.Collections.Products;
-            var product = (new App.Models.Product).addJSON(data.product_with_image);
+            it('`ignoreFilters` is applied', function() {
+                var products = new App.Collections.Products;
+                var product = (new App.Models.Product).addJSON(data.product_with_image);
 
-            products.add([product.set({'compositeId': 100001, filterResult: false}),
-                          product.clone().set({'compositeId': 100002, filterResult: true}),
-                          product.clone().set({'compositeId': 100003, filterResult: true}),
-                          product.clone().set({'compositeId': 100004, filterResult: false})]);
-            model.set('products', products);
+                products.add([product.set({'compositeId': 100001, filterResult: false}),
+                              product.clone().set({'compositeId': 100002, filterResult: true}),
+                              product.clone().set({'compositeId': 100003, filterResult: true}),
+                              product.clone().set({'compositeId': 100004, filterResult: false})]);
+                model.set('products', products);
 
-            var portion = model.getPortion(0, 2, {ignoreFilters: false});
+                var portion = model.getPortion(0, 2, {ignoreFilters: false});
 
-            expect(portion.length).toBe(2);
-            expect(portion[0].constructor).toBe(App.Models.Product);
+                expect(portion.length).toBe(2);
+                expect(portion[0].constructor).toBe(App.Models.Product);
 
-            portion = model.getPortion(2, 2, {ignoreFilters: false});
-            expect(portion.length).toBe(0);
+                portion = model.getPortion(2, 2, {ignoreFilters: false});
+                expect(portion.length).toBe(0);
+            });
         });
 
         it('get_subcategory_products(start_index, count)', function() {
