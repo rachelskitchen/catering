@@ -410,7 +410,8 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         },
         /**
          * @param {number} [type=1] - attribute type (`1` or `2`).
-         * @returns {(Object|undefined)} If attribute type is disabled returns `undefined`. Otherwise, returns the following object:
+         * @returns {(Object|undefined)} If attribute type is disabled or attributes list is empty returns `undefined`.
+         *                               Otherwise, returns the following object:
          * ```
          * {
          *     name: name,          // attribute name
@@ -420,14 +421,21 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
          * ```
          */
         get_attribute: function(type) {
-            if(type != 1 && type != 2)
+            if (type != 1 && type != 2) {
                 type = 1;
+            }
 
-            if(!this.get('attribute_' + type + '_enable'))
+            if (!this.get('attribute_' + type + '_enable')) {
                 return;
+            }
 
-            var all_attrs = this.get_attributes_list(),
-                name = this.get('attribute_' + type + '_name'),
+            var all_attrs = this.get_attributes_list();
+
+            if (_.isEmpty(all_attrs)) {
+                return;
+            }
+
+            var name = this.get('attribute_' + type + '_name'),
                 selected = this.get('attribute_' + type + '_selected'),
                 value = all_attrs['attribute_' + type + '_all'][selected];
 
