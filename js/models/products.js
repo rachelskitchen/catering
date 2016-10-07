@@ -706,7 +706,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 changes.push('active');
             }
 
-            var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax', 'price'];
+            var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax'];
+
+            // do not check price change if the product is combo
+            if (!this.get('is_combo')) {
+                attrs.push('price');
+            }
 
             for (var it = 0, len = attrs.length; it < len; it++) {
                 var key = attrs[it];
