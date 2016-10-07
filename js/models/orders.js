@@ -327,7 +327,8 @@ define(["backbone"], function(Backbone) {
             if (!_.isObject(authorizationHeader)) {
                 return;
             }
-            var items = this.get('items');
+            var items = this.get('items'),
+                self = this;
             return Backbone.$.ajax({
                 url: '/weborders/v1/order/' + this.get('id') + '/orderitems/',
                 method: 'GET',
@@ -335,7 +336,7 @@ define(["backbone"], function(Backbone) {
                 contentType: 'application/json',
                 success: function(data) {
                     if (Array.isArray(data.data)) {
-                        items.reset(data.data);
+                        items.reset(self.processComboItems(data.data));
                     }
                 },
                 error: new Function()           // to override global ajax error handler
@@ -444,6 +445,51 @@ define(["backbone"], function(Backbone) {
 
                 self.trigger('onReorderCompleted', changes);
             }
+        },
+        /**
+         * Looks up combo child products and excludes them from `items`
+         * adding them to product sets of parent combo product.
+         *
+         * @return {Array} filtered order items.
+         */
+        processComboItems: function(items) {
+            var sets = {};
+
+            items = items.filter(function(item) {
+                var combo_product = item.product.combo_used,
+                    combo_set_id = item.combo_product_set_id;
+
+                if (typeof combo_set_id == 'number') {
+
+                    if (!(combo_product in sets)) {
+                        sets[combo_product] = {};
+                    }
+
+                    if (!(combo_set_id in sets[combo_product])) {
+                        sets[combo_product][combo_set_id] = [];
+                    }
+
+                    item.is_child_product = true;
+                    sets[combo_product][combo_set_id].push(item);
+
+                    return false;
+                } else {
+                    return true;
+                }
+            });
+
+            items.forEach(function(item) {
+                if (item.is_combo) {
+                    item.product.product_sets = _.map(sets[item.product.id], function(value, key) {
+                        return {
+                            id: key,
+                            order_products: value
+                        }
+                    });
+                }
+            });
+
+            return items;
         }
     });
 
