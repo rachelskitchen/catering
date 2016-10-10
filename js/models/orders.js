@@ -336,7 +336,7 @@ define(["backbone"], function(Backbone) {
                 contentType: 'application/json',
                 success: function(data) {
                     if (Array.isArray(data.data)) {
-                        items.reset(self.processComboItems(data.data));
+                        items.reset(self.processUpsellComboItems(data.data));
                     }
                 },
                 error: new Function()           // to override global ajax error handler
