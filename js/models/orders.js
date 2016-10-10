@@ -439,7 +439,9 @@ define(["backbone"], function(Backbone) {
 
                 // add items
                 items.each(function(orderItem) {
-                   myorder.add(orderItem);
+                    if (orderItem.get('product').get('name') != 'Shipping and Handling') {
+                        myorder.add(orderItem);
+                    }
                 });
 
                 self.trigger('onReorderCompleted', changes);
