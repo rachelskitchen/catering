@@ -470,6 +470,7 @@ define(["backbone"], function(Backbone) {
                     }
 
                     item.is_child_product = true;
+                    item.selected = true;
                     sets[combo_product][combo_set_id].push(item);
 
                     return false;
