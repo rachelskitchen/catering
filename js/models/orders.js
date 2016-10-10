@@ -500,10 +500,12 @@ define(["backbone"], function(Backbone) {
                 } else if (item.has_upsell) {
                     var upsell_data = upsell_fake_items[product.combo_used];
                     if (upsell_data) {
-                        item.upcharge_name = upsell_data.name;
-                        item.upcharge_price = _.reduce(upsell_sets[product.combo_used], function(memo, item) {
-                            return memo - item;
-                        }, upsell_data.price - product.price);
+                        item.upcharge_name = upsell_data.product.name;
+                        item.upcharge_price = _.reduce(upsell_sets[product.combo_used], function(memo, pset) {
+                            return _.reduce(pset, function(memo, item) {
+                                return memo - item.quantity * (item.product.price - item.product.upcharge_price);
+                            }, memo);
+                        }, upsell_data.product.price - item.quantity * (product.price - product.upcharge_price));
                     }
 
                     product.product_sets = _.map(upsell_sets[product.combo_used], function(value, key) {
