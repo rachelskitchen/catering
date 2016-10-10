@@ -201,11 +201,11 @@ define(["profile_view"], function(profile_view) {
     var ProfileOrderItemView = App.Views.CoreProfileView.CoreProfileOrderItemView.extend({
         className: 'item',
         bindings: {
-            '.modifiers': 'text: modifiers'
+            '.modifiers': 'text: select(is_combo, getComboItems($model), getModifiers($model))'
         },
-        computeds: {
-            modifiers: function() {
-                var modifiers = this.model.get_modifiers(),
+        bindingFilters: {
+            getModifiers: function(model) {
+                var modifiers = model.get_modifiers(),
                     items = [];
 
                 modifiers && modifiers.get_modifierList().forEach(function(modifier) {
@@ -213,6 +213,21 @@ define(["profile_view"], function(profile_view) {
                 });
 
                 return items.length ? '+' + items.join(', +') : '';
+            },
+            getComboItems: function(model) {
+                var data = model.item_submit(),
+                    items = [];
+
+                _.isObject(data) && data.products_sets.forEach(function(pset) {
+                   pset.products.forEach(function(product) {
+                        var modifiers = [],
+                            name = product.product_name_override;
+
+                        items.push(product.quantity + 'x ' + name);
+                    });
+                });
+
+                return items.join(', ');
             }
         }
     });
