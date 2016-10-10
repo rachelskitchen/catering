@@ -439,9 +439,9 @@ define(["backbone"], function(Backbone) {
                 }
 
                 // add items
-                // items.each(function(orderItem) {
-                   myorder.addJSON(items);
-                // });
+                items.each(function(orderItem) {
+                   myorder.add(orderItem);
+                });
 
                 self.trigger('onReorderCompleted', changes);
             }
@@ -503,11 +503,12 @@ define(["backbone"], function(Backbone) {
                         item.upcharge_name = upsell_data.product.name;
                         item.upcharge_price = _.reduce(upsell_sets[product.combo_used], function(memo, pset) {
                             return _.reduce(pset, function(memo, item) {
-                                return memo - item.quantity * (item.product.price + item.product.upcharge_price);
+                                return memo - item.quantity * (item.product.price - item.product.upcharge_price);
                             }, memo);
-                        }, upsell_data.product.price - item.quantity * (product.price + product.upcharge_price));
+                        }, upsell_data.product.price - item.quantity * (product.price - product.upcharge_price));
                     }
 
+                    product.combo_price = upsell_data.product.price;
                     product.product_sets = _.map(upsell_sets[product.combo_used], function(value, key) {
                         return {
                             id: key,
