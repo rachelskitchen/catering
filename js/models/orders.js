@@ -452,36 +452,61 @@ define(["backbone"], function(Backbone) {
          *
          * @return {Array} filtered order items.
          */
-        processComboItems: function(items) {
-            var sets = {};
+        processUpsellComboItems: function(items) {
+            var combo_sets = {},
+                upsell_sets = {},
+                upsell_fake_items = {}; // wrappers for upsell combo item created in backend
 
+            // determine upsell fake objects
+            _.where(items, {has_upsell: true}).forEach(function(upsell_root_item) {
+                upsell_fake_items[upsell_root_item.product.combo_used] = {};
+            });
+
+            // excludes child products and fake upsell items
             items = items.filter(function(item) {
                 var combo_product = item.product.combo_used,
-                    combo_set_id = item.combo_product_set_id;
+                    combo_set_id = item.combo_product_set_id,
+                    upsell_set_id = item.dynamic_combo_slot_id;
 
                 if (typeof combo_set_id == 'number') {
-
-                    if (!(combo_product in sets)) {
-                        sets[combo_product] = {};
-                    }
-
-                    if (!(combo_set_id in sets[combo_product])) {
-                        sets[combo_product][combo_set_id] = [];
-                    }
-
-                    item.is_child_product = true;
-                    item.selected = true;
-                    sets[combo_product][combo_set_id].push(item);
-
+                    // this is combo set child item
+                    addSetItem(combo_sets, combo_product, combo_set_id, item);
                     return false;
+
+                } else if (typeof upsell_set_id == 'number') {
+                    // this is upsell combo set child item
+                    addSetItem(upsell_sets, combo_product, upsell_set_id, item);
+                    return false;
+
+                } else if (item.is_combo && item.product.id in upsell_fake_items) {
+                    // this is fake upsell combo item
+                    upsell_fake_items[item.product.id] = item;
+                    return false;
+
                 } else {
                     return true;
                 }
             });
 
             items.forEach(function(item) {
+                var product = item.product;
                 if (item.is_combo) {
-                    item.product.product_sets = _.map(sets[item.product.id], function(value, key) {
+                    product.product_sets = _.map(combo_sets[product.id], function(value, key) {
+                        return {
+                            id: key,
+                            order_products: value
+                        }
+                    });
+                } else if (item.has_upsell) {
+                    var upsell_data = upsell_fake_items[product.combo_used];
+                    if (upsell_data) {
+                        item.upcharge_name = upsell_data.name;
+                        item.upcharge_price = _.reduce(upsell_sets[product.combo_used], function(memo, item) {
+                            return memo - item;
+                        }, upsell_data.price - product.price);
+                    }
+
+                    product.product_sets = _.map(upsell_sets[product.combo_used], function(value, key) {
                         return {
                             id: key,
                             order_products: value
@@ -489,6 +514,20 @@ define(["backbone"], function(Backbone) {
                     });
                 }
             });
+
+            function addSetItem(sets, product_id, set_id, item) {
+                if (!(product_id in sets)) {
+                    sets[product_id] = {};
+                }
+
+                if (!(set_id in sets[product_id])) {
+                    sets[product_id][set_id] = [];
+                }
+
+                item.is_child_product = true;
+                item.selected = true;
+                sets[product_id][set_id].push(item);
+            }
 
             return items;
         }
