@@ -440,7 +440,7 @@ define(["backbone"], function(Backbone) {
 
                 // add items
                 items.each(function(orderItem) {
-                   myorder.add(orderItem);
+                   myorder.addJSON(orderItem);
                 });
 
                 self.trigger('onReorderCompleted', changes);
