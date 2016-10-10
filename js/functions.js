@@ -2709,6 +2709,13 @@ function traceDeferredObjects() {
         }
         return counter;
     }
+    StackClass.prototype.resolveAll = function() {
+        for (var k in this) {
+            if (this.hasOwnProperty(k)) {
+                this[k].dfd.resolve();
+            }
+        }
+    }
 
     var jQueryDeferredFunc = $.Deferred;
     $.Deferred = function() {
@@ -2726,6 +2733,43 @@ function traceDeferredObjects() {
             //trace(key, " => dfd done");
         });
         return dfd;
+    }
+}
+/*
+* Trace all Backbone events occurred in application. Call it when it's needed.
+* @param {Object} filter - a regexp string is applied to the type of the object e.g. "Myorder|Customer" (url param dev=true must be specified),
+* if filter is undefined then filtering is not used
+*/
+function traceTriggers(filter) {
+    var ModelTriggerFunc = Backbone.Model.prototype.trigger,
+        ViewTriggerFunc = Backbone.View.prototype.trigger,
+        CollectionTriggerFunc = Backbone.Collection.prototype.trigger;
+
+    Backbone.Model.prototype.trigger = function() {
+        /*var e = new Error,
+            type = this.getType ?  this.getType() : '';
+        var regexp = new RegExp(filter);
+        if (!type || regexp.test(type)) {
+            console.log("TRIGGER EVENT:", type, arguments, e.stack);
+        }*/
+        traceIt.apply(this, arguments);
+        ModelTriggerFunc.apply(this, arguments);
+    }
+    Backbone.View.prototype.trigger = function() {
+        traceIt.apply(this, arguments);
+        ViewTriggerFunc.apply(this, arguments);
+    }
+    Backbone.Collection.prototype.trigger = Backbone.Model.prototype.trigger = function() {
+        traceIt.apply(this, arguments);
+        CollectionTriggerFunc.apply(this, arguments);
+    }
+    function traceIt() {
+        var e = new Error,
+            type = this.getType ?  this.getType() : '';
+        var regexp = new RegExp(filter);
+        if (!type || regexp.test(type)) {
+            console.log("TRIGGER EVENT:", type, arguments, e.stack);
+        }
     }
 }
 
