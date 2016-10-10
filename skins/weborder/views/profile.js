@@ -220,10 +220,7 @@ define(["profile_view"], function(profile_view) {
 
                 _.isObject(data) && data.products_sets.forEach(function(pset) {
                    pset.products.forEach(function(product) {
-                        var modifiers = [],
-                            name = product.product_name_override;
-
-                        items.push(product.quantity + 'x ' + name);
+                        items.push(product.quantity + 'x ' + product.product_name_override);
                     });
                 });
 
