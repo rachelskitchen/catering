@@ -201,7 +201,7 @@ define(["profile_view"], function(profile_view) {
     var ProfileOrderItemView = App.Views.CoreProfileView.CoreProfileOrderItemView.extend({
         className: 'item',
         bindings: {
-            '.modifiers': 'text: select(is_combo, getComboItems($model), getModifiers($model))'
+            '.modifiers': 'text: select(is_combo, getComboItems($model), select(has_upsell, getUpsellItems($model), getModifiers($model)))'
         },
         bindingFilters: {
             getModifiers: function(model) {
@@ -217,6 +217,23 @@ define(["profile_view"], function(profile_view) {
             getComboItems: function(model) {
                 var data = model.item_submit(),
                     items = [];
+
+                _.isObject(data) && data.products_sets.forEach(function(pset) {
+                   pset.products.forEach(function(product) {
+                        items.push(product.quantity + 'x ' + product.product_name_override);
+                    });
+                });
+
+                return items.join(', ');
+            },
+            getUpsellItems: function(model) {
+                var data = model.item_submit(),
+                    product = model.get_product(),
+                    items = [];
+
+                if (product) {
+                    items.push(product.get('name'));
+                }
 
                 _.isObject(data) && data.products_sets.forEach(function(pset) {
                    pset.products.forEach(function(product) {
