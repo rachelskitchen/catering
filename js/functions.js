@@ -2737,9 +2737,9 @@ function traceDeferredObjects() {
 }
 /*
 * Trace all Backbone events occurred in application. Call it when it's needed.
-* @param {string} filter - a regexp string is applied to the type of the object e.g. "Myorder|Customer" (url param dev=true must be specified),
+* @param {string} filter - a regexp string is applied to the type of the object e.g. "order|Customer" (url param dev=true must be specified),
 * if filter is undefined then filtering is not used
-* @param {string} ignore - an ignore filter regexp string is applied to the type of the object e.g. "false|change:"
+* @param {string} ignore - an ignore filter regexp string is applied to the type of the object e.g. "false|OrderItem"
 */
 function traceTriggers(filter, ignore) {
     var ModelTriggerFunc = Backbone.Model.prototype.trigger,
@@ -2754,16 +2754,16 @@ function traceTriggers(filter, ignore) {
         traceIt.apply(this, arguments);
         ViewTriggerFunc.apply(this, arguments);
     }
-    Backbone.Collection.prototype.trigger = Backbone.Model.prototype.trigger = function() {
+    Backbone.Collection.prototype.trigger = function() {
         traceIt.apply(this, arguments);
         CollectionTriggerFunc.apply(this, arguments);
     }
     function traceIt() {
         var e = new Error,
             type = this.getType ?  this.getType() : '';
-        var regexp = new RegExp(filter);
-        var ignoreRegExp = new RegExp(ignore);
-        if (!type || (regexp.test(type) && !ignoreRegExp.test(type)) {
+        var regexp = new RegExp(filter, 'i');
+        var ignoreRegExp = new RegExp(ignore, 'i');
+        if (!type || (regexp.test(type) && !ignoreRegExp.test(type))) {
             console.log("TRIGGER EVENT:", type, arguments, e.stack);
         }
     }
