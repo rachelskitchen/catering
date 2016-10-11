@@ -1276,7 +1276,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             },
             price: function() {
                 var product = this.model.get_product();
-                return product.get('is_combo') || product.get('has_upsell') ? product.get('combo_price') : this.model.get('sum');
+                return product.get('has_upsell') ? product.get('combo_price') : this.model.get('sum');
             }
         }
     })
