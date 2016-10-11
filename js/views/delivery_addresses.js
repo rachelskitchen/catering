@@ -213,10 +213,6 @@ define(['backbone', 'factory'], function(Backbone) {
 
             if (this.isShippingServices)
                 this.listenTo(this.options.customer, 'change:shipping_services', this.updateShippingServices, this);
-            var entry = false;
-            if (entry && this.isShippingServices && this.options.customer.orders) {
-                this.listenTo(this.options.customer.orders, 'onReorderCompleted', this.updateAddress, this);
-            }
 
             App.Views.AddressView.prototype.initialize.apply(this, arguments);
 
