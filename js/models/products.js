@@ -706,7 +706,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 changes.push('active');
             }
 
-            var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax'];
+            var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax', 'price'];
 
             for (var it = 0, len = attrs.length; it < len; it++) {
                 var key = attrs[it];
