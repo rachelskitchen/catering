@@ -1871,7 +1871,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                  * Delayed cart totals update. Timeout is 500 msec.
                  * @type {Function}
                  */
-                this.getDiscountsTimeout = setTimeout(function(){ self.get_cart_totals(self.last_cart_totals_params); }, 500);
+                this.getDiscountsTimeout = setTimeout(function() {
+                    self.get_cart_totals(self.last_cart_totals_params); //update_cart_totals func can be called several times with different params during 500 ms interval.
+                                                                        //The latest params should be used for get_cart_totals() result call.
+                }, 500);
             }
         },
         /**
