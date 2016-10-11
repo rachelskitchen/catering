@@ -493,7 +493,7 @@ define(["backbone"], function(Backbone) {
                 if (item.is_combo) {
                     product.product_sets = _.map(combo_sets[product.id], function(value, key) {
                         return {
-                            id: key,
+                            id: Number(key),
                             order_products: value
                         }
                     });
@@ -511,7 +511,7 @@ define(["backbone"], function(Backbone) {
                     product.combo_price = upsell_data.product.price;
                     product.product_sets = _.map(upsell_sets[product.combo_used], function(value, key) {
                         return {
-                            id: key,
+                            id: Number(key),
                             order_products: value
                         }
                     });
