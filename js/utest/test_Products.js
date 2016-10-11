@@ -1333,6 +1333,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                     tax: 5,
                     price: 20
                 });
+console.log(model.get('is_combo'), model.get('has_upsell'));
                 expect(model.reorder(true)).toEqual([]);
                 expect(model.get('price')).toBe(25);
             });
