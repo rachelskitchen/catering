@@ -440,7 +440,17 @@ define(["backbone"], function(Backbone) {
 
                 // add items
                 items.each(function(orderItem) {
-                   myorder.add(orderItem);
+                    var product = orderItem.get_product(),
+                        type;
+                    if (product.is_combo || product.has_upsell) {
+                        if (product.has_upsell)
+                            type = 'MyorderUpsell';
+                        else
+                            type = 'MyorderCombo';
+                    } else {
+                        type = 'Myorder';
+                    }
+                   myorder.add(App.Models.create(type).set(orderItem.toJSON()));
                 });
 
                 self.trigger('onReorderCompleted', changes);
