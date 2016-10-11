@@ -335,9 +335,6 @@ define(["backbone"], function(Backbone) {
                 contentType: 'application/json',
                 success: function(data) {
                     if (Array.isArray(data.data)) {
-                        data.data = _.filter(data.data, function(item) {
-                            return item.product.name != 'Shipping and Handling';
-                        });
                         items.reset(data.data);
                     }
                 },
@@ -442,7 +439,9 @@ define(["backbone"], function(Backbone) {
 
                 // add items
                 items.each(function(orderItem) {
-                    myorder.add(orderItem);
+                    if (orderItem.get('product').get('name') != 'Shipping and Handling') {
+                        myorder.add(orderItem);
+                    }
                 });
 
                 self.trigger('onReorderCompleted', changes);
