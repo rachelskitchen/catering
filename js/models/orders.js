@@ -115,7 +115,7 @@ define(["backbone"], function(Backbone) {
          */
         reorder: function () {
             var changes = [],
-                items = this.toJSON();
+                items = this.models.slice();
 
             // do not use the collection as items resource
             // because it can be modified during processing
