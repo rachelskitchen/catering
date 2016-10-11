@@ -114,9 +114,13 @@ define(["backbone"], function(Backbone) {
          * @returns {Array} Array of attributes changed from order placement.
          */
         reorder: function () {
-            var changes = [];
+            var changes = [],
+                items = this.toJSON();
 
-            this.each(function(orderItem) {
+            // do not use the collection as items resource
+            // because it can be modified during processing
+            // (for instance, first item was removed from collection as inactive and further values of orderItem will be incorrect)
+            items.forEach(function(orderItem) {
                 changes.push.apply(changes, orderItem.reorder());
             });
 
