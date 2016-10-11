@@ -2737,21 +2737,16 @@ function traceDeferredObjects() {
 }
 /*
 * Trace all Backbone events occurred in application. Call it when it's needed.
-* @param {Object} filter - a regexp string is applied to the type of the object e.g. "Myorder|Customer" (url param dev=true must be specified),
+* @param {string} filter - a regexp string is applied to the type of the object e.g. "Myorder|Customer" (url param dev=true must be specified),
 * if filter is undefined then filtering is not used
+* @param {string} ignore - an ignore filter regexp string is applied to the type of the object e.g. "false|change:"
 */
-function traceTriggers(filter) {
+function traceTriggers(filter, ignore) {
     var ModelTriggerFunc = Backbone.Model.prototype.trigger,
         ViewTriggerFunc = Backbone.View.prototype.trigger,
         CollectionTriggerFunc = Backbone.Collection.prototype.trigger;
 
     Backbone.Model.prototype.trigger = function() {
-        /*var e = new Error,
-            type = this.getType ?  this.getType() : '';
-        var regexp = new RegExp(filter);
-        if (!type || regexp.test(type)) {
-            console.log("TRIGGER EVENT:", type, arguments, e.stack);
-        }*/
         traceIt.apply(this, arguments);
         ModelTriggerFunc.apply(this, arguments);
     }
@@ -2767,7 +2762,8 @@ function traceTriggers(filter) {
         var e = new Error,
             type = this.getType ?  this.getType() : '';
         var regexp = new RegExp(filter);
-        if (!type || regexp.test(type)) {
+        var ignoreRegExp = new RegExp(ignore);
+        if (!type || (regexp.test(type) && !ignoreRegExp.test(type)) {
             console.log("TRIGGER EVENT:", type, arguments, e.stack);
         }
     }
