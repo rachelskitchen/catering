@@ -708,15 +708,11 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
 
             var attrs = ['is_cold', 'is_gift', 'sold_by_weight', 'tax'];
 
-            // do not check price change if the product is combo or has upsell
-            // if (!this.get('is_combo') && !this.get('has_upsell')) {
-            //     attrs.push('price');
-            // }
-
             for (var it = 0, len = attrs.length; it < len; it++) {
                 var key = attrs[it];
                 if (this.get(key) !== actual_data[key]) {
                     this.set(key, actual_data[key]);
+                    // do not notify about price change if the product is combo or has upsell
                     if (!this.get('is_combo') && !this.get('has_upsell')) {
                         (key != 'price' || !ignorePriceChange) && changes.push(key);
                     }

@@ -218,7 +218,7 @@ define(["profile_view"], function(profile_view) {
                 var data = model.item_submit(),
                     items = [];
 
-                _.isObject(data) && data.products_sets.forEach(function(pset) {
+                _.isObject(data) && Array.isArray(data.products_sets) && data.products_sets.forEach(function(pset) {
                    pset.products.forEach(function(product) {
                         items.push(product.quantity + 'x ' + product.product_name_override);
                     });
@@ -235,7 +235,7 @@ define(["profile_view"], function(profile_view) {
                     items.push(product.get('name'));
                 }
 
-                _.isObject(data) && data.products_sets.forEach(function(pset) {
+                _.isObject(data) && Array.isArray(data.products_sets) && data.products_sets.forEach(function(pset) {
                    pset.products.forEach(function(product) {
                         items.push(product.quantity + 'x ' + product.product_name_override);
                     });
