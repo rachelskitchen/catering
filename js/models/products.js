@@ -713,8 +713,10 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                 if (this.get(key) !== actual_data[key]) {
                     this.set(key, actual_data[key]);
                     // do not notify about price change if the product is combo or has upsell
-                    if (!this.get('is_combo') && !this.get('has_upsell')) {
-                        (key != 'price' || !ignorePriceChange) && changes.push(key);
+                    if (key == 'price') {
+                        !ignorePriceChange && !this.get('is_combo') && !this.get('has_upsell') && changes.push(key);
+                    } else {
+                        changes.push(key);
                     }
                 }
             }
