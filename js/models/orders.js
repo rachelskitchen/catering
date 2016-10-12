@@ -340,10 +340,7 @@ define(["backbone"], function(Backbone) {
                 contentType: 'application/json',
                 success: function(data) {
                     if (Array.isArray(data.data)) {
-                        data.data = _.filter(data.data, function(item) {
-                            return item.product.name != 'Shipping and Handling';
-                        });
-                        items.reset(self.processUpsellComboItems(data.data));
+                        items.reset(self.processItems(data.data));
                     }
                 },
                 error: new Function()           // to override global ajax error handler
@@ -469,7 +466,7 @@ define(["backbone"], function(Backbone) {
          *
          * @return {Array} filtered order items.
          */
-        processUpsellComboItems: function(items) {
+        processItems: function(items) {
             var combo_sets = {},
                 upsell_sets = {},
                 upsell_fake_items = {}; // wrappers for upsell combo item created in backend
@@ -485,7 +482,9 @@ define(["backbone"], function(Backbone) {
                     combo_set_id = item.combo_product_set_id,
                     upsell_set_id = item.dynamic_combo_slot_id;
 
-                if (typeof combo_set_id == 'number') {
+                if (item.product.name == 'Shipping and Handling') {
+                    return false;
+                } else if (typeof combo_set_id == 'number') {
                     // this is combo set child item
                     addSetItem(combo_sets, combo_product, combo_set_id, item);
                     return false;
