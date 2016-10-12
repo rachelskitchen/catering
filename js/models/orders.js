@@ -340,6 +340,9 @@ define(["backbone"], function(Backbone) {
                 contentType: 'application/json',
                 success: function(data) {
                     if (Array.isArray(data.data)) {
+                        data.data = _.filter(data.data, function(item) {
+                            return item.product.name != 'Shipping and Handling';
+                        });
                         items.reset(self.processUpsellComboItems(data.data));
                     }
                 },
@@ -444,9 +447,6 @@ define(["backbone"], function(Backbone) {
 
                 // add items
                 items.each(function(orderItem) {
-                    if (orderItem.get('product').get('name') == 'Shipping and Handling') {
-                        return;
-                    }
                     var product = orderItem.get_product(),
                         type;
                     if (product.is_combo || product.has_upsell) {
