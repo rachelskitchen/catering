@@ -236,6 +236,10 @@
     width: 100%;
 }
 
+.profile-edit .reward-cards-list .balance-info {
+    margin-top: 13px;
+}
+
 .profile-edit .header-underline {
     max-width: 320px;
     width: 100%;

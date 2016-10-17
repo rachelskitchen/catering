@@ -191,6 +191,7 @@
         ],
         'REWARDS_EMPTY_CART': 'Rewards can not be applied while your cart is empty.',
         'REWARDS_ENTER_CAPTCHA': 'Enter Captcha Characters',
+        'REWARDS_BALANCE_INFO': 'You\'ve earned $1 Reward Points for order items, $2 Reward Points for store visits and $3$4 Reward Points for store purchases.',
         'CONFIRM_SUBMIT': 'Submit',
         'SEARCH_ENTER_STRING': 'Search',
         'PRODUCTS_NOT_FOUND': 'No products found',

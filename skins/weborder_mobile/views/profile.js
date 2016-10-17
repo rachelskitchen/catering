@@ -169,7 +169,6 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
                 return new Backbone.Model({collapsed: true});
             }
         },
-        itemView: ProfileRewardCardEditionView,
         events: {
             'click .reward-cards': 'collapse'
         },
@@ -329,6 +328,7 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
         App.Views.ProfileView.ProfileRewardCardSelectionView = ProfileRewardCardSelectionView;
         App.Views.ProfileView.ProfileRewardCardsSelectionView = ProfileRewardCardsSelectionView;
         App.Views.ProfileView.ProfileRewardCardsEditionView = ProfileRewardCardsEditionView;
+        App.Views.ProfileView.ProfileRewardCardEditionView = ProfileRewardCardEditionView;
         App.Views.ProfileView.ProfileAddressView = ProfileAddressView;
         App.Views.ProfileView.ProfileAddressesView = ProfileAddressesView;
         App.Views.ProfileView.ProfileOrdersItemView = ProfileOrdersItemView;
