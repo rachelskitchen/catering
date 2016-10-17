@@ -986,7 +986,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'reward_card_edition',
         tagName: 'li',
         bindings: {
-            '.card-number': 'text: number'
+            '.card-number': 'text: number',
+            '.balance-info': 'text: format(_lp_REWARDS_BALANCE_INFO, balance_points, balance_visits, _system_settings_currency_symbol, balance_purchases)'
         },
         events: {
             'click .remove-btn': 'unlinkRewardCard',
@@ -1024,7 +1025,12 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 return this.getBinding('customer_rewardCards').length == 0;
             }
         },
-        itemView: App.Views.CoreProfileView.CoreProfileRewardCardEditionView,
+        itemView: function(opts) {
+            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+                mod: 'RewardCardEdition',
+                balance: opts.model.get('balance')
+            }));
+        },
         hide_show_NewRewardCard: function() {
             var card = this.options.newCard,
                 cur_add_new_card = !card.get('add_new_card');
@@ -1404,6 +1410,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         App.Views.ProfileView.ProfileGiftCardsEditionView = App.Views.CoreProfileView.CoreProfileGiftCardsEditionView;
         App.Views.ProfileView.ProfileRewardCardSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardSelectionView;
         App.Views.ProfileView.ProfileRewardCardsSelectionView = App.Views.CoreProfileView.CoreProfileRewardCardsSelectionView;
+        App.Views.ProfileView.ProfileRewardCardEditionView = App.Views.CoreProfileView.CoreProfileRewardCardEditionView;
         App.Views.ProfileView.ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView;
         App.Views.ProfileView.ProfilePaymentCVVView = App.Views.CoreProfileView.CoreProfilePaymentCVVView;
         App.Views.ProfileView.ProfileTermsOfUseView = App.Views.CoreProfileView.CoreProfileTermsOfUseView;

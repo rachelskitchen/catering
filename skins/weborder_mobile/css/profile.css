@@ -233,6 +233,17 @@
     white-space: nowrap;
 }
 
+.reward-cards-list .payment-item .remove-btn {
+    top: 1.3em;
+}
+
+.reward-cards-list .payment-item .balance-info {
+    white-space: normal;
+    margin-top: 1em;
+    padding-right: 1em;
+    text-align: center;
+}
+
 .payment-item.selected::after  {
     content: '\f00c';
     font-family: "FontAwesome";
