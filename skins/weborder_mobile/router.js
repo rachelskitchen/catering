@@ -1066,7 +1066,7 @@ define(["main_router"], function(main_router) {
                     var ordersReq = customer.ordersRequest;
 
                     ordersReq.done(function() {
-                        var order = customer.orders.get(order_id);
+                        var order = customer.orders.get(order_id),
                             itemsReq = customer.getOrderItems(order);
 
                         itemsReq.done(function() {
