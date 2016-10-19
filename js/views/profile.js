@@ -1296,14 +1296,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.order-id': 'text: id',
             '.qty': 'text: items_qty',
             '.subtotal': 'text: currencyFormat(subtotal)',
-            '.animate-spin': 'classes: {hide: length($orderItems)}',
+            '.animate-spin': 'classes: {hide: any(length($orderItems),not(ui_collapse))}',
             '.items': 'collection: $orderItems, itemView: "itemView"'
         },
         itemView: function(opts) {
+            trace("CORE: OrdersItem itemView ==>", opts.model.get('product_sub_id'));
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
                 mod: 'OrderItem',
+                model: opts.model,
                 order: opts.collectionView.model
-            }), opts.model.get('id'));
+            }), opts.model.get('product_sub_id'));
         },
         bindingSources: {
             ui: function() {
@@ -1319,9 +1321,14 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.btn': 'reorder'
         },
         showItems: function() {
-            var ui = this.getBinding('$ui');
+            var req, ui = this.getBinding('$ui');
             ui.set('collapse', !ui.get('collapse'));
-            this.options.customer.getOrderItems(this.model);
+            req = this.options.customer.getOrderItems(this.model);
+            /*if (req) {
+                req.fail(function(){
+                    ui.set('collapse', !ui.get('collapse'));
+                })
+            }*/
         },
         reorder: function() {
             this.options.customer.trigger('onReorder', this.model.get('id'));
@@ -1347,13 +1354,14 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             }
         },
         itemView: function(opts) {
+            trace("CORE: itemView ==>")
             // Do not use `this` keyword here.
             // It refers to new created object.
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
                 mod: 'OrdersItem',
                 customer: opts.collectionView.model,
                 orderItems: opts.model.get('items')
-            }), opts.model.get('id'));
+            }), opts.model.get('id')).delegateEvents();
         }
     });
 
