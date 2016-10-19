@@ -1278,7 +1278,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 mod: 'OrderItem',
                 model: opts.model,
                 order: opts.collectionView.model
-            })/*, opts.model.get('product_sub_id')*/);
+            }));
         },
         bindingSources: {
             ui: function() {
@@ -1294,7 +1294,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.btn': 'reorder'
         },
         showItems: function() {
-            var req, ui = this.getBinding('$ui');
+            var ui = this.getBinding('$ui');
             ui.set('collapse', !ui.get('collapse'));
             this.getItems();
         },
@@ -1325,7 +1325,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             }
         },
         itemView: function(opts) {
-            trace("CORE: itemView ==>")
             // Do not use `this` keyword here.
             // It refers to new created object.
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
