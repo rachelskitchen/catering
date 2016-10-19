@@ -1056,7 +1056,10 @@ define(["main_router"], function(main_router) {
 
                     req.done(function() {
                         order = orders.get(order_id);
-                        dfd.resolve(order);
+                        if (order) {
+                            return dfd.resolve(order);
+                        }
+                        dfd.reject();
                     });
 
                     req.fail(function() {
