@@ -155,27 +155,26 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
     });
 
     var ProfileRewardCardEditionView = App.Views.CoreProfileView.CoreProfileRewardCardEditionView.extend({
-        className: 'payment-item font-size3 primary-text list-subheader'
+        bindings: {
+            '.card-number': 'value: number'
+        },
+        events: {
+            'click .ctrl': 'unlink'
+        },
+        unlink: function() {
+            this.options.collectionView.options.unlinkRewardCard(this.model);
+        }
     });
 
     var ProfileRewardCardsEditionView = App.Views.CoreProfileView.CoreProfileRewardCardsEditionView.extend({
         bindings: {
-            '.reward-cards': 'classes: {collapsed: ui_collapsed}',
-            '.reward-cards-list': 'collection: $collection',
-            '.reward-cards-list-wrap': 'toggle: not(ui_collapsed)'
-        },
-        bindingSources: {
-            ui: function() {
-                return new Backbone.Model({collapsed: true});
-            }
+            '.new-loyalty-number': 'updateContent: newRewardCardView, toggle: not(length($collection))',
         },
         itemView: ProfileRewardCardEditionView,
-        events: {
-            'click .reward-cards': 'collapse'
-        },
-        collapse: function() {
-            var $ui = this.getBinding('$ui');
-            $ui.set('collapsed', !$ui.get('collapsed'));
+        initialize: function() {
+            App.Views.CoreProfileView.CoreProfileRewardCardsEditionView.prototype.initialize.apply(this, arguments);
+            var newRewardCard = this.getBinding('$newRewardCard');
+            this.listenTo(newRewardCard, 'change:number change:captchaValue', this.options.onRewardCardChanged.bind(this, newRewardCard));
         }
     });
 
@@ -195,12 +194,13 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
                             App.Data.customer.deleteAddress(self.model);
                         }
                     }
-                });
-        },
+                }
+            );
+        }
     });
 
     var ProfileAddressesView = App.Views.CoreProfileView.CoreProfileAddressesView.extend({
-        itemView: ProfileAddressView,
+        itemView: ProfileAddressView
     });
 
     var ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView.extend({
@@ -329,8 +329,6 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
         App.Views.ProfileView.ProfileRewardCardSelectionView = ProfileRewardCardSelectionView;
         App.Views.ProfileView.ProfileRewardCardsSelectionView = ProfileRewardCardsSelectionView;
         App.Views.ProfileView.ProfileRewardCardsEditionView = ProfileRewardCardsEditionView;
-        App.Views.ProfileView.ProfileAddressView = ProfileAddressView;
-        App.Views.ProfileView.ProfileAddressesView = ProfileAddressesView;
         App.Views.ProfileView.ProfileOrdersItemView = ProfileOrdersItemView;
         App.Views.ProfileView.ProfileOrderItemView = ProfileOrderItemView;
         App.Views.ProfileView.ProfileOrderItemComboView = ProfileOrderItemComboView;
