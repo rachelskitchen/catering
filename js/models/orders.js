@@ -335,15 +335,10 @@ define(["backbone"], function(Backbone) {
                 return;
             }
             var items = this.get('items'),
-                self = this,
-                url_host = "";
-            if (this.get('store') && this.get('store').get('dns')) {
-                if (App.Data.settings.get('hostname') != this.get('store').get('dns')) {
-                    url_host = "https://" + this.get('store').get('dns');
-                }
-            }
+                self = this;
+
             return Backbone.$.ajax({
-                url: url_host + '/weborders/v1/order/' + this.get('id') + '/orderitems/',
+                url: '/weborders/v1/order/' + this.get('id') + '/orderitems/',
                 method: 'GET',
                 headers: authorizationHeader,
                 contentType: 'application/json',
@@ -515,7 +510,7 @@ define(["backbone"], function(Backbone) {
 
             items.forEach(function(item, index) {
                 var product = item.product;
-                item.product_sub_id = item.product.id_category + '_' + item.product.id + '_' + index;
+                //item.product_sub_id = item.product.id_category + '_' + item.product.id + '_' + index;
                 if (item.is_combo) {
                     product.product_sets = _.map(combo_sets[product.id], function(value, key) {
                         return {

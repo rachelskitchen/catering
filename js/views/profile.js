@@ -1278,7 +1278,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 mod: 'OrderItem',
                 model: opts.model,
                 order: opts.collectionView.model
-            }), opts.model.get('product_sub_id'));
+            })/*, opts.model.get('product_sub_id')*/);
         },
         bindingSources: {
             ui: function() {
