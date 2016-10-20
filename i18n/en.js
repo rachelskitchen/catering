@@ -667,6 +667,7 @@
         "PROFILE_PAST_ORDERS_SUBTITLE": "Reorder a favorite",
         "PROFILE_ORDER_NUMBER": "Order #",
         "PROFILE_REORDER": "Reorder",
+        "PROFILE_REORDER_FAVORITE": "Reorder a favorite",
         "PROFILE_ORDER_NOT_FOUND": "Order #%s is not found",
         "PROFILE_PLEASE_LOG_IN": "Please log in to make a reorder",
         "PROFILE_LOYALTY_PROGRAM": "Loyalty Program",
