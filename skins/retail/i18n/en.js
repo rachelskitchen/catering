@@ -192,6 +192,7 @@
         'REWARDS_ITEM_REWARDS': 'Item Rewards',
         'REWARDS_VISIT_REWARDS': 'Visit Rewards',
         'REWARDS_PURCHASE_REWARDS': 'Purchase Rewards',
+        'REWARDS_BALANCE_HEADER': 'LOYALTY REWARDS',
         'REWARDS_BALANCE_INFO': 'You\'ve earned $1 Reward Points for order items, $2 Reward Points for store visits and $3$4 Reward Points for store purchases.',
         'STANFORD_RELOAD_INFO1': "Please specify the Card # and the amount you'd like to add",
         'STANFORD_RELOAD_INFO2': "Please specify the plan you'd like to add value to",
@@ -214,6 +215,7 @@
         'PAST_ORDERS_QUANTITY_TITLE': 'Quantity',
         'PAST_ORDERS_TOTAL_TITLE': 'Total',
         'VIEW_PAST_ORDERS': 'View Past Orders',
-        'PAST_ORDER': 'Past Order'
+        'PAST_ORDER': 'Past Order',
+        'PROFILE_LOYALTY_NUMBER': 'Loyalty Number'
     } // end of locale
 }); // end of module
