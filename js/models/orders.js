@@ -508,7 +508,7 @@ define(["backbone"], function(Backbone) {
                 }
             });
 
-            items.forEach(function(item, index) {
+            items.forEach(function(item) {
                 var product = item.product;
                 if (item.is_combo) {
                     product.product_sets = _.map(combo_sets[product.id], function(value, key) {

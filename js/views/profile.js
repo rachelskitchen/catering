@@ -1273,7 +1273,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             '.items': 'collection: $orderItems, itemView: "itemView"'
         },
         itemView: function(opts) {
-            trace("CORE: OrdersItem itemView ==>", opts.model.get('product_sub_id'));
             return App.Views.GeneratorView.create('Profile', _.extend(opts, {
                 mod: 'OrderItem',
                 model: opts.model,
