@@ -990,7 +990,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         bindings: {
             '.card-number': 'text: number',
             '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}',
-            '.balance-info': 'text: format(_lp_REWARDS_BALANCE_INFO, balance_points, balance_visits, _system_settings_currency_symbol, balance_purchases)'
         },
         events: {
             'click .remove-btn': 'unlinkRewardCard'
@@ -1002,6 +1001,16 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 }
                 return 'background-image: url(%s);'.replace('%s', url);
             }
+        }
+    });
+
+    App.Views.CoreProfileView.CoreProfileRewardCardBalanceView = App.Views.FactoryView.extend({
+        name: 'profile',
+        mod: 'reward_card_balance',
+        bindings: {
+            '.purchase-points': 'text: currencyFormat(balance_purchases)',
+            '.item-points': 'text: balance_points',
+            '.visit-points': 'text: balance_visits'
         }
     });
 
@@ -1396,5 +1405,6 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         App.Views.ProfileView.ProfileOrderItemView = App.Views.CoreProfileView.CoreProfileOrderItemView;
         App.Views.ProfileView.ProfileOrdersItemView = App.Views.CoreProfileView.CoreProfileOrdersItemView;
         App.Views.ProfileView.ProfileOrdersView = App.Views.CoreProfileView.CoreProfileOrdersView;
+        App.Views.ProfileView.ProfileRewardCardBalanceView = App.Views.CoreProfileView.CoreProfileRewardCardBalanceView;
     });
 });

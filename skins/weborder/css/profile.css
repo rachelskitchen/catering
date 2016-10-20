@@ -463,6 +463,21 @@
     letter-spacing: 0.4px;
 }
 
+.profile-edit .balance-info-wrap {
+    margin-top: 22px;
+}
+
+.profile-edit .balance-info-wrap li.balance-info {
+    margin-top: 10px;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.profile-edit .balance-info-wrap .item-value {
+    padding: 5px;
+    font-size: 18px;
+}
+
 .profile-orders .orders {
     padding: 0 25px;
 }
