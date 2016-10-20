@@ -989,10 +989,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         mod: 'reward_card_edition',
         bindings: {
             '.card-number': 'text: number',
-            '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}',
-        },
-        events: {
-            'click .remove-btn': 'unlinkRewardCard'
+            '.logo': 'attr: {style: showLogo(_system_settings_logo_img)}'
         },
         bindingFilters: {
             showLogo: function(url) {
