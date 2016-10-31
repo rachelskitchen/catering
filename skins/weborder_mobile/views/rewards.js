@@ -48,7 +48,6 @@
     });
 
     return new (require('factory'))(rewards_view.initViews.bind(rewards_view), function() {
-        App.Views.RewardsView.RewardsInfoView = RewardsInfoView;
         App.Views.RewardsView.RewardsCardView = RewardsCardView;
     });
 });
