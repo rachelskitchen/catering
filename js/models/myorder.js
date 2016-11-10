@@ -480,7 +480,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 exceeded = modifiers.checkAmount(),
                 is_modifiers_only = _.isObject(opt) ? opt.modifiers_only : false;
 
-            if (!is_modifiers_only && product.get("sold_by_weight") && !this.get("weight")) {
+            if (product.get("sold_by_weight") && !this.get("weight")) {
                 return {
                     status: 'ERROR',
                     errorMsg: ERROR.BLOCK_WEIGHT_IS_NOT_VALID
@@ -1004,6 +1004,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
      * @lends App.Models.MyorderUpsell.prototype
      */
     {
+        initialize: function() {
+            App.Models.MyorderCombo.prototype.initialize.apply(this, arguments);
+            this.listenTo(this, "change:weight", this.update_product_price);
+        },
         /**
          * Update price for combo product.
          * @returns {number} - the calculated price of combo product.
@@ -1073,10 +1077,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @returns {number} - the calculated total upcharge combo price.
          */
         get_total_upcharge_price: function() {
-            var root_price = this.get_initial_price() + this.get('upcharge_price'),
+            var self = this,
+                root_price = this.get_initial_price() * get_weight_koeff() + this.get('upcharge_price'),
                 sum = 0;
 
-            var prices = [this.get_initial_price(), this.get('upcharge_price')];
+            var prices = [(this.get_initial_price() * get_weight_koeff()).toFixedTrim(4), this.get('upcharge_price')];
 
             this.get('product').get('product_sets').each( function(product_set) {
                 product_set.get_selected_products().forEach(function(model) {
@@ -1100,7 +1105,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             sum += root_price;
 
             if (App.Data.devMode) {
-                trace("total_upcharge_price = ", prices.join(" + "), "=", sum);
+                trace("total_upcharge_price = ", prices.join(" + "), "=", sum.toFixedTrim(4));
+            }
+
+            function  get_weight_koeff() {
+                return self.get('product').get('sold_by_weight') ? self.get('weight') : 1;
             }
 
             return sum;

@@ -29,7 +29,7 @@
         <% } %>
     </h3>
     <ul class="modifier_place">
-        <% if(sold_by_weight) { %>
+        <% if(sold_by_weight && !upsell) { %>
         <li><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>
