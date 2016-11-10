@@ -122,7 +122,7 @@ define(["myorder_view"], function(myorder_view) {
             _base.prototype.render.apply(this, arguments);
 
             var view, mod,
-                sold_by_weight = this.model.get_product().get("sold_by_weight");
+                sold_by_weight = this.model.get_product().get("sold_by_weight") && !this.model.isUpsellProduct();
 
             if (sold_by_weight || !this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
                 mod = sold_by_weight ? 'WeightCart' : 'MainCart';

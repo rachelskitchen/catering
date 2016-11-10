@@ -2815,3 +2815,13 @@ function spyFunction(object, func_name) {
         };
 }
 
+/**
+*  It take the fixed part of the number but cut off unnecessary zeros from the end
+*/
+if (typeof Number.prototype.toFixedTrim == 'undefined') {
+    Number.prototype.toFixedTrim = function(fixed) {
+        return (this.toFixed(fixed) * 1).toString();
+    }
+} else {
+    console.error("Attemt to re-define Number.prototype.toFixedTrim function");
+}
