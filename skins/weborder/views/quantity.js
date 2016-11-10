@@ -97,7 +97,7 @@ define(["quantity_view"], function(quantity_view) {
         mod: 'main_cart',
         initialize: function() {
             QuantityMainView.prototype.initialize.apply(this, arguments);
-            if (this.model.isComboBased() && this.model.get('product').get('product_sets').haveWeightProduct()) {
+            if (this.model.isComboBased() && (this.model.get('product').get('product_sets').haveWeightProduct() || this.model.get('product').get("sold_by_weight"))){
                 QuantityMainView.prototype.combo_weight_product_change.call(this, true);
             }
         },
