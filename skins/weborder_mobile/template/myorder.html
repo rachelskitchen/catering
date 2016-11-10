@@ -25,7 +25,7 @@
     </div>
     <% }); %>
     <ul class="modifier_place font-size2 regular-text">
-        <% if(sold_by_weight) { %>
+        <% if(sold_by_weight && !upsell) { %>
         <li class="special"><%= weight %> @ <%= currency_symbol %><%= initial_price %><%if(uom) { print("/" + uom ) }%></li>
         <% } %>
         <% if(is_gift) { %>

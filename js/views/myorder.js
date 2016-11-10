@@ -236,7 +236,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 sold_by_weight = this.model.get_product().get("sold_by_weight");
 
             if (sold_by_weight || !this.options.flags || this.options.flags.indexOf('no_quantity') == -1) {
-                mod = sold_by_weight ? 'Weight' : 'Main';
+                mod = this.get_quantity_mod();
 
                 view = App.Views.GeneratorView.create('Quantity', {
                     el: this.$('.quantity_info'),
@@ -305,6 +305,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             } else {
                 App.Data.errors.alert(check.errorMsg); // user notification
             }
+        },
+        get_quantity_mod: function() {
+            var sold_by_weight = this.model.get_product().get("sold_by_weight");
+            return sold_by_weight ? 'Weight' : 'Main';
         }
     });
 
@@ -324,7 +328,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this.model.get('product').get('product_sets').check_selected();
         },
         check_weight_product: function() {
-            var isComboWithWeightProduct = this.model.get('product').get('product_sets').haveWeightProduct();
+            var isComboWithWeightProduct = this.model.get('product').get('product_sets').haveWeightProduct() || this.model.get('product').get("sold_by_weight");
             this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
         }
       });
@@ -362,6 +366,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             } else {
                 _base.prototype.action.apply(this, arguments);
             }
+        },
+        get_quantity_mod: function() {
+            return 'Main'; //only quntity mode for main customization popup
         }
       });
     }
@@ -439,6 +446,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             model.uom = systemSettings.scales.default_weighing_unit;
             model.gift_card_number = product.get('gift_card_number');
             model.sold_by_weight = model.product.get("sold_by_weight");
+            model.upsell = product.get("has_upsell");
             model.label_manual_weights = systemSettings.scales.label_for_manual_weights;
             model.image = product.get_product().get('image');
             model.id = product.get_product().get('id');
