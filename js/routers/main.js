@@ -1457,7 +1457,6 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             function createAccountAction() {
-                customer.set('terms_accepted', false);
                 self.navigate('signup', true);
             }
         },
