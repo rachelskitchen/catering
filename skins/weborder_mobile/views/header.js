@@ -86,9 +86,9 @@ define(["factory"], function() {
                 $.smartbanner({
                     daysHidden : 0,
                     daysReminder : 0,
-                    title : 'Stanford R&DE FOOD ToGo',
-                    author : 'Revel Systems',
-                    icon : 'https://lh3.googleusercontent.com/kj4yHHb6ct6xWUsUPHE38Efh38_1MpIrF3IejoZiI9yLtB4VtrLJ3timHm6EWnfbJSih=w300',
+                    title : set_dir.smart_banner_title || 'Stanford R&DE FOOD ToGo',
+                    author : set_dir.smart_banner_author || 'Revel Systems',
+                    icon : set_dir.smart_banner_icon_url || 'https://lh3.googleusercontent.com/kj4yHHb6ct6xWUsUPHE38Efh38_1MpIrF3IejoZiI9yLtB4VtrLJ3timHm6EWnfbJSih=w300',
                     force: mobile,
                     appendToSelector: '#header',
                     scale: '1',
