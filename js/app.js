@@ -126,7 +126,13 @@
          * @memberof App
          * @type module:app~Skins
          */
-        Skins: skins
+        Skins: skins,
+        /**
+         * Contains stand along functionalities for mixing with Views or Models.
+         * @memberof App
+         * @namespace App.Mixes
+         */
+        Mixes: {}
     };
 
     /**

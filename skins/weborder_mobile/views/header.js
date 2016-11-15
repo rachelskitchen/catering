@@ -30,7 +30,7 @@ define(["factory"], function() {
         };
     }
 
-    var HeaderMainView = App.Views.FactoryView.extend({
+    var HeaderMainView = App.Views.FactoryView.mixed(App.Mixes.SmartBannerMix).extend({
         name: 'header',
         mod: 'main',
         bindings: {
@@ -67,40 +67,7 @@ define(["factory"], function() {
             this.subViews.push(tabs);
             this.$el.append(tabs.el);
 
-            var mobile = function() {
-                if (cssua.ua.ios) {
-                    return 'ios';
-                } else if (cssua.ua.android) {
-                    return 'android';
-                }
-            }();
-
-            var set_dir = App.SettingsDirectory;
-            var store_app_id = (mobile == 'ios' && set_dir ? set_dir.apple_app_id : set_dir.google_app_id);
-            if (set_dir.smart_banner && store_app_id) {
-                var meta = document.createElement('meta');
-                meta.name = APP_STORE_NAME[mobile];
-                meta.content = 'app-id=' + store_app_id;
-                document.querySelector('head').appendChild(meta);
-
-                $.smartbanner({
-                    daysHidden : 0,
-                    daysReminder : 0,
-                    title : set_dir.smart_banner_title || 'Stanford R&DE FOOD ToGo',
-                    author : set_dir.smart_banner_author || 'Revel Systems',
-                    icon : set_dir.smart_banner_icon_url || 'https://lh3.googleusercontent.com/kj4yHHb6ct6xWUsUPHE38Efh38_1MpIrF3IejoZiI9yLtB4VtrLJ3timHm6EWnfbJSih=w300',
-                    force: mobile,
-                    appendToSelector: '#header',
-                    scale: '1',
-                    onInstall: bannerHideHandler,
-                    onClose: bannerHideHandler
-                })
-            }
-
-            function bannerHideHandler() {
-                $('#section').css('top', $('#section').offset().top - $('#smartbanner').height());
-            }
-
+            this.start_smart_banner();
             return this;
         },
         search: function(e) {
