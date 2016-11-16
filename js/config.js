@@ -470,7 +470,12 @@ define({
          * @type {string}
          * @description The actual path of [orders]{@link module:orders} module.
          */
-        orders: 'js/models/orders'
+        orders: 'js/models/orders',
+        /**
+         * @type {string}
+         * @description The actual path to [smart_banner]{@link module:smart_banner} module.
+         */
+        smart_banner: 'js/views/smart_banner'
     },
     /**
      * A waiting time of a module loading.
@@ -699,6 +704,9 @@ define({
         },
         'orders': {
             deps: ['backbone']
+        },
+        'smart_banner': {
+            deps: ['factory']
         }
     },
     /**

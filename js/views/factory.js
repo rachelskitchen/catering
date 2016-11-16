@@ -403,3 +403,4 @@ function swipe_detect_Android(el, callback){
         handleswipe(swipedir)
     }, false)
 }
+
