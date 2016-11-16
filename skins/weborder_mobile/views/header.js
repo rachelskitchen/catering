@@ -20,7 +20,7 @@
  * If not, see <http://www.gnu.org/licenses/>.
  */
 
-define(["factory"], function() {
+define(["factory", "smart_banner"], function() {
     'use strict';
 
     function setCallback(prop) {
