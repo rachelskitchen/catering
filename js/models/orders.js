@@ -541,6 +541,8 @@ define(["backbone"], function(Backbone) {
                         }
                     });
                 }
+
+                processModifiers(item);
             });
 
             // defect Bug 51992 - Weborder: Order History > Reorder Combo > Unable to edit Combo product
@@ -561,6 +563,21 @@ define(["backbone"], function(Backbone) {
                 item.is_child_product = true;
                 item.selected = true;
                 sets[product_id][set_id].push(item);
+            }
+
+            function processModifiers(item) {
+                var product = item.product,
+                    modifiers = item.modifiers;
+                if (product.max_price) {
+                    modifiers.forEach(function(modifier) {
+                        modifier.modifiers.forEach(function(mdf) {
+                            if (mdf.actual_data && mdf.price < mdf.actual_data.price) {
+                                mdf.max_price_amount = mdf.price;
+                                mdf.price = mdf.actual_data.price;
+                            }
+                        });
+                    });
+                }
             }
 
             return items;
