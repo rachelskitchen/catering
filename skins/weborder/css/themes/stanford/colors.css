@@ -29,6 +29,9 @@ body,
 .attention-text[class] {
   color: #D0021B;
 }
+.attention-bg[class] {
+  background: #D0021B;
+}
 /* [special_text] special text (modifier price) */
 .special-text[class] {
   color: #2EBC1C;
@@ -164,9 +167,10 @@ body,
 .input-bg[class],
 .textarea,
 .input,
-.select-wrapper,
-.select-wrapper select {
-  background: #FFFFFF;
+.select-wrapper::after,
+.select-wrapper select,
+.mdf_split::before {
+  background: #F9F9F9;
 }
 /* [input_text] input text color */
 .textarea,
