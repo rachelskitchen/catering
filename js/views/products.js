@@ -230,7 +230,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         computeds: {
             is_modifiers: function() {
-                return this.model.get_modifiers().length > 0;
+                return this.model.get_modifiers().length > 0 || this.model.get('product').get('sold_by_weight');
             }
         },
         getProductPrice: function() {
