@@ -107,7 +107,7 @@ define(["products_view"], function(products_view) {
         },
         computeds: {
             is_modifiers: function() {
-                return this.model.get_modifiers().length > 0;
+                return this.model.get_modifiers().length > 0 || this.model.get('product').get('sold_by_weight');
             },
             is_no_combo_link: function() {
                 return this.options.action === 'add';
