@@ -2691,9 +2691,9 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          * Adds default empty address to the collection.
          */
         addDefault: function() {
-            var country = App.Settings.address.country ? App.Settings.address.country : "US",
+            var country = App.Settings.address && App.Settings.address.country ? App.Settings.address.country : "",
                 state = country == "US" ? App.Settings.address.state : "";
-            this.add({country: country,
+            this.add({country: country, // bug 53808
                     state: state });
         },
         /**
