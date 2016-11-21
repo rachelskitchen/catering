@@ -1976,7 +1976,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
 
             req.always(function() {
                 // if there are no address models, create an empty one
-                !addresses.length && addresses.add({});
+                !addresses.length && addresses.addDefault();
             });
         },
         /**
@@ -2683,9 +2683,18 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
             // handle the case when the collection doesn't contain any profile address after the address removal
             this.listenTo(this, 'remove', function() {
                 if (!this.some(function(model) { return !isNaN(model.get('id')); })) {
-                    this.add({});
+                    this.addDefault();
                 }
             });
+        },
+        /**
+         * Adds default empty address to the collection.
+         */
+        addDefault: function() {
+            var country = App.Settings.address.country ? App.Settings.address.country : "US",
+                state = country == "US" ? App.Settings.address.state : "";
+            this.add({country: country,
+                    state: state });
         },
         /**
          * Converts the array of addresses objects from API to model format.
