@@ -2695,6 +2695,7 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
                 state = country == "US" ? App.Settings.address.state : "";
             this.add({country: country, // bug 53808
                     state: state });
+            return this;
         },
         /**
          * Converts the array of addresses objects from API to model format.
