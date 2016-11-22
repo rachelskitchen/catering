@@ -37,7 +37,7 @@ var tests_list = [
     'test_Total'
 ];
 
-//tests_list = ['test_ProductSets'];
+//tests_list = ['test_Settings', 'test_TimeFrm', 'test_Myorder'];
 
 if (!window._phantom) {
     for(var key in tests_list) {
@@ -56,7 +56,7 @@ var ajaxMock = function(options) {
            def.resolve();
            return def;
         }
-        if (ajaxMock.replyData.status == 'OK' && typeof options.success == 'function') {
+        if (ajaxMock.httpError == false && typeof options.success == 'function') {
             options.success(ajaxMock.replyData);
         } else if (typeof options.error == 'function') {
             options.error({statusText: "error"}, "error", 'some error occurred');
@@ -90,3 +90,21 @@ ajaxMock.replyData = {
     status: "OK",
     data: {}
 }
+ajaxMock.httpError = false;
+
+function MockAjax(replyData, opt) {
+    if (!ajaxMock.OldAjaxFunction) {
+        ajaxMock.OldAjaxFunction = $.ajax;
+    }
+    $.ajax = ajaxMock;
+    ajaxMock.replyData = replyData;
+    ajaxMock.httpError = getOption(opt, 'httpError', false);
+};
+
+function UnmockAjax() {
+    if (ajaxMock.OldAjaxFunction)
+        $.ajax = ajaxMock.OldAjaxFunction;
+    ajaxMock.httpError = false;
+}
+
+

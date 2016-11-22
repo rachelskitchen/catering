@@ -29,7 +29,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     // set config for require
     require.config(app.config);
 
-    require(['cssua', 'functions', 'model_errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
+    require(['cssua', 'model_errors', 'tests_list', 'e2e_list', 'settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();
         // hardcode English locale
         App.Data.get_parameters = {locale: 'en'};
@@ -72,7 +72,9 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             });
         });
 
+        MockAjax(settings_data.defaults_initialized.settings_skin);
         settings.set('settings_system', settings_data.all.settings_system);
+        UnmockAjax();
         settings.set('settings_directory', settings_data.all.settings_directory);
         App.SettingsDirectory = settings.get('settings_directory');
 

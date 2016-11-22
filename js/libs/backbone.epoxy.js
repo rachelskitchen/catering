@@ -89,18 +89,6 @@
       return new_class;
   }
 
-  if (!window.getOption) {
-    window.getOption = function(options, key, defValue) {
-      if (!_.isObject(options) || options[key] === undefined || options[key] === null) {
-        return defValue;
-      } else {
-        return options[key];
-      }
-    }
-  } else {
-    console.error("Namespace collision: getOption");
-  }
-
   Backbone.Collection.prototype.clone = function() {
       var copy = new this.constructor();
       this.each(function(model, index) {
