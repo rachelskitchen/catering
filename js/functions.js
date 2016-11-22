@@ -2825,3 +2825,19 @@ if (typeof Number.prototype.toFixedTrim == 'undefined') {
 } else {
     console.error("Attemt to re-define Number.prototype.toFixedTrim function");
 }
+/*
+*  Use this function inside another one to get some options' property or default value
+*  usage : var keyValue = getOption(options, 'key', defValue);
+*/
+if (!window.getOption) {
+    window.getOption = function(options, key, defValue) {
+      if (!_.isObject(options) || options[key] === undefined || options[key] === null) {
+        return defValue;
+      } else {
+        return options[key];
+      }
+    }
+} else {
+    console.error("Namespace collision: getOption");
+}
+

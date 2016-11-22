@@ -1,4 +1,4 @@
-define(['functions'], function() {
+define([], function() {
 
     describe('TimeFrm', function() {
 
