@@ -1695,14 +1695,14 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
         profileCreateContent: function() {
             var customer = App.Data.customer,
                 mainModel = App.Data.mainModel,
-                address = new App.Models.CustomerAddress();
+                addresses = (new App.Collections.CustomerAddresses()).addDefault();
 
             return {
                 modelName: 'Profile',
                 mod: 'Create',
                 model: customer,
                 register: register,
-                address: address,
+                address: addresses.at(0),
                 createProfileAction: register,
                 back: this.navigate.bind(this, 'signup', true)
             };
