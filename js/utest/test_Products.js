@@ -1350,7 +1350,6 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                     },
                     available: true,
                     is_cold: false,
-                    is_gift: false,
                     sold_by_weight: false,
                     tax: 5,
                     price: 20,
@@ -1375,8 +1374,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                     is_gift: false,
                     sold_by_weight: false,
                     tax: 5,
-                    price: 20,
-                    is_gift: false
+                    price: 20
                 });
                 expect(model.reorder()).toEqual(['price']);
                 expect(model.get('price')).toBe(25);
