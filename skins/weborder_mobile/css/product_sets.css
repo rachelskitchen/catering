@@ -3,23 +3,34 @@
     overflow: hidden;
 }
 
+.product_set_list .combo_item .modifier__inner {
+    position: relative;
+    padding-right: 14em;
+}
+
+.product_set_list .combo_item .modifier-controls-box {
+    position: absolute;
+    right: 0;
+    top: .7em;
+}
+
 .product_set_list .combo_item input {
     position: absolute;
     left: -5000px;
 }
 
 .product_set_list .combo_item .title {
-    vertical-align: middle;
-    line-height: 1em;
+    line-height: 1.2em;
 }
 
 .product_set_list .combo_item .checkbox-outer {
     display: inline-block;
+    position: relative;
 }
 
 .product_set_list .combo_item .input {
-    vertical-align: middle;
     display: inline-block;
+    position: absolute;
     width: 1em;
     height: 1em;
     border-radius: 0.2em;
@@ -34,6 +45,11 @@
     content: '\f00c';
     font-family: 'FontAwesome';
     font-size: 0.8em;
+}
+
+.product_set_list .combo_item .title_wrapper {
+    margin-left: 1.5em;
+    vertical-align: top;
 }
 
 .product_set_list .combo_item .cost {
@@ -81,4 +97,3 @@
 .myorderList .combo_products_place .qty {
     background: none;
 }
-
