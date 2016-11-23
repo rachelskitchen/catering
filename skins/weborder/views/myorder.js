@@ -113,6 +113,49 @@ define(["myorder_view"], function(myorder_view) {
       })
     };
 
+    var MyOrderMatrixUpsellRootView = _MyOrderMatrixUpsellRootView( CoreViews.CoreMyOrderMatrixView )
+                                                         .mixed( DynamicHeightHelper_Combo );
+    function _MyOrderMatrixUpsellRootView(_base){ return _base.extend({
+        render: function() {
+            _base.prototype.render.apply(this, arguments);
+            this.renderProductFooter();
+            this.dh_initialize();
+            return this;
+        },
+        renderProductFooter: function() {
+            var model = this.model,
+                product = this.model.get("product");
+
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$(".product_info_footer"),
+                model: this.model,
+                mod: 'Matrix_UpsellRootFirst_Footer',
+                action: this.options.action,
+                action_text_label: this.options.action_text_label,
+                //flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
+                real: this.options.real,
+                action_callback: this.options.action_callback
+            });
+            this.subViews.push(view);
+        }
+      })
+    };
+
+    var MyOrderMatrix_UpsellRootFirst_FooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        name: 'myorder',
+        mod: 'matrix_upsell_root_first_footer',
+        events: {
+            'click .upgrade_combo_button': 'upgrade_combo'
+        },
+        onEnterListeners: {
+            '.upgrade_combo_button': 'upgrade_combo'
+        },
+        upgrade_combo: function() {
+            this.options.model.get('product').set('has_upsell', true, {silent: true});
+            $('#popup .cancel').trigger('click', ['UpgradeToCombo']);
+        }
+    });
+
     var MyOrderItemView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemView );
     var MyOrderItemComboView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemComboView );
     var MyOrderItemUpsellView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView );
@@ -210,5 +253,7 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderItemUpsellView = MyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
         App.Views.MyOrderView.MyOrderMatrixFooterView = MyOrderMatrixFooterView;
+        App.Views.MyOrderView.MyOrderMatrixUpsellRootView = MyOrderMatrixUpsellRootView;
+        App.Views.MyOrderView.MyOrderMatrix_UpsellRootFirst_FooterView = MyOrderMatrix_UpsellRootFirst_FooterView;
     });
 });
