@@ -3,6 +3,7 @@
 }
 
 .combo_item .title {
+    max-width: 280px;
     cursor: pointer;
 }
 
