@@ -28,6 +28,7 @@ define(['products_view'], function(products_view) {
             var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
                 no_combo = _.isObject(options) ? options.no_combo : false,
                 combo_based = this.model.isComboBased() && !no_combo,
+                is_combo = this.model.isComboProduct(),
                 has_upsell = this.model.isUpsellProduct();
 
             var myorder = App.Models.create(combo_based ? (has_upsell ? 'MyorderUpsell' : 'MyorderCombo') : 'Myorder');
@@ -36,9 +37,9 @@ define(['products_view'], function(products_view) {
 
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
             def.then(function() {
-                var cache_id = combo_based ? myorder.get("id_product") : undefined;
+                var mod, cache_id = combo_based ? myorder.get("id_product") : undefined;
                 var clone = myorder.clone();
-                if (no_combo) {
+                if (no_combo || has_upsell) {
                     clone.get('product').set('has_upsell', false, {silent: true});
                 }
                 if (no_combo && options.combo_root) {
@@ -46,7 +47,7 @@ define(['products_view'], function(products_view) {
                 }
 
                 $('#main-spinner').removeClass('ui-visible');
-                App.Data.mainModel.set('popup', {
+                /*App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
                     mod: isStanfordItem ? 'StanfordItem' : (combo_based ? 'MatrixCombo' : 'Matrix'),
                     className: isStanfordItem ? 'stanford-reload-item' : '',
@@ -55,7 +56,46 @@ define(['products_view'], function(products_view) {
                     init_cache_session: combo_based ? true : false,
                     cache_id: combo_based ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
                                                               //the view will be removed from cache after the product is added/updated into the cart.
+                });*/
+
+                if (isStanfordItem)
+                    mod = 'StanfordItem';
+                else if (has_upsell && !no_combo)
+                    mod = 'MatrixUpsellRoot';
+                else if (is_combo)
+                    mod = 'MatrixCombo';
+                else
+                    mod = 'Matrix';
+
+                App.Data.mainModel.set('popup', {
+                    modelName: 'MyOrder',
+                    mod: mod,
+                    className: isStanfordItem ? 'stanford-reload-item' : '',
+                    model: clone,
+                    action: 'add',
+                    //combo_child: true,
+                    real: myorder,
+                    init_cache_session: (is_combo && !no_combo) ? true : false,
+                    cache_id: (is_combo && !no_combo) ? cache_id : undefined, //cache is enabled for combo products during the phase of product customization only
+                                                              //the view will be removed from cache after the product is added/updated into the cart.
+                    action_callback: function(status) {
+                        if (status == "UpgradeToCombo") {
+                            LaunchUpsellCombo();
+                        }
+                    }
                 });
+                function LaunchUpsellCombo() {
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'MyOrder',
+                        mod: 'MatrixCombo',
+                        className: '',
+                        model: clone,
+                        action: 'add',
+                        init_cache_session: true,
+                        cache_id: cache_id //cache is enabled for combo products during the phase of product customization only
+                                           //the view will be removed from cache after the product is added/updated into the cart.
+                    });
+                }
             });
         }
     });
