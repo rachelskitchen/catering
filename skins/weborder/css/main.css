@@ -308,6 +308,9 @@ input[type="radio"]:checked + .radio::before,
 .btn-half {
     width: 50%;
 }
+.btn-almost-half {
+    width: 49%;
+}
 
 .disabled, [disabled] {
     opacity: 0.5;
