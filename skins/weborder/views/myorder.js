@@ -31,7 +31,7 @@ define(["myorder_view"], function(myorder_view) {
                                                     .mixed( DynamicHeightHelper_Modifiers );
     function _MyOrderMatrixView(_base){ return _base.extend({
         bindings: {
-            '.popup__title': 'text: select(isGiftCard, _lp_GIFT_CARD_RELOAD, _lp_CUSTOMIZE)'
+            '.popup__title': 'text: popup_text'
         },
         computeds: {
             isGiftCard: {
@@ -39,6 +39,9 @@ define(["myorder_view"], function(myorder_view) {
                 get: function(model) {
                     return model.get_product().get('is_gift');
                 }
+            },
+            popup_text: function() {
+                return this.getBinding('isGiftCard') ? _loc.GIFT_CARD_RELOAD : (this.options.combo_child ? _loc.CUSTOMIZE_ITEM : _loc.CUSTOMIZE);
             }
         },
         render: function() {
@@ -104,6 +107,9 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrixComboView = _MyOrderMatrixComboView( CoreViews.CoreMyOrderMatrixComboView )
                                                          .mixed( DynamicHeightHelper_Combo );
     function _MyOrderMatrixComboView(_base){ return _base.extend({
+        bindings: {
+            '.popup__title': 'text: _lp_CUSTOMIZE_COMBO'
+        },
         render: function() {
             _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();
@@ -116,6 +122,9 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrixUpsellRootView = _MyOrderMatrixUpsellRootView( CoreViews.CoreMyOrderMatrixView )
                                                          .mixed( DynamicHeightHelper_Combo );
     function _MyOrderMatrixUpsellRootView(_base){ return _base.extend({
+        bindings: {
+            '.popup__title': 'text: _lp_CUSTOMIZE'
+        },
         render: function() {
             _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();

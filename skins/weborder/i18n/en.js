@@ -45,6 +45,8 @@
         'CONFIRM_TODAY_ASAP': 'Today ASAP',
         'CONFIRM_MINUTES': 'min',
         'CUSTOMIZE': 'Customize',
+        'CUSTOMIZE_COMBO': 'CUSTOMIZE A COMBO',
+        'CUSTOMIZE_ITEM': 'CUSTOMIZE AN ITEM',
         'ENTER_NEW_ADDRESS': 'Enter New Address',
         'GIFT_CARD_RELOAD': 'Gift Card Reload',
         'GIFTCARD_TITLE': 'Enter your Gift Card Information',

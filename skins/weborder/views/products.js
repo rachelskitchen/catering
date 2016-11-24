@@ -25,42 +25,27 @@ define(['products_view'], function(products_view) {
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function(event, options) {
-            var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                no_combo = _.isObject(options) ? options.no_combo : false,
-                combo_based = this.model.isComboBased() && !no_combo,
+            var self = this,
+                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
                 is_combo = this.model.isComboProduct(),
                 has_upsell = this.model.isUpsellProduct();
 
-            var myorder = App.Models.create(combo_based ? (has_upsell ? 'MyorderUpsell' : 'MyorderCombo') : 'Myorder');
-
+            var myorder = App.Models.create(is_combo ? 'MyorderCombo' : 'Myorder');
             var def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
-            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+            this.addSpinner();
             def.then(function() {
-                var mod, cache_id = combo_based ? myorder.get("id_product") : undefined;
-                var clone = myorder.clone();
-                if (no_combo || has_upsell) {
+                var mod, cache_id = is_combo ? myorder.get("id_product") : undefined,
+                    clone = myorder.clone();
+
+                self.removeSpinner();
+                if (has_upsell) {
                     clone.get('product').set('has_upsell', false, {silent: true});
                 }
-                if (no_combo && options.combo_root) {
-                    clone.get_modifiers().update(options.combo_root.get_modifiers());
-                }
-
-                $('#main-spinner').removeClass('ui-visible');
-                /*App.Data.mainModel.set('popup', {
-                    modelName: 'MyOrder',
-                    mod: isStanfordItem ? 'StanfordItem' : (combo_based ? 'MatrixCombo' : 'Matrix'),
-                    className: isStanfordItem ? 'stanford-reload-item' : '',
-                    model: clone,
-                    action: 'add',
-                    init_cache_session: combo_based ? true : false,
-                    cache_id: combo_based ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
-                                                              //the view will be removed from cache after the product is added/updated into the cart.
-                });*/
 
                 if (isStanfordItem)
                     mod = 'StanfordItem';
-                else if (has_upsell && !no_combo)
+                else if (has_upsell)
                     mod = 'MatrixUpsellRoot';
                 else if (is_combo)
                     mod = 'MatrixCombo';
@@ -73,30 +58,48 @@ define(['products_view'], function(products_view) {
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: clone,
                     action: 'add',
-                    //combo_child: true,
                     real: myorder,
-                    init_cache_session: (is_combo && !no_combo) ? true : false,
-                    cache_id: (is_combo && !no_combo) ? cache_id : undefined, //cache is enabled for combo products during the phase of product customization only
+                    init_cache_session: is_combo ? true : false,
+                    cache_id: is_combo ? cache_id : undefined, //cache is enabled for combo products during the phase of product customization only
                                                               //the view will be removed from cache after the product is added/updated into the cart.
                     action_callback: function(status) {
                         if (status == "UpgradeToCombo") {
-                            LaunchUpsellCombo();
+                            LaunchUpsellCombo(clone);
                         }
                     }
                 });
-                function LaunchUpsellCombo() {
-                    App.Data.mainModel.set('popup', {
-                        modelName: 'MyOrder',
-                        mod: 'MatrixCombo',
-                        className: '',
-                        model: clone,
-                        action: 'add',
-                        init_cache_session: true,
-                        cache_id: cache_id //cache is enabled for combo products during the phase of product customization only
-                                           //the view will be removed from cache after the product is added/updated into the cart.
+                function LaunchUpsellCombo(old_root) {
+                    var myorder = App.Models.create('MyorderUpsell');
+                    var def = myorder.add_empty(self.model.get('id'), self.model.get('id_category'));
+
+                    self.addSpinner();
+                    def.then(function() {
+                        self.removeSpinner();
+
+                        var clone = myorder.clone(),
+                            cache_id = myorder.get("id_product");
+
+                        clone.get_modifiers().update(old_root.get_modifiers());
+
+                        App.Data.mainModel.set('popup', {
+                            modelName: 'MyOrder',
+                            mod: 'MatrixCombo',
+                            className: '',
+                            model: clone,
+                            action: 'add',
+                            init_cache_session: true,
+                            cache_id: cache_id //cache is enabled for combo products during the phase of product customization only
+                                               //the view will be removed from cache after the product is added/updated into the cart.
+                        });
                     });
                 }
             });
+        },
+        addSpinner: function() {
+            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        },
+        removeSpinner: function() {
+            $('#main-spinner').removeClass('ui-visible');
         }
     });
 
