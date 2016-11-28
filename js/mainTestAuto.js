@@ -84,7 +84,9 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
             });
         });
 
+        MockAjax(settings_data.defaults_initialized.settings_skin);
         settings.set('settings_system', settings_data.all.settings_system);
+        UnmockAjax();
         settings.set('settings_directory', settings_data.all.settings_directory);
         App.Settings = settings.get('settings_system');
         App.SettingsDirectory = settings.get('settings_directory');
