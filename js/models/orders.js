@@ -563,6 +563,55 @@ define(["backbone"], function(Backbone) {
                 sets[product_id][set_id].push(item);
             }
 
+            function processModifiers(item) {
+                var product = item.product,
+                    modifiers = item.modifiers;
+
+                // Preparing modifiers
+                modifiers.forEach(function(modifier) {
+                    var new_modifiers = [];
+
+                    modifier.modifiers.forEach(function(base_modifier) {
+                        if (_.findWhere(new_modifiers, { id: base_modifier.id })) {
+                            return;
+                        }
+
+                        var modifiers_group = _.where(modifier.modifiers, { id: base_modifier.id });
+
+                        if (modifiers_group.length > 1) {
+                            var highest_price_modifier = null,
+                                total_qty = 0;
+
+                            modifiers_group.forEach(function(modifierItem) {
+                                if (!highest_price_modifier || modifierItem.price > highest_price_modifier.price) {
+                                    highest_price_modifier = _.clone(modifierItem);
+                                }
+                                total_qty += modifierItem.qty;
+                            });
+
+                            highest_price_modifier.qty = total_qty;
+                            new_modifiers.push(highest_price_modifier);
+                        }
+                        else {
+                            new_modifiers.push(base_modifier);
+                        }
+                    });
+
+                    modifier.modifiers = new_modifiers;
+                });
+
+                if (product.max_price) {
+                    modifiers.forEach(function(modifier) {
+                        modifier.modifiers.forEach(function(mdf) {
+                            if (mdf.actual_data && mdf.price < mdf.actual_data.price) {
+                                mdf.max_price_amount = mdf.price;
+                                mdf.price = mdf.actual_data.price;
+                            }
+                        });
+                    });
+                }
+            }
+
             return items;
         }
     });
