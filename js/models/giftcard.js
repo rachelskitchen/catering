@@ -27,7 +27,7 @@
  * @requires module:captcha
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "captcha"], function(Backbone) {
+define(["backbone", "backbone_extensions", "captcha"], function(Backbone) {
     'use strict';
 
     /**
