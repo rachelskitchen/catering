@@ -141,7 +141,6 @@ define(["myorder_view"], function(myorder_view) {
                 mod: 'Matrix_UpsellRootFirst_Footer',
                 action: this.options.action,
                 action_text_label: this.options.action_text_label,
-                //flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
                 real: this.options.real,
                 action_callback: this.options.action_callback
             });
@@ -153,15 +152,33 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrix_UpsellRootFirst_FooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
         name: 'myorder',
         mod: 'matrix_upsell_root_first_footer',
+        bindings: {
+            '.upgrade_combo_button': 'text: combo_btn_label'
+        },
         events: {
             'click .upgrade_combo_button': 'upgrade_combo'
+        },
+        computeds: {
+            combo_btn_label: function() {
+                return this.options.action == "add" ? _loc.MYORDER_UPGRADE_TO_COMBO : _loc.MYORDER_EDIT_COMBO;
+            }
         },
         onEnterListeners: {
             '.upgrade_combo_button': 'upgrade_combo'
         },
         upgrade_combo: function() {
-            this.options.model.get('product').set('has_upsell', true, {silent: true});
-            $('#popup .cancel').trigger('click', ['UpgradeToCombo']);
+            $('#popup .cancel').trigger('click', ['Combo']);
+        },
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
+
+            var view = App.Views.GeneratorView.create('Product', {
+                el: this.$('.product_price'),
+                model: this.model,
+                mod: 'Price'
+            });
+            this.subViews.push(view);
+            return this;
         }
     });
 
@@ -197,6 +214,11 @@ define(["myorder_view"], function(myorder_view) {
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
             var combo_based = model.isComboBased();
+            var has_upsell = model.isUpsellProduct();
+            if (has_upsell) {
+                model.trigger('edit_upsell');
+                return;
+            }
 
             var cache_id = combo_based ? model.get("id_product") : undefined;
 
