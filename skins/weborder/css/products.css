@@ -110,6 +110,11 @@
     border-top-style: solid;
 }
 
+.product_info_footer .btn-line {
+    min-height: 50px;
+    padding-top: 10px;
+}
+
 .product_info_footer .footer-line .label {
     line-height: 44px;
     text-transform: uppercase;

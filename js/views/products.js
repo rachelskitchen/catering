@@ -223,7 +223,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             this.listenTo(this.model, "set_modifiers_before_add", this.customize.bind(this, "then_add_item"));
         },
         bindings: {
-            '.customize': 'classes:{hide:not(is_modifiers)}'
+            '.customize': 'classes:{hide:any(true, not(is_modifiers))}'
         },
         events: {
             'click .customize': 'customize'
@@ -257,7 +257,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
                         App.Data.mainModel.set('popup', {
                                 modelName: 'MyOrder',
                                 mod: 'MatrixCombo',
-                                cache_id: self.model.get('id_product')
+                                cache_id: self.model.get('id_product'),
                             });
                         self.update_price();
                     }

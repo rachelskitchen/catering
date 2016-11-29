@@ -29,6 +29,9 @@ define(['products_view'], function(products_view) {
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
                 is_combo = this.model.isComboProduct(),
                 has_upsell = this.model.isUpsellProduct();
+            if (has_upsell) {
+                return this.addUpsellProduct();
+            }
 
             var myorder = App.Models.create(is_combo ? 'MyorderCombo' : 'Myorder');
             var def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
@@ -39,14 +42,9 @@ define(['products_view'], function(products_view) {
                     clone = myorder.clone();
 
                 self.removeSpinner();
-                if (has_upsell) {
-                    clone.get('product').set('has_upsell', false, {silent: true});
-                }
 
                 if (isStanfordItem)
                     mod = 'StanfordItem';
-                else if (has_upsell)
-                    mod = 'MatrixUpsellRoot';
                 else if (is_combo)
                     mod = 'MatrixCombo';
                 else
@@ -58,42 +56,122 @@ define(['products_view'], function(products_view) {
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: clone,
                     action: 'add',
-                    real: myorder,
                     init_cache_session: is_combo ? true : false,
                     cache_id: is_combo ? cache_id : undefined, //cache is enabled for combo products during the phase of product customization only
                                                               //the view will be removed from cache after the product is added/updated into the cart.
+                });
+            });
+        },
+        editUpsellProduct: function(options) {
+            var self = this,
+                myorder = getOption(options, 'myorder', undefined);
+
+            LaunchRootEdit(myorder);
+
+            function LaunchRootEdit(real, clone) {
+                if (!clone)
+                    clone = myorder.clone();
+                App.Data.mainModel.set('popup', {
+                    modelName: 'MyOrder',
+                    mod: 'MatrixUpsellRoot',
+                    model: clone,
+                    action: 'update',
+                    real: myorder,
                     action_callback: function(status) {
-                        if (status == "UpgradeToCombo") {
-                            LaunchUpsellCombo(clone);
+                        if (status == "Combo") {
+                            LaunchUpsellComboEdit(myorder, clone);
                         }
                     }
                 });
-                function LaunchUpsellCombo(old_root) {
-                    var myorder = App.Models.create('MyorderUpsell');
-                    var def = myorder.add_empty(self.model.get('id'), self.model.get('id_category'));
+            }
+            function LaunchUpsellComboEdit(real, clone) {
+                var cache_id = real.get("id_product");
+                App.Data.mainModel.set('popup', {
+                    modelName: 'MyOrder',
+                    mod: 'MatrixCombo',
+                    model: clone,
+                    real: myorder,
+                    action: 'update',
+                    init_cache_session: true,
+                    cache_id: cache_id, //cache is enabled for combo products during the phase of product customization only
+                                       //the view will be removed from cache after the product is added/updated into the cart.
+                    action_callback: function(status) {
+                        if (status == "BackToRoot") {
+                            LaunchRootEdit(real, clone);
+                        }
+                    }
+                });
+            }
+        },
+        addUpsellProduct: function() {
+            var self = this, def;
 
-                    self.addSpinner();
-                    def.then(function() {
-                        self.removeSpinner();
+            LaunchRootNoUpsell();
 
-                        var clone = myorder.clone(),
-                            cache_id = myorder.get("id_product");
+            function LaunchRootNoUpsell(lastMyorder) {
+                var myorder = App.Models.create('Myorder'),
+                    def = myorder.add_empty(self.model.get('id'), self.model.get('id_category')),
+                    clone;
 
-                        clone.get_modifiers().update(old_root.get_modifiers());
+                self.addSpinner();
+                def.then(function() {
+                    self.removeSpinner();
+                    clone = myorder.clone();
+                    if (lastMyorder){
+                        clone.get_modifiers().update(lastMyorder.get_modifiers(), {silent: true});
+                        clone.set('quantity', lastMyorder.get('quantity'), {silent: true});
+                    }
+                    clone.get('product').set('has_upsell', false, {silent: true});
 
-                        App.Data.mainModel.set('popup', {
-                            modelName: 'MyOrder',
-                            mod: 'MatrixCombo',
-                            className: '',
-                            model: clone,
-                            action: 'add',
-                            init_cache_session: true,
-                            cache_id: cache_id //cache is enabled for combo products during the phase of product customization only
-                                               //the view will be removed from cache after the product is added/updated into the cart.
-                        });
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'MyOrder',
+                        mod: 'MatrixUpsellRoot',
+                        model: clone,
+                        action: 'add',
+                        action_callback: function(status) {
+                            if (status == "Combo") {
+                                LaunchUpsellCombo(clone, lastMyorder);
+                            }
+                        }
                     });
+                });
+            }
+            function LaunchUpsellCombo(old_root, myorder) {
+                if (!myorder) {
+                    myorder = App.Models.create('MyorderUpsell');
+                    def = myorder.add_empty(self.model.get('id'), self.model.get('id_category'));
+                } else {
+                    def = (new $.Deferred).resolve();
                 }
-            });
+
+                self.addSpinner();
+                def.then(function() {
+                    self.removeSpinner();
+
+                    var clone = myorder.clone(),
+                        cache_id = myorder.get("id_product");
+                    clone.get('product').set('has_upsell', true, {silent: true});
+                    clone.get_modifiers().update(old_root.get_modifiers(), {silent: true});
+                    clone.set('quantity', old_root.get('quantity'), {silent: true});
+
+                    self.listenTo(clone, 'edit_upsell', self.editUpsellProduct.bind(self, {myorder: clone}));
+
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'MyOrder',
+                        mod: 'MatrixCombo',
+                        model: clone,
+                        action: 'add',
+                        init_cache_session: true,
+                        cache_id: cache_id, //cache is enabled for combo products during the phase of product customization only
+                                           //the view will be removed from cache after the product is added/updated into the cart.
+                        action_callback: function(status) {
+                            if (status == "BackToRoot") {
+                                LaunchRootNoUpsell(clone);
+                            }
+                        }
+                    });
+                });
+            }
         },
         addSpinner: function() {
             $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');

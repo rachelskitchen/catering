@@ -118,6 +118,8 @@
         'MYORDER_WEIGHT': 'w/',
         'MYORDER_ADD_ITEM': 'Add Item',
         'MYORDER_UPGRADE_TO_COMBO': 'Upgrade to Combo',
+        'MYORDER_EDIT_COMBO': 'Edit Combo',
+        'MYORDER_COMBO_BACK': 'Back',
         'MYORDER_UPDATE_ITEM': 'Update Item',
         'PLACE_ORDER': 'Place Order',
         'PRODUCTS_PRICE': 'Price',

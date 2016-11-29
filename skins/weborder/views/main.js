@@ -161,7 +161,7 @@ define(["done_view", "generator"], function(done_view) {
             this.subViews[3] = App.Views.GeneratorView.create(data.modelName, data);
         },
         hide_popup: function(event, status) {
-            var callback = _.isObject(this.model.get('popup')) ? this.model.get('popup').action_callback : null;
+            var callback = _.isObject( this.subViews[2]) ? this.subViews[2].options.action_callback : null;
             this.model.unset('popup');
             callback && callback(status);
         },

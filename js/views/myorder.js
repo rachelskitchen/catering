@@ -330,6 +330,19 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         check_weight_product: function() {
             var isComboWithWeightProduct = this.model.get('product').get('product_sets').haveWeightProduct() || this.model.get('product').get("sold_by_weight");
             this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
+        },
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
+
+            var view = App.Views.GeneratorView.create('Product', {
+                el: this.$('.product_price'),
+                model: this.model,
+                mod: 'Price'
+            });
+
+            this.subViews.push(view);
+
+            return this;
         }
       });
     }
@@ -346,7 +359,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this;
         },
         events: {
-            'click .no_combo_link': 'no_combo'
+            'click .no_combo_link': 'no_combo',
+            'click .back_btn': 'back_to_root_product'
         },
         bindings: {
             ":el": "classes:{combo: false}"
@@ -369,6 +383,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         get_quantity_mod: function() {
             return 'Main'; //only quntity mode for main customization popup
+        },
+        back_to_root_product: function() {
+            $('#popup .cancel').trigger('click', ['BackToRoot']);
         }
       });
     }
