@@ -132,7 +132,13 @@
          * @memberof App
          * @namespace App.Mixes
          */
-        Mixes: {}
+        Mixes: {},
+        /**
+         * Contains all available controllers for managing some features needing in control several Views.
+         * @memberof App
+         * @namespace App.Controllers
+         */
+        Controllers: {}
     };
 
     /**
