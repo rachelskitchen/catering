@@ -216,7 +216,7 @@ define(["myorder_view"], function(myorder_view) {
             var combo_based = model.isComboBased();
             var has_upsell = model.isUpsellProduct();
             if (has_upsell) {
-                model.trigger('edit_upsell');
+                App.Data.controllers.get('UpsellProductCRL').editUpsellProduct(model);
                 return;
             }
 

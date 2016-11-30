@@ -30,7 +30,7 @@ define(['products_view'], function(products_view) {
                 is_combo = this.model.isComboProduct(),
                 has_upsell = this.model.isUpsellProduct();
             if (has_upsell) {
-                return this.addUpsellProduct();
+                return App.Data.controllers.get('UpsellProductCRL').addUpsellProduct(this.model);
             }
 
             var myorder = App.Models.create(is_combo ? 'MyorderCombo' : 'Myorder');
@@ -62,9 +62,17 @@ define(['products_view'], function(products_view) {
                 });
             });
         },
-        editUpsellProduct: function(options) {
-            var self = this,
-                myorder = getOption(options, 'myorder', undefined);
+        addSpinner: function() {
+            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        },
+        removeSpinner: function() {
+            $('#main-spinner').removeClass('ui-visible');
+        }
+    });
+
+    App.Controllers.UpsellProductCRL = Backbone.Model.extend({
+        editUpsellProduct: function(myorder) {
+            var self = this;
 
             LaunchRootEdit(myorder);
 
@@ -103,14 +111,14 @@ define(['products_view'], function(products_view) {
                 });
             }
         },
-        addUpsellProduct: function() {
+        addUpsellProduct: function(model) {
             var self = this, def;
 
             LaunchRootNoUpsell();
 
             function LaunchRootNoUpsell(lastMyorder) {
                 var myorder = App.Models.create('Myorder'),
-                    def = myorder.add_empty(self.model.get('id'), self.model.get('id_category')),
+                    def = myorder.add_empty(model.get('id'), model.get('id_category')),
                     clone;
 
                 self.addSpinner();
@@ -139,7 +147,7 @@ define(['products_view'], function(products_view) {
             function LaunchUpsellCombo(old_root, myorder) {
                 if (!myorder) {
                     myorder = App.Models.create('MyorderUpsell');
-                    def = myorder.add_empty(self.model.get('id'), self.model.get('id_category'));
+                    def = myorder.add_empty(model.get('id'), model.get('id_category'));
                 } else {
                     def = (new $.Deferred).resolve();
                 }
@@ -153,8 +161,6 @@ define(['products_view'], function(products_view) {
                     clone.get('product').set('has_upsell', true, {silent: true});
                     clone.get_modifiers().update(old_root.get_modifiers(), {silent: true});
                     clone.set('quantity', old_root.get('quantity'), {silent: true});
-
-                    self.listenTo(clone, 'edit_upsell', self.editUpsellProduct.bind(self, {myorder: clone}));
 
                     App.Data.mainModel.set('popup', {
                         modelName: 'MyOrder',
