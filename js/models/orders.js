@@ -788,16 +788,12 @@ define(["backbone"], function(Backbone) {
          */
         processOrders: function(orders) {
             if (Array.isArray(orders)) {
-                orders = orders.map(function(order) {
+                return orders.filter(function(order) {
                     if (order.dining_option === DINING_OPTION.DINING_OPTION_SHIPPING) {
                         order.items = order.items.filter(function(item) {
                             return !item.actual_data.is_shipping;
                         });
                     }
-                    return order;
-                });
-
-                return orders.filter(function(order) {
                     return order.items.every(function(item) {
                         return !item.combo_used && !item.has_upsell && !item.is_combo && (App.Data.is_stanford_mode ? !item.actual_data.is_gift : true);
                     });
