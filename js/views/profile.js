@@ -278,7 +278,6 @@ define(["factory"], function() {
             '.address__default-checkbox': 'css: {display: select(id, "", "none")}',
             '.address__default': 'checked: is_primary',
             '.checkbox': 'attr: {checked: select(is_primary, "checked", false)}',
-            '.country-row': 'classes: {required: all(not(country), any(street_1, street_2, city, state, province, zipcode))}', // country is the only required address field
             '.country-wrapper': 'classes: {placeholder: not(country)}',
             '.country': 'value: country, options: parseOptions(_lp_COUNTRIES)',
             '.state-row': 'toggle: equal(country, "US")',
