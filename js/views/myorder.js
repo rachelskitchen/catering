@@ -149,7 +149,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var view = App.Views.GeneratorView.create('MyOrder', {
                 el: this.$(".product_info_footer"),
                 model: this.model,
-                mod: 'MatrixFooter',
+                mod: this.options.combo_child ? 'MatrixComboItemFooter' : 'MatrixFooter',
                 action: this.options.action,
                 action_text_label: this.options.action_text_label,
                 flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
@@ -322,7 +322,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this;
         },
         bindings: {
-            ":el": "classes:{combo: true}"
+            ":el": "classes:{combo: true}",
+            '.product_price_label': 'classes: {hide: true}'
         },
         check_model: function() {
             return this.model.get('product').get('product_sets').check_selected();
@@ -840,5 +841,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderItemComboView = App.Views.CoreMyOrderView.CoreMyOrderItemComboView;
         App.Views.MyOrderView.MyOrderItemUpsellView = App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemUpsellRootView = App.Views.CoreMyOrderView.CoreMyOrderItemUpsellRootView;
+        App.Views.MyOrderView.MyOrderMatrixComboItemFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
     });
 });

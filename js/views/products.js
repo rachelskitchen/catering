@@ -119,11 +119,17 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         bindings: {
             '.size_chart_wrapper': 'toggle: _product_size_chart',
-            'a.size_chart': 'attr:{href: _product_size_chart}'
+            'a.size_chart': 'attr:{href: _product_size_chart}',
+            '.timetables': 'toggle:showTimetable'
         },
         events: {
             'change .gift_card_number': 'gift_change',
             'change .gift_card_price': 'gift_price_change'
+        },
+        computeds: {
+            showTimetable: function() {
+                return !this.options.hide_timetable && !this._hide_timetable;
+            }
         },
         getData: function() {
             var model = this.product.toJSON(),
@@ -151,7 +157,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             return model;
         },
         getProductPrice: function() {
-            return round_monetary_currency(this.model.get_product_price());
+            return round_monetary_currency(this.model.get_total_product_price());
         },
         render: function() {
             var model = this.getData();
@@ -234,8 +240,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             }
         },
         getProductPrice: function() {
-            var modifiers_price = this.model.get_sum_of_modifiers();
-            return round_monetary_currency(this.model.get_product_price() + modifiers_price);
+            return round_monetary_currency(this.model.get_total_product_price());
         },
         customize: function(event) {
             var self = this;

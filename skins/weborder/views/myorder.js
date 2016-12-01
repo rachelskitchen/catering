@@ -59,7 +59,6 @@ define(["myorder_view"], function(myorder_view) {
             $('#popup').addClass('ui-invisible');
             setTimeout(this.dh_change_height.bind(this, 1), 20);
             this.interval = this.interval || setInterval(this.dh_change_height.bind(this), 500); // check size every 0.5 sec
-            this.$('.modifiers_table_scroll').contentarrow(undefined, true); // 2nd param is doNotUpdateScrollTop
         },
         events: {
             'change_height .product_instructions': 'dh_change_height' // if special request button pressed
@@ -95,7 +94,6 @@ define(["myorder_view"], function(myorder_view) {
             }
         },
         remove: function() {
-            this.$('.modifiers_table_scroll').contentarrow('destroy');
             clearInterval(this.interval);
             _base_proto.remove.apply(this, arguments);
         }
@@ -130,6 +128,18 @@ define(["myorder_view"], function(myorder_view) {
             this.renderProductFooter();
             this.dh_initialize();
             return this;
+        },
+        renderProduct: function() {
+            var viewOptions = {
+                modelName: 'Product',
+                model: this.model,
+                mod: 'Modifiers',
+                hide_timetable: true
+            };
+
+            this.viewProduct = App.Views.GeneratorView.create('Product', viewOptions);
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
         },
         renderProductFooter: function() {
             var model = this.model,
@@ -167,7 +177,12 @@ define(["myorder_view"], function(myorder_view) {
             '.upgrade_combo_button': 'upgrade_combo'
         },
         upgrade_combo: function() {
-            $('#popup .cancel').trigger('click', ['Combo']);
+            var check = this.view_check_order();
+            if (check.status == "OK") {
+                $('#popup .cancel').trigger('click', ['Combo']);
+            } else {
+                App.Data.errors.alert(check.errorMsg);
+            }
         },
         render: function() {
             App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
@@ -276,6 +291,13 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var MyOrderMatrixComboItemFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        bindings: {
+            '.product_price_label': 'classes: {hide: true}',
+            '.footer-line': 'classes: {hide: true}'
+        }
+    });
+
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
@@ -286,5 +308,6 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderMatrixFooterView = MyOrderMatrixFooterView;
         App.Views.MyOrderView.MyOrderMatrixUpsellRootView = MyOrderMatrixUpsellRootView;
         App.Views.MyOrderView.MyOrderMatrix_UpsellRootFirst_FooterView = MyOrderMatrix_UpsellRootFirst_FooterView;
+        App.Views.MyOrderView.MyOrderMatrixComboItemFooterView = MyOrderMatrixComboItemFooterView;
     });
 });
