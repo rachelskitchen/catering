@@ -74,6 +74,7 @@
 }
 .promotions__item-left {
     max-width: 70%;
+    overflow: hidden;
 }
 .promotions__item-name {
     margin-bottom: 0.2em;

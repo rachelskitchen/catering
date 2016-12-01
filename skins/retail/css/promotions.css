@@ -60,8 +60,8 @@
 
 .promotions__item {
     box-sizing: border-box;
-    height: 60px;
-    padding: 20px 0;
+    position: relative;
+    padding: 10px 120px 10px 0;
 }
 li:not(:last-child) .promotions__item {
     border-bottom-width: 1px;
@@ -70,7 +70,13 @@ li:not(:last-child) .promotions__item {
 
 .promotions__item-left {
     line-height: 20px;
-    margin-top: -10px;
+    overflow: hidden;
+}
+
+.promotions__item-apply {
+    position: absolute;
+    right: 0;
+    top: 20px;
 }
 
 .promotions__item-applied:before {
