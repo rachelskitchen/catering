@@ -59,7 +59,7 @@ define(["products_view"], function(products_view) {
             product_price: {
                 deps: ['initial_price', "_product_combo_price"],
                 get: function() {
-                    return this.model.get_product_price();
+                    return this.model.get_total_product_price();
                 }
             },
             price: {
@@ -115,8 +115,7 @@ define(["products_view"], function(products_view) {
             product_price: {
                 deps: ['initial_price', "_product_combo_price", "$model"],
                 get: function() {
-                    var modifiers_price = this.model.get_sum_of_modifiers();
-                    return round_monetary_currency(this.model.get_product_price() + modifiers_price);
+                    return round_monetary_currency(this.model.get_total_product_price());
                 }
             }
         },

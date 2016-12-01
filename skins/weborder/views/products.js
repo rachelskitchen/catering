@@ -128,6 +128,7 @@ define(['products_view'], function(products_view) {
                     if (lastMyorder){
                         clone.get_modifiers().update(lastMyorder.get_modifiers(), {silent: true});
                         clone.set('quantity', lastMyorder.get('quantity'), {silent: true});
+                        clone.set('weight', lastMyorder.get('weight'), {silent: true});
                     }
                     clone.get('product').set('has_upsell', false, {silent: true});
 
@@ -158,9 +159,9 @@ define(['products_view'], function(products_view) {
 
                     var clone = myorder.clone(),
                         cache_id = myorder.get("id_product");
+
+                    clone.update(old_root, {silent: true});
                     clone.get('product').set('has_upsell', true, {silent: true});
-                    clone.get_modifiers().update(old_root.get_modifiers(), {silent: true});
-                    clone.set('quantity', old_root.get('quantity'), {silent: true});
 
                     App.Data.mainModel.set('popup', {
                         modelName: 'MyOrder',
@@ -176,6 +177,7 @@ define(['products_view'], function(products_view) {
                             }
                         }
                     });
+                    clone.trigger('combo_product_change');
                 });
             }
         },
@@ -218,9 +220,9 @@ define(['products_view'], function(products_view) {
                 }
             },
             product_price: {
-                deps: ['initial_price', '_product_combo_price'],
+                deps: ['initial_price', '$model'],
                 get: function() {
-                    return this.model.get_product_price();
+                    return this.model.get_total_product_price();
                 }
             },
             price: {
@@ -245,7 +247,7 @@ define(['products_view'], function(products_view) {
 
     var noImageMixin = {
         bindings: {
-            '.img_wrapper': 'classes: {"no-photo": isDefaultImage(_product_image)}'
+            '.img_wrapper': 'classes: {"no-photo": isDefaultImage(_product_image)}',
         },
         bindingFilters: {
             isDefaultImage: function(image) {
@@ -253,9 +255,12 @@ define(['products_view'], function(products_view) {
             }
         }
     }
+    var noTimetable = {
+        _hide_timetable: true
+    }
     var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend( noImageMixin );
     var ProductModifiersComboView = App.Views.CoreProductView.CoreProductModifiersComboView.extend( noImageMixin );
-    var ProductModifiersUpsellView = App.Views.CoreProductView.CoreProductModifiersUpsellView.extend( noImageMixin );
+    var ProductModifiersUpsellView = App.Views.CoreProductView.CoreProductModifiersUpsellView.extend( noImageMixin ).mixed(noTimetable);
 
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductListItemView = ProductListItemView;

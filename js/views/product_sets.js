@@ -48,6 +48,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         bindings: {
             '.mdf_quantity select': 'value: decimal(quantity), options:qty_options',
+            '.mdf_quantity': 'css: {display: select(mdf_qty_display, "inline-block", "none")}',
             '.customize ': "classes:{hide:any(not(selected), not(is_modifiers))}",
             '.cost': "classes: {hide: any(not(selected), not(is_modifiers))}",
             '.price': "text: currencyFormat(modifiers_sum)"
@@ -79,6 +80,15 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                         });
                     }
                     return data;
+                }
+            },
+            mdf_qty_display: {
+                deps: ['selected', 'productSet_cur_qty_to_add'],
+                get: function(selected,  cur_qty_to_add) {
+                    var is_selected = this.model.get('selected'),
+                        max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
+
+                    return (selected && max_quantity > 1) ? true : false;
                 }
             }
         },
@@ -179,12 +189,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             var quantity;
             if(this.model.get('selected')) {
                 this.$('.input').attr('checked', 'checked');
-                this.$(".mdf_quantity").css("display", "inline-block");
-                this.$(".split-qty-wrapper").addClass('single')
             }
             else {
                 this.$('.input').attr('checked', false);
-                this.$(".mdf_quantity").hide();
             }
         },
         update: function() {
