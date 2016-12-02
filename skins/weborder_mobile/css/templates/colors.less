@@ -1,3 +1,5 @@
+@import "../../../../css/mixins.less";
+
 * {
     -webkit-tap-highlight-color: rgba(0,0,0,0);
     -o-tap-highlight-color: rgba(0,0,0,0);
@@ -245,8 +247,7 @@ select:-moz-focusring {
     .resolve-color(@list_separator);
 }
 
-.profile-menu-links a:not(:last-child)::after,
-.toolbar {
+.profile-menu-links a:not(:last-child)::after {
     .resolve-background(@list_separator);
 }
 
@@ -397,4 +398,20 @@ ul.reward-selection > li,
 .establishments[class],
 .profile-menu.shown {
     .resolve-background-alpha(@shadow_background, 60%);
+}
+
+/* [toolbar] *
+.toolbar {
+    background: @toolbar;
+}
+
+/* header customization */
+#header .main .title when (isurl(url(@header_logo_image))) {
+    display: inline-block !important;
+    height: 2em !important;
+    width: 10em !important;
+    background-image: url(@header_logo_image);
+    background-position: 50% !important;
+    background-repeat: no-repeat !important;
+    color: transparent;
 }
