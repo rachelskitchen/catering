@@ -11,60 +11,13 @@
             <%= _lp.HEADER_MAP %></li>
     </ul>
     <div class="store_info">
-        <h1 class="title_wrap">
-            <div>
-                <div class="title"></div>
-            </div>
-        </h1>
-        <div class="delivery_wrapper"></div>
+        <h1 class="title"></h1>
+        <div class="address-line1"></div>
+        <div class="address-line2"></div>
+        <div class="operation-time">
+            <span class="open-now"></span>
+            (<a class="primary-text link" href="#about"><%= _lp.STORE_INFO_VIEW_OPEN_HOURS %></a>)
+        </div>
         <div class="promotions-link link special-text"><%= _lp.PROMOTIONS_ALL %></div>
-    </div>
-</script>
-
-<script type="text/template" id="header_delivery-template">
-    <div class='delivery_info'>
-        <%
-            var title = _lp.HEADER_DELIVERY_MINIMUM,
-                content = currency_symbol + min_delivery_amount;
-        %>
-        <div class="row">
-            <span> <%= title %>: </span>
-            <%= content %>
-        </div>
-        <%
-            var title = '',
-                content = '';
-            if (delivery_post_code_lookup_enabled) {
-                title = _lp.HEADER_DELIVERY_AREA + ":";
-                content = delivery_post_codes;
-            } else if (!delivery_geojson_enabled) {
-                title = _lp.HEADER_DELIVERY_RADIUS + ":";
-                content = max_delivery_distance + ' ';
-                if (distance_mearsure.toLowerCase() == 'km') {
-                    content += _lp.HEADER_DELIVERY_KM;
-                } else {
-                    content += _lp.HEADER_DELIVERY_MILE;
-                    if (max_delivery_distance > 1) {
-                        content += _lp.HEADER_DELIVERY_MILE_END;
-                    }
-                }
-            }
-        %>
-        <div class="row">
-            <span> <%= title %> </span>
-            <%= content %>
-        </div>
-        <%
-            var title = _lp.HEADER_DELIVERY_TIME,
-                content = '';
-            if (delivery_time.hour > 0) content += delivery_time.hour + ' ' + _lp.HEADER_DELIVERY_HOUR;
-            if (delivery_time.hour > 0 && delivery_time.minutes > 0) content += ' ';
-            if (delivery_time.minutes > 0) content += delivery_time.minutes + ' ' + _lp.HEADER_DELIVERY_MINUTES;
-            if (delivery_time.minutes == 0 && delivery_time.hour == 0) content += _lp.HEADER_DELIVERY_ASAP;
-        %>
-        <div class="row">
-            <span> <%= title %>: </span>
-            <%= content %>
-        </div>
     </div>
 </script>

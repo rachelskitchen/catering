@@ -38,18 +38,12 @@ define(["backbone", "factory"], function() {
             '.map': 'classes: {active: strictEqual(tab_index, 2)}',
             '.title': 'text: business_name',
             '.promotions-link': 'toggle: promotions_available',
-            '.store_info': 'classes: {"store-info-narrow": isNarrow}'
+            '.address-line1': 'text: line1',
+            '.address-line2': 'text: line2',
+            '.open-now': 'text: select(openNow, _lp_STORE_INFO_OPEN_NOW, _lp_STORE_INFO_CLOSED_NOW)'
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
-            if (App.Data.settings.get('settings_system').delivery_for_online_orders) {
-                var view = App.Views.GeneratorView.create('Header', {
-                    el: this.$('.delivery_wrapper'),
-                    mod: 'Delivery',
-                    model: this.model
-                });
-                this.subViews.push(view);
-            }
             loadSpinner(this.$('img.img'));
         },
         events: {
@@ -59,62 +53,32 @@ define(["backbone", "factory"], function() {
             'click .promotions-link': onClick('onPromotions')
         },
         computeds: {
-            isNarrow: {
-                deps: [
-                    'promotions_available',
-                    '_system_settings_delivery_for_online_orders',
-                    '_system_settings_min_delivery_amount',
-                    '_system_settings_delivery_post_code_lookup',
-                    '_system_settings_delivery_geojson',
-                    '_system_settings_estimated_delivery_time'
-                ],
-                get: function(promotions_available, delivery_for_online_orders, min_delivery_amount, delivery_post_code_lookup, delivery_geojson, estimated_delivery_time) {
-                    var delivery_post_code_lookup_enabled = _.isArray(delivery_post_code_lookup) && delivery_post_code_lookup[0],
-                        delivery_geojson_enabled = _.isArray(delivery_geojson) && delivery_geojson[0];
+            openNow: function() {
+                return App.Data.timetables.openNow();
+            },
+            line1: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    var line1 = address.line_1,
+                        line2 = address.line_2;
+                    return line2 ? line1 + ', ' + line2 : line1;
+                }
+            },
+            line2: {
+                deps: ['_system_settings_address'],
+                get: function(address) {
+                    var address_line = address.city + ', ';
+                        address_line += address.getRegion() ? address.getRegion() + ' ' : '';
+                        address_line += address.postal_code;
 
-                    if (promotions_available &&
-                        _.isNumber(min_delivery_amount) &&
-                        estimated_delivery_time &&
-                        (delivery_post_code_lookup_enabled || !delivery_geojson_enabled))
-                    {
-                        return true;
-                    }
-
-                    return false;
+                    return address_line;
                 }
             }
-        }
-    });
-
-    var HeaderDeliveryView = App.Views.FactoryView.extend({
-        name: 'header',
-        mod: 'delivery',
-        render: function() {
-            var settings = App.Data.settings.get('settings_system'),
-                initial_model = this.model.toJSON();
-
-            $.extend(initial_model, {
-                currency_symbol: settings.currency_symbol,
-                min_delivery_amount: round_monetary_currency(settings.min_delivery_amount),
-                delivery_post_code_lookup_enabled: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[0],
-                delivery_post_codes: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[1],
-                delivery_geojson_enabled: _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0],
-                max_delivery_distance: settings.max_delivery_distance,
-                delivery_time: {
-                    hour: Math.floor(settings.estimated_delivery_time / 60),
-                    minutes: Math.ceil(settings.estimated_delivery_time % 60)
-                },
-                distance_mearsure: settings.distance_mearsure
-            });
-
-            this.model = initial_model;
-            App.Views.FactoryView.prototype.render.apply(this, arguments);
         }
     });
 
     return new (require('factory'))(function() {
         App.Views.HeaderView = {};
         App.Views.HeaderView.HeaderMainView = HeaderMainView;
-        App.Views.HeaderView.HeaderDeliveryView = HeaderDeliveryView;
     });
 });

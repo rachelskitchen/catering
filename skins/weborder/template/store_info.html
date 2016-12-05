@@ -45,6 +45,7 @@
             </ul>
         </div>
         <% } %>
+        <div class="delivery-info block"></div>
         <div class="access block">
             <span class="bold label"><%= _lp.STORE_INFO_ACCESS %>:</span>
             <div class="access-info inline-block"></div>
@@ -86,4 +87,56 @@
         <div id="mapBox"></div>
         <div class="show-delivery-area primary-text link"><%= _lp.STORE_INFO_MAP_SHOW_DELIVERY_AREA %></div>
     </div>
+</script>
+
+<script type="text/template" id="store_info_delivery-template">
+    <%
+        var title = _lp.HEADER_DELIVERY_MINIMUM,
+            content = currency_symbol + min_delivery_amount;
+    %>
+    <% if (title && content) { %>
+    <div class="block">
+        <span class="bold label"> <%= title %>: </span>
+        <%= content %>
+    </div>
+    <% } %>
+    <%
+        var title = '',
+            content = '';
+        if (delivery_post_code_lookup_enabled) {
+            title = _lp.HEADER_DELIVERY_AREA + ":";
+            content = delivery_post_codes;
+        } else if (!delivery_geojson_enabled) {
+            title = _lp.HEADER_DELIVERY_RADIUS + ":";
+            content = max_delivery_distance + ' ';
+            if (distance_mearsure.toLowerCase() == 'km') {
+                content += _lp.HEADER_DELIVERY_KM;
+            } else {
+                content += _lp.HEADER_DELIVERY_MILE;
+                if (max_delivery_distance > 1) {
+                    content += _lp.HEADER_DELIVERY_MILE_END;
+                }
+            }
+        }
+    %>
+    <% if (title && content) { %>
+    <div class="block">
+        <span class="bold label"> <%= title %> </span>
+        <%= content %>
+    </div>
+    <% } %>
+    <%
+        var title = _lp.HEADER_DELIVERY_TIME,
+            content = '';
+        if (delivery_time.hour > 0) content += delivery_time.hour + ' ' + _lp.HEADER_DELIVERY_HOUR;
+        if (delivery_time.hour > 0 && delivery_time.minutes > 0) content += ' ';
+        if (delivery_time.minutes > 0) content += delivery_time.minutes + ' ' + _lp.HEADER_DELIVERY_MINUTES;
+        if (delivery_time.minutes == 0 && delivery_time.hour == 0) content += _lp.HEADER_DELIVERY_ASAP;
+    %>
+    <% if (title && content) { %>
+    <div class="block">
+        <span class="bold label"> <%= title %>: </span>
+        <%= content %>
+    </div>
+    <% } %>
 </script>

@@ -39,7 +39,8 @@ define(["backbone", "factory", "generator"], function(Backbone) {
             '.email': 'text: _system_settings_email, attr: {href: format("mailto:$1", _system_settings_email)}',
             '.access': 'toggle: _system_settings_about_access_to_location',
             '.access-info': 'text: _system_settings_about_access_to_location',
-            '.gallery': 'updateContent: galleryViewData'
+            '.gallery': 'updateContent: galleryViewData',
+            '.delivery-info': 'updateContent: deliveryInfoView'
         },
         bindingFilters: {
             handleDescriptions: function(desc) {
@@ -74,6 +75,19 @@ define(["backbone", "factory", "generator"], function(Backbone) {
                             mod: 'Gallery',
                             model: this.options.about
                         };
+                    }
+                }
+            },
+            deliveryInfoView: {
+                deps: ['_system_settings_delivery_for_online_orders'],
+                get: function(isDeliveryEnabled) {
+                    if (isDeliveryEnabled) {
+                        return {
+                            name: 'StoreInfo',
+                            mod: 'Delivery',
+                            el: this.$('.delivery-info'),
+                            viewId: 'Delivery'
+                        }
                     }
                 }
             }
@@ -440,11 +454,36 @@ define(["backbone", "factory", "generator"], function(Backbone) {
         }
     });
 
+    var StoreInfoDeliveryView = App.Views.FactoryView.extend({
+        name: 'store_info',
+        mod: 'delivery',
+        initialize: function() {
+            var settings = App.Settings,
+                initial_model = {
+                currency_symbol: settings.currency_symbol,
+                min_delivery_amount: round_monetary_currency(settings.min_delivery_amount),
+                delivery_post_code_lookup_enabled: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[0],
+                delivery_post_codes: _.isArray(settings.delivery_post_code_lookup) && settings.delivery_post_code_lookup[1],
+                delivery_geojson_enabled: _.isArray(settings.delivery_geojson) && settings.delivery_geojson[0],
+                max_delivery_distance: settings.max_delivery_distance,
+                delivery_time: {
+                    hour: Math.floor(settings.estimated_delivery_time / 60),
+                    minutes: Math.ceil(settings.estimated_delivery_time % 60)
+                },
+                distance_mearsure: settings.distance_mearsure
+            };
+
+            this.model = initial_model;
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        }
+    });
+
     return new (require('factory'))(function() {
         App.Views.StoreInfoView = {};
         App.Views.StoreInfoView.StoreInfoMainView = StoreInfoMainView;
         App.Views.StoreInfoView.StoreInfoMapView = StoreInfoMapView;
         App.Views.StoreInfoView.StoreInfoGalleryView = StoreInfoGalleryView;
         App.Views.StoreInfoView.StoreInfoMapWithStoresView = StoreInfoMapWithStoresView;
+        App.Views.StoreInfoView.StoreInfoDeliveryView = StoreInfoDeliveryView;
     });
 });
