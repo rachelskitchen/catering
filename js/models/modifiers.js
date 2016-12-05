@@ -276,7 +276,10 @@ define(["backbone"], function(Backbone) {
          * @returns {number} Total amount of the modifier. It's calculated as `price` \* `quantity` \* 'quantity type coefficient'.
          */
         getSum: function() {
-            return this.get('price') * this.get('quantity') * this.half_price_koeff();
+            var actual_data = this.get('actual_data'),
+                price = actual_data ? actual_data.price : this.get('price');
+
+            return price * this.get('quantity') * this.half_price_koeff();
         },
         /**
          * Updates modifier to actual state checking reorder changes.
