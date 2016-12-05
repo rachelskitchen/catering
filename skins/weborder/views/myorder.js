@@ -292,9 +292,13 @@ define(["myorder_view"], function(myorder_view) {
     });
 
     var MyOrderMatrixComboItemFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         bindings: {
             '.product_price_label': 'classes: {hide: true}',
-            '.footer-line': 'classes: {hide: true}'
+            '.footer-line': 'classes: {hide: not(_product_sold_by_weight)}'
         }
     });
 

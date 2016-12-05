@@ -51,7 +51,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             '.mdf_quantity': 'css: {display: select(mdf_qty_display, "inline-block", "none")}',
             '.customize ': "classes:{hide:any(not(selected), not(is_modifiers))}",
             '.cost': "classes: {hide: any(not(selected), not(is_modifiers))}",
-            '.price': "text: currencyFormat(modifiers_sum)"
+            '.price': "text: currencyFormat(modifiers_sum)",
+            '.input': "classes: {radio: is_radio_type, checkbox: not(is_radio_type)}"
         },
         computeds: {
             is_modifiers: function() {
@@ -90,6 +91,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
 
                     return (selected && max_quantity > 1) ? true : false;
                 }
+            },
+            is_radio_type: function() {
+                return this.options.type == 'radio';
             }
         },
         initialize: function() {
@@ -165,12 +169,25 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 return;
             }
             var productSet = this.options.productSet;
-            var el = $(".checkbox", $(e.currentTarget)),
+            var el = $(".input", $(e.currentTarget)),
                 checked = el.attr('checked') == "checked" ? false : true,
                 exactAmount = productSet.get('maximum_amount');
 
-            if (checked && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
+
+            if (checked && this.options.type == 'checkbox' && exactAmount > 0 && productSet.get_selected_qty() >= exactAmount) {
                 return;
+            }
+
+            if(this.options.type == 'radio') {
+                if (checked) {
+                    this.$el.parent().find('.input[checked="checked"]').removeAttr('checked');
+                    productSet.get('order_products').where({selected: true}).forEach(function(product) {
+                        product.set('selected', false);
+                    });
+                }
+                else {
+                    return;
+                }
             }
 
             this.model.set('selected', checked);
@@ -195,14 +212,14 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
         },
         update: function() {
+            var self = this;
             this.update_elements();
-            this.options.myorder_root.trigger('combo_product_change');
             this.model.trigger('change:modifiers');
         },
         check_model: function() {
-            var checked = this.$(".checkbox").attr('checked') == "checked" ? true : false;
+            var checked = this.$(".input").attr('checked') == "checked" ? true : false;
             if (checked && this.model.check_order().status != 'OK') {
-                this.$(".checkbox").click(); //return back to the unchecked state
+                this.$(".input").click(); //return back to the unchecked state
             }
         }
     });
@@ -244,20 +261,25 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         mod: 'item',
         initialize: function() {
             App.Views.ItemView.prototype.initialize.apply(this, arguments);
+
+            var update_throttle = _.throttle(this.combo_product_change, 200, {leading: false});
+            this.listenTo(this.model.get('order_products'), 'change', update_throttle, this);
             this.listenTo(this.model.get('order_products'), 'change', this.controlCheckboxes, this);
+        },
+        combo_product_change: function() {
+            this.options.myorder_root.trigger('combo_product_change');
         },
         render: function() {
             var model = this.model.toJSON(),
                 currency = App.Data.settings.get('settings_system').currency_symbol,
                 view;
-            model.type = 0;
             this.$el.html(this.template(model));
 
             var view = App.Views.GeneratorView.create('Combo', {
                 el: this.$('.modifier_class_list'),
                 mod: 'List',
                 collection: this.model.get('order_products'),
-                type: 0, //checkboxes
+                type: this.is_radio_type() ? 'radio' : 'checkbox',
                 productSet: this.model,
                 myorder_root: this.options.myorder_root //root combo product instance of App.Models.Myorder model
             });
@@ -268,13 +290,19 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.controlCheckboxes();
             return this;
         },
+        is_radio_type: function() {
+            var productSet = this.model,
+                maximumAmount = productSet.get('maximum_amount'),
+                minimumAmount = productSet.get('minimum_amount');
+            return maximumAmount == 1 && minimumAmount == 1;
+        },
         controlCheckboxes: function() {
             if(!this.subViews[0])
                 return;
             var checked = this.subViews[0].$el.find('.input[checked=checked]').parent(),
                 unchecked = this.subViews[0].$el.find('.input').not("[checked=checked]").parent(),
                 maximumAmount = this.model.get('maximum_amount');
-            if(!this.type && maximumAmount > 0 && this.model.get_selected_qty() >= maximumAmount) {
+            if(!this.is_radio_type() && maximumAmount > 0 && this.model.get_selected_qty() >= maximumAmount) {
                 checked.removeClass('fade-out');
                 unchecked.addClass('fade-out');
             } else {
@@ -296,6 +324,19 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         render: function() {
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection && this.collection.each(this.addItem.bind(this));
+
+        /*    if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+                view = App.Views.GeneratorView.create('Instructions', {
+                    el: this.$('.product_instructions'),
+                    model: this.model,
+                    mod: 'Modifiers'
+                });
+                this.subViews.push(view);
+
+                if (App.Settings.special_requests_online === false) {
+                    view.$el.hide(); // hide special request if not allowed
+                }
+            } */
 
             this.$el.parents('.modifiers_table').show();
             return this;

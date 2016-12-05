@@ -219,9 +219,21 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         name: 'myorder',
         mod: 'matrix_footer',
         initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update_child_selected);
             return this;
+        },
+        bindings: {
+            '.uom': 'text: uom, classes: {hide: not(uom)}'
+        },
+        computeds: {
+            uom: {
+                deps: ['_system_settings_scales', '_product_sold_by_weight'],
+                get: function(scales, sold_by_weight) {
+                    return scales.default_weighing_unit && sold_by_weight ? scales.default_weighing_unit : false;
+                }
+            }
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -246,7 +258,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 this.subViews.push(view);
             }
 
-            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+        /*    if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
                 view = App.Views.GeneratorView.create('Instructions', {
                     el: this.$('.product_instructions'),
                     model: model,
@@ -258,6 +270,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     view.$el.hide(); // hide special request if not allowed
                 }
             }
+        */
 
             this.update_child_selected();
             return this;
@@ -353,26 +366,14 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'matrix_footer_upsell',
         initialize: function() {
             _base.prototype.initialize.apply(this, arguments);
-            if (this.options.action === 'update') {
-               this.$('.no_combo_link').hide();
-            }
             this.listenTo(this.model, "action_add_item", this.action); //used for the case when root modifiers were not selected before user press Add Item
             return this;
         },
         events: {
-            'click .no_combo_link': 'no_combo',
             'click .back_btn': 'back_to_root_product'
         },
         bindings: {
             ":el": "classes:{combo: false}"
-        },
-        no_combo: function() {
-            var self = this;
-            $('#popup .cancel').trigger('click');
-            var target_product_view = $('.product_list_item[data-id='+ this.model.get('product').get('compositeId') + ']');
-            setTimeout( function() {
-                target_product_view && target_product_view.trigger('click', {no_combo: true, combo_root: self.model});
-            }, 10);
         },
         action: function (event) {
             var check_root_modifiers = this.model.check_order({ modifiers_only: true });

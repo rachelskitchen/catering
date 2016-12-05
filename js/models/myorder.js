@@ -767,7 +767,10 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @return {number} - product price with sum of modifiers
          */
         get_total_product_price: function() {
-            return (this.get('initial_price') + this.get_sum_of_modifiers()) * this.get('quantity');
+            if (this.get_product().get('sold_by_weight'))
+                return this.get('initial_price') * this.get('weight') + this.get_sum_of_modifiers();
+            else
+                return (this.get('initial_price') + this.get_sum_of_modifiers()) * this.get('quantity');
         }
     });
 
