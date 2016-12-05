@@ -9,9 +9,6 @@
 .combo_item .input {
     padding: 0;
     cursor: pointer;
-    -webkit-box-sizing: border-box;
-    -moz-box-sizing: border-box;
-    box-sizing: content-box;
 }
 
 .combo_item .input.checkbox {
@@ -32,15 +29,6 @@
 
 .combo_item .customize {
     margin: 0 10px;
-}
-
-.no_combo_link {
-    display: inline-block;
-    padding: 14px 0;
-}
-
-.combo_item_wrap .checkbox[checked=checked]::before {
-  margin: 3px;
 }
 
 .combo_item .checkbox-outer {

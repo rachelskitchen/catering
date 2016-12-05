@@ -160,7 +160,9 @@ define(['products_view'], function(products_view) {
                     var clone = myorder.clone(),
                         cache_id = myorder.get("id_product");
 
-                    clone.update(old_root, {silent: true});
+                    clone.get_modifiers().update(old_root.get_modifiers(), {silent: true});
+                    clone.set('quantity', old_root.get('quantity'), {silent: true});
+                    clone.set('weight', old_root.get('weight'), {silent: true});
                     clone.get('product').set('has_upsell', true, {silent: true});
 
                     App.Data.mainModel.set('popup', {
@@ -177,7 +179,7 @@ define(['products_view'], function(products_view) {
                             }
                         }
                     });
-                    clone.trigger('combo_product_change');
+                    setTimeout(clone.trigger.bind(clone, 'combo_product_change'), 0);
                 });
             }
         },
@@ -201,7 +203,6 @@ define(['products_view'], function(products_view) {
             '.product-price': 'value: monetaryFormat(product_price)',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
             '.currency': 'text: _system_settings_currency_symbol',
-            '.uom': 'text: uom, toggle: uom',
             '.price-wrapper': 'attr: {"data-amount": monetaryFormat(product_price)}, classes: {"product-price-wrapper": not(giftMode)}'
         },
         computeds: {
@@ -211,12 +212,6 @@ define(['products_view'], function(products_view) {
                     var modifiers = this.model.get_modifiers(),
                         not_size = modifiers && modifiers.getSizeModel() === undefined;
                     return isGift && onlineOrders && not_size;
-                }
-            },
-            uom: {
-                deps: ['_system_settings_scales', '_product_sold_by_weight'],
-                get: function(scales, sold_by_weight) {
-                    return scales.default_weighing_unit && sold_by_weight ? '/ ' + scales.default_weighing_unit : false;
                 }
             },
             product_price: {
