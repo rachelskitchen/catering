@@ -259,7 +259,8 @@
     font-size: 1.4em;
 }
 
-.payment-item.add-cc {
+.payment-item.add-cc,
+.payment-item.add-gift-card {
     display: inline-block;
 }
 
