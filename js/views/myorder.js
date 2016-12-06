@@ -100,28 +100,41 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         renderModifiers: function() {
             var model = this.model,
-                viewModifiers;
+                view;
 
             switch(model.get_attribute_type()) {
                 case 0:
                 case 2:
                     var el = $('<div></div>');
                     this.$('.modifiers_info').append(el);
-                    viewModifiers =  App.Views.GeneratorView.create('ModifiersClasses', {
+                    view =  App.Views.GeneratorView.create('ModifiersClasses', {
                         el: el,
                         model: model,
                         mod: 'List'
                     });
                     break;
                 case 1:
-                    viewModifiers =  App.Views.GeneratorView.create('ModifiersClasses', {
+                    view =  App.Views.GeneratorView.create('ModifiersClasses', {
                         el: this.$('.product_attribute_info'),
                         model: model,
                         mod: 'Matrixes',
                         modifiersEl: this.$('.modifiers_info')
                     });
             }
-            this.subViews.push(viewModifiers);
+            this.subViews.push(view);
+
+            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+                view = App.Views.GeneratorView.create('Instructions', {
+                    el: this.$('.product_instructions'),
+                    model: model,
+                    mod: 'Modifiers'
+                });
+                this.subViews.push(view);
+
+                if (App.Settings.special_requests_online === false) {
+                    view.$el.hide(); // hide special request if not allowed
+                }
+            }
         },
         renderProduct: function() {
             var model = this.model,
@@ -152,7 +165,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 mod: this.options.combo_child ? 'MatrixComboItemFooter' : 'MatrixFooter',
                 action: this.options.action,
                 action_text_label: this.options.action_text_label,
-                flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
+                flags: this.options.combo_child ? [/*'no_specials',*/'no_quantity'] : undefined,
                 real: this.options.real,
                 action_callback: this.options.action_callback
             });
@@ -258,7 +271,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 this.subViews.push(view);
             }
 
-        /*    if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+          /*  if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
                 view = App.Views.GeneratorView.create('Instructions', {
                     el: this.$('.product_instructions'),
                     model: model,
@@ -269,8 +282,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                 if (App.Settings.special_requests_online === false) {
                     view.$el.hide(); // hide special request if not allowed
                 }
-            }
-        */
+            } */
 
             this.update_child_selected();
             return this;

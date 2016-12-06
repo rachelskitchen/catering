@@ -50,8 +50,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             '.mdf_quantity select': 'value: decimal(quantity), options:qty_options',
             '.mdf_quantity': 'css: {display: select(mdf_qty_display, "inline-block", "none")}',
             '.customize ': "classes:{hide:any(not(selected), not(is_modifiers))}",
-            '.cost': "classes: {hide: any(not(selected), not(is_modifiers))}",
-            '.price': "text: currencyFormat(modifiers_sum)",
+            '.cost': "classes: {hide: not(selected)}",
+            '.price': "text: modifiers_sum_frm",
+            '.plus': 'classes: {hide: not(modifiers_sum)}',
             '.input': "classes: {radio: is_radio_type, checkbox: not(is_radio_type)}"
         },
         computeds: {
@@ -61,7 +62,17 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             modifiers_sum: {
                 deps: ['$model'],
                 get: function() {
-                    return this.model.get_sum_of_modifiers();
+                    return this.model.get_sum_of_modifiers() +
+                           (this.options.myorder_root.isUpsellProduct() ? this.model.get('product').get("upcharge_price") : this.model.get('initial_price'));
+                }
+            },
+            modifiers_sum_frm: {
+                get: function() {
+                    var sum = this.getBinding("modifiers_sum");
+                    if (sum.toFixed(2) == 0)
+                        return 'free';
+                    else
+                        return round_monetary_currency(sum);
                 }
             },
             qty_options: {
@@ -149,6 +160,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 combo_child: true,
                 real: this.model,
                 action: 'update',
+                flags: ['no_specials'],
                 action_callback: function() {
                     //return back to the combo root product view:
                     App.Data.mainModel.set('popup', {
@@ -322,10 +334,11 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             App.Views.ListView.prototype.initialize.apply(this, arguments);
         },
         render: function() {
+            var view;
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection && this.collection.each(this.addItem.bind(this));
 
-        /*    if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
                 view = App.Views.GeneratorView.create('Instructions', {
                     el: this.$('.product_instructions'),
                     model: this.model,
@@ -336,7 +349,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 if (App.Settings.special_requests_online === false) {
                     view.$el.hide(); // hide special request if not allowed
                 }
-            } */
+            }
 
             this.$el.parents('.modifiers_table').show();
             return this;
