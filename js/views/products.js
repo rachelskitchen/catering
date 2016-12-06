@@ -223,51 +223,8 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     });
 
     CoreView.CoreProductModifiersUpsellView = CoreView.CoreProductModifiersView.extend({
-        initialize: function() {
-            var self = this;
-            CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, "set_modifiers_before_add", this.customize.bind(this, "then_add_item"));
-        },
-        bindings: {
-            '.customize': 'classes:{hide:any(true, not(is_modifiers))}'
-        },
-        events: {
-            'click .customize': 'customize'
-        },
-        computeds: {
-            is_modifiers: function() {
-                return this.model.get_modifiers().length > 0 || this.model.get('product').get('sold_by_weight');
-            }
-        },
         getProductPrice: function() {
             return round_monetary_currency(this.model.get_total_product_price());
-        },
-        customize: function(event) {
-            var self = this;
-            var clone = this.model.clone();
-            App.Data.mainModel.set('popup', {
-                modelName: 'MyOrder',
-                mod: 'Matrix',
-                className: '',
-                model: clone,
-                combo_child: true,
-                real: this.model,
-                action: 'update',
-                action_text_label: event == "then_add_item" ? 'add' : 'update',
-                action_callback: function(status) {
-                    if (event == "then_add_item" && self.model.check_order({modifiers_only: true}).status == 'OK') {
-                        self.model.trigger("action_add_item");//add upsell product to the cart
-                    } else {
-                        //return back to the Upsell root product view:
-                        App.Data.mainModel.set('popup', {
-                                modelName: 'MyOrder',
-                                mod: 'MatrixCombo',
-                                cache_id: self.model.get('id_product'),
-                            });
-                        self.update_price();
-                    }
-                }
-            });
         }
     });
 
