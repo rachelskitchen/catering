@@ -28,9 +28,9 @@ define(["products_view"], function(products_view) {
         mod: 'modifiers',
         bindings: {
             '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
-            '.product-price': 'value: monetaryFormat(product_price)',
+            '.product-price': 'value: monetaryFormat(product_price), classes: {hide: hide_price}',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
-            '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
+            '.currency': 'text: _system_settings_currency_symbol, toggle: not(any(uom, hide_price))',
             '.uom': 'text: uom, toggle: uom',
             '.title': 'text: _product_name',
             '.desc': 'text: _product_description, toggle: _product_description',
@@ -73,11 +73,13 @@ define(["products_view"], function(products_view) {
                     value = parseFloat(value);
                     if(!isNaN(value)) {
                         product.set('price', value);
-                        //this.model.set('initial_price', value);
                     } else {
                         this.model.trigger('change:initial_price');
                     }
                 }
+            },
+            hide_price: function() {
+                return this.options.combo_child;
             }
         },
         initialize: function() {

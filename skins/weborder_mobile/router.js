@@ -782,10 +782,12 @@ define(["main_router"], function(main_router) {
                         link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             var status = header.updateProduct(order);
+                            var cache_id = combo_order.get('id_product');
                             if (status) {
                                 self.stopListening(self, 'route', back);
-                                originOrder.update(order);
                                 combo_order.trigger("change:modifiers");
+                                self.stopListening(order, 'change', setHeaderToUpdate);
+                                self.return_to_combo_product(cache_id);
                             }
                         }
                     });
@@ -851,7 +853,7 @@ define(["main_router"], function(main_router) {
                             var status = header.updateProduct(combo_order);
                             if (status) {
                                 combo_order.trigger("change:modifiers");
-                                self.combo_upsell_product( {
+                                self.combo_upsell_product({
                                         id_category: combo_order.get('product').get('id_category'),
                                         id_product: combo_order.get('id_product'),
                                         has_upsell: true,
