@@ -779,19 +779,89 @@ define(["main_router"], function(main_router) {
                 function setHeaderToUpdate() {
                     header.set({
                         page_title: _loc.CUSTOMIZE,
-                        link_title: action == "then_add_item" ? _loc.ADD_TO_CART : _loc.UPDATE,
+                        link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             var status = header.updateProduct(order);
                             if (status) {
                                 self.stopListening(self, 'route', back);
                                 originOrder.update(order);
                                 combo_order.trigger("change:modifiers");
-                                if (action == "then_add_item")
-                                    App.Data.myorder.trigger("add_upsell_item_to_cart");
                             }
                         }
                     });
                     self.listenTo(order, 'change', setHeaderToUpdate);
+                }
+            });
+        },
+        upsell_root_product: function(combo_order, options) {
+            this.prepare('modifiers', function() {
+                var self = this,
+                    header = App.Data.header;
+
+                if (!combo_order) {
+                    return this.navigate('index', true);
+                }
+
+                if (!combo_order) {
+                    return this.navigate('index', true);
+                }
+
+                header.set({
+                    back: window.history.back.bind(window.history),
+                    back_title: _loc.BACK,
+                    cart: cart,
+                    hideCart: true
+                });
+
+                App.Data.mainModel.set({
+                    header: _.extend({}, headerModes.Modifiers, {submode: 'child'}),
+                    footer: footerModes.None
+                });
+
+                setHeaderToUpdate();
+                showProductDetails();
+
+                function showProductDetails() {
+                    var content = {
+                        modelName: 'MyOrder',
+                        model: combo_order,
+                        mod: 'Matrix',
+                        combo_child: true,
+                        cacheId: false
+                    };
+                    App.Data.mainModel.set({
+                        contentClass: '',
+                        content: content
+                    });
+                    self.change_page();
+                }
+
+                function cart() {
+                    if (App.Data.myorder.get_only_product_quantity() > 0) {
+                        self.stopListening(combo_order, 'change', setHeaderToUpdate);
+                        self.navigate('cart', true);
+                    }
+                }
+
+                function setHeaderToUpdate() {
+                    header.set({
+                        page_title: _loc.CUSTOMIZE,
+                        link_title: _loc.UPDATE,
+                        link: !App.Settings.online_orders ? header.defaults.link : function() {
+                            var status = header.updateProduct(combo_order);
+                            if (status) {
+                                combo_order.trigger("change:modifiers");
+                                self.combo_upsell_product( {
+                                        id_category: combo_order.get('product').get('id_category'),
+                                        id_product: combo_order.get('id_product'),
+                                        has_upsell: true,
+                                        upgrade_to_upsell: true,
+                                        old_root: combo_order
+                                    });
+                            }
+                        }
+                    });
+                    self.listenTo(combo_order, 'change', setHeaderToUpdate);
                 }
             });
         },
@@ -844,7 +914,9 @@ define(["main_router"], function(main_router) {
         combo_upsell_product: function(options) {
             var id_category = options.id_category,
                 id_product = options.id_product,
-                has_upsell = options.has_upsell;
+                has_upsell = options.has_upsell,
+                upgrade_to_upsell = options.upgrade_to_upsell,
+                old_root = options.old_root;
             this.prepare('combo_product', function() {
                 var self = this,
                     isEditMode = !id_product,
@@ -868,12 +940,22 @@ define(["main_router"], function(main_router) {
                     orderClone = order.clone();
                     showProductDetails();
                 } else {
-                    order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
+                    this.initCategories().always(function() {
+                        order.add_empty(id_product * 1, id_category * 1).then(showProductDetails);
+                    });
                 }
 
                 function showProductDetails() {
                     if(!isEditMode) {
                         order = order.clone();
+                    }
+                    if (has_upsell && !upgrade_to_upsell && !isEditMode) {
+                        return self.upsell_root_product(order, order.get("id_product"));
+                    }
+                    if (old_root) {
+                        order.get_modifiers().update(old_root.get_modifiers(), {silent: true});
+                        order.set('quantity', old_root.get('quantity'), {silent: true});
+                        order.set('weight', old_root.get('weight'), {silent: true});
                     }
                     App.Data.mainModel.set({
                         header: _.extend({}, headerModes.ComboProduct, {
@@ -901,12 +983,6 @@ define(["main_router"], function(main_router) {
                         contentClass: '',
                         content: content
                     });
-
-                    if (has_upsell && !isEditMode) {
-                        self.listenTo(header, "set_modifiers_before_add", function() {
-                            self.combo_child_products(order, order.get("id_product"), {action: "then_add_item"});
-                        });
-                    }
 
                     self.change_page();
                 }

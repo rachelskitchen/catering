@@ -49,8 +49,8 @@
     margin-top: 0.5em;
 }
 .product-modifiers .no_combo_link {
-    float: right;
-    margin-top: 0.9em;
+    float: left;
+    margin-top: 0.1em;
 }
 .product-modifiers .timetable {
     font-style: italic;

@@ -199,15 +199,7 @@ define(["factory", "smart_banner"], function() {
             var self = this;
             if(!App.Settings.online_orders) return;
 
-            var order = this.options.order;
-
-            var check_root_modifiers = order.check_order({ modifiers_only: true });
-            if (check_root_modifiers.status !== 'OK') {
-                this.model.trigger("set_modifiers_before_add");//invoke modifiers page for the root product
-                return;
-            }
-
-            this.model.addProduct(order).done(function () {
+            this.model.addProduct(this.options.order).done(function () {
                 //self.setHeaderToUpdate();
             });
         }
