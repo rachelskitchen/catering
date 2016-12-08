@@ -951,7 +951,7 @@ define(["main_router"], function(main_router) {
                     if(!isEditMode) {
                         order = order.clone();
                     }
-                    if (has_upsell && !upgrade_to_upsell && !isEditMode) {
+                    if (has_upsell && !upgrade_to_upsell && !isEditMode && order.check_order({modifiers_only: true}).status != "OK") {
                         return self.upsell_root_product(order, order.get("id_product"));
                     }
                     if (old_root) {
