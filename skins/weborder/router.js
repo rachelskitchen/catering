@@ -75,6 +75,7 @@ define(["main_router"], function(main_router) {
                 App.Data.parentCategories = new App.Collections.SubCategories();
                 App.Data.search = new App.Collections.Search();
                 App.Data.paymentMethods = new App.Models.PaymentMethods(App.Data.settings.get_payment_process());
+                App.Data.controllers.create('UpsellProductCRL');
 
                 var mainModel = App.Data.mainModel = new App.Models.MainModel({
                     acceptableCCTypes: ACCEPTABLE_CREDIT_CARD_TYPES,

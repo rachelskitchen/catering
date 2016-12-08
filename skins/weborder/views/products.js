@@ -25,38 +25,169 @@ define(['products_view'], function(products_view) {
 
     var ProductListItemView = App.Views.CoreProductView.CoreProductListItemView.extend({
         showModifiers: function(event, options) {
-            var isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
-                no_combo = _.isObject(options) ? options.no_combo : false,
-                combo_based = this.model.isComboBased() && !no_combo,
+            var self = this,
+                isStanfordItem = App.Data.is_stanford_mode && this.model.get('is_gift'),
+                is_combo = this.model.isComboProduct(),
                 has_upsell = this.model.isUpsellProduct();
+            if (has_upsell) {
+                return App.Data.controllers.get('UpsellProductCRL').addUpsellProduct(this.model);
+            }
 
-            var myorder = App.Models.create(combo_based ? (has_upsell ? 'MyorderUpsell' : 'MyorderCombo') : 'Myorder');
-
+            var myorder = App.Models.create(is_combo ? 'MyorderCombo' : 'Myorder');
             var def = myorder.add_empty(this.model.get('id'), this.model.get('id_category'));
 
-            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+            this.addSpinner();
             def.then(function() {
-                var cache_id = combo_based ? myorder.get("id_product") : undefined;
-                var clone = myorder.clone();
-                if (no_combo) {
-                    clone.get('product').set('has_upsell', false, {silent: true});
-                }
-                if (no_combo && options.combo_root) {
-                    clone.get_modifiers().update(options.combo_root.get_modifiers());
-                }
+                var mod, cache_id = is_combo ? myorder.get("id_product") : undefined,
+                    clone = myorder.clone();
 
-                $('#main-spinner').removeClass('ui-visible');
+                self.removeSpinner();
+
+                if (isStanfordItem)
+                    mod = 'StanfordItem';
+                else if (is_combo)
+                    mod = 'MatrixCombo';
+                else
+                    mod = 'Matrix';
+
                 App.Data.mainModel.set('popup', {
                     modelName: 'MyOrder',
-                    mod: isStanfordItem ? 'StanfordItem' : (combo_based ? 'MatrixCombo' : 'Matrix'),
+                    mod: mod,
                     className: isStanfordItem ? 'stanford-reload-item' : '',
                     model: clone,
                     action: 'add',
-                    init_cache_session: combo_based ? true : false,
-                    cache_id: combo_based ? cache_id : undefined //cache is enabled for combo products during the phase of product customization only
+                    init_cache_session: is_combo ? true : false,
+                    cache_id: is_combo ? cache_id : undefined, //cache is enabled for combo products during the phase of product customization only
                                                               //the view will be removed from cache after the product is added/updated into the cart.
                 });
             });
+        },
+        addSpinner: function() {
+            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        },
+        removeSpinner: function() {
+            $('#main-spinner').removeClass('ui-visible');
+        }
+    });
+
+    App.Controllers.UpsellProductCRL = Backbone.Model.extend({
+        editUpsellProduct: function(myorder) {
+            var self = this;
+
+            LaunchRootEdit(myorder);
+
+            function LaunchRootEdit(real, clone) {
+                if (!clone)
+                    clone = myorder.clone();
+                App.Data.mainModel.set('popup', {
+                    modelName: 'MyOrder',
+                    mod: 'MatrixUpsellRoot',
+                    model: clone,
+                    action: 'update',
+                    real: myorder,
+                    action_callback: function(status) {
+                        if (status == "Combo") {
+                            LaunchUpsellComboEdit(myorder, clone);
+                        }
+                    }
+                });
+            }
+            function LaunchUpsellComboEdit(real, clone) {
+                var cache_id = real.get("id_product");
+                App.Data.mainModel.set('popup', {
+                    modelName: 'MyOrder',
+                    mod: 'MatrixCombo',
+                    model: clone,
+                    real: myorder,
+                    action: 'update',
+                    init_cache_session: true,
+                    cache_id: cache_id, //cache is enabled for combo products during the phase of product customization only
+                                       //the view will be removed from cache after the product is added/updated into the cart.
+                    action_callback: function(status) {
+                        if (status == "BackToRoot") {
+                            LaunchRootEdit(real, clone);
+                        }
+                    }
+                });
+            }
+        },
+        addUpsellProduct: function(model) {
+            var self = this, def;
+
+            LaunchRootNoUpsell();
+
+            function LaunchRootNoUpsell(lastMyorder) {
+                var myorder = App.Models.create('Myorder'),
+                    def = myorder.add_empty(model.get('id'), model.get('id_category')),
+                    clone;
+
+                self.addSpinner();
+                def.then(function() {
+                    self.removeSpinner();
+                    clone = myorder.clone();
+                    if (lastMyorder){
+                        clone.get_modifiers().update(lastMyorder.get_modifiers(), {silent: true});
+                        clone.set('quantity', lastMyorder.get('quantity'), {silent: true});
+                        clone.set('weight', lastMyorder.get('weight'), {silent: true});
+                    }
+                    clone.get('product').set('has_upsell', false, {silent: true});
+
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'MyOrder',
+                        mod: 'MatrixUpsellRoot',
+                        model: clone,
+                        action: 'add',
+                        action_callback: function(status) {
+                            if (status == "Combo") {
+                                LaunchUpsellCombo(clone, lastMyorder);
+                            }
+                        }
+                    });
+                });
+            }
+            function LaunchUpsellCombo(old_root, myorder) {
+                if (!myorder) {
+                    myorder = App.Models.create('MyorderUpsell');
+                    def = myorder.add_empty(model.get('id'), model.get('id_category'));
+                } else {
+                    def = (new $.Deferred).resolve();
+                }
+
+                self.addSpinner();
+                def.then(function() {
+                    self.removeSpinner();
+
+                    var clone = myorder.clone(),
+                        cache_id = myorder.get("id_product");
+
+                    clone.get_modifiers().update(old_root.get_modifiers(), {silent: true});
+                    clone.set('quantity', old_root.get('quantity'), {silent: true});
+                    clone.set('weight', old_root.get('weight'), {silent: true});
+                    clone.get('product').set('has_upsell', true, {silent: true});
+
+                    App.Data.mainModel.set('popup', {
+                        modelName: 'MyOrder',
+                        mod: 'MatrixCombo',
+                        model: clone,
+                        action: 'add',
+                        init_cache_session: true,
+                        cache_id: cache_id, //cache is enabled for combo products during the phase of product customization only
+                                           //the view will be removed from cache after the product is added/updated into the cart.
+                        action_callback: function(status) {
+                            if (status == "BackToRoot") {
+                                LaunchRootNoUpsell(clone);
+                            }
+                        }
+                    });
+                    setTimeout(clone.trigger.bind(clone, 'combo_product_change'), 0);
+                });
+            }
+        },
+        addSpinner: function() {
+            $('#main-spinner').css('font-size', App.Data.getSpinnerSize() + 'px').addClass('ui-visible');
+        },
+        removeSpinner: function() {
+            $('#main-spinner').removeClass('ui-visible');
         }
     });
 
@@ -72,7 +203,6 @@ define(['products_view'], function(products_view) {
             '.product-price': 'value: monetaryFormat(product_price)',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
             '.currency': 'text: _system_settings_currency_symbol',
-            '.uom': 'text: uom, toggle: uom',
             '.price-wrapper': 'attr: {"data-amount": monetaryFormat(product_price)}, classes: {"product-price-wrapper": not(giftMode)}'
         },
         computeds: {
@@ -84,16 +214,10 @@ define(['products_view'], function(products_view) {
                     return isGift && onlineOrders && not_size;
                 }
             },
-            uom: {
-                deps: ['_system_settings_scales', '_product_sold_by_weight'],
-                get: function(scales, sold_by_weight) {
-                    return scales.default_weighing_unit && sold_by_weight ? '/ ' + scales.default_weighing_unit : false;
-                }
-            },
             product_price: {
-                deps: ['initial_price', '_product_combo_price'],
+                deps: ['initial_price', '$model'],
                 get: function() {
-                    return this.model.get_product_price();
+                    return this.model.get_total_product_price();
                 }
             },
             price: {
@@ -118,7 +242,7 @@ define(['products_view'], function(products_view) {
 
     var noImageMixin = {
         bindings: {
-            '.img_wrapper': 'classes: {"no-photo": isDefaultImage(_product_image)}'
+            '.img_wrapper': 'classes: {"no-photo": isDefaultImage(_product_image)}',
         },
         bindingFilters: {
             isDefaultImage: function(image) {
@@ -126,9 +250,12 @@ define(['products_view'], function(products_view) {
             }
         }
     }
+    var noTimetable = {
+        _hide_timetable: true
+    }
     var ProductModifiersView = App.Views.CoreProductView.CoreProductModifiersView.extend( noImageMixin );
     var ProductModifiersComboView = App.Views.CoreProductView.CoreProductModifiersComboView.extend( noImageMixin );
-    var ProductModifiersUpsellView = App.Views.CoreProductView.CoreProductModifiersUpsellView.extend( noImageMixin );
+    var ProductModifiersUpsellView = App.Views.CoreProductView.CoreProductModifiersUpsellView.extend( noImageMixin ).mixed(noTimetable);
 
     return new (require('factory'))(products_view.initViews.bind(products_view), function() {
         App.Views.ProductView.ProductListItemView = ProductListItemView;

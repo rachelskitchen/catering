@@ -46,7 +46,7 @@ define({
          * @type {string}
          * @description The actual path of [app]{@link module:facebook} module.
          */
-        facebook: "//connect.facebook.net/en_US/sdk",
+        facebook: "https://connect.facebook.net/en_US/sdk",
         /**
          * @type {string}
          * @description The actual path of [app]{@link module:app} module.

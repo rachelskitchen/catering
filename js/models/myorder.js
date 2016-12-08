@@ -760,7 +760,17 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @return {number} - initial product price or inventory child product price
          */
         get_product_price: function() {
-            return this.get('initial_price');
+            return this.get('initial_price') * this.get('quantity');
+        },
+        /**
+         * Get price with modifiers.
+         * @return {number} - product price with sum of modifiers
+         */
+        get_total_product_price: function() {
+            if (this.get_product().get('sold_by_weight'))
+                return this.get('initial_price') * this.get('weight') + this.get_sum_of_modifiers();
+            else
+                return (this.get('initial_price') + this.get_sum_of_modifiers()) * this.get('quantity');
         }
     });
 
@@ -860,7 +870,21 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          * @return {number} - combo product price
          */
         get_product_price: function() {
-            return this.get('product').get('combo_price');
+            return this.get('product').get('combo_price') * this.get('quantity');
+        },
+        /**
+         * Get price for combo with all modifiers.
+         * @return {number} - product price with sum of modifiers
+         */
+        get_total_product_price: function() {
+            return this.get('product').get('combo_total_price') * this.get('quantity');
+        },
+        /**
+         * Get price of modifiers for selected child products
+         * @return {number} - sum of modifiers
+         */
+        get_sum_child_modifiers: function() {
+            return this.get('product').get('children_mdf_price');
         },
         /**
          * Update price for combo product.
@@ -868,6 +892,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         update_product_price: function() {
             var root_price = this.get_initial_price(),
+                children_mdf_price = 0,
                 sum = 0, combo_saving_products = [];
 
             var prices = [this.get_initial_price()];
@@ -883,6 +908,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         sold_by_weight = product ?  product.get('sold_by_weight') : false,
                         weight = model.get('weight'),
                         initial_price = model.get_initial_price();
+
+                    children_mdf_price += model.get_sum_of_modifiers();
 
                     if (sold_by_weight && weight) {
                         sum += initial_price * weight;
@@ -905,6 +932,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             }
 
             this.get('product').set("combo_price", sum);
+            this.get('product').set("combo_modifiers_sum", children_mdf_price, {silent: true});
+            this.get('product').set("combo_total_price", sum + children_mdf_price);
+
             return sum;
         },
         /**
@@ -1015,7 +1045,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
         update_product_price: function() {
             App.Data.devMode && trace("culculate upcharge ==>");
             var compound_price = this.get_compound_price(),
-                total_upcharge_price = this.get_total_upcharge_price();
+                total_upcharge_price = this.get_total_upcharge_price(),
+                root_modifiers_price = this.get_sum_of_modifiers(),
+                children_mdf_price = this.get_sum_child_modifiers();
 
             var saving_amount = Math.min(compound_price - total_upcharge_price, this.get_initial_price());
             saving_amount = parseFloat(saving_amount.toFixed(2));
@@ -1023,12 +1055,15 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             var final_upsell_price = compound_price - saving_amount;
             final_upsell_price = parseFloat(final_upsell_price.toFixed(2));
 
+            this.get('product').set("combo_price", final_upsell_price);
+            this.get('product').set("combo_total_price", final_upsell_price + root_modifiers_price + children_mdf_price);
+
             if (App.Data.devMode) {
                 trace("saving_amount = MIN(compound_price - total_upcharge_price, initial_product_price) =", saving_amount);
                 trace("final_upsell_price = compound_price - saving_amount =", final_upsell_price);
+                trace("final_upsell_price_with_mdf = ", final_upsell_price, "+", root_modifiers_price, "+", children_mdf_price, " = ", this.get('product').get("combo_total_price"));
             }
 
-            this.get('product').set("combo_price", final_upsell_price);
             return final_upsell_price;
         },
         /**
@@ -1037,7 +1072,9 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
          */
         get_compound_price: function() {
             var product_price = this.get_initial_price(),
-                sum = 0, prices = [product_price];
+                sum = 0,
+                children_mdf_price = 0,
+                prices = [product_price];
 
             this.get('product').get('product_sets').each( function(product_set) {
                 product_set.get_selected_products().forEach(function(model) {
@@ -1045,6 +1082,8 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         sold_by_weight = product ?  product.get('sold_by_weight') : false,
                         weight = model.get('weight'),
                         initial_price = model.get_initial_price();
+
+                    children_mdf_price += model.get_sum_of_modifiers();
 
                     if (sold_by_weight && weight) {
                         sum += initial_price * weight;
@@ -1063,7 +1102,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 trace("compound_price = ", prices.join(" + "), "=", sum);
             }
 
-            //this.get('product').set("combo_price", sum);
+            this.get('product').set("children_mdf_price", children_mdf_price, {silent: true});
             return sum;
         },
          /**
