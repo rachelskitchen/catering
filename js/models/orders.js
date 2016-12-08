@@ -595,6 +595,10 @@ define(["backbone"], function(Backbone) {
                             new_modifiers.push(highest_price_modifier);
                         }
                         else {
+                            if (modifier.split && base_modifier.actual_data) {
+                                base_modifier.price = base_modifier.actual_data.price;
+                            }
+
                             new_modifiers.push(base_modifier);
                         }
                     });
