@@ -119,11 +119,17 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
         },
         bindings: {
             '.size_chart_wrapper': 'toggle: _product_size_chart',
-            'a.size_chart': 'attr:{href: _product_size_chart}'
+            'a.size_chart': 'attr:{href: _product_size_chart}',
+            '.timetables': 'toggle:showTimetable'
         },
         events: {
             'change .gift_card_number': 'gift_change',
             'change .gift_card_price': 'gift_price_change'
+        },
+        computeds: {
+            showTimetable: function() {
+                return !this.options.hide_timetable && !this._hide_timetable;
+            }
         },
         getData: function() {
             var model = this.product.toJSON(),
@@ -151,7 +157,7 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
             return model;
         },
         getProductPrice: function() {
-            return round_monetary_currency(this.model.get_product_price());
+            return round_monetary_currency(this.model.get_total_product_price());
         },
         render: function() {
             var model = this.getData();
@@ -217,52 +223,8 @@ define(["backbone", "factory", "generator", "list"], function(Backbone) {
     });
 
     CoreView.CoreProductModifiersUpsellView = CoreView.CoreProductModifiersView.extend({
-        initialize: function() {
-            var self = this;
-            CoreView.CoreProductModifiersView.prototype.initialize.apply(this, arguments);
-            this.listenTo(this.model, "set_modifiers_before_add", this.customize.bind(this, "then_add_item"));
-        },
-        bindings: {
-            '.customize': 'classes:{hide:not(is_modifiers)}'
-        },
-        events: {
-            'click .customize': 'customize'
-        },
-        computeds: {
-            is_modifiers: function() {
-                return this.model.get_modifiers().length > 0 || this.model.get('product').get('sold_by_weight');
-            }
-        },
         getProductPrice: function() {
-            var modifiers_price = this.model.get_sum_of_modifiers();
-            return round_monetary_currency(this.model.get_product_price() + modifiers_price);
-        },
-        customize: function(event) {
-            var self = this;
-            var clone = this.model.clone();
-            App.Data.mainModel.set('popup', {
-                modelName: 'MyOrder',
-                mod: 'Matrix',
-                className: '',
-                model: clone,
-                combo_child: true,
-                real: this.model,
-                action: 'update',
-                action_text_label: event == "then_add_item" ? 'add' : 'update',
-                action_callback: function(status) {
-                    if (event == "then_add_item" && self.model.check_order({modifiers_only: true}).status == 'OK') {
-                        self.model.trigger("action_add_item");//add upsell product to the cart
-                    } else {
-                        //return back to the Upsell root product view:
-                        App.Data.mainModel.set('popup', {
-                                modelName: 'MyOrder',
-                                mod: 'MatrixCombo',
-                                cache_id: self.model.get('id_product')
-                            });
-                        self.update_price();
-                    }
-                }
-            });
+            return round_monetary_currency(this.model.get_total_product_price());
         }
     });
 

@@ -9,7 +9,7 @@ var tests_list = [
     'test_Checkout',
     'test_ChildProducts',
     'test_CollectionSort',
-    // 'test_Customers',
+    //'test_Customers',
     'test_Payments',
     'test_Delivery',
     'test_Errors',

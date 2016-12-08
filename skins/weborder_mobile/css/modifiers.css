@@ -67,6 +67,11 @@
     margin-right: 0.3em;
 }
 
+.product_set_list .combo_item .input.radio,
+.modifier .input.radio {
+   border-radius: 0.6em;
+}
+
 .modifier input:checked + .input::before {
     display: inline-block;
     content: '\f00c';
