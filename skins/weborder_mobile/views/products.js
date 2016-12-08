@@ -101,7 +101,8 @@ define(["products_view"], function(products_view) {
         },
         bindings: {
             '.customize': 'classes:{hide:not(is_modifiers)}',
-            '.no_combo_link': 'classes:{hide:not(is_no_combo_link)}'
+            '.no_combo_link': 'classes:{hide:not(is_no_combo_link)}',
+            '.links_wrap': 'classes:{hide:all(not(is_no_combo_link),not(is_modifiers))}',
         },
         events: {
             'click .customize': 'customize',
