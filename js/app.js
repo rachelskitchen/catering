@@ -260,6 +260,8 @@
             if (app.get['stanford'] == 'true') {
                 App.Data.is_stanford_mode = true;
             }
+            // common initialization
+            commonInit();
 
             // invoke beforeStart onfig
             app.beforeInit();
@@ -533,5 +535,30 @@
             el.addClass(className);
             el.one('blur', el.removeClass.bind(el, className));
         });
+    }
+
+    /**
+     *  Set common cross core/dev subprojects initilizations here
+     */
+    function commonInit() {
+        /*
+        *   Factory of controllers
+        */
+        App.Data.ctrlCache = {};
+        App.Data.controllers = {
+            create: function(ctrlName, id) {
+                if (!App.Controllers[ctrlName]) {
+                    console.error("Can't find App.Controllers." + ctrlName);
+                    return;
+                }
+                var ctrl = new App.Controllers[ctrlName];
+                var cache_id = cache_id ? cache_id : ctrlName;
+                App.Data.ctrlCache[cache_id] = ctrl;
+                return ctrl;
+            },
+            get: function(id) {
+                return App.Data.ctrlCache[id];
+            }
+        };
     }
 })();
