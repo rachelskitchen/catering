@@ -612,6 +612,9 @@ define(["backbone"], function(Backbone) {
                                 base_modifier.max_price_amount = base_modifier.price;
                                 base_modifier.price = base_modifier.actual_data.price;
                             }
+                            else if (modifier.split && base_modifier.actual_data) {
+                                base_modifier.price = base_modifier.actual_data.price;
+                            }
 
                             new_modifiers.push(base_modifier);
                         }
