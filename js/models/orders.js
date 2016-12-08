@@ -581,26 +581,19 @@ define(["backbone"], function(Backbone) {
                         // Group of modifiers
                         if (modifiers_group.length > 1) {
                             var highest_price_modifier = null,
-                                total_qty = 0,
-                                max_price = 0;
+                                total_qty = 0;
 
                             modifiers_group.forEach(function(modifier_item) {
                                 if (!highest_price_modifier || modifier_item.price > highest_price_modifier.price) {
                                     highest_price_modifier = _.clone(modifier_item);
                                 }
                                 total_qty += modifier_item.qty;
-
-                                // check max price for a modifier
-                                if (product.max_price &&
-                                    modifier_item.price &&
-                                    modifier_item.actual_data &&
-                                    modifier_item.price < modifier_item.actual_data.price)
-                                {
-                                    max_price = item.modifier_amount;
-                                }
                             });
 
                             // set max price for a modifier
+                            var max_price = (product.max_price && highest_price_modifier.price)
+                                ? product.max_price - product.price : 0;
+
                             if (product.max_price) {
                                 highest_price_modifier.max_price_amount = max_price;
                                 highest_price_modifier.price = highest_price_modifier.actual_data.price;
