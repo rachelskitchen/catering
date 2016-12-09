@@ -580,38 +580,47 @@ define(["backbone"], function(Backbone) {
 
                         var modifiers_group = _.where(modifier.modifiers, { id: base_modifier.id });
 
+                        // Group of modifiers
                         if (modifiers_group.length > 1) {
                             var highest_price_modifier = null,
                                 total_qty = 0;
 
-                            modifiers_group.forEach(function(modifierItem) {
-                                if (!highest_price_modifier || modifierItem.price > highest_price_modifier.price) {
-                                    highest_price_modifier = _.clone(modifierItem);
+                            modifiers_group.forEach(function(modifier_item) {
+                                if (!highest_price_modifier || modifier_item.price > highest_price_modifier.price) {
+                                    highest_price_modifier = _.clone(modifier_item);
                                 }
-                                total_qty += modifierItem.qty;
+                                total_qty += modifier_item.qty;
                             });
+
+                            // set max price for a modifier
+                            var max_price = (product.max_price && highest_price_modifier.price)
+                                ? product.max_price - product.price : 0;
+
+                            if (product.max_price) {
+                                highest_price_modifier.max_price_amount = max_price;
+                                highest_price_modifier.price = highest_price_modifier.actual_data.price;
+                            }
 
                             highest_price_modifier.qty = total_qty;
                             new_modifiers.push(highest_price_modifier);
                         }
+                        // Base modifier
                         else {
+                            // set max price for a modifier
+                            if (product.max_price &&
+                                base_modifier.actual_data &&
+                                base_modifier.price < base_modifier.actual_data.price)
+                            {
+                                base_modifier.max_price_amount = base_modifier.price;
+                                base_modifier.price = base_modifier.actual_data.price;
+                            }
+
                             new_modifiers.push(base_modifier);
                         }
                     });
 
                     modifier.modifiers = new_modifiers;
                 });
-
-                if (product.max_price) {
-                    modifiers.forEach(function(modifier) {
-                        modifier.modifiers.forEach(function(mdf) {
-                            if (mdf.actual_data && mdf.price < mdf.actual_data.price) {
-                                mdf.max_price_amount = mdf.price;
-                                mdf.price = mdf.actual_data.price;
-                            }
-                        });
-                    });
-                }
             }
 
             return items;
