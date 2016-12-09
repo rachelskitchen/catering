@@ -301,8 +301,9 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
     return ViewModule;
 });
 
-
-
+/*
+* swiping function for Android or iOS
+*/
 function get_swipe_detect_fn(){
     if (cssua.userAgent.android) {
         return swipe_detect_Android;

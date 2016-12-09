@@ -12,7 +12,7 @@
 .product-modifiers {
     padding: 1.8em;
     margin: 0 -1.8em;
-    min-height: 9.2em;
+    min-height: 8em;
 }
 
 .product-modifiers input {
@@ -49,8 +49,8 @@
     margin-top: 0.5em;
 }
 .product-modifiers .no_combo_link {
-    float: right;
-    margin-top: 0.9em;
+    display: inline-block;
+    margin-top: 0.1em;
 }
 .product-modifiers .timetable {
     font-style: italic;

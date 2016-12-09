@@ -28,8 +28,8 @@
     <div class="modifier_class list-title">
         <span class="list-header-text font-size3"><%= name %></span>
         <% if (_settings.online_orders) { %>
-            <div class="regular-text font-size2">
-            <% if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
+            <div class="special-text font-size2">
+            <% if (typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
                 <%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>
             <% } %>
             </div>

@@ -26,7 +26,7 @@
     <div class='modifiers_classes_title'>
         <h3 class="title header-text"><%= name %></h3>
         <% if (_settings.online_orders) { %>
-            <% if (type === 0 && typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
+            <% if (typeof maximum_amount == 'number' && typeof minimum_amount == 'number' && maximum_amount == minimum_amount) { %>
                 <div class='modifiers_classes_subtitle special-text'>
                 (<%= _lp.MODIFIERS_CHOOSE %> <%= minimum_amount %>)
                 </div>
@@ -39,4 +39,5 @@
 <script type="text/template" id="product_sets_list-template">
     <div class="special-text"><%= _lp.PRODUCT_SETS_SELECT_1 %><%= combo_name %><%= _lp.PRODUCT_SETS_SELECT_2 %>:</div>
     <div class="modifier_classes primary-border"></div>
+    <div class="product_instructions text-left primary-border"></div>
 </script>

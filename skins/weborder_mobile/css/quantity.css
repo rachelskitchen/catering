@@ -10,6 +10,10 @@
     text-align: center;
 }
 
+.quantity .controls .uom {
+    margin-left: 0.2em;
+}
+
 .quantity .btn-qty {
     width: 6em;
     height: 6em;

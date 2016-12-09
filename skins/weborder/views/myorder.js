@@ -31,7 +31,7 @@ define(["myorder_view"], function(myorder_view) {
                                                     .mixed( DynamicHeightHelper_Modifiers );
     function _MyOrderMatrixView(_base){ return _base.extend({
         bindings: {
-            '.popup__title': 'text: select(isGiftCard, _lp_GIFT_CARD_RELOAD, _lp_CUSTOMIZE)'
+            '.popup__title': 'text: popup_text'
         },
         computeds: {
             isGiftCard: {
@@ -39,6 +39,9 @@ define(["myorder_view"], function(myorder_view) {
                 get: function(model) {
                     return model.get_product().get('is_gift');
                 }
+            },
+            popup_text: function() {
+                return this.getBinding('isGiftCard') ? _loc.GIFT_CARD_RELOAD : (this.options.combo_child ? _loc.CUSTOMIZE_ITEM : _loc.CUSTOMIZE);
             }
         },
         render: function() {
@@ -56,7 +59,6 @@ define(["myorder_view"], function(myorder_view) {
             $('#popup').addClass('ui-invisible');
             setTimeout(this.dh_change_height.bind(this, 1), 20);
             this.interval = this.interval || setInterval(this.dh_change_height.bind(this), 500); // check size every 0.5 sec
-            this.$('.modifiers_table_scroll').contentarrow(undefined, true); // 2nd param is doNotUpdateScrollTop
         },
         events: {
             'change_height .product_instructions': 'dh_change_height' // if special request button pressed
@@ -92,7 +94,6 @@ define(["myorder_view"], function(myorder_view) {
             }
         },
         remove: function() {
-            this.$('.modifiers_table_scroll').contentarrow('destroy');
             clearInterval(this.interval);
             _base_proto.remove.apply(this, arguments);
         }
@@ -104,6 +105,9 @@ define(["myorder_view"], function(myorder_view) {
     var MyOrderMatrixComboView = _MyOrderMatrixComboView( CoreViews.CoreMyOrderMatrixComboView )
                                                          .mixed( DynamicHeightHelper_Combo );
     function _MyOrderMatrixComboView(_base){ return _base.extend({
+        bindings: {
+            '.popup__title': 'text: _lp_CUSTOMIZE_COMBO'
+        },
         render: function() {
             _base.prototype.render.apply(this, arguments);
             this.renderProductFooter();
@@ -112,6 +116,86 @@ define(["myorder_view"], function(myorder_view) {
         }
       })
     };
+
+    var MyOrderMatrixUpsellRootView = _MyOrderMatrixUpsellRootView( CoreViews.CoreMyOrderMatrixView )
+                                                         .mixed( DynamicHeightHelper_Combo );
+    function _MyOrderMatrixUpsellRootView(_base){ return _base.extend({
+        bindings: {
+            '.popup__title': 'text: _lp_CUSTOMIZE'
+        },
+        render: function() {
+            _base.prototype.render.apply(this, arguments);
+            this.renderProductFooter();
+            this.dh_initialize();
+            return this;
+        },
+        renderProduct: function() {
+            var viewOptions = {
+                modelName: 'Product',
+                model: this.model,
+                mod: 'Modifiers',
+                hide_timetable: true
+            };
+
+            this.viewProduct = App.Views.GeneratorView.create('Product', viewOptions);
+            this.$('.product_info').append(this.viewProduct.el);
+            this.subViews.push(this.viewProduct);
+        },
+        renderProductFooter: function() {
+            var model = this.model,
+                product = this.model.get("product");
+
+            var view = App.Views.GeneratorView.create('MyOrder', {
+                el: this.$(".product_info_footer"),
+                model: this.model,
+                mod: 'Matrix_UpsellRootFirst_Footer',
+                action: this.options.action,
+                action_text_label: this.options.action_text_label,
+                real: this.options.real,
+                action_callback: this.options.action_callback
+            });
+            this.subViews.push(view);
+        }
+      })
+    };
+
+    var MyOrderMatrix_UpsellRootFirst_FooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        name: 'myorder',
+        mod: 'matrix_upsell_root_first_footer',
+        bindings: {
+            '.upgrade_combo_button': 'text: combo_btn_label'
+        },
+        events: {
+            'click .upgrade_combo_button': 'upgrade_combo'
+        },
+        computeds: {
+            combo_btn_label: function() {
+                return this.options.action == "add" ? _loc.MYORDER_UPGRADE_TO_COMBO : _loc.MYORDER_EDIT_COMBO;
+            }
+        },
+        onEnterListeners: {
+            '.upgrade_combo_button': 'upgrade_combo'
+        },
+        upgrade_combo: function() {
+            var check = this.view_check_order();
+            if (check.status == "OK") {
+                $('#popup .cancel').trigger('click', ['Combo']);
+            } else {
+                App.Data.errors.alert(check.errorMsg);
+            }
+        },
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
+
+            var view = App.Views.GeneratorView.create('Product', {
+                el: this.$('.product_price'),
+                model: this.model,
+                mod: 'Price'
+            });
+            this.subViews.push(view);
+            return this;
+        }
+    });
 
     var MyOrderItemView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemView );
     var MyOrderItemComboView = _MyOrderItemView( App.Views.CoreMyOrderView.CoreMyOrderItemComboView );
@@ -145,6 +229,11 @@ define(["myorder_view"], function(myorder_view) {
                 isStanfordItem = App.Data.is_stanford_mode && this.model.get_product().get('is_gift');
 
             var combo_based = model.isComboBased();
+            var has_upsell = model.isUpsellProduct();
+            if (has_upsell) {
+                App.Data.controllers.get('UpsellProductCRL').editUpsellProduct(model);
+                return;
+            }
 
             var cache_id = combo_based ? model.get("id_product") : undefined;
 
@@ -202,6 +291,17 @@ define(["myorder_view"], function(myorder_view) {
         }
     });
 
+    var MyOrderMatrixComboItemFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.extend({
+        initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
+        bindings: {
+            '.product_price_label': 'classes: {hide: true}',
+            '.footer-line': 'classes: {hide: not(_product_sold_by_weight)}'
+        }
+    });
+
     return new (require('factory'))(myorder_view.initViews.bind(myorder_view), function() {
         App.Views.MyOrderView.MyOrderMatrixView = MyOrderMatrixView;
         App.Views.MyOrderView.MyOrderMatrixComboView = MyOrderMatrixComboView;
@@ -210,5 +310,8 @@ define(["myorder_view"], function(myorder_view) {
         App.Views.MyOrderView.MyOrderItemUpsellView = MyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemSpecialView = MyOrderItemSpecialView;
         App.Views.MyOrderView.MyOrderMatrixFooterView = MyOrderMatrixFooterView;
+        App.Views.MyOrderView.MyOrderMatrixUpsellRootView = MyOrderMatrixUpsellRootView;
+        App.Views.MyOrderView.MyOrderMatrix_UpsellRootFirst_FooterView = MyOrderMatrix_UpsellRootFirst_FooterView;
+        App.Views.MyOrderView.MyOrderMatrixComboItemFooterView = MyOrderMatrixComboItemFooterView;
     });
 });

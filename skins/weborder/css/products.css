@@ -110,6 +110,10 @@
     border-top-style: solid;
 }
 
+.product_info_footer .btn-line {
+    min-height: 50px;
+}
+
 .product_info_footer .footer-line .label {
     line-height: 44px;
     text-transform: uppercase;
@@ -118,7 +122,6 @@
 }
 
 .product_info_footer .currency,
-.product_info_footer .uom,
 .product_info_footer .price,
 .price-wrapper::before {
     width: auto;
@@ -130,13 +133,18 @@
     vertical-align: middle;
 }
 
-.product_info_footer .currency,
-.product_info_footer .uom {
+.product_info_footer .currency {
     padding: 9px 0;
 }
 
-.product_info_footer.combo .footer-line .quantity_info {
-    float: right;
+.product_info_footer .uom {
+    display: inline-block;
+    font-size: 21px;
+    font-weight: 600;
+    line-height: 44px;
+    padding: 0;
+    vertical-align: bottom;
+    margin-left: 7px;
 }
 
 .product_info .gift-card-box {
