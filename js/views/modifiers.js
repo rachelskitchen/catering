@@ -90,8 +90,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         },
         render: function() {
             var model = this.model.toJSON(),
+
                 modifierBlock = this.options.modifierClass;
-            model.type = this.options.type === SIZE || this.options.type === SPECIAL ? 'radio' : 'checkbox';
+            model.type = this.is_radio_type() ? 'radio' : 'checkbox';
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = round_monetary_currency(model.price);
             model.slength = model.price.length;
@@ -133,6 +134,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.update_free();
 
             return this;
+        },
+        is_radio_type: function() {
+            var modifierBlock = this.options.modifierClass,
+                maximumAmount = modifierBlock.get('maximum_amount'),
+                minimumAmount = modifierBlock.get('minimum_amount');
+
+            return this.options.type === SIZE || this.options.type === SPECIAL || (maximumAmount == 1 && minimumAmount == 1);
         },
         showTooltip: function(event) {
             event.preventDefault();
@@ -198,7 +206,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             }
         },
         update: function() {
-            if(this.options.type === SIZE || this.options.type === SPECIAL) {
+            if(this.is_radio_type()) {
                 this.$el.parent().find('input[checked="checked"]').removeAttr('checked');
                 this.$el.parent().find('.input.checked').removeClass('checked');
                 if(this.model.get('selected')) {
@@ -455,13 +463,20 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             this.controlCheckboxes();
             return this;
         },
+        is_radio_type: function() {
+            var modifierBlock = this.model,
+                maximumAmount = modifierBlock.get('maximum_amount'),
+                minimumAmount = modifierBlock.get('minimum_amount');
+
+            return this.type === SIZE || this.type === SPECIAL || (maximumAmount == 1 && minimumAmount == 1);
+        },
         controlCheckboxes: function() {
             if(!this.subViews[0])
                 return;
             var checked = this.subViews[0].$el.find('input:checked').parent(),
                 unchecked = this.subViews[0].$el.find('input:not(:checked)').parent(),
                 maximumAmount = this.model.get('maximum_amount');
-            if(!this.type && maximumAmount > 0 && this.model.get('modifiers').get_selected_qty() >= maximumAmount) {
+            if(!this.is_radio_type() && maximumAmount > 0 && this.model.get('modifiers').get_selected_qty() >= maximumAmount) {
                 checked.fadeTo(100, 1);
                 checked.removeClass('fade-out');
                 unchecked.fadeTo(100, 0.5);

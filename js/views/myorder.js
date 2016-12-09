@@ -100,28 +100,41 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         renderModifiers: function() {
             var model = this.model,
-                viewModifiers;
+                view;
 
             switch(model.get_attribute_type()) {
                 case 0:
                 case 2:
                     var el = $('<div></div>');
                     this.$('.modifiers_info').append(el);
-                    viewModifiers =  App.Views.GeneratorView.create('ModifiersClasses', {
+                    view =  App.Views.GeneratorView.create('ModifiersClasses', {
                         el: el,
                         model: model,
                         mod: 'List'
                     });
                     break;
                 case 1:
-                    viewModifiers =  App.Views.GeneratorView.create('ModifiersClasses', {
+                    view =  App.Views.GeneratorView.create('ModifiersClasses', {
                         el: this.$('.product_attribute_info'),
                         model: model,
                         mod: 'Matrixes',
                         modifiersEl: this.$('.modifiers_info')
                     });
             }
-            this.subViews.push(viewModifiers);
+            this.subViews.push(view);
+
+            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+                view = App.Views.GeneratorView.create('Instructions', {
+                    el: this.$('.product_instructions'),
+                    model: model,
+                    mod: 'Modifiers'
+                });
+                this.subViews.push(view);
+
+                if (App.Settings.special_requests_online === false) {
+                    view.$el.hide(); // hide special request if not allowed
+                }
+            }
         },
         renderProduct: function() {
             var model = this.model,
@@ -131,7 +144,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var viewOptions = {
                 modelName: 'Product',
                 model: model,
-                mod: 'Modifiers'
+                mod: 'Modifiers',
+                combo_child: this.options.combo_child
             };
 
             if (is_gift) {
@@ -149,10 +163,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             var view = App.Views.GeneratorView.create('MyOrder', {
                 el: this.$(".product_info_footer"),
                 model: this.model,
-                mod: 'MatrixFooter',
+                mod: this.options.combo_child ? 'MatrixComboItemFooter' : 'MatrixFooter',
                 action: this.options.action,
                 action_text_label: this.options.action_text_label,
-                flags: this.options.combo_child ? ['no_specials', 'no_quantity'] : undefined,
+                flags: this.options.combo_child ? ['no_quantity'] : undefined,
                 real: this.options.real,
                 action_callback: this.options.action_callback
             });
@@ -219,9 +233,21 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         name: 'myorder',
         mod: 'matrix_footer',
         initialize: function() {
+            this.extendBindingSources({_product: this.model.get_product()});
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
             this.listenTo(this.model.get('product'), 'change:attribute_1_selected change:attribute_2_selected', this.update_child_selected);
             return this;
+        },
+        bindings: {
+            '.uom': 'text: uom, classes: {hide: not(uom)}'
+        },
+        computeds: {
+            uom: {
+                deps: ['_system_settings_scales', '_product_sold_by_weight'],
+                get: function(scales, sold_by_weight) {
+                    return scales.default_weighing_unit && sold_by_weight ? scales.default_weighing_unit : false;
+                }
+            }
         },
         render: function() {
             App.Views.FactoryView.prototype.render.apply(this, arguments);
@@ -244,19 +270,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     mod: mod
                 });
                 this.subViews.push(view);
-            }
-
-            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
-                view = App.Views.GeneratorView.create('Instructions', {
-                    el: this.$('.product_instructions'),
-                    model: model,
-                    mod: 'Modifiers'
-                });
-                this.subViews.push(view);
-
-                if (App.Settings.special_requests_online === false) {
-                    view.$el.hide(); // hide special request if not allowed
-                }
             }
 
             this.update_child_selected();
@@ -322,7 +335,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             return this;
         },
         bindings: {
-            ":el": "classes:{combo: true}"
+            ":el": "classes:{combo: true}",
+            '.product_price_label': 'classes: {hide: true}'
         },
         check_model: function() {
             return this.model.get('product').get('product_sets').check_selected();
@@ -330,6 +344,19 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         check_weight_product: function() {
             var isComboWithWeightProduct = this.model.get('product').get('product_sets').haveWeightProduct() || this.model.get('product').get("sold_by_weight");
             this.options.model.trigger('combo_weight_product_change', isComboWithWeightProduct);
+        },
+        render: function() {
+            App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView.prototype.render.apply(this, arguments);
+
+            var view = App.Views.GeneratorView.create('Product', {
+                el: this.$('.product_price'),
+                model: this.model,
+                mod: 'Price'
+            });
+
+            this.subViews.push(view);
+
+            return this;
         }
       });
     }
@@ -339,25 +366,14 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         mod: 'matrix_footer_upsell',
         initialize: function() {
             _base.prototype.initialize.apply(this, arguments);
-            if (this.options.action === 'update') {
-               this.$('.no_combo_link').hide();
-            }
             this.listenTo(this.model, "action_add_item", this.action); //used for the case when root modifiers were not selected before user press Add Item
             return this;
         },
         events: {
-            'click .no_combo_link': 'no_combo'
+            'click .back_btn': 'back_to_root_product'
         },
         bindings: {
             ":el": "classes:{combo: false}"
-        },
-        no_combo: function() {
-            var self = this;
-            $('#popup .cancel').trigger('click');
-            var target_product_view = $('.product_list_item[data-id='+ this.model.get('product').get('compositeId') + ']');
-            setTimeout( function() {
-                target_product_view && target_product_view.trigger('click', {no_combo: true, combo_root: self.model});
-            }, 10);
         },
         action: function (event) {
             var check_root_modifiers = this.model.check_order({ modifiers_only: true });
@@ -369,6 +385,9 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         get_quantity_mod: function() {
             return 'Main'; //only quntity mode for main customization popup
+        },
+        back_to_root_product: function() {
+            $('#popup .cancel').trigger('click', ['BackToRoot']);
         }
       });
     }
@@ -823,5 +842,6 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         App.Views.MyOrderView.MyOrderItemComboView = App.Views.CoreMyOrderView.CoreMyOrderItemComboView;
         App.Views.MyOrderView.MyOrderItemUpsellView = App.Views.CoreMyOrderView.CoreMyOrderItemUpsellView;
         App.Views.MyOrderView.MyOrderItemUpsellRootView = App.Views.CoreMyOrderView.CoreMyOrderItemUpsellRootView;
+        App.Views.MyOrderView.MyOrderMatrixComboItemFooterView = App.Views.CoreMyOrderView.CoreMyOrderMatrixFooterView;
     });
 });

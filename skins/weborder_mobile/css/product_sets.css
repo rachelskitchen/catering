@@ -94,6 +94,10 @@
     word-break: normal;
     margin: 0.1em 0.7em 0em 0.3em;
 }
+.product-modifiers.header .links_wrap {
+    height: 2.5em;
+    margin-top: 0.2em;
+}
 .myorderList .combo_products_place .qty {
     background: none;
 }

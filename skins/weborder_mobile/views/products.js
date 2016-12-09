@@ -28,9 +28,9 @@ define(["products_view"], function(products_view) {
         mod: 'modifiers',
         bindings: {
             '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
-            '.product-price': 'value: monetaryFormat(product_price)',
+            '.product-price': 'value: monetaryFormat(product_price), classes: {hide: hide_price}',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
-            '.currency': 'text: _system_settings_currency_symbol, toggle: not(uom)',
+            '.currency': 'text: _system_settings_currency_symbol, toggle: not(any(uom, hide_price))',
             '.uom': 'text: uom, toggle: uom',
             '.title': 'text: _product_name',
             '.desc': 'text: _product_description, toggle: _product_description',
@@ -57,9 +57,9 @@ define(["products_view"], function(products_view) {
                 }
             },
             product_price: {
-                deps: ['initial_price', "_product_combo_price"],
+                deps: ['initial_price', "$model"],
                 get: function() {
-                    return this.model.get_product_price();
+                    return this.model.get_total_product_price();
                 }
             },
             price: {
@@ -73,11 +73,13 @@ define(["products_view"], function(products_view) {
                     value = parseFloat(value);
                     if(!isNaN(value)) {
                         product.set('price', value);
-                        //this.model.set('initial_price', value);
                     } else {
                         this.model.trigger('change:initial_price');
                     }
                 }
+            },
+            hide_price: function() {
+                return this.options.combo_child;
             }
         },
         initialize: function() {
@@ -99,7 +101,8 @@ define(["products_view"], function(products_view) {
         },
         bindings: {
             '.customize': 'classes:{hide:not(is_modifiers)}',
-            '.no_combo_link': 'classes:{hide:not(is_no_combo_link)}'
+            '.no_combo_link': 'classes:{hide:not(is_no_combo_link)}',
+            '.links_wrap': 'classes:{hide:all(not(is_no_combo_link),not(is_modifiers))}',
         },
         events: {
             'click .customize': 'customize',
@@ -113,10 +116,9 @@ define(["products_view"], function(products_view) {
                 return this.options.action === 'add';
             },
             product_price: {
-                deps: ['initial_price', "_product_combo_price", "$model"],
+                deps: ['initial_price', "$model"],
                 get: function() {
-                    var modifiers_price = this.model.get_sum_of_modifiers();
-                    return round_monetary_currency(this.model.get_product_price() + modifiers_price);
+                    return round_monetary_currency(this.model.get_total_product_price());
                 }
             }
         },

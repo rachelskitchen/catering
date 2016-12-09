@@ -690,6 +690,12 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
         isUpsellProduct: function() {
             return this.get("has_upsell") === true;
         },
+         /**
+         * @returns {boolean} `true` if the order item is Combo product.
+         */
+        isComboProduct: function() {
+            return this.get("is_combo") === true;
+        },
         /**
          * Checks changes before make reorder. The product may change after order placement.
          * Need to find out changed attibutes.

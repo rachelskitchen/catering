@@ -125,23 +125,34 @@
 </script>
 
 <script type="text/template" id="myorder_matrix_footer-template">
-    <div class="product_instructions text-left primary-border"></div>
     <div class="footer-line text-left primary-border">
         <div class="product_price_label fl-left header-text label"><%= _lp.GIFT_CARD_ENTER_AMOUNT %></div>
         <div class="product_price fl-right"></div>
         <div class="quantity quantity_info"></div>
+        <div class="uom"></div>
     </div>
     <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>
 
 <script type="text/template" id="myorder_matrix_footer_upsell-template">
-    <div class="product_instructions text-left primary-border"></div>
     <div class="footer-line text-left primary-border">
         <div class="product_price fl-right"></div>
-        <div class="no_combo_link fl-right link primary-text"><%= _lp.UPSELL_DONT_WANT_COMBO %></div>
         <div class="quantity quantity_info"></div>
     </div>
-    <div class="action_button btn" tabindex="0"><%= _lp.MYORDER_ADD_ITEM %></div>
+    <div class="btn-line">
+        <div class="back_btn btn btn-almost-half border-box fl-left" tabindex="0"><%= _lp.MYORDER_COMBO_BACK %></div>
+        <div class="action_button btn btn-almost-half border-box fl-right" tabindex="1"><%= _lp.MYORDER_ADD_ITEM %></div>
+    </div>
+</script>
+
+<script type="text/template" id="myorder_matrix_upsell_root_first_footer-template">
+    <div class="footer-line text-left primary-border">
+        <div class="product_price fl-right"></div>
+        <div class="quantity quantity_info"></div>
+        <div class="uom"></div>
+    </div>
+    <div class="upgrade_combo_button btn btn-almost-half border-box fl-left" tabindex="0"><%= _lp.MYORDER_UPGRADE_TO_COMBO %></div>
+    <div class="action_button btn btn-almost-half border-box fl-right" tabindex="1"><%= _lp.MYORDER_ADD_ITEM %></div>
 </script>
 
 <script type="text/template" id="myorder_itemSpecial-template">
