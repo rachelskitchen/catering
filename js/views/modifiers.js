@@ -39,24 +39,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'mouseout .info': 'hideTooltip'
         },
         bindings: {
-            '.mdf_quantity select': 'value: decimal(quantity), options:qty_options',
+            '.mdf_quantity select': 'value: decimal(quantity)',
             '.mdf_split': 'classes: {hide: not(split)}',
             '.mdf_split select': 'value: decimal(qty_type), change_split_modifier: qty_type'
-        },
-        initialize: function() {
-            _.extend(this.bindingSources, {modifierClass: this.options.modifierClass});
-
-            App.Views.ItemView.prototype.initialize.apply(this, arguments);
-
-            var root = this.options.modifierClass;
-            this.listenTo(this.model, 'change:quantity', function() {
-                trace("#1 update_cur_qty_to_add");
-                root.update_cur_qty_to_add();
-            });
-            this.listenTo(this.model, 'change:selected', function() {
-                trace("#2 update_cur_qty_to_add");
-                root.update_cur_qty_to_add();
-            });
         },
         bindingHandlers: {
             change_split_modifier: function($element, qty_type) {
@@ -95,37 +80,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             max_quantity: function() {
                 var maximum_amount = this.options.modifierClass.get('maximum_amount');
                 return maximum_amount ? maximum_amount : 5; // default value
-            },
-            qty_options: {
-                deps: ['modifierClass_cur_qty_to_add'],
-                get: function(cur_qty_to_add) {
-                    var root = this.options.modifierClass;
-                    root.update_cur_qty_to_add();
-                    var data=[],
-                    cur_qty_to_add = this.options.modifierClass.get('cur_qty_to_add'),
-                        is_selected = this.model.get('selected');
-                    var max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
-                    trace(this.model.get("name"), "cur_qty_to_add =", cur_qty_to_add, "is_selected=", is_selected, "qty=", this.model.get('quantity'), "max_qty=", max_quantity);
-                    if (max_quantity <= 0){
-                        max_quantity = 1;
-                    }
-                    for (var i = 1; i <= max_quantity; i++) {
-                        data.push({
-                            label: "x" + i,
-                            value: i
-                        });
-                    }
-                    return data;
-                }
-            },
-            mdf_qty_display: {
-                deps: ['selected', 'modifierClass_cur_qty_to_add'],
-                get: function(selected,  cur_qty_to_add) {
-                    var is_selected = this.model.get('selected'),
-                        max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
-
-                    return (selected && max_quantity > 1) ? true : false;
-                }
             }
         },
         initialize: function() {
@@ -162,10 +116,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 max_quantity *= 2;
             }
 
-        /*    for (var i=1; i <= max_quantity; i++) {
+            for (var i=1; i <= max_quantity; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
                 mdf_quantity_el.append(option_el);
-            }*/
+            }
 
             var mdf_split_el = this.$(".mdf_split select");
             var index = [1, 2, 0];//this change the order of options as First Half, Second Half and Full.
@@ -266,10 +220,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     if (App.Settings.enable_quantity_modifiers) {
                         this.$(".mdf_quantity").css("display", "inline-block");
 
-                        /*this.$('.mdf_quantity option:selected').removeAttr('selected');
+                        this.$('.mdf_quantity option:selected').removeAttr('selected');
                         if (this.model.get('quantity') > 0) {
                             this.$(".mdf_quantity select").val(this.model.get('quantity'));
-                        }*/
+                        }
                     }
                     if (App.Settings.enable_split_modifiers) {
                         this.$(".mdf_split").css("display", "inline-block");
@@ -419,7 +373,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             };
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each(this.addItem.bind(this));
-            this.options.modifierClass.update_cur_qty_to_add();
             return this;
         },
         addItem: function(model) {
