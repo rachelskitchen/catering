@@ -39,16 +39,30 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'mouseout .info': 'hideTooltip'
         },
         bindings: {
-            '.mdf_quantity select': 'value: decimal(quantity)',
+            '.mdf_quantity select': 'value: decimal(quantity), options:qty_options',
             '.mdf_split': 'classes: {hide: not(split)}',
             '.mdf_split select': 'value: decimal(qty_type), change_split_modifier: qty_type'
+        },
+        initialize: function() {
+            _.extend(this.bindingSources, {modifierClass: this.options.modifierClass});
+
+            App.Views.ItemView.prototype.initialize.apply(this, arguments);
+
+            var root = this.options.modifierClass;
+            this.listenTo(this.model, 'change:quantity', function() {
+                trace("#1 update_cur_qty_to_add");
+                root.update_cur_qty_to_add();
+            });
+            this.listenTo(this.model, 'change:selected', function() {
+                trace("#2 update_cur_qty_to_add");
+                root.update_cur_qty_to_add();
+            });
         },
         bindingHandlers: {
             change_split_modifier: function($element, qty_type) {
                 var splitLabel = $(".selected_option", $element.closest(".mdf_split").parent());
                 removeClassRegexp(splitLabel, "option_\\d+");
                 splitLabel.addClass("option_" + qty_type);
-
                 // Bug #32135. Change amount of quantity options when qty_type is changed.
                 var max_quantity = this.view.getBinding('max_quantity'),
                     mdf_quantity_el = this.view.$el.find('.mdf_quantity select'),
@@ -81,6 +95,37 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             max_quantity: function() {
                 var maximum_amount = this.options.modifierClass.get('maximum_amount');
                 return maximum_amount ? maximum_amount : 5; // default value
+            },
+            qty_options: {
+                deps: ['modifierClass_cur_qty_to_add'],
+                get: function(cur_qty_to_add) {
+                    var root = this.options.modifierClass;
+                    root.update_cur_qty_to_add();
+                    var data=[],
+                    cur_qty_to_add = this.options.modifierClass.get('cur_qty_to_add'),
+                        is_selected = this.model.get('selected');
+                    var max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
+                    trace(this.model.get("name"), "cur_qty_to_add =", cur_qty_to_add, "is_selected=", is_selected, "qty=", this.model.get('quantity'), "max_qty=", max_quantity);
+                    if (max_quantity <= 0){
+                        max_quantity = 1;
+                    }
+                    for (var i = 1; i <= max_quantity; i++) {
+                        data.push({
+                            label: "x" + i,
+                            value: i
+                        });
+                    }
+                    return data;
+                }
+            },
+            mdf_qty_display: {
+                deps: ['selected', 'modifierClass_cur_qty_to_add'],
+                get: function(selected,  cur_qty_to_add) {
+                    var is_selected = this.model.get('selected'),
+                        max_quantity = is_selected ? cur_qty_to_add + this.model.get('quantity') : cur_qty_to_add;
+
+                    return (selected && max_quantity > 1) ? true : false;
+                }
             }
         },
         initialize: function() {
@@ -117,10 +162,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 max_quantity *= 2;
             }
 
-            for (var i=1; i <= max_quantity; i++) {
+        /*    for (var i=1; i <= max_quantity; i++) {
                 option_el = $('<option>').val(i).text("x" + i);
                 mdf_quantity_el.append(option_el);
-            }
+            }*/
 
             var mdf_split_el = this.$(".mdf_split select");
             var index = [1, 2, 0];//this change the order of options as First Half, Second Half and Full.
@@ -221,10 +266,10 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     if (App.Settings.enable_quantity_modifiers) {
                         this.$(".mdf_quantity").css("display", "inline-block");
 
-                        this.$('.mdf_quantity option:selected').removeAttr('selected');
+                        /*this.$('.mdf_quantity option:selected').removeAttr('selected');
                         if (this.model.get('quantity') > 0) {
                             this.$(".mdf_quantity select").val(this.model.get('quantity'));
-                        }
+                        }*/
                     }
                     if (App.Settings.enable_split_modifiers) {
                         this.$(".mdf_split").css("display", "inline-block");
@@ -283,9 +328,15 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
         events: {
             'change input': 'change'
         },
+        initialize: function() {
+            _.extend(this.bindingSources, {
+                    product: this.options.data.product
+                });
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+        },
         render: function() {
             var model = {};
-            model.type = 'checkbox';
+            model.type = 'radio';
             model.currency_symbol = App.Data.settings.get('settings_system').currency_symbol;
             model.price = "";
             model.slength = 0;
@@ -296,11 +347,22 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             model.name = this.options.name;
             model.modifierClassName = this.options.name;
 
-            this.listenLocked = setInterval(this.controlCheckboxes.bind(this), 300);
-
             this.$el.html(this.template(model));
 
             return this;
+        },
+        bindings: {
+            'input': 'attr: {checked: is_checked}',
+            '.input': 'classes: {checked: is_checked}'
+        },
+        computeds: {
+            is_checked: function() {
+                var data = this.options.data,
+                    id = this.options.id,
+                    row = 'attribute_' + data.row +'_selected';
+
+                return this.getBinding('product_' + row) == id ? 'checked' : false;
+            }
         },
         change: function(e) {
             if(!App.Settings.online_orders) {
@@ -317,17 +379,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 select = product.get(row);
 
             if(checked) {
-                if (select || product.get(other) && data.attributesOther[product.get(other)].indexOf(id) === -1) {
+                if (product.get(other) && data.attributesOther[product.get(other)].indexOf(id) === -1) {
                     return el.prop('checked', false);
                 } else {
                     product.set(row, id);
-                    this.$('input').attr('checked', 'checked');
-                    this.$('.input').addClass('checked');
                 }
             } else if (select === id) {
                 product.set(row, null);
-                this.$('input').removeAttr('checked');
-                this.$('.input').removeClass('checked');
             }
         },
         controlCheckboxes: function() {
@@ -343,10 +401,6 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 parent.fadeTo(100, 0.5);
                 parent.addClass('fade-out');
             } else {
-                if (select) {
-                    this.$('input').attr('checked', 'checked');
-                    this.$('.input').addClass('checked');
-                }
                 parent.fadeTo(100, 1);
                 parent.removeClass('fade-out');
             }
@@ -365,6 +419,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             };
             App.Views.ListView.prototype.render.apply(this, arguments);
             this.collection.each(this.addItem.bind(this));
+            this.options.modifierClass.update_cur_qty_to_add();
             return this;
         },
         addItem: function(model) {
@@ -396,6 +451,8 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                     sort: sorts[key * 1]
                 });
             }
+            this.listenTo(this.options.data.product, 'change', this.controlCheckboxes, this);
+            this.controlCheckboxes();
             return this;
         },
         addItem: function(data) {
@@ -408,6 +465,13 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             });
             this.$('.modifiers-list').append(view.el);
             this.subViews.push(view);
+        },
+        controlCheckboxes: function() {
+            this.subViews.forEach(function(view) {
+                if (view.controlCheckboxes) {
+                    view.controlCheckboxes();
+                }
+            });
         }
     });
 
