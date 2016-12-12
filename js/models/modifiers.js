@@ -557,7 +557,13 @@ define(["backbone"], function(Backbone) {
                 amount_free_selected: [],
                 ignore_free_modifiers: false,
                 forced: false,
-                split: false
+                split: false,
+                /*
+                * the current max modifiers qty to add of this modifier block
+                * @type {number}
+                * @default 1
+                */
+                cur_qty_to_add: 1
             };
         },
         /**
@@ -571,6 +577,16 @@ define(["backbone"], function(Backbone) {
             });
 
             this.checkAmountFree();
+        },
+         /**
+         * the maximum number of additional modifiers which can be add for this modifier block
+         */
+        update_cur_qty_to_add: function() {
+            var cur_qty = this.get('modifiers').get_selected_qty(),
+                max_quantity = this.get('maximum_amount');
+
+            //trace("update_cur_qty_to_add => ", max_quantity - cur_qty);
+            this.set('cur_qty_to_add', max_quantity - cur_qty);
         },
         /**
          * Handles `modifiers` attribute change.
