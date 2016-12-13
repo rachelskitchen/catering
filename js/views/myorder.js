@@ -118,7 +118,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                         el: this.$('.product_attribute_info'),
                         model: model,
                         mod: 'Matrixes',
-                        modifiersEl: this.$('.modifiers_info')
+                        modifiersEl: this.$('.modifiers_info'),
+                        flags: this.options.flags
                     });
             }
             this.subViews.push(view);

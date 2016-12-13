@@ -614,6 +614,9 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 attribute_2_enable = this.product.get('attribute_2_enable');
 
             if (this.product.check_selected()) {
+                this.subViews.splice(attribute_1_enable + attribute_2_enable,2).map(function(el) {
+                    el.remove();
+                });
                 var viewModifiers = App.Views.GeneratorView.create('ModifiersClasses', {
                     model: this.model,
                     mod: 'List'
@@ -623,12 +626,27 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
                 modifiersEl.addClass('product_attributes_selected');
                 this.subViews.push(viewModifiers);
                 modifiersEl.show();
+                this.addSpecialInstructions();
             } else {
-                this.subViews.splice(attribute_1_enable + attribute_2_enable,1).map(function(el) {
+                this.subViews.splice(attribute_1_enable + attribute_2_enable,2).map(function(el) {
                     el.remove();
                 });
                 modifiersEl.hide();
                 modifiersEl.removeClass('product_attributes_selected');
+            }
+        },
+        addSpecialInstructions: function() {
+            var view,
+                modifiersEl = this.options.modifiersEl;
+            if (!this.options.flags || this.options.flags.indexOf('no_specials') == -1) {
+                if (App.Settings.special_requests_online !== false) {
+                    view = App.Views.GeneratorView.create('Instructions', {
+                        el: $('.product_instructions', modifiersEl),
+                        model: this.model,
+                        mod: 'Modifiers'
+                    });
+                    this.subViews.push(view);
+                }
             }
         }
     });
