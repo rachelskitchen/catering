@@ -1040,16 +1040,33 @@ define(["main_router"], function(main_router) {
 
                 function setAction(cb) {
                     return function() {
-                        var reorderReq = customer.reorder(order_id);
-                        reorderReq.done(function() {
-                            var myorder = App.Data.myorder,
-                                removed = _.difference(myorder.pluck('id_product'), orderCollection.pluck('id_product'));
-                            removed.forEach(function(id_product) {
-                                myorder.remove(myorder.findWhere({id_product: id_product}));
+                        if (myorder.length) {
+                            App.Data.errors.alert(_loc.PROFILE_REORDER_CARD_HAS_ITEMS_MSG, false, true, {
+                                isConfirm: true,
+                                confirm: {
+                                    ok: _loc.YES
+                                },
+                                callback: function(res) {
+                                    res && reorderReq(cb);
+                                }
                             });
-                        })
-                        reorderReq.always(cb);
+                        }
+                        else {
+                            reorderReq(cb);
+                        }
                     }
+                }
+
+                function reorderReq(cb) {
+                    var reorderReq = customer.reorder(order_id);
+                    reorderReq.done(function() {
+                        var myorder = App.Data.myorder,
+                            removed = _.difference(myorder.pluck('id_product'), orderCollection.pluck('id_product'));
+                        removed.forEach(function(id_product) {
+                            myorder.remove(myorder.findWhere({id_product: id_product}));
+                        });
+                    });
+                    reorderReq.always(cb);
                 }
             });
 
