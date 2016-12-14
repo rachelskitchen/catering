@@ -1041,7 +1041,7 @@ define(["main_router"], function(main_router) {
                 function setAction(cb) {
                     return function() {
                         if (myorder.length) {
-                            App.Data.errors.alert(_loc.PROFILE_REORDER_CARD_HAS_ITEMS_MSG, false, true, {
+                            App.Data.errors.alert(_loc.PROFILE_REORDER_CART_HAS_ITEMS_MSG, false, true, {
                                 isConfirm: true,
                                 confirm: {
                                     ok: _loc.YES
