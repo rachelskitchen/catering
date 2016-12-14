@@ -21,6 +21,10 @@
  */
 
 /*
+* How to find View refs:
+* (App.Views.GeneratorView.create|get\:|modelName\:)[^%]{1,100}[\'\"]Card[\'\"][^%]{1,300}[\"\']Main[\"\']
+*/
+/*
 * Constants
 */
 
