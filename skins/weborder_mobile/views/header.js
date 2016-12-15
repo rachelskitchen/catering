@@ -210,9 +210,10 @@ define(["factory", "smart_banner"], function() {
         mod: 'promotions',
         tagName: 'div',
         bindings: {
-            '.title': 'text:page_title',
+            '.title': 'text: page_title',
             '.btn-back-title': 'text: back_title',
-            '.btn-cart': 'toggle: all(not(link), not(hideCart)), attr: {"data-count": cartItemsQuantity}, classes: {"qty-visible": cartItemsQuantity}'
+            '.btn-link': 'toggle: link',
+            '.btn-link-title': 'text: link_title'
         },
         events: {
             'click .btn-link': setCallback('link'),

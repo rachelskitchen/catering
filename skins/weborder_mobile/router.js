@@ -2305,9 +2305,9 @@ define(["main_router"], function(main_router) {
                     App.Data.header.set({
                         page_title: _loc.HEADER_PROMOTIONS_LIST_PT,
                         back_title: backToMenu ? _loc.MENU : _loc.BACK,
+                        link_title: _loc.CONTINUE,
                         back: back,
-                        cart: cart,
-                        hideCart: App.Data.header.get('hideCart') || App.Data.myorder.get_only_product_quantity() < 1
+                        link: (App.Data.myorder.get_only_product_quantity() > 0) ? link : null
                     });
 
                     content = {
@@ -2327,7 +2327,7 @@ define(["main_router"], function(main_router) {
                     backToMenu ? self.navigate('index', true) : window.history.back();
                 }
 
-                function cart() {
+                function link() {
                     self.navigate('cart', true);
                 }
             });
@@ -2362,7 +2362,7 @@ define(["main_router"], function(main_router) {
                         page_title: _loc.HEADER_PROMOTION_PT,
                         back_title: _loc.BACK,
                         back: window.history.back.bind(window.history),
-                        hideCart: true
+                        link: null
                     });
 
                     App.Data.mainModel.set({
