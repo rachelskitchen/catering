@@ -669,6 +669,7 @@
         "PROFILE_REORDER": "Reorder",
         "PROFILE_REORDER_FAVORITE": "Reorder a favorite",
         "PROFILE_REORDER_NO_ITEMS_AVAILABLE": "Items from selected order are not available now",
+        "PROFILE_REORDER_CART_HAS_ITEMS_MSG": "Selecting Previous Order will remove the items in your cart. Are you sure?",
         "PROFILE_ORDER_NOT_FOUND": "Order #%s is not found",
         "PROFILE_PLEASE_LOG_IN": "Please log in to make a reorder",
         "PROFILE_LOYALTY_PROGRAM": "Loyalty Program",
