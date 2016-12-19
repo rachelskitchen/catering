@@ -2,8 +2,13 @@
     return {
         'DINING_OPTION_NAME': {
             'DINING_OPTION_TOGO': 'Pick up in store',
-            'DINING_OPTION_SHIPPING': 'Shipping',
-            'DINING_OPTION_OTHER': 'Other'
+            'DINING_OPTION_EATIN': 'Eat In',
+            'DINING_OPTION_DELIVERY': 'Delivery',
+            'DINING_OPTION_CATERING': 'Catering',
+            'DINING_OPTION_DRIVETHROUGH': 'Drive Through',
+            'DINING_OPTION_ONLINE': 'Online Ordering',
+            'DINING_OPTION_OTHER': 'Other',
+            'DINING_OPTION_SHIPPING': 'Shipping'
         },
         'CARD_TITLE': 'Enter your Card Information',
         'CARD_FIRST_NAME': 'First Name',
