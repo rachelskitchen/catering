@@ -297,8 +297,6 @@ define(["backbone", "async"], function(Backbone) {
             // convert skin to mobile version if necessary
             this.checkIfMobile(); //
 
-            if (App.skin == App.Skins.RETAIL) settings.delivery_charge = 0; // if Retail skin set delivery_charge to 0
-
             this.set('skin', App.skin, {silent: true});
             this.trigger('change:skin');
             this.trigger('changeSkin');

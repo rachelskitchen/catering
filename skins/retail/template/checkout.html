@@ -91,15 +91,30 @@
         </div>
     </div>
 
-    <div>
-        <div class="label required optional-text"><%= _lp.CHECKOUT_SHIPPING_HANDLING %></div>
-        <div class="inline-block">
-            <div class="shipping-status fl-right"></div>
-            <div class="select-wrapper inline-block">
-                <select class="shipping-select select"></select>
+    <% if(isShippingServices) { %>
+    <div class="address-edit">
+        <div class="item">
+            <div class="label required optional-text"><%= _lp.PROFILE_COUNTRY %>:</div>
+            <div class="select-wrapper">
+                <select class="country size1">
+                <% for (var i in countries) { %>
+                    <option value="<%= i %>" <% if(i.toLowerCase() == country.toLowerCase()) { %>selected="selected"<% } %>><%= countries[i] %></option>
+                <% } %>
+                </select>
             </div>
         </div>
     </div>
+
+    <div class="item">
+        <div class="label required optional-text"><%= _lp.CHECKOUT_SHIPPING_HANDLING %></div>
+        <div class="inline-block">
+            <div class="select-wrapper">
+                <select class="shipping-select select size1"></select>
+            </div>
+            <div class="shipping-status fl-right"></div>
+        </div>
+    </div>
+    <% } %>
 </script>
 
 <script type="text/template" id="checkout_other-template">
