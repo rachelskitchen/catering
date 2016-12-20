@@ -109,20 +109,9 @@
     border-top-width: 2px;
     border-top-style: solid;
 }
-.product_info_footer .group_btn_wrap {
-    display: table;
-    width: 100%;
-}
-.product_info_footer .btn_wrap_half {
-    display: table-cell;
-    width: 50%;
-}
-.product_info_footer .btn_wrap_half .btn {
-   width: 98%;
-}
 
 .product_info_footer .btn-line {
-    min-height: 50px;
+    overflow: hidden;
 }
 
 .product_info_footer .footer-line .label {
