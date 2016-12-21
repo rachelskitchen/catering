@@ -229,6 +229,12 @@ define(["delivery_addresses", "generator"], function(delivery_addresses) {
                     return dining_option == 'DINING_OPTION_ONLINE' ? selected_dining_option : dining_option;
                 },
                 set: function(value) {
+                    var dining_options = this.getBinding('dining_options');
+
+                    if (!value && dining_options.length) {
+                        value = dining_options[0].value;
+                    }
+
                     this.model.set('dining_option', value);
                 }
             }
