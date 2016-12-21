@@ -1086,8 +1086,22 @@ define(["main_router"], function(main_router) {
                         isReorder: Boolean(order_id),
                         total: orderCollection.total
                     },
-                    contentClass: '',
-                    content: [
+                    contentClass: ''
+                });
+
+                if (orderReq) {
+                    orderReq.always(function() {
+                        setContent();
+                        self.change_page.call(self);
+                    });
+                }
+                else {
+                    setContent();
+                    this.change_page();
+                }
+
+                function setContent() {
+                    App.Data.mainModel.set('content', [
                         {
                             modelName: 'MyOrder',
                             mod: 'Details',
@@ -1106,14 +1120,7 @@ define(["main_router"], function(main_router) {
                             className: 'myorderNote',
                             model: orderCollection.checkout
                         }
-                    ]
-                });
-
-                if (orderReq) {
-                    orderReq.always(this.change_page.bind(this));
-                }
-                else {
-                    this.change_page();
+                    ]);
                 }
 
                 function setAction(cb) {
@@ -1152,7 +1159,6 @@ define(["main_router"], function(main_router) {
                 var dfd = Backbone.$.Deferred(),
                     orders = customer.orders,
                     order = orders.get(order_id),
-                    errors = App.Data.errors,
                     req;
 
                 if (!order) {
