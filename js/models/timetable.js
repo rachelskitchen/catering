@@ -856,10 +856,6 @@ define(["backbone"], function(Backbone) {
                 return false;
             }
 
-            // for Directory there is no need to consider estimated_order_preparation_time, online_order_start_time_offset, online_order_end_time_offset.
-            this.workingDay.preparation_time = 0;
-            this.workingDay.start_time = 0;
-            this.workingDay.end_time = 0;
             return this.checking_work_shop(this.base());
         },
         /**
