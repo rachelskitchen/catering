@@ -779,7 +779,7 @@ define(["backbone"], function(Backbone) {
             isPrice ? this.update_free_price() : this.update_free_quantity();
         },
         /**
-         * Updates free items.
+         * Updates free items with free quantity set.
          */
         update_free_quantity: function() {
             var self = this,
@@ -808,7 +808,7 @@ define(["backbone"], function(Backbone) {
             });
         },
         /**
-         * Updates free items.
+         * Updates free items with free price set.
          */
         update_free_price: function() {
             var self = this,
