@@ -1036,6 +1036,10 @@ define(["main_router"], function(main_router) {
 
                 function setAction(cb) {
                     return function() {
+                        if (!App.Data.myorder.get_only_product_quantity()) {
+                            App.Data.errors.alert(MSG.ERROR_PRODUCT_NOT_SELECTED, false);
+                            return;
+                        }
                         if (isAuthorized) {
                             !self.showIsStudentQuestion(cb) && cb();
                         } else {
