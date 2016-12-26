@@ -884,6 +884,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                         products[i].compositeId = products[i].id + '_' + products[i].id_category;
                         category = App.Data.categories.find({id: products[i].id_category});
                         products[i].sort_value = category ? (category.get('sort') * 100000 + products[i].sort) : products[i].sort;
+                        products[i].category_sort_value = category ? (category.get('sort_val') * 100000 + products[i].sort) : products[i].sort;
                         products[i].filterResult = true;
                         self.add(products[i]);
                     }
