@@ -1204,7 +1204,7 @@ define(["main_router"], function(main_router) {
                     id: 1,
                     name: _loc.SORT_BY_DEFAULT,
                     sortStrategy: 'sortNumbers',
-                    sortKey: 'sort_value',
+                    sortKey: 'category_sort_value',
                     sortOrder: 'asc',
                     selected: true
                 },
