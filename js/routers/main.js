@@ -130,6 +130,12 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 App.Data.establishments && App.Data.establishments.removeSavedEstablishment();
             }, this);
 
+            this.listenTo(App.Data.myorder, 'checkout_reorder_completed', function() {
+                if (App.Data.myorder.checkout.get('dining_option') == 'DINING_OPTION_SHIPPING') {
+                    App.Data.myorder.update_cart_totals({update_shipping_options: true});
+                }
+            }, this);
+
             // set handler for window.unload event
             window.onunload = this.beforeUnloadApp.bind(this);
         },
