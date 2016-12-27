@@ -1572,7 +1572,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 };
             var id_category = 12;
             App.Data.categories = new App.Collections.Categories();
-            App.Data.categories.add({id: 12, sort: 1});
+            App.Data.categories.add({id: 12, sort: 1, sort_val: 2001});
 
             beforeEach(function() {
                 collection = new App.Collections.Products();
@@ -1636,6 +1636,7 @@ define(['products', 'js/utest/data/Products', 'js/utest/data/Timetable', 'catego
                 expect(ajaxOpts.data.category).toBe(id_category);
                 expect(ajaxOpts.data.page).toBe(page);
                 expect(collection.at(0).get('sort_value')).toBe(100002);
+                expect(collection.at(0).get('category_sort_value')).toBe(200100002);
             });
 
             it('search is passed, response.status is "OK"', function() {
