@@ -620,6 +620,7 @@ define(["main_router"], function(main_router) {
             });
         },
         checkout: function(order_id) {
+            var self = this;
             this.prepare('checkout', function() {
                 var settings = App.Data.settings.get('settings_system'),
                     customer = App.Data.customer,
@@ -695,7 +696,10 @@ define(["main_router"], function(main_router) {
                 }
 
                 if (reorderReq) {
-                    reorderReq.always(this.change_page.bind(this));
+                    reorderReq.always(function() {
+                        self.change_page();
+                        App.Data.myorder.trigger('checkout_reorder_completed');
+                    });
                 } else {
                     this.change_page();
                 }
