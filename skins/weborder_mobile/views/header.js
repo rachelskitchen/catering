@@ -34,15 +34,16 @@ define(["factory", "smart_banner"], function() {
         name: 'header',
         mod: 'main',
         bindings: {
-           '.title': 'text:page_title',
-           '.btn-back': 'toggle: all(back, not(showMenuBtn))',
-           '.btn-profile': 'toggle: showMenuBtn',
-           '.btn-back-title': 'text: back_title',
-           '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
-           '.btn-search': 'classes: {active: showSearch}',
-           '.search': 'outsideTouch: showSearch, events:["onOutsideTouch"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
-           '.input-search': 'value: search, events: ["input"]',
-           '.ctrl': 'reset: search, events: ["click"]'
+            ':el': 'classes: {"directory-tab-used": directoryTabUsed}',
+            '.title': 'text:page_title',
+            '.btn-back': 'toggle: all(back, any(directoryTabUsed, not(showMenuBtn)))',
+            '.btn-header.btn-profile': 'toggle: showMenuBtn',
+            '.btn-back-title': 'text: back_title',
+            '.btn-cart': 'toggle: cartItemsQuantity, classes: {"qty-visible": cartItemsQuantity}, attr: {"data-count": cartItemsQuantity}',
+            '.btn-search': 'classes: {active: showSearch}',
+            '.search': 'outsideTouch: showSearch, events:["onOutsideTouch"], classes: {invisible: not(showSearch)}, attr: {contenteditable: false}',
+            '.input-search': 'value: search, events: ["input"]',
+            '.ctrl': 'reset: search, events: ["click"]'
         },
         events: {
             'click .btn-back': setCallback('back'),
@@ -56,6 +57,7 @@ define(["factory", "smart_banner"], function() {
             'click .btn-profile': 'profile'
         },
         render: function() {
+            this.model.set('directoryTabUsed', App.Data.directoryTabUsed || false);
             App.Views.FactoryView.prototype.render.apply(this, arguments);
 
             var tabs = App.Views.GeneratorView.create('Header', {

@@ -1,5 +1,7 @@
 <script type="text/template" id="header_main-template">
+    <% if (!directoryTabUsed) { %>
     <div class="btn-header btn-profile fl-left"></div>
+    <% } %>
     <div class="btn-header btn-back fl-left"><span class="btn-back-title font-size4"></span></div>
     <div class="btn-header btn-cart fl-right" data-count=""></div>
     <div class="btn-header btn-search fl-right"></div>
@@ -10,6 +12,9 @@
             <label class="ctrl-wrapper"><input type="button" class="ctrl"></label>
         </form>
     </div>
+    <% if (directoryTabUsed) { %>
+    <div class="btn-profile fl-left"></div>
+    <% } %>
 </script>
 
 <script type="text/template" id="header_tabs-template">
