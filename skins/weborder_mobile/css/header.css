@@ -210,3 +210,22 @@
 .main .search.invisible {
     height: 0 !important;
 }
+
+#header .directory-tab-used .btn-profile {
+    width: 7.8em;
+    height: 5.5em;
+    margin: 0 0 0 -1.4em;
+    padding: 1em 0;
+    line-height: 5.5em;
+}
+
+#header .directory-tab-used .btn-profile::before {
+    height: auto;
+    border-right-width: 1px;
+    border-right-style: solid;
+    text-align: center;
+}
+
+#header .directory-tab-used .tabs {
+    margin-left: 6.4em;
+}
