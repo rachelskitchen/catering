@@ -592,38 +592,100 @@ define(["backbone"], function(Backbone) {
                                 total_qty += modifier_item.qty;
                             });
 
-                            // set max price for a modifier
-                            var max_price = (product.max_price && highest_price_modifier.price)
-                                ? product.max_price - product.price : 0;
-
-                            if (product.max_price) {
-                                highest_price_modifier.max_price_amount = max_price;
-                                highest_price_modifier.price = highest_price_modifier.actual_data.price;
-                            }
-
                             highest_price_modifier.qty = total_qty;
                             new_modifiers.push(highest_price_modifier);
                         }
                         // Base modifier
                         else {
-                            // set max price for a modifier
-                            if (product.max_price &&
-                                base_modifier.actual_data &&
-                                base_modifier.price < base_modifier.actual_data.price)
-                            {
-                                base_modifier.max_price_amount = base_modifier.price;
-                                base_modifier.price = base_modifier.actual_data.price;
-                            }
-                            else if (modifier.split && base_modifier.actual_data) {
-                                base_modifier.price = base_modifier.actual_data.price;
-                            }
-
                             new_modifiers.push(base_modifier);
                         }
                     });
 
                     modifier.modifiers = new_modifiers;
+
+                    // Update selected modifiers
+                    if (product.max_price && !modifier.admin_modifier) {
+                        var is_price = modifier.amount_free_is_dollars,
+                            amount_free = modifier.amount_free,
+                            max_price = getMaxPrice(item),
+                            qty_total = 0;
+
+                        _.where(modifier.modifiers, { selected: true }).forEach(function(m) {
+                            var half_price_koeff = (m.qty_type > 0) ? 0.5 : 1,
+                                qty = m.qty * half_price_koeff;
+
+                            // Updates free items with free price set
+                            if (is_price) {
+                                var mdf_price_sum = model.getSum(m, m.qty);
+
+                                if (amount_free == 0) {
+                                    m.free_amount = undefined;
+                                }
+                                else if (amount_free < mdf_price_sum) {
+                                    m.free_amount = round_monetary_currency(mdf_price_sum - amount_free) * 1;
+                                    amount_free = 0;
+                                }
+                                else {
+                                    m.free_amount = 0;
+                                    amount = round_monetary_currency(amount_free - mdf_price_sum);
+                                }
+                            }
+                            // Updates free items with free quantity set
+                            else {
+                                qty_total += qty;
+
+                                if (qty_total <= amount_free) {
+                                    m.free_amount = 0;
+                                }
+                                else {
+                                    var delta = qty_total - amount_free;
+
+                                    if (delta.toFixed(1)*1 < qty) {
+                                        m.free_amount = round_monetary_currency(delta * m.price) * 1;
+                                    }
+                                    else {
+                                        m.free_amount = undefined;
+                                    }
+                                }
+                            }
+
+                            // Updates modifiers price according to "Max Price" feature
+                            var price = m.free_amount != undefined ? m.free_amount : getSum(m, qty);
+
+                            if (price > max_price) {
+                                m.max_price_amount = max_price;
+                            }
+
+                            if (m.actual_data && m.price < m.actual_data.price) {
+                                m.price = m.actual_data.price;
+                            }
+
+                            max_price = (max_price > price) ? (max_price - price) : 0;
+                        });
+                    }
                 });
+            }
+
+            function getSum(mod, qty) {
+                var price = mod.actual_data ? mod.actual_data.price : mod.price;
+                return price * qty;
+            }
+
+            function getMaxPrice(item) {
+                var product = item.product,
+                    modifiers = item.modifiers,
+                    max_price = product.max_price;
+
+                // get size modifier
+                var size_modifier = _.where(modifiers, { admin_modifier: true, admin_mod_key: 'SIZE' }),
+                    size_selected = (size_modifier.length)
+                        ? _.findWhere(size_modifier[0].modifiers, { selected: true })
+                        : null;
+
+                // get initial price
+                var initial_price = size_selected ? size_selected.price : product.price;
+
+                return (max_price > initial_price) ? (max_price - initial_price) : 0;
             }
 
             return items;
