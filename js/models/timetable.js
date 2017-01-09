@@ -771,7 +771,28 @@ define(["backbone"], function(Backbone) {
             for (var i = 0; i < date_range; i++) {
                 check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
                 wh = this.get_working_hours(check_day);
-                if (wh != false) {
+
+                var is_working = wh.some(function(item) {
+                    var from = item.from.split(':'),
+                        from_h = parseInt(from[0]),
+                        from_m = parseInt(from[1]);
+
+                    var to = item.to.split(':'),
+                        to_h = parseInt(to[0]),
+                        to_m = parseInt(to[1]);
+
+                    var start = new Date(now);
+                    start.setHours(from_h, from_m, 0, 0);
+                    start = start.getTime();
+
+                    var end = new Date(now);
+                    end.setHours(to_h, to_m, 0, 0);
+                    end = end.getTime();
+
+                    return (start <= now && now <= end);
+                });
+
+                if (wh != false && is_working) {
                     if (index_by_day_delta) {
                         index_by_day_delta[i] = key_index++;
                     }
