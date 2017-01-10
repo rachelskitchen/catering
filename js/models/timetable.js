@@ -772,8 +772,7 @@ define(["backbone"], function(Backbone) {
                 check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
                 wh = this.get_working_hours(check_day);
                 if (wh != false) {
-                    // Check working hours for today
-                    if (i === 0 && !this.isWorkingNow(wh)) {
+                    if (i === 0 && !this.checking_work_shop(now, isDelivery)) {
                         continue;
                     }
                     if (index_by_day_delta) {
@@ -818,34 +817,6 @@ define(["backbone"], function(Backbone) {
                     delta: ob_day.index
                 };
             }, self);
-        },
-        /**
-         * Check if the store is working at the moment
-         * @param {Array} hours - working hours array
-         * return {Boolean}
-         */
-        isWorkingNow: function(hours) {
-            var now = this.base();
-
-            return hours.some(function(item) {
-                var from = item.from.split(':'),
-                    from_h = parseInt(from[0]),
-                    from_m = parseInt(from[1]);
-
-                var to = item.to.split(':'),
-                    to_h = parseInt(to[0]),
-                    to_m = parseInt(to[1]);
-
-                var start = new Date(now);
-                start.setHours(from_h, from_m, 0, 0);
-                start = start.getTime();
-
-                var end = new Date(now);
-                end.setHours(to_h, to_m, 0, 0);
-                end = end.getTime();
-
-                return (start <= now && now <= end);
-            });
         },
         /**
          * Finds the last pickup time available for the working period later than 'curtime'.
