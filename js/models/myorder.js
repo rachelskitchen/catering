@@ -2098,6 +2098,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                                 myorder.process_cart_totals(data.data);
                             }
                             break;
+                        case "DISCOUNT_CODE_IS_EMPTY":
                         case "DISCOUNT_CODE_NOT_FOUND":
                         case "DISCOUNT_CODE_NOT_APPLICABLE":
                             myorder.checkout.set('last_discount_code', null);
