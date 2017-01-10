@@ -541,6 +541,8 @@ define(["backbone"], function(Backbone) {
                         }
                     });
                 }
+
+                processModifiers(item);
             });
 
             // defect Bug 51992 - Weborder: Order History > Reorder Combo > Unable to edit Combo product
