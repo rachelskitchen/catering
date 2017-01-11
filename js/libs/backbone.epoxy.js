@@ -297,12 +297,32 @@
           return Backbone.Collection.prototype.toJSON.apply(this, arguments);
       }
     }
-  }
 
-  if (App.Data.devMode) {
-      //set debug aliases
-      dbgSetAliases();
-  }
+    Backbone.Collection.prototype.toJSONDeep = function() {
+      var json = this.toJSON();
+      json.forEach(function(model,index) {
+        for (var key in model) {
+          if (_.isObject(model[key]) && model[key].toJSONDeep) {
+            json[index] = model[key].toJSONDeep();
+          }
+        }
+      });
+      return json;
+    }
+
+    Backbone.Model.prototype.toJSONDeep = function() {
+      var json = this.toJSON();
+
+      for (var key in json) {
+          var value = json[key];
+          if (_.isObject(value) && value.toJSONDeep) {
+              json[key] = value.toJSONDeep();
+          }
+      }
+      return json;
+    }
+
+  }//end of if (App.Data.devMode)
 
   // Calls method implementations of a super-class object:
   function _super(instance, method, args) {

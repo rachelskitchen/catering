@@ -2456,6 +2456,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // run history tracking
             this.triggerInitializedEvent();
+
+            this.afterInitialized();
         },
         reorder: function(order_id) {
             var customer = App.Data.customer,
@@ -2476,6 +2478,18 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
 
             return dfd;
+        },
+        afterInitialized: function() {
+            if( App.Data.devMode ) {
+                var customer = new App.Models.Customer();
+                customer.loadCustomer();
+                if (customer.get('email')) {
+                    App.Data.customer.set('email', customer.get('email'));
+                }
+
+                //set debug aliases
+                dbgSetAliases();
+            }
         }
     });
 
