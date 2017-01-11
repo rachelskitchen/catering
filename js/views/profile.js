@@ -1268,11 +1268,9 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
             price: function() {
                 var product = this.model.get_product();
                 return product.get('has_upsell') ? product.get('combo_price') : this.model.get('sum');
-            }
-        },
-        bindingFilters: {
-            getModifiers: function(model) {
-                var modifiers = model.get_modifiers(),
+            },
+            getModifiers: function() {
+                var modifiers = this.model.get_modifiers(),
                     items = [];
 
                 modifiers && modifiers.get_modifierList().forEach(function(modifier) {
@@ -1286,8 +1284,8 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
                 }
                 return items.length ? '+' + items.join(', +') : '';
             },
-            getComboItems: function(model) {
-                var data = model.item_submit(),
+            getComboItems: function() {
+                var data = this.model.item_submit(),
                     items = [];
 
                 _.isObject(data) && Array.isArray(data.products_sets) && data.products_sets.forEach(function(pset) {
@@ -1298,9 +1296,9 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
 
                 return items.join(', ');
             },
-            getUpsellItems: function(model) {
-                var data = model.item_submit(),
-                    product = model.get_product(),
+            getUpsellItems: function() {
+                var data = this.model.item_submit(),
+                    product = this.model.get_product(),
                     items = [];
 
                 if (product) {
@@ -1315,9 +1313,11 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
 
                 return items.join(', ');
             },
-            getWeightedItemInfo: function(model) {
-                var data = model.item_submit();
-                return data.product_name_override;
+            getWeightedItemInfo: function() {
+                var data = this.model.item_submit(),
+                    modifiers = this.getBinding('getModifiers');
+
+                return data.product_name_override + (modifiers ? ', ' + modifiers : '');
             }
         }
     })
