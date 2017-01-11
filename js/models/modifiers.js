@@ -760,6 +760,26 @@ define(["backbone"], function(Backbone) {
 
             this.set('amount_free_selected', selected);
         },
+        reorder_preset_free: function(mdf) {
+            var isPrice = this.get('amount_free_is_dollars'),
+                FreeAmount = this.get('amount_free');
+
+            trace("reorder_preset_free:#0", this.get('name'), FreeAmount, mdf.get('price'), mdf.get('actual_data'));
+
+            if (!FreeAmount) {
+                return;
+            }
+            if (mdf.get('selected')){
+                if (mdf.get('price') < mdf.get('actual_data').price) {
+                    mdf.set('free_amount', mdf.get('price'));
+                    this.get('amount_free_selected').push(mdf.get('id'));
+                    trace("reorder_preset_free:#1", this.get('name'), mdf.get('name'), mdf.get('free_amount'));
+                } else {
+                    mdf.set('free_amount', undefined);
+                    trace("reorder_preset_free:#2", this.get('name'), mdf.get('name'), mdf.get('free_amount'));
+                }
+            }
+        },
         /**
          * Updates free items.
          * @param {App.Models.Modifier} model - modifiers item
@@ -835,7 +855,8 @@ define(["backbone"], function(Backbone) {
         /**
          * Inits free modifiers.
          */
-        initFreeModifiers: function() {
+        initFreeModifiers: function(opt) {
+            var reorder_mode = getOption(opt, 'reorder', false);
             if(this.get('ignore_free_modifiers'))
                 return;
 
@@ -843,8 +864,10 @@ define(["backbone"], function(Backbone) {
                 selected = this.get('amount_free_selected');
 
             modifiers instanceof Backbone.Collection && modifiers.where({selected: true}).forEach(function(modifier) {
-                if(selected.indexOf(modifier.get('id')) == -1)
+                if(selected.indexOf(modifier.get('id')) == -1) {
+                    reorder_mode && this.reorder_preset_free(modifier);
                     this.update_free(modifier);
+                }
             }, this);
         },
         /**
@@ -897,12 +920,12 @@ define(["backbone"], function(Backbone) {
          * Changes `ignore_free_modifiers` to false and resets `amount_free_selected`.
          * Used in reorder.
          */
-        enableFreeModifiers: function() {
+        enableFreeModifiers: function(opt) {
             this.set({
                 ignore_free_modifiers: false,
                 amount_free_selected: []
             });
-            this.initFreeModifiers();
+            this.initFreeModifiers(opt);
         }
     });
 
@@ -1280,8 +1303,8 @@ define(["backbone"], function(Backbone) {
          * Calls {@link App.Models.ModifierBlock#enableFreeModifiers enableFreeModifiers()} method for each item.
          * Used in reorder.
          */
-        enableFreeModifiers: function() {
-            this.invoke('enableFreeModifiers');
+        enableFreeModifiers: function(options) {
+            this.invoke('enableFreeModifiers', options);
         }
     });
 
