@@ -303,7 +303,7 @@
       json.forEach(function(model,index) {
         for (var key in model) {
           if (_.isObject(model[key]) && model[key].toJSONDeep) {
-            json[index] = model[key].toJSONDeep();
+            json[index][key] = model[key].toJSONDeep();
           }
         }
       });

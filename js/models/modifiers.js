@@ -855,8 +855,7 @@ define(["backbone"], function(Backbone) {
         /**
          * Inits free modifiers.
          */
-        initFreeModifiers: function(opt) {
-            var reorder_mode = getOption(opt, 'reorder', false);
+        initFreeModifiers: function() {
             if(this.get('ignore_free_modifiers'))
                 return;
 
@@ -865,10 +864,29 @@ define(["backbone"], function(Backbone) {
 
             modifiers instanceof Backbone.Collection && modifiers.where({selected: true}).forEach(function(modifier) {
                 if(selected.indexOf(modifier.get('id')) == -1) {
-                    reorder_mode && this.reorder_preset_free(modifier);
                     this.update_free(modifier);
                 }
             }, this);
+        },
+         /**
+         * Reorder free modifiers.
+         * @param {Array} modifiers_free_selected - array of modifiers ids showing in which order modifiers were selected, it's received from Backend
+         * Note that modifiers_free_selected is a single array for all modifiers blocks.
+         */
+        reorderFreeModifiers: function(modifiers_free_selected) {
+            var modifiers = this.get('modifiers'),
+                selected = modifiers_free_selected;
+            this.set({
+                ignore_free_modifiers: false,
+                amount_free_selected: []
+            });
+            Array.isArray(selected) && selected.forEach(function(id) {
+                var mdf = modifiers.findWhere({id: id});
+                if (mdf) { //obligatory check due to modifiers_free_selected combines free mdfs from different blocks
+                    this.update_free(mdf);
+                }
+            }, this);
+            //trace("reorderCalculateFreeModifiers: ", this.get('name'), this.get('amount_free_selected'));
         },
         /**
          * Adds listeners to `modifiers`.
@@ -916,17 +934,6 @@ define(["backbone"], function(Backbone) {
         reorder: function() {
             return this.get('modifiers').reorder(this.get('amount_free'), this.get('amount_free_is_dollars'));
         },
-        /**
-         * Changes `ignore_free_modifiers` to false and resets `amount_free_selected`.
-         * Used in reorder.
-         */
-        enableFreeModifiers: function(opt) {
-            this.set({
-                ignore_free_modifiers: false,
-                amount_free_selected: []
-            });
-            this.initFreeModifiers(opt);
-        }
     });
 
     /**
@@ -1299,13 +1306,6 @@ define(["backbone"], function(Backbone) {
                 return changes.concat(modifierBlock.reorder());
             }, []);
         },
-        /**
-         * Calls {@link App.Models.ModifierBlock#enableFreeModifiers enableFreeModifiers()} method for each item.
-         * Used in reorder.
-         */
-        enableFreeModifiers: function(options) {
-            this.invoke('enableFreeModifiers', options);
-        }
     });
 
     /**
