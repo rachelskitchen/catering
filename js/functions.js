@@ -2508,7 +2508,14 @@ function getInstanceName() {
     } else {
         return '';
     }
+}
 
+/**
+ * Gets true if the origin is Revel's default one, otherwise - false.
+ * @return {boolean} true or false.
+ */
+function isRevelinOrigin() {
+    return window.location.hostname == "revelin.revelsystems.com";
 }
 
 /**
