@@ -2247,6 +2247,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 discounts: json.discounts,
                 shipping: json.shipping && json.shipping.service_charge,
                 shipping_discount: json.shipping && json.shipping.discount_sum,
+                final_total: json.final_total
             });
         },
 
