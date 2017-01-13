@@ -91,7 +91,8 @@ define(['backbone', 'tip', 'delivery'], function(Backbone) {
             prevailing_tax: 0,
             shipping: 0,
             shipping_discount: 0,
-            grandTotal: 0 //result price of the order
+            grandTotal: 0, //result price of the order
+            final_total: 0
         },
         /**
          * Set values for `tax_country`, `prevailing_surcharge`, `prevailing_tax`, `tip`, `delivery` attributes.
@@ -139,15 +140,7 @@ define(['backbone', 'tip', 'delivery'], function(Backbone) {
          * @returns {string} total amount formatted as a string.
          */
         get_total: function() { // subtotal + surcharge + tax
-            var tax = this.get_tax() * 1,
-                subtotal = this.get_subtotal() * 1,
-                surcharge = this.get_surcharge() * 1;
-
-            if(!App.TaxCodes.is_tax_included(this.get('tax_country'))) {
-                subtotal += surcharge + tax;
-            }
-
-            return round_monetary_currency(subtotal);
+            return round_monetary_currency(this.get('final_total'));
         },
         /**
          * @returns {string} discounts amount formatted as a string.
