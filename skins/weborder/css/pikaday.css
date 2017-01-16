@@ -212,7 +212,7 @@ http://nicolasgallagher.com/micro-clearfix-hack/
     cursor: help;
 }
 
-.pikaday {
-    width: 144px;
+.order-details .pikaday {
+    width: 246px;
     cursor: pointer;
 }

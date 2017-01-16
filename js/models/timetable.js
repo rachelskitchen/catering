@@ -772,8 +772,8 @@ define(["backbone"], function(Backbone) {
                 check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
                 wh = this.get_working_hours(check_day);
                 if (wh != false) {
-                    if (i === 0 && !this.checking_work_shop(now, isDelivery)) {
-                        continue;
+                    if (!this.checking_work_shop(check_day, isDelivery)) {
+                        continue; //#56143 continue to find out the next day which user would make an order for.
                     }
                     if (index_by_day_delta) {
                         index_by_day_delta[i] = key_index++;
