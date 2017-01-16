@@ -772,7 +772,7 @@ define(["backbone"], function(Backbone) {
                 check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
                 wh = this.get_working_hours(check_day);
                 if (wh != false) {
-                    if (i === 0 && !this.checking_work_shop(now, isDelivery)) {
+                    if (!this.checking_work_shop(check_day, isDelivery)) {
                         continue;
                     }
                     if (index_by_day_delta) {
