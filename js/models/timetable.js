@@ -773,7 +773,7 @@ define(["backbone"], function(Backbone) {
                 wh = this.get_working_hours(check_day);
                 if (wh != false) {
                     if (!this.checking_work_shop(check_day, isDelivery)) {
-                        continue;
+                        continue; //#56143 continue to find out the next day which user would make an order for.
                     }
                     if (index_by_day_delta) {
                         index_by_day_delta[i] = key_index++;
