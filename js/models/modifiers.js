@@ -435,12 +435,23 @@ define(["backbone"], function(Backbone) {
         /**
          * @returns {Array} An array. Each item is result of {@link App.Models.Modifier#modifiers_submit item.modifiers_submit()} call.
          */
-        modifiers_submit: function() {
-            var modifiers = [];
-            this.each(function(modifier) {
-                var res = modifier.modifiers_submit();
-                res && modifiers.push(res);
-            });
+        modifiers_submit: function(mdf_free_selected) {
+            var modifiers = [], self = this;
+            if (Array.isArray(mdf_free_selected) && mdf_free_selected.length) {
+                mdf_free_selected.forEach(function(id) {
+                    var modifier = self.findWhere({id: id});
+                    if (modifier) {
+                        var res = modifier.modifiers_submit();
+                        res && modifiers.push(res);
+                    }
+                });
+            }
+            else {
+                this.each(function(modifier) {
+                    var res = modifier.modifiers_submit();
+                    res && modifiers.push(res);
+                });
+            }
             return modifiers;
         },
         /**
@@ -671,7 +682,7 @@ define(["backbone"], function(Backbone) {
             }
 
             var self = this,
-                modifiers = this.get('modifiers').modifiers_submit();
+                modifiers = this.get('modifiers').modifiers_submit(this.get('amount_free_selected'));
 
             modifiers.forEach(function(model) {
                 model.admin_mod_key = self.get("admin_mod_key");
@@ -759,26 +770,6 @@ define(["backbone"], function(Backbone) {
             }
 
             this.set('amount_free_selected', selected);
-        },
-        reorder_preset_free: function(mdf) {
-            var isPrice = this.get('amount_free_is_dollars'),
-                FreeAmount = this.get('amount_free');
-
-            trace("reorder_preset_free:#0", this.get('name'), FreeAmount, mdf.get('price'), mdf.get('actual_data'));
-
-            if (!FreeAmount) {
-                return;
-            }
-            if (mdf.get('selected')){
-                if (mdf.get('price') < mdf.get('actual_data').price) {
-                    mdf.set('free_amount', mdf.get('price'));
-                    this.get('amount_free_selected').push(mdf.get('id'));
-                    trace("reorder_preset_free:#1", this.get('name'), mdf.get('name'), mdf.get('free_amount'));
-                } else {
-                    mdf.set('free_amount', undefined);
-                    trace("reorder_preset_free:#2", this.get('name'), mdf.get('name'), mdf.get('free_amount'));
-                }
-            }
         },
         /**
          * Updates free items.
@@ -873,20 +864,25 @@ define(["backbone"], function(Backbone) {
          * @param {Array} modifiers_free_selected - array of modifiers ids showing in which order modifiers were selected, it's received from Backend
          * Note that modifiers_free_selected is a single array for all modifiers blocks.
          */
-        reorderFreeModifiers: function(modifiers_free_selected) {
+        reorderFreeModifiers: function() {
+            if (!this.isFreeModifiers())
+                return;
+
             var modifiers = this.get('modifiers'),
-                selected = modifiers_free_selected;
+                selected = modifiers.pluck('modifier_item_id').sort(function(a, b) {
+                            return a - b;
+                        });
             this.set({
                 ignore_free_modifiers: false,
                 amount_free_selected: []
             });
             Array.isArray(selected) && selected.forEach(function(id) {
-                var mdf = modifiers.findWhere({id: id});
-                if (mdf) { //obligatory check due to modifiers_free_selected combines free mdfs from different blocks
+                var mdf = modifiers.findWhere({modifier_item_id: id});
+                if (mdf) {
                     this.update_free(mdf);
                 }
             }, this);
-            //trace("reorderCalculateFreeModifiers: ", this.get('name'), this.get('amount_free_selected'));
+            trace("reorderCalculateFreeModifiers: ", this.get('name'), this.get('amount_free_selected'));
         },
         /**
          * Adds listeners to `modifiers`.

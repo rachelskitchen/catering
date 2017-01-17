@@ -81,7 +81,7 @@ define(["backbone"], function(Backbone) {
             // make modifiers reorder
             if (modifiers) {
                 changes.push.apply(changes, modifiers.reorder())
-                modifiers.invoke('reorderFreeModifiers', this.get('modifiers_free_selected'));
+                modifiers.invoke('reorderFreeModifiers');
             };
 
             return changes;
