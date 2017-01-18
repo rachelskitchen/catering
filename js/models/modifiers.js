@@ -882,7 +882,7 @@ define(["backbone"], function(Backbone) {
                     this.update_free(mdf);
                 }
             }, this);
-            trace("reorderCalculateFreeModifiers: ", this.get('name'), this.get('amount_free_selected'));
+            //trace("reorderCalculateFreeModifiers: ", this.get('name'), this.get('amount_free_selected'));
         },
         /**
          * Adds listeners to `modifiers`.

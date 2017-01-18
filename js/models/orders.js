@@ -82,6 +82,7 @@ define(["backbone"], function(Backbone) {
             if (modifiers) {
                 changes.push.apply(changes, modifiers.reorder())
                 modifiers.invoke('reorderFreeModifiers');
+                modifiers.trigger('modifiers_changed'); // to recalculate mdf prices in accordence to Max Price feature
             };
 
             return changes;
