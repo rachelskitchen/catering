@@ -344,7 +344,6 @@ define(["backbone"], function(Backbone) {
                 headers: authorizationHeader,
                 contentType: 'application/json',
                 success: function(data) {
-//                    data.data[0].modifiers_free_selected = [702, 701];
                     if (Array.isArray(data.data)) {
                         items.reset(self.processItems(data.data));
                     }
