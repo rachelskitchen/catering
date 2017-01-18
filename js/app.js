@@ -250,6 +250,7 @@
             app.get['srv'] == '2-20' && (app.REVEL_HOST = 'https://2-20.revelup.com');
             app.get['srv'] == '2-21' && (app.REVEL_HOST = 'https://2-21.revelup.com');
             app.get['srv'] == '2-22' && (app.REVEL_HOST = 'https://2-22.revelup.com');
+            app.get['srv'] == '2-23' && (app.REVEL_HOST = 'https://2-23.revelup.com');
             app.get['srv'] == 'rde' && (app.REVEL_HOST = 'https://rde.revelup.com');
 
             // Add 'no-focus-css' class to [tabindex] element when user clicks on it.

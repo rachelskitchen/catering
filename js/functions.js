@@ -2823,6 +2823,8 @@ function dbgSetAliases() {
 
     Backbone.Model.prototype.js = Backbone.Model.prototype.toJSON;
     Backbone.Collection.prototype.js = Backbone.Collection.prototype.toJSON;
+    Backbone.Model.prototype.jsd = Backbone.Model.prototype.toJSONDeep;
+    Backbone.Collection.prototype.jsd = Backbone.Collection.prototype.toJSONDeep;
     Backbone.Model.prototype.t = Backbone.Model.prototype.getType;
     Backbone.Collection.prototype.t = Backbone.Collection.prototype.getType;
 }
