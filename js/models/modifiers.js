@@ -435,12 +435,23 @@ define(["backbone"], function(Backbone) {
         /**
          * @returns {Array} An array. Each item is result of {@link App.Models.Modifier#modifiers_submit item.modifiers_submit()} call.
          */
-        modifiers_submit: function() {
-            var modifiers = [];
-            this.each(function(modifier) {
-                var res = modifier.modifiers_submit();
-                res && modifiers.push(res);
-            });
+        modifiers_submit: function(mdf_free_selected) {
+            var modifiers = [], self = this;
+            if (Array.isArray(mdf_free_selected) && mdf_free_selected.length) {
+                mdf_free_selected.forEach(function(id) {
+                    var modifier = self.findWhere({id: id});
+                    if (modifier) {
+                        var res = modifier.modifiers_submit();
+                        res && modifiers.push(res);
+                    }
+                });
+            }
+            else {
+                this.each(function(modifier) {
+                    var res = modifier.modifiers_submit();
+                    res && modifiers.push(res);
+                });
+            }
             return modifiers;
         },
         /**
@@ -671,7 +682,7 @@ define(["backbone"], function(Backbone) {
             }
 
             var self = this,
-                modifiers = this.get('modifiers').modifiers_submit();
+                modifiers = this.get('modifiers').modifiers_submit(this.get('amount_free_selected'));
 
             modifiers.forEach(function(model) {
                 model.admin_mod_key = self.get("admin_mod_key");
@@ -843,8 +854,33 @@ define(["backbone"], function(Backbone) {
                 selected = this.get('amount_free_selected');
 
             modifiers instanceof Backbone.Collection && modifiers.where({selected: true}).forEach(function(modifier) {
-                if(selected.indexOf(modifier.get('id')) == -1)
+                if(selected.indexOf(modifier.get('id')) == -1) {
                     this.update_free(modifier);
+                }
+            }, this);
+        },
+         /**
+         * Reorder free modifiers.
+         * @param {Array} modifiers_free_selected - array of modifiers ids showing in which order modifiers were selected, it's received from Backend
+         * Note that modifiers_free_selected is a single array for all modifiers blocks.
+         */
+        reorderFreeModifiers: function() {
+            if (!this.isFreeModifiers())
+                return;
+
+            var modifiers = this.get('modifiers'),
+                selected = modifiers.pluck('modifier_item_id').sort(function(a, b) {
+                            return a - b;
+                        });
+            this.set({
+                ignore_free_modifiers: false,
+                amount_free_selected: []
+            });
+            Array.isArray(selected) && selected.forEach(function(id) {
+                var mdf = modifiers.findWhere({modifier_item_id: id});
+                if (mdf) {
+                    this.update_free(mdf);
+                }
             }, this);
         },
         /**
@@ -893,17 +929,6 @@ define(["backbone"], function(Backbone) {
         reorder: function() {
             return this.get('modifiers').reorder(this.get('amount_free'), this.get('amount_free_is_dollars'));
         },
-        /**
-         * Changes `ignore_free_modifiers` to false and resets `amount_free_selected`.
-         * Used in reorder.
-         */
-        enableFreeModifiers: function() {
-            this.set({
-                ignore_free_modifiers: false,
-                amount_free_selected: []
-            });
-            this.initFreeModifiers();
-        }
     });
 
     /**
@@ -1276,13 +1301,6 @@ define(["backbone"], function(Backbone) {
                 return changes.concat(modifierBlock.reorder());
             }, []);
         },
-        /**
-         * Calls {@link App.Models.ModifierBlock#enableFreeModifiers enableFreeModifiers()} method for each item.
-         * Used in reorder.
-         */
-        enableFreeModifiers: function() {
-            this.invoke('enableFreeModifiers');
-        }
     });
 
     /**
