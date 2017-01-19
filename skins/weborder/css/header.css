@@ -2,6 +2,17 @@
     height: 166px;
 }
 
+#header .main {
+    position: relative;
+}
+
+#header .store_info {
+    position: absolute;
+    z-index: 1;
+    left: 200px;
+    max-width: 360px;
+}
+
 #header .logo {
     width: 166px;
     height: 166px;
@@ -94,4 +105,15 @@
     content: '\f02b';
     font-family: 'FontAwesome';
     padding-right: 5px;
+}
+
+@media (max-width: 1200px) {
+    #header .store_info {
+        max-width: none;
+        padding-right: 200px;
+    }
+
+    #header .title {
+        font-size: 24px;
+    }
 }
