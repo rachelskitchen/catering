@@ -2803,14 +2803,14 @@ function dbgSetAliases() {
     if (typeof window.SS != 'undefined' ||
         typeof window.DS != 'undefined' ||
         typeof window.D != 'undefined' ||
-        typeof window.View != 'undefined') {
+        typeof window.V != 'undefined') {
         console.error("dbgSetAliases: Namespace Error: some aliase names are already used.");
         return;
     }
     window.D = App.Data;
     window.SS = App.Settings;
     window.DS = App.SettingsDirectory;
-    window.View = App.dbgView;
+    window.V = App.dbgView;
 
     var m_pro = Backbone.Model.prototype,
         col_pro = Backbone.Collection.prototype;
@@ -2827,6 +2827,7 @@ function dbgSetAliases() {
     Backbone.Collection.prototype.jsd = Backbone.Collection.prototype.toJSONDeep;
     Backbone.Model.prototype.t = Backbone.Model.prototype.getType;
     Backbone.Collection.prototype.t = Backbone.Collection.prototype.getType;
+    Backbone.View.prototype.t = Backbone.View.prototype.getType;
 }
 
 /**

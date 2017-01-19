@@ -29,7 +29,15 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         name: 'myorder',
         mod: 'modifier',
         bindings: {
-            '.mdf-sum': 'text: currencyFormat(sum)',
+            '.mdf-sum': 'text: currencyFormat(get_mdf_price)',
+        },
+        computeds: {
+            get_mdf_price: {
+                deps: ['sum', 'price'],
+                get: function() {
+                    return this.options.parent_mode == 'OrderItem' ? this.getBinding('order_price') : this.getBinding('sum');
+                }
+            }
         },
         render: function() {
             var price, model = this.model.toJSON();
@@ -416,7 +424,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     var view = App.Views.GeneratorView.create('MyOrder', {
                         el: $('<li></li>'),
                         mod: 'Modifier',
-                        model: modifier
+                        model: modifier,
+                        parent_mode: self.options.mod
                     });
                     self.subViews.push(view);
 
