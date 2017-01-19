@@ -55,9 +55,9 @@ define(["backbone"], function(Backbone) {
                 this.addJSON(options);
                 this.set({
                     initial_price: this.get_initial_price(),
-                    sum: this.get_modelsum()
+                    sum: this.get_initial_price() + this.get("modifier_amount")
                 });
-                this.update_mdf_sum();
+                //this.update_mdf_sum();
             }
         },
         /**
@@ -594,12 +594,10 @@ define(["backbone"], function(Backbone) {
                             });
 
                             highest_price_modifier.qty = total_qty;
-                            new_modifiers.push(highest_price_modifier);
+                            base_modifier = highest_price_modifier;
                         }
-                        // Base modifier
-                        else {
-                            new_modifiers.push(base_modifier);
-                        }
+                        base_modifier.order_price = base_modifier.price; //to view an order's modifier price in the past orders list
+                        new_modifiers.push(base_modifier);
                     });
 
                     modifier.modifiers = new_modifiers;
@@ -656,11 +654,9 @@ define(["backbone"], function(Backbone) {
                             if (price > max_price) {
                                 m.max_price_amount = max_price;
                             }
-
                             if (m.actual_data && m.price < m.actual_data.price) {
                                 m.price = m.actual_data.price;
                             }
-
                             max_price = (max_price > price) ? (max_price - price) : 0;
                         });
                     }
