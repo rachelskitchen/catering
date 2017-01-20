@@ -1116,7 +1116,9 @@ define(["main_router"], function(main_router) {
                             mod: 'List',
                             className: 'myorderList',
                             collection: orderCollection,
-                            disallow_edit: true
+                            disallow_edit: true,
+                            parent_mode: 'PastOrder',
+                            _to_all_subviews: ['parent_mode']
                         },
                         {
                             modelName: 'MyOrder',

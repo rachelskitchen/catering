@@ -228,7 +228,7 @@ define(["profile_view", "giftcard_view", "myorder_view"], function(profile_view)
                 mod = 'OrderItemUpsell';
             }
 
-            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+            return opts.collectionView.createView('Profile', _.extend(opts, {
                 mod: mod,
                 order: opts.collectionView.model
             }), opts.model.get('id'));

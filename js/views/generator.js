@@ -32,7 +32,26 @@ define(['backbone'], function(Backbone) {
         create: function(ViewClass, options, idParam) {
             var root, id = idParam && ViewClass + options.mod + 'View' + idParam;
             options = options || {};
-            options = _.defaults(options, this.options);
+            options = _.defaults(options, App.Views.Generator.prototype.options);
+
+trace("create=>", ViewClass + options.mod, this.options._to_all_subviews, options);
+
+            if (Array.isArray(options._to_all_subviews) || Array.isArray(this.options._to_all_subviews)) {
+                //Pass some options from a parent view to all child & their child views down a creation tree
+                var inherits = this.options._to_all_subviews;
+                //To use this feature you should use FormView.createView() method or App.Views.GeneratorView.create.call(this, ...)
+                //to create child views. It's for context translation of a parent view to a child one.
+                !Array.isArray(inherits) && (inherits = []);
+                !Array.isArray(options._to_all_subviews) && (options._to_all_subviews = []);
+                options._to_all_subviews = inherits.concat(options._to_all_subviews);
+                for (var key, i = 0; i < options._to_all_subviews.length; i++){
+                    key = options._to_all_subviews[i];
+                    if (options[key])
+                        continue; // an inherited option will be overridden by an option from this view
+                    options[key] = this.options[key]; //inherit options from parent view
+                }
+            }
+
             if(App.Views.Generator.enableCache && id in cache) {
                 var view = cache[id];
             } else {
@@ -74,9 +93,7 @@ define(['backbone'], function(Backbone) {
         *   find view in the cache
         */
         findViewCached: function(ViewClass, options, idParam) {
-            var root, id = idParam && ViewClass + options.mod + 'View' + idParam;
-            options = options || {};
-            options = _.defaults(options, this.options);
+            var id = idParam && ViewClass + options.mod + 'View' + idParam;
             if(App.Views.Generator.enableCache && id in cache) {
                 var view = cache[id];
             }
