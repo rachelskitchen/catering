@@ -35,7 +35,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
             get_mdf_price: {
                 deps: ['sum', 'price'],
                 get: function() {
-                    return this.options.parent_mode == 'OrderItem' ? this.getBinding('order_price') : this.getBinding('sum');
+                    return this.options.parent_mode == 'PastOrder' ? this.getBinding('order_price') : this.getBinding('sum');
                 }
             }
         },
@@ -421,11 +421,10 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
                     return;
                 var selected = modifier.get('modifiers').where({selected: true});
                 selected.forEach(function(modifier) {
-                    var view = App.Views.GeneratorView.create('MyOrder', {
+                    var view = self.createView('MyOrder', {
                         el: $('<li></li>'),
                         mod: 'Modifier',
-                        model: modifier,
-                        parent_mode: self.options.mod
+                        model: modifier
                     });
                     self.subViews.push(view);
 
@@ -648,7 +647,7 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         },
         addItem: function(model) {
             var mod = this.resolveItemMod(model);
-            var view = App.Views.GeneratorView.create('MyOrder', {
+            var view = this.createView('MyOrder', {
                 mod: mod,
                 model: model,
                 el: $('<li></li>'),
