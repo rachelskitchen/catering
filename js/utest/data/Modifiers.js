@@ -37,7 +37,8 @@ define([], function() {
             "selected": true,
             "sort": 5,
             "cost": null,
-            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/"
+            "img": window._phantom ? "base/skins/weborder/img/" : "./skins/weborder/img/",
+            "modifier_item_id": "102"
         },
         "ex": {
             "id": 1223,
@@ -52,7 +53,8 @@ define([], function() {
             "qty_type": 0,
             "description": null,
             "actual_data": null,
-            "split": false
+            "split": false,
+            "modifier_item_id": "102"
         },
         "ex2": {
             "id": 122,
@@ -67,7 +69,8 @@ define([], function() {
             "qty_type": 0,
             "description": null,
             "actual_data": null,
-            "split": false
+            "split": false,
+            "modifier_item_id": "101"
         },
         "ex3": {
             "id": 125554,

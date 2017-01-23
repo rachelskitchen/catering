@@ -37,7 +37,7 @@ var tests_list = [
     'test_Total'
 ];
 
-//tests_list = ['test_Settings', 'test_TimeFrm', 'test_Myorder'];
+//tests_list = ['test_Modifiers'];
 
 if (!window._phantom) {
     for(var key in tests_list) {
