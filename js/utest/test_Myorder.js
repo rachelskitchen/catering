@@ -568,7 +568,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             model.set({id_product: 12}, {silent: true});
             var clone = model.clone();
             clone.get('discount').cid = model.get('discount').cid;
-            expect(clone.toJSON()).toEqual(model.toJSON());
+            expect(clone.toJSONDeep()).toEqual(model.toJSONDeep());
             expect(clone.cid).not.toBe(model.cid);
             expect(clone.__proto__).toBe(model.__proto__);
             expect(model.trigger).toHaveBeenCalled()

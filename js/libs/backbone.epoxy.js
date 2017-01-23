@@ -297,6 +297,7 @@
           return Backbone.Collection.prototype.toJSON.apply(this, arguments);
       }
     }
+  }//end of if (App.Data.devMode)
 
     Backbone.Collection.prototype.toJSONDeep = function() {
       var json = this.toJSON();
@@ -321,8 +322,6 @@
       }
       return json;
     }
-
-  }//end of if (App.Data.devMode)
 
   // Calls method implementations of a super-class object:
   function _super(instance, method, args) {

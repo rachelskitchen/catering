@@ -1064,12 +1064,18 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             expect(modifiers.reorder).toHaveBeenCalledWith(model.get('amount_free'), model.get('amount_free_is_dollars'));
         });
 
-        it('enableFreeModifiers()', function() {
-            spyOn(model, 'initFreeModifiers');
-            model.enableFreeModifiers();
+        it('reorderFreeModifiers() not free', function() {
+            model.set('modifiers', exDef.modifiers);
+            model.reorderFreeModifiers();
+            expect(model.get('modifiers').toJSON()).toEqual(exDef.modifiers.toJSON());
+        });
+
+        it('reorderFreeModifiers() not free', function() {
+            model.set('amount_free', 2);
+            model.set('modifiers', exDef.modifiers);
+            model.reorderFreeModifiers();
             expect(model.get('ignore_free_modifiers')).toBe(false);
-            expect(model.get('amount_free_selected')).toEqual([]);
-            expect(model.initFreeModifiers).toHaveBeenCalled();
+            expect(model.get('amount_free_selected')).toEqual([122, 1223]);
         });
     });
 
@@ -1495,12 +1501,6 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
             ];
             model.addJSON(data);
             expect(model.reorder().sort()).toEqual(['price', 'active', 'price'].sort());
-        });
-
-        it('enableFreeModifiers()', function() {
-            spyOn(model, 'invoke');
-            model.enableFreeModifiers();
-            expect(model.invoke).toHaveBeenCalledWith('enableFreeModifiers');
         });
     });
 
