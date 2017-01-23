@@ -101,6 +101,12 @@ define(['backbone', 'backbone_epoxy', 'backbone_epoxy_handlers', 'backbone_epoxy
             this.$el.html(this.template(this.model ? (this.model.toJSON ? this.model.toJSON() : this.model) : undefined));
             return this;
         },
+        /*
+         * creation view.
+         */
+        createView: function() {
+            return App.Views.Generator.prototype.create.apply(this, arguments);
+        },
         /**
          * Remove the view.
          *
