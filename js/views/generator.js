@@ -34,8 +34,7 @@ define(['backbone'], function(Backbone) {
             options = options || {};
             options = _.defaults(options, App.Views.Generator.prototype.options);
 
-trace("create=>", ViewClass + options.mod, this.options._to_all_subviews, options);
-
+            //trace("create=>", ViewClass + options.mod, this.options._to_all_subviews, options);
             if (Array.isArray(options._to_all_subviews) || Array.isArray(this.options._to_all_subviews)) {
                 //Pass some options from a parent view to all child & their child views down a creation tree
                 var inherits = this.options._to_all_subviews;
