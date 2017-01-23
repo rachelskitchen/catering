@@ -50,12 +50,12 @@ define(["backbone", "factory"], function(Backbone) {
             var profilePanel = this.options.profilePanel,
                 view;
 
-            view = new App.Views.GeneratorView.create(profilePanel.modelName, _.extend(profilePanel, {
+            view = App.Views.GeneratorView.create(profilePanel.modelName, _.extend(profilePanel, {
                 el: this.$('.profile-panel-box')
             }));
             this.subViews.push(view);
 
-            view = new App.Views.GeneratorView.create('SearchLine', {
+            view = App.Views.GeneratorView.create('SearchLine', {
                 mod: 'Main',
                 el: this.$('.search-box'),
                 model: this.options.searchLine

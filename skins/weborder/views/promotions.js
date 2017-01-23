@@ -28,7 +28,7 @@ define(["promotions_view"], function(promotions_view) {
     		App.Data.errors.alert('', false, false, {
                 typeIcon: '',
                 customClass: 'promotions-item-popup',
-                customView: new App.Views.GeneratorView.create('Promotions', {
+                customView: App.Views.GeneratorView.create('Promotions', {
                 	mod: 'Item',
                 	model: this.model
                 })
