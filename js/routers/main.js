@@ -2125,6 +2125,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                     model: customer,
                     collection: customer.orders,
                     className: 'profile-orders',
+                    parent_mode: 'PastOrder',
+                    _to_all_subviews: ['parent_mode'],
                     cacheId: true
                 };
             }

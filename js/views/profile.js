@@ -1390,7 +1390,7 @@ App.Views.CoreProfileView.CoreProfileAddressCreateView = App.Views.FactoryView.e
         itemView: function(opts) {
             // Do not use `this` keyword here.
             // It refers to new created object.
-            return App.Views.GeneratorView.create('Profile', _.extend(opts, {
+            return opts.collectionView.createView('Profile', _.extend(opts, {
                 mod: 'OrdersItem',
                 customer: opts.collectionView.model,
                 orderItems: opts.model.get('items')
