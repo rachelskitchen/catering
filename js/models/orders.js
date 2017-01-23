@@ -53,11 +53,11 @@ define(["backbone"], function(Backbone) {
             App.Models.Myorder.prototype.initialize.apply(this, arguments);
             if (_.isObject(options)) {
                 this.addJSON(options);
+                var productSum = this.get("weight") ? this.get_initial_price() * this.get("weight") : this.get_initial_price();
                 this.set({
                     initial_price: this.get_initial_price(),
-                    sum: this.get_initial_price() + this.get("modifier_amount")
+                    sum: (productSum + this.get("modifier_amount")) * this.get("quantity")
                 });
-                //this.update_mdf_sum();
             }
         },
         /**

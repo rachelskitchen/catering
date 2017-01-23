@@ -93,7 +93,7 @@ define(['./notification'], function(notification_view) {
 					_instance instanceof Backbone.View && _instance.remove();
 
 					// create new view and append it to body
-					_instance = new App.Views.GeneratorView.create('Notification', options);
+					_instance = App.Views.GeneratorView.create('Notification', options);
 					Backbone.$('body').append(_instance.el);
 
 					return _instance;

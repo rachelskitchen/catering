@@ -240,7 +240,7 @@ define(["main_router"], function(main_router) {
                     askStanfordStudent.pending = true;
                     askStanfordStudent.proceed = cb;
 
-                    var view = new App.Views.GeneratorView.create('StanfordCard', {
+                    var view = App.Views.GeneratorView.create('StanfordCard', {
                         mod: 'StudentStatus',
                         model: stanfordCard,
                         className: 'stanford-student-status'
@@ -278,7 +278,7 @@ define(["main_router"], function(main_router) {
 
             // onStudent event occurs when a customer answers 'Yes' on student status question.
             App.Data.stanfordCard && this.listenTo(App.Data.stanfordCard, 'onStudent', function() {
-                var view = new App.Views.GeneratorView.create('StanfordCard', {
+                var view = App.Views.GeneratorView.create('StanfordCard', {
                     mod: 'Popup',
                     model: App.Data.stanfordCard,
                     myorder: App.Data.myorder,
@@ -420,7 +420,7 @@ define(["main_router"], function(main_router) {
                     App.Data.errors.alert(MSG.NO_REWARDS_AVAILABLE);
                 } else {
                     var clone = rewardsCard.clone(),
-                        view = new App.Views.GeneratorView.create('Rewards', {
+                        view = App.Views.GeneratorView.create('Rewards', {
                             mod: 'Info',
                             model: clone,
                             collection: App.Data.myorder,
@@ -461,7 +461,7 @@ define(["main_router"], function(main_router) {
                     rewardsCard.set('number', customer.get('rewardCards').at(0).get('number'));
                 }
 
-                view = new App.Views.GeneratorView.create('Rewards', {
+                view = App.Views.GeneratorView.create('Rewards', {
                     mod: 'Card',
                     model: rewardsCard,
                     customer: customer,
