@@ -482,7 +482,7 @@
             'REVEL_DIRECTORY_WELCOME_TEXT': 'and easily pay at any establishment that uses Revel',
             'BRAND_DIRECTORY_WELCOME_TEXT': 'to easy pay',
             'ERROR_INTEGRITY_TEST_MAIN': 'There is no testA_xx function in main.js (functions.js). Try manually clear the browser cache and restart.',
-            'MODIFIER_FREE': 'free',
+            'MODIFIER_FREE': 'Free',
             'ERROR_PAYPAL_DIRECTIONS_NO_RESULT': 'Unable to get directions',
             'NO_REWARDS_AVAILABLE': 'There are currently no qualified rewards for this loyalty account.',
             'MERCURY_RETURN_MESSAGE_SUCCESS': 'Success',
