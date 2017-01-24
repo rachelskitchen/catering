@@ -29,7 +29,8 @@ define(["backbone", "stanfordcard_view", "factory", "generator"], function(Backb
         name: 'myorder',
         mod: 'modifier',
         bindings: {
-            '.mdf-sum': 'text: currencyFormat(get_mdf_price)',
+            '.mdf-sum': 'text: select(get_mdf_price, currencyFormat(get_mdf_price), MSG.MODIFIER_FREE)',
+            '.mdf-plus': 'classes: {hide: not(get_mdf_price)}'
         },
         computeds: {
             get_mdf_price: {

@@ -8,8 +8,11 @@
                 </span>
             <% } else if(!isSpecial && !isInventoryMatrix) { %>
                 <span class="cost fl-right special-text">
-                    <span class="plus">+</span>
-                    <span class="currency_symbol"><%= currency_symbol %></span><span class="price special-text"><%= price %></span>
+                    <% if (price == 0) { %>
+                    <span class="price special-text"><%= MSG.MODIFIER_FREE %></span>
+                    <% } else { %>
+                    <span class="plus">+</span><span class="currency_symbol"><%= currency_symbol %></span><span class="price special-text"><%= price %></span>
+                    <% } %>
                 </span>
             <% } %>
             <span class="free fl-right special-text"><span class="value"></span></span>
