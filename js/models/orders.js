@@ -584,19 +584,22 @@ define(["backbone"], function(Backbone) {
                         // Group of modifiers
                         if (modifiers_group.length > 1) {
                             var highest_price_modifier = null,
-                                total_qty = 0;
+                                total_qty = 0,
+                                order_price = 0;
 
                             modifiers_group.forEach(function(modifier_item) {
                                 if (!highest_price_modifier || modifier_item.price > highest_price_modifier.price) {
                                     highest_price_modifier = _.clone(modifier_item);
                                 }
                                 total_qty += modifier_item.qty;
+                                order_price += modifier_item.price * modifier_item.qty;
                             });
 
                             highest_price_modifier.qty = total_qty;
                             base_modifier = highest_price_modifier;
                         }
-                        base_modifier.order_price = base_modifier.price; //to view an order's modifier price in the past orders list
+                        base_modifier.order_price = order_price ? order_price : base_modifier.price * base_modifier.qty; //to view an order's modifier price in the past orders list
+                        base_modifier.order_price *= item.quantity;
                         new_modifiers.push(base_modifier);
                     });
 
@@ -655,7 +658,7 @@ define(["backbone"], function(Backbone) {
                                 m.max_price_amount = max_price;
                             }
                             if (m.actual_data && m.price < m.actual_data.price) {
-                                m.price = m.actual_data.price;
+                                m.price = m.actual_data.price;//the case used now for free modifiers
                             }
                             max_price = (max_price > price) ? (max_price - price) : 0;
                         });
