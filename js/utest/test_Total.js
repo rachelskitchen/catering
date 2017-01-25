@@ -124,23 +124,13 @@ define(['total', 'js/utest/data/Total'], function(total, data) {
                 spyOn(total, 'get_tax').and.returnValue(tax);
                 spyOn(total, 'get_subtotal').and.returnValue(subtotal);
                 spyOn(total, 'get_surcharge').and.returnValue(surcharge);
-                spyOn(App.TaxCodes, 'is_tax_included').and.callFake(function() {
-                    return taxIncluded;
-                });
             });
 
-            it('tax is included', function() {
-                taxIncluded = true;
+            it('get_total check', function() {
+                var final_total = 123;
+                total.set('final_total', final_total)
                 total.get_total();
-                expect(round_monetary_currency).toHaveBeenCalledWith(subtotal);
-                commnCheck();
-            });
-
-            it('tax is excluded', function() {
-                taxIncluded = false;
-                total.get_total();
-                expect(round_monetary_currency).toHaveBeenCalledWith(subtotal + surcharge + tax);
-                commnCheck();
+                expect(round_monetary_currency).toHaveBeenCalledWith(final_total);
             });
 
             function commnCheck() {

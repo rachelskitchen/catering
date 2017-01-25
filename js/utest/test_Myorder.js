@@ -2324,7 +2324,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 App.Settings.server_time = 0;
                 model.checkout = new Backbone.Model({
                     dining_option: 'DINING_OPTION_ONLINE',
-                    pickupTS: pickup,
+                    pickupTS: pickup.getTime(),
                     isPickupASAP: false
                 });
                 model.checkout.set('dining_option', 'DINING_OPTION_TOGO');
