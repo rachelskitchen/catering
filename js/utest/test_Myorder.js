@@ -2357,6 +2357,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     return last_pt;
                 });
 
+                spyOn(window, 'getServerTimezoneOffset').and.callFake(function() {
+                    return 0;
+                });
+
                 createDate = format_date_1(new Date(new Date().getTime()));
                 pickupTimeToServer = format_date_1(pickup);
             });
@@ -2564,6 +2568,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     paymentInfo: {
                         tip: 1,
                         type: 2,
+                        tip_percent: 0,
                         cardInfo: {
                             firstDigits: '',
                             lastDigits: '',
@@ -2720,6 +2725,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     it('payment type is credit, customer is authorized, customer.doPayWithToken() is true', function() {
                         App.Data.customer.isAuthorized.and.returnValue(true);
                         App.Data.customer.doPayWithToken.and.returnValue(true);
+                        App.Data.customer.payments = new Backbone.Model;
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expectPayWithToken();
                     });
@@ -2728,6 +2734,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         App.Data.customer.isAuthorized.and.returnValue(true);
                         App.Data.customer.doPayWithToken.and.returnValue(false);
                         App.Data.card.toJSON.and.returnValue({rememberCard: true});
+                        App.Data.customer.payments = new Backbone.Model;
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expectPayWithToken();
                     });
@@ -2737,6 +2744,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         App.Data.customer.doPayWithToken.and.returnValue(false);
                         App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: true});
                         App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: ''});
+                        App.Data.customer.payments = new Backbone.Model;
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expectPayWithToken();
                     });
@@ -2823,11 +2831,11 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     checkout.pickupTime = 'pickup time';
 
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.call_name).toBe('first name    last / pickup time / phone');
+                    expect(ajax.data.orderInfo.call_name).toBe('first name last / pickup time / phone');
                     expect(ajax.data.orderInfo.customer.phone).toBe('phone');
                     expect(ajax.data.orderInfo.customer.email).toBe('email');
                     expect(ajax.data.orderInfo.customer.first_name).toBe('first name');
-                    expect(ajax.data.orderInfo.customer.last_name).toBe('   last   ');
+                    expect(ajax.data.orderInfo.customer.last_name).toBe('last');
                 });
             });
 
@@ -2878,6 +2886,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
                         type : 2,
+                        tip_percent: 0,
                         cardInfo : {
                             firstDigits : '',
                             lastDigits : '',
@@ -2979,7 +2988,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.submit_order_and_pay(3);
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
-                        type : 3
+                        type : 3,
+                        tip_percent : 0
                     });
                 });
 
@@ -2993,6 +3003,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
                         type : 3,
+                        tip_percent : 0,
                         payer_id : 'id',
                         payment_id : 'payment'
                     });
@@ -3101,7 +3112,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('customer.doPayWithGiftCard() returns false', function() {
                     App.Data.customer.doPayWithGiftCard.and.returnValue(false);
                     model.submit_order_and_pay(5);
-                    expect(ajax.data.paymentInfo.cardInfo).toEqual({cardNumber : '123', captchaKey : 'key', captchaValue : 'value'});
+                    expect(ajax.data.paymentInfo.cardInfo).toEqual({cardNumber : '123', captchaValue : 'value'});
                 });
             });
 
@@ -3341,9 +3352,11 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
 
                 describe('ajax error', function() {
+                    beforeEach(function() {
+                    });
+
                     it('general', function() {
                         dfd.reject();
-
                         expect(model.paymentResponse).toEqual({
                             status: 'ERROR',
                             errorMsg: MSG.ERROR_SUBMIT_ORDER
@@ -3361,9 +3374,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     });
 
                     it('`validationOnly` is false, `capturePhase` is true', function() {
+                        this.get_params = App.Data.get_parameters;
+                        App.Data.get_parameters = {
+                            pay: 'true',
+                            UMrefNum: 123456
+                        };
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, true);
                         dfd.reject();
-
+                        App.Data.get_parameters = this.get_params;
                         expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                         expect(model.paymentResponse.status).toBe('error');
                         expect(model.paymentResponse.capturePhase).toBe(true);
