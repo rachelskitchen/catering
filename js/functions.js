@@ -2683,6 +2683,13 @@ function getDiffWithServerTime(server_time, sever_time_zone_offset) {
     return diff;
 }
 
+/*
+*  gets time offset in seconds between server and client
+*/
+function getServerTimezoneOffset(srv_timezone_offset) {
+    return srv_timezone_offset + (new Date()).getTimezoneOffset() * 60 * 1000;
+}
+
 /**
  * Detects the differences between objects including nested ones.
  * @param {Object} a - the first object for comparison.
@@ -2868,5 +2875,25 @@ if (!window.getOption) {
     }
 } else {
     console.error("Namespace collision: getOption");
+}
+
+/*
+*  get billing address
+*/
+function get_billing_address() {
+    var billing_address,
+        use_profile_address = App.Data.card.get("use_profile_address"),
+        use_checkout_address = App.Data.card.get("use_checkout_address");
+    if (use_profile_address) {
+        billing_address = App.Data.customer.get('addresses').getDefaultProfileAddress();
+        return billing_address ? billing_address.toJSON() : null;
+    } else if(use_checkout_address) {
+        var address = App.Data.customer.get('addresses').getCheckoutAddress();
+        address.country_code = address.country;
+        return address;
+    } else {
+        billing_address = App.Data.card.get("billing_address");
+        return _.isObject(billing_address) ? billing_address.toJSON() : null;
+    }
 }
 
