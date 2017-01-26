@@ -10,7 +10,7 @@ define(['giftcard'], function() {
             model = new App.Models.GiftCard();
             def = {
                 captchaImage: '',
-                captchaKey: '',
+                captchaKey: undefined,
                 captchaValue: '',
                 cardNumber: '',
                 remainingBalance: null,
@@ -228,6 +228,143 @@ define(['giftcard'], function() {
                 expect(model.get('remainingBalance')).toEqual(defaults.remainingBalance);
                 expect(model.get('token')).toEqual(defaults.token);
                 expect(model.get('selected')).toEqual(defaults.selected);
+            });
+        });
+    });
+
+    describe('App.Collections.GiftCards', function() {
+        var collection, defaults;
+
+        beforeEach(function() {
+            collection = new App.Collections.GiftCards();
+
+            defaults = {
+                cardNumber: '0000111122223333',
+                remainingBalance: 10,
+                token: 'somesecretkey',
+                selected: false
+            };
+
+            collection.add(new App.Models.GiftCard(defaults));
+        });
+
+        describe('getCards()', function() {
+            var authHeader = { Authorization: 'Bearer XXX' },
+                ajaxReq, ajaxParams;
+
+            beforeEach(function() {
+                ajaxReq = Backbone.$.Deferred();
+
+                spyOn(Backbone.$, 'ajax').and.callFake(function() {
+                    ajaxParams = arguments[0];
+                    ajaxReq.done(ajaxParams.success);
+                    return ajaxReq;
+                });
+            });
+
+            it('authorizationHeader is not passed', function() {
+                expect(collection.getCards()).not.toEqual(jasmine.any(Object));
+            });
+
+            it('authorizationHeader is not an object', function() {
+                var values = ['a', '', -1, 0, 1, NaN, -Infinity, null, undefined, false, true];
+
+                values.forEach(function(value) {
+                    expect(collection.getCards(value)).not.toEqual(jasmine.any(Object));
+                });
+            });
+
+            it('request params are valid', function() {
+                var req = collection.getCards(authHeader);
+
+                expect(req).toBe(ajaxReq);
+                expect(Backbone.$.ajax).toHaveBeenCalled();
+                expect(ajaxParams.url).toBe('/weborders/v1/giftcard/');
+                expect(ajaxParams.method).toBe('GET');
+                expect(ajaxParams.headers).toBe(authHeader);
+                expect(ajaxParams.success).toEqual(jasmine.any(Function));
+                expect(ajaxParams.error).toEqual(jasmine.any(Function));
+            });
+
+            it('request is successful, `data.status` is `OK` and `data.data` is an array', function() {
+                var req = collection.getCards(authHeader),
+                    data = {
+                        status: 'OK',
+                        data: [{
+                            number: '1111222233334444',
+                            remaining_balance: 100,
+                            token: 'supersecret'
+                        }]
+                    };
+
+                ajaxReq.resolve(data);
+                var model = collection.at(0);
+
+                expect(model.get('cardNumber')).toEqual(data.data[0].number);
+                expect(model.get('remainingBalance')).toEqual(data.data[0].remaining_balance);
+                expect(model.get('token')).toEqual(data.data[0].token);
+            });
+        });
+
+        describe('getSelected()', function() {
+            it('There are no selected cards in the collection. The method should return undefined', function() {
+                expect(collection.getSelected()).toEqual(undefined);
+            });
+
+            it('There are selected cards in the collection. The method should return object', function() {
+                collection.at(0).set('selected', true);
+                expect(collection.getSelected()).toEqual(jasmine.any(Object));
+            });
+        });
+
+        describe('selectFirstItem()', function() {
+            it('There are no selected cards in the collection. The first model should be selected', function() {
+                collection.selectFirstItem();
+                expect(collection.at(0).get('selected')).toEqual(true);
+            });
+        });
+
+        describe('addUniqueItem()', function() {
+            var giftCard;
+
+            beforeEach(function() {
+                giftCard = new App.Models.GiftCard({
+                    cardNumber: '1111222233334444',
+                    remainingBalance: 100,
+                    token: 'supersecret'
+                });
+
+                spyOn(collection, 'findWhere').and.callThrough();
+            });
+
+            it('giftCard is not passed', function() {
+                collection.addUniqueItem();
+                expect(collection.findWhere).not.toHaveBeenCalled();
+            });
+
+            it('giftCard is not an instance of `App.Models.GiftCard`', function() {
+                var values = ['a', '', -1, 0, 1, NaN, -Infinity, null, undefined, false, true, [], {}];
+
+                values.forEach(function(value) {
+                    collection.addUniqueItem(value);
+                    expect(collection.findWhere).not.toHaveBeenCalled();
+                });
+            });
+
+            it('giftCard is an instance of `App.Models.GiftCard`', function() {
+                collection.addUniqueItem(giftCard);
+                expect(collection.findWhere).toHaveBeenCalled();
+            });
+
+            it('giftCard has the same number as an existing card. The existing one should be updated with new attributes', function() {
+                giftCard.set('cardNumber', '0000111122223333');
+                collection.addUniqueItem(giftCard);
+                expect(collection.at(0).get('token')).toEqual(giftCard.get('token'));
+            });
+
+            it('giftCard has a unique number. New card should be added to the collection', function() {
+                collection.addUniqueItem(giftCard);
+                expect(collection.length).toBeGreaterThan(1);
             });
         });
     });
