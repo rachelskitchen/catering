@@ -354,7 +354,6 @@ define(['stanfordcard', 'js/utest/data/StanfordCard'], function(stanfordcard, da
                 expect(ajaxOpts.dataType).toBe(data.API.dataType);
                 expect(_data.establishment).toBe(App.Data.settings.get('establishment'));
                 expect(_data.number).toBe(card.get('number'));
-                expect(_data.captchaKey).toBe(card.get('captchaKey'));
                 expect(_data.captchaValue).toBe(card.get('captchaValue'));
             }
         });

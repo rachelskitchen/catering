@@ -31,7 +31,7 @@ define([], function() {
             'planId': null,
             'captchaValue': '',
             'captchaImage': '',
-            'captchaKey': '',
+            'captchaKey': undefined,
             'validated': false,
             'needToAskStudentStatus': true
         },
