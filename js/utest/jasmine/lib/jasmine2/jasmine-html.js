@@ -120,6 +120,13 @@ jasmineRequire.HtmlReporter = function(j$) {
 
         for (var i = 0; i < result.failedExpectations.length; i++) {
           var expectation = result.failedExpectations[i];
+          //ee-dev
+          var button = createDom("div", {className: "info-button"}, 'i');
+          button.addEventListener('click', (function(){
+              console.log(expectation.stack);
+          }).bind(expectation));
+          messages.appendChild(button);
+          //end of ee-dev
           messages.appendChild(createDom("div", {className: "result-message"}, expectation.message));
           messages.appendChild(createDom("div", {className: "stack-trace"}, expectation.stack));
         }
