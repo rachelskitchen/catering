@@ -190,32 +190,32 @@ define(['card'], function() {
                 App.Data.settings.set('skin', this.skin);
             });
 
-            it("Exp date", function() {
-                model.set('cardNumber', '5555555555555555');
-                model.set('securityCode', '444');
+            describe('Expiration date', function() {
+                beforeEach(function() {
+                    model.set({
+                        cardNumber: '5555555555555555',
+                        securityCode: '444',
+                        // get month with leading zero
+                        expMonth: ('0' + (new Date().getMonth() + 1)).slice(-2)
+                    });
+                });
 
-                // user did not select month and year
-                // (card.expMonth is '01', card.expDate is the current year by default)
-                // NOTE: this will fail if runned in January (first month)
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                it('Expiration date is less than the current one', function() {
+                    model.set({ expMonth: '01', expDate: '2000' });
+                    expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                });
 
-                // month is less than the current one
-                model.set('expMonth', '01');
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                it('Expiration date is greater than the current one', function() {
+                    model.set({
+                        expDate: (new Date().getFullYear() + 1).toString() // next year
+                    });
 
-                // year is less than the current one
-                model.set('expDate', '2000');
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
+                    expect(model.check().status).toBe('OK');
+                });
 
-                // early exp date
-                model.set('expMonth', new Date().getMonth());
-                model.set('expDate', new Date().getFullYear());
-                expect(model.check().errorMsg.indexOf(MSG.ERROR_CARD_EXP)).not.toBe(-1);
-
-                // correct date, everything is ok
-                model.set('expMonth', new Date().getMonth() + 1);
-                model.set('expDate', new Date().getFullYear());
-                expect(model.check().status).toBe('OK');
+                it('Expiration date is the same as the current one', function() {
+                    expect(model.check().status).toBe('OK');
+                });
             });
 
             it('`opts.ignorePerson`, `opts.ignoreCardNumber`, `opts.ignoreSecurityCode` are passed as `true`', function() {
