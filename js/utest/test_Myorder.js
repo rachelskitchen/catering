@@ -3437,8 +3437,12 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
             expect(model.remove).toHaveBeenCalled();
             expect(model.total.empty).toHaveBeenCalled();
-            expect(model.checkout.set).toHaveBeenCalledWith('dining_option', 'DINING_OPTION_ONLINE');
-            expect(model.checkout.set).toHaveBeenCalledWith('notes', '');
+            expect(model.checkout.set).toHaveBeenCalledWith({
+                dining_option: 'DINING_OPTION_ONLINE',
+                notes: '',
+                discount_code: '',
+                last_discount_code: ''
+            });
         });
 
         it('removeFreeModifiers()', function() {
