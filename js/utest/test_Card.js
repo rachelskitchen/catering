@@ -195,8 +195,7 @@ define(['card'], function() {
                     model.set({
                         cardNumber: '5555555555555555',
                         securityCode: '444',
-                        // get month with leading zero
-                        expMonth: ('0' + (new Date().getMonth() + 1)).slice(-2)
+                        expMonth: ('0' + (new Date().getMonth() + 1)).slice(-2) // get current month with leading zero
                     });
                 });
 
