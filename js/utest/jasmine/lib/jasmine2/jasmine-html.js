@@ -162,7 +162,7 @@ jasmineRequire.HtmlReporter = function(j$) {
         var skippedMessage = "Ran " + specsExecuted + " of " + totalSpecsDefined + " specs - run all";
         alert.appendChild(
           createDom("span", {className: "bar skipped"},
-            createDom("a", {href: "?", title: "Run all specs"}, skippedMessage)
+            createDom("a", {href: "?" + (App.Data.devMode ? "dev=true" : ""), title: "Run all specs"}, skippedMessage) //ee-dev href fixed here
           )
         );
       }
@@ -272,9 +272,20 @@ jasmineRequire.HtmlReporter = function(j$) {
       return "" + count + " " + word;
     }
 
-    function specHref(result) {
+//ee-dev ---------------------------
+//old function:
+/*  function specHref(result) {
       return "?spec=" + encodeURIComponent(result.fullName);
+    } */
+//new function:
+    function specHref(result) {
+      var spec = "?"
+      if (App.Data.devMode) {
+          spec += "dev=true&";
+      }
+      return spec + "spec=" + encodeURIComponent(result.fullName);
     }
+//end of ee-dev
 
     function setMenuModeTo(mode) {
       htmlReporterMain.setAttribute("class", "html-reporter " + mode);

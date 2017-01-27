@@ -18,6 +18,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
 
     // add skins
     skins.set('WEBORDER', 'weborder'); // add `weborder` skin
+    skins.set('RETAIL', 'retail');
     skins.set('WEBORDER_MOBILE', 'weborder_mobile'); // add `weborder` skin
     skins.set('PAYPAL', 'paypal', '../dev/skins/paypal'); // set `paypal` skin
     skins.set('MLB', 'mlb', '../dev/skins/mlb'); // set `mlb` skin
