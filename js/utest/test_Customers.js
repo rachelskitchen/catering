@@ -3270,6 +3270,142 @@ define(['customers',  'js/utest/data/Customer'], function(customers, data) {
                 App.Data.customer = this.customer;
             });
         });
-    });
+/*
+    //Here is some logic for testing of old functions.
+    //Probably can be used for getCheckoutAddress() testing soon
 
+        describe('setShippingAddress()', function() {
+            var checkout = new Backbone.Model(),
+                diningOption = '',
+                getShippingAddress, isProfileAddressSelected;
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+                App.Data.customer = new Backbone.Model({
+                    shipping_address: -1,
+                    addresses: ['address 1', 'address 2'],
+                    shipping_selected: -1,
+                    shipping_services: ['shipping service 1', 'shipping service 2'],
+                    deliveryAddressIndex: 0,
+                    shippingAddressIndex: 1,
+                    cateringAddressIndex: 2
+                });
+                App.Data.customer.defaults = {
+                    shipping_address: -1
+                };
+                App.Data.customer.isProfileAddressSelected = jasmine.createSpy();
+                getShippingAddress = spyOn(model, 'getShippingAddress');
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            });
+
+            it('App.Data.customer does not exist', function() {
+                App.Data.customer = undefined;
+                expect(model.setShippingAddress(checkout, diningOption)).toBeUndefined();
+            });
+
+            it('selected address is not from profile', function() {
+                diningOption = 'DINING_OPTION_DELIVERY';
+                shipping_address = App.Data.customer.get('deliveryAddressIndex');
+                expect(shipping_address).toBe(0);
+                getShippingAddress.and.returnValue(shipping_address);
+                App.Data.customer.isProfileAddressSelected.and.returnValue(false);
+
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
+                expect(model.getShippingAddress).toHaveBeenCalledWith(diningOption);
+                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
+            });
+
+            it('selected address is from profile', function() {
+                shipping_address = 4;
+                App.Data.customer.set('shipping_address', shipping_address, {silent: true});
+                diningOption = 'DINING_OPTION_DELIVERY';
+                getShippingAddress.and.returnValue(0);
+                App.Data.customer.isProfileAddressSelected.and.returnValue(true);
+
+                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
+                expect(model.getShippingAddress).not.toHaveBeenCalled();
+                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
+            });
+        });
+
+*/
+
+/*
+    //Here is some logic for testing of getCustomerAddress function got from Myorder model.
+    describe('getCustomerAddress()', function() {
+            var address;
+
+            beforeEach(function() {
+                this.customer = App.Data.customer;
+
+                App.Data.customer = new Backbone.Model();
+                App.Data.customer.getOrderAddress = jasmine.createSpy();
+
+                address = {
+                    address: 'test',
+                    city: 'test',
+                    country: 'test',
+                    province: '',
+                    state: 'test',
+                    street_1: 'test',
+                    street_2: '',
+                    zipcode: 'test'
+                };
+            });
+
+            afterEach(function() {
+                App.Data.customer = this.customer;
+            });
+
+            it('shipping address is selected', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
+                App.Data.customer.set({
+                    shipping_address: 1,
+                    addresses: [undefined, address]
+                });
+
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is selected, some fields do not exist', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
+
+                delete address.address;
+                App.Data.customer.set({
+                    shipping_address: 1,
+                    addresses: [undefined, address]
+                });
+
+                address.address = '';
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is not selected, address with last index should be used', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
+                App.Data.customer.set({
+                    shipping_address: -1,
+                    addresses: [undefined, address]
+                });
+
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+
+            it('shipping address is not selected, address with last index should be used, extra fields should be ignored', function() {
+                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
+
+                address.id = 123;
+                App.Data.customer.set({
+                    shipping_address: -1,
+                    addresses: [undefined, undefined, undefined, address]
+                });
+
+                delete address.id;
+                expect(model.getCustomerAddress()).toEqual(address);
+            });
+        });
+*/
+    });
 });
