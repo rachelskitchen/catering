@@ -607,7 +607,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             beforeEach(function() {
                 this.timetables = App.Data.timetables;
                 App.Data.timetables = {
-                    check_order_enable: function() {}
+                    check_order_enable: function() {},
+                    base: function() {}
                 };
                 App.Data.myorder.checkout = {
                     get: function() {}
@@ -2223,6 +2224,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(model.models[1].get('discount').zero_discount).toHaveBeenCalled();
             });
 
+        if (!window._phantom) {
             it('product.combo_items', function() {
                 model.add(orders_combo, {silent: true});
                 var order_product = new App.Models.Product(),
@@ -2237,8 +2239,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.process_cart_totals(json_combo);
 
                 expect(product.get('combo_price')).toBe(5);
-                expect(model.models[0].get('product').set).toHaveBeenCalledWith('combo_price', 5);
+                expect(model.models[0].get('product').set).toHaveBeenCalledWith('combo_price', 25);
             });
+        }
 
             describe('json.service_fees', function() {
                 beforeEach(function() {
