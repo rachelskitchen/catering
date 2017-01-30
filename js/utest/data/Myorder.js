@@ -184,7 +184,7 @@ define([], function() {
                 "compositeId": "2060_479",
                 "size_chart": null,
                 "is_combo": true,
-                "combo_price": null,
+                "combo_price": 5,
                 "barcode": "100000001547",
                 "sold_amount": 0,
                 "sku": "",
@@ -360,7 +360,7 @@ define([], function() {
             "final_total": 5,
             "items": [{
                 "product": 2060,
-                "price": 5,
+                "price": 25,
                 "product_sub_id": "c1810",
                 "product_name_override": "Combo",
                 "is_combo": true,

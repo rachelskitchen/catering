@@ -107,6 +107,12 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
             if (App.Data.devMode == true) {
                 //starting the tests without code coverage testing:
+
+                /*jasmine.getEnv().addReporter({
+                    specStarted: function(result) {
+                        console.log(result.fullName);
+                    }
+                })*/
                 require(tests_list, function() {
                     dbgSetAliases();
                     $(window).trigger('load');
