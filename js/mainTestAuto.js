@@ -7,6 +7,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
     app.config.paths['e2e_list'] = "js/utest/_e2e_list";
     app.config.paths['blanket'] = "js/utest/jasmine/lib/jasmine2/blanket";
     app.config.paths['jasmine_blanket'] = "js/utest/jasmine/lib/jasmine2/jasmine-blanket";
+    app.config.paths['deep-diff'] = "js/libs/deep-diff";
 
     app.config.shim['jasmine_blanket'] = {deps: ['blanket'],  exports: 'blanket'};
 
@@ -39,10 +40,12 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
     };
 
     App.unitTest = true;
+    App.dbgStackTrace = [];
 
-    require(['cssua', 'functions', 'errors', 'backbone_epoxy', 'tests_list', 'e2e_list', 'settings', 'tax', 'locale', 'about'], function() { //, 'e2e_list', 'settings', 'tax', 'main_router', 'locale'
+    require(['cssua', 'deep-diff', 'functions', 'errors', 'backbone_epoxy', 'tests_list', 'e2e_list', 'settings', 'tax', 'locale', 'about'], function() { //, 'e2e_list', 'settings', 'tax', 'main_router', 'locale'
 
         console.log("mainAutoTest: step #2 ==>");
+
         app.get = {}; //parse_get_params();
         // hardcode English locale
         App.Data.get_parameters = {locale: 'en'};
@@ -64,7 +67,6 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
         });
         settings.set({
             'img_path' : 'test/path/',
-            'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 14,
             'host': app.REVEL_HOST
         });
@@ -85,7 +87,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
             });
         });
 
-        MockAjax(settings_data.defaults_initialized.settings_skin);
+        MockAjax(settings_data.initializing_tests.settings_skin);
         settings.set('settings_system', settings_data.all.settings_system);
         UnmockAjax();
         settings.set('settings_directory', settings_data.all.settings_directory);

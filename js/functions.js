@@ -2839,14 +2839,31 @@ function dbgSetAliases() {
 
 /**
 *  Debug objects methods
-*  usage example: spyFunction(App.Data.customer.get('addresses'), 'add')
+*  usage example:
+*       spyFunction(App.Data.customer.get('addresses'), 'add')
+*  another example:
+*       spyFunction(App.Data.settings, 'set', function(params){
+*           if (params[0] == 'settings_system' && _.isObject(params[1])) {
+*               console.log("DELIVERY CHARGE = ", params[1].delivery_charge);
+*           }
+*           return false;
+*       });
 */
-function spyFunction(object, func_name) {
+function spyFunction(object, func_name, check_callback) {
     object[func_name] =
         function() {
-            var e = new Error;
-            trace(e.stack);
-            trace("arguments are:", arguments);
+            var is_trace = true,
+                e = new Error;
+
+            if (check_callback) {
+                if(!check_callback(arguments)) {
+                    is_trace = false;
+                };
+            }
+            if (is_trace) {
+               trace(e.stack);
+               trace("arguments are:", arguments);
+            }
             object.constructor.prototype[func_name].apply(object, arguments);
         };
 }
@@ -2897,3 +2914,33 @@ function get_billing_address() {
     }
 }
 
+/*
+*  hook for setTimeout to save stackTrace
+*/
+function dbgSetAsyncHooks() {
+    var initSetTimeout = setTimeout;
+    setTimeout = function() {
+        var curTrace;
+        if (!this.stackTrace) {
+            this.stackTrace = "";
+            curTrace = (new Error).stack;
+            this.stackTrace = curTrace + '\n' + this.stackTrace;
+        }
+        initSetTimeout.apply(this, arguments);
+    }
+}
+/*
+*  log deep diff of two objects
+*/
+function logdiff(o1, o2) {
+    if (!window.diff) {
+        window.diff = require('deep-diff');
+    }
+    var delta = diff(o1, o2);
+    if (!delta) {
+        console.log('no differences found');
+    }
+    for (var i = 0; i < delta.length; i++ ) {
+        console.log(delta[i].path, delta[i].kind, delta[i].lhs, delta[i].rhs);
+    }
+}

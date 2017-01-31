@@ -37,7 +37,7 @@ var tests_list = [
     'test_Total'
 ];
 
-//tests_list = ['test_Modifiers'];
+//tests_list = ['test_Settings'];
 
 if (!window._phantom) {
     for(var key in tests_list) {
@@ -71,7 +71,7 @@ var ajaxMock = function(options) {
                def.reject();
            }
         }
-    },10);
+    },0);
 
     def.error = function error(callback) {
         if (callback)

@@ -14,6 +14,15 @@ define(['js/utest/data/Settings', 'settings'], function(settings) {
             jasmine.DEFAULT_TIMEOUT_INTERVAL = 60000; //60sec.
 
         beforeEach(function(done) {
+            App.Data.settings.set('settings_system', settings.all.settings_system, {silent: true});
+            try { //if the bug with Delivery test will occur in the future
+                throw new Error;
+            } catch (e) {
+                App.dbgStackTrace.push({ delivery_charge: App.Data.settings.get('settings_system').delivery_charge,
+                            stack: e.stack
+                });
+            }
+
             spyOn(window, "getData").and.callFake(get);
             spyOn(window, "setData").and.callFake(set);
             spyOn(App.Data.errors, "alert").and.callFake(function() { console.log(arguments); });
@@ -326,6 +335,12 @@ define(['js/utest/data/Settings', 'settings'], function(settings) {
 
             it("Delivery", function() {
                 expect(typeof(sys.delivery_charge)).toBe("number");
+                if (!sys.delivery_charge) { //to check if an error with this test will occur in the future
+                    App.dbgStackTrace.forEach(function(obj){
+                        trace("------------------------------------------------------------------------------");
+                        trace(obj);
+                    })
+                }
                 expect(sys.delivery_charge >= 0).toBeTruthy();
                 expect(typeof(sys.delivery_cold_untaxed)).toBe("boolean");
                 expect(typeof(sys.delivery_for_online_orders)).toBe("boolean");
