@@ -55,6 +55,36 @@ define([], function() {
             "hostname": "weborder-dev-branch.revelup.com"
         },
 
+        "initializing_tests": {
+            "brand": null,
+            "establishment": null,
+            "host": "https://weborder-dev-branch.revelup.com",
+            "storage_data": 0,
+            "skin": "",
+            "settings_skin": {
+                "img_default" : ['default.png'],
+                "routing": {
+                    "errors": {
+                        "cssCore": [],
+                        "templatesCore": ["errors_core"]
+                    },
+                    "establishments": {
+                        "cssCore": ["establishments"],
+                        "templatesCore": ["establishments"]
+                    }
+                }
+            },
+            "settings_system": {},
+            "timeout": 60000,
+            "isMaintenance": false,
+            "maintenanceMessage": "",
+            "version": 1.06,
+            "supported_skins": [],
+            "basePath": window._phantom ? "base" : ".",
+            "coreBasePath": window._phantom ? "base" : ".",
+            "hostname": "weborder-dev-branch.revelup.com"
+        },
+
         "all": {
             "supported_skins": ["weborder", "weborder_mobile", "retail", "paypal", "mlb", "directory_mobile", "directory"],
             "brand": 1,

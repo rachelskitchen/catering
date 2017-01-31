@@ -1872,7 +1872,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
 
                 // need to use only time zone offset, difference in minutes between client and server time is already considered
-                var TimeZoneOffset = App.Settings.time_zone_offset + (new Date()).getTimezoneOffset() * 60 * 1000;
+                var TimeZoneOffset = getServerTimezoneOffset(App.Settings.time_zone_offset);
 
                 if (isASAP) {
                     lastPT = App.Data.timetables.getLastPTforWorkPeriod(currentTime);

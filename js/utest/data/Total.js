@@ -12,7 +12,8 @@ define([], function() {
             prevailing_tax: 0,
             shipping: 0,
             shipping_discount: 0,
-            grandTotal: 0
+            grandTotal: 0,
+            final_total : 0
         },
         "SYSTEM_SETTINGS": {
             tax_country: 'US',
