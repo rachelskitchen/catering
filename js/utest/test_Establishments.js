@@ -99,12 +99,14 @@ define(['establishments'], function() {
                     });
 
                     it('brand has more than 1 establishment', function() {
+                        var spySettings = spyOn(App.Data.settings, 'trigger');
                         model.add([{id: 111}, {id: 222}]);
                         model.checkGETParameters();
 
                         expectMetaBrand();
                         expectStatusCode(1);
-                        expect(model.trigger).toHaveBeenCalledWith('loadStoresList');
+                        expect(App.Data.selectEstablishmentMode).toBe(true);
+                        expect(App.Data.settings.trigger).toHaveBeenCalledWith('change:establishment');
                     });
 
                     it('brand has no establishments', function() {

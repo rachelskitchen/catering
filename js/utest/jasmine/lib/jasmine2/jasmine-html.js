@@ -120,6 +120,13 @@ jasmineRequire.HtmlReporter = function(j$) {
 
         for (var i = 0; i < result.failedExpectations.length; i++) {
           var expectation = result.failedExpectations[i];
+          //ee-dev
+          var button = createDom("div", {className: "info-button"}, 'i');
+          button.addEventListener('click', (function(){
+              console.log(expectation.stack);
+          }).bind(expectation));
+          messages.appendChild(button);
+          //end of ee-dev
           messages.appendChild(createDom("div", {className: "result-message"}, expectation.message));
           messages.appendChild(createDom("div", {className: "stack-trace"}, expectation.stack));
         }
@@ -155,7 +162,7 @@ jasmineRequire.HtmlReporter = function(j$) {
         var skippedMessage = "Ran " + specsExecuted + " of " + totalSpecsDefined + " specs - run all";
         alert.appendChild(
           createDom("span", {className: "bar skipped"},
-            createDom("a", {href: "?", title: "Run all specs"}, skippedMessage)
+            createDom("a", {href: "?" + (App.Data.devMode ? "dev=true" : ""), title: "Run all specs"}, skippedMessage) //ee-dev href fixed here
           )
         );
       }
@@ -265,9 +272,20 @@ jasmineRequire.HtmlReporter = function(j$) {
       return "" + count + " " + word;
     }
 
-    function specHref(result) {
+//ee-dev ---------------------------
+//old function:
+/*  function specHref(result) {
       return "?spec=" + encodeURIComponent(result.fullName);
+    } */
+//new function:
+    function specHref(result) {
+      var spec = "?"
+      if (App.Data.devMode) {
+          spec += "dev=true&";
+      }
+      return spec + "spec=" + encodeURIComponent(result.fullName);
     }
+//end of ee-dev
 
     function setMenuModeTo(mode) {
       htmlReporterMain.setAttribute("class", "html-reporter " + mode);

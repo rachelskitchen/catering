@@ -47,6 +47,8 @@ define(['js/utest/data/Geolocation', 'geolocation'], function(data) {
                 });
             });
 
+
+          if (!window._phantom) {
             it('navigator.geolocation exists, successful detecting', function() {
                 dfd = geolocation.detect_current_location();
                 expect(navigator.geolocation.getCurrentPosition).toHaveBeenCalled();
@@ -92,6 +94,7 @@ define(['js/utest/data/Geolocation', 'geolocation'], function(data) {
                 cssua.userAgent.firefox = ff;
                 geolocation.set('timeout', timeout);
             });
+          }
         });
 
         it('setCurLocation()', function() {

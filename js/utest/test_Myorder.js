@@ -607,7 +607,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             beforeEach(function() {
                 this.timetables = App.Data.timetables;
                 App.Data.timetables = {
-                    check_order_enable: function() {}
+                    check_order_enable: function() {},
+                    base: function() {}
                 };
                 App.Data.myorder.checkout = {
                     get: function() {}
@@ -2223,6 +2224,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 expect(model.models[1].get('discount').zero_discount).toHaveBeenCalled();
             });
 
+        if (!window._phantom) {
             it('product.combo_items', function() {
                 model.add(orders_combo, {silent: true});
                 var order_product = new App.Models.Product(),
@@ -2237,8 +2239,9 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 model.process_cart_totals(json_combo);
 
                 expect(product.get('combo_price')).toBe(5);
-                expect(model.models[0].get('product').set).toHaveBeenCalledWith('combo_price', 5);
+                expect(model.models[0].get('product').set).toHaveBeenCalledWith('combo_price', 25);
             });
+        }
 
             describe('json.service_fees', function() {
                 beforeEach(function() {
@@ -2324,7 +2327,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 App.Settings.server_time = 0;
                 model.checkout = new Backbone.Model({
                     dining_option: 'DINING_OPTION_ONLINE',
-                    pickupTS: pickup,
+                    pickupTS: pickup.getTime(),
                     isPickupASAP: false
                 });
                 model.checkout.set('dining_option', 'DINING_OPTION_TOGO');
@@ -2355,6 +2358,10 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 last_pt = new Date(2011, 10, 10);
                 spyOn(App.Data.timetables, 'getLastPTforWorkPeriod').and.callFake(function() {
                     return last_pt;
+                });
+
+                spyOn(window, 'getServerTimezoneOffset').and.callFake(function() {
+                    return 0;
                 });
 
                 createDate = format_date_1(new Date(new Date().getTime()));
@@ -2564,6 +2571,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     paymentInfo: {
                         tip: 1,
                         type: 2,
+                        tip_percent: 0,
                         cardInfo: {
                             firstDigits: '',
                             lastDigits: '',
@@ -2720,6 +2728,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     it('payment type is credit, customer is authorized, customer.doPayWithToken() is true', function() {
                         App.Data.customer.isAuthorized.and.returnValue(true);
                         App.Data.customer.doPayWithToken.and.returnValue(true);
+                        App.Data.customer.payments = new Backbone.Model;
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expectPayWithToken();
                     });
@@ -2728,6 +2737,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         App.Data.customer.isAuthorized.and.returnValue(true);
                         App.Data.customer.doPayWithToken.and.returnValue(false);
                         App.Data.card.toJSON.and.returnValue({rememberCard: true});
+                        App.Data.customer.payments = new Backbone.Model;
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expectPayWithToken();
                     });
@@ -2737,6 +2747,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                         App.Data.customer.doPayWithToken.and.returnValue(false);
                         App.Data.settings.get_payment_process.and.returnValue({credit_card_dialog: true});
                         App.Data.card.toJSON.and.returnValue({rememberCard: false, cardNumber: ''});
+                        App.Data.customer.payments = new Backbone.Model;
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
                         expectPayWithToken();
                     });
@@ -2823,11 +2834,11 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     checkout.pickupTime = 'pickup time';
 
                     model.submit_order_and_pay(PAYMENT_TYPE.CREDIT);
-                    expect(ajax.data.orderInfo.call_name).toBe('first name    last / pickup time / phone');
+                    expect(ajax.data.orderInfo.call_name).toBe('first name last / pickup time / phone');
                     expect(ajax.data.orderInfo.customer.phone).toBe('phone');
                     expect(ajax.data.orderInfo.customer.email).toBe('email');
                     expect(ajax.data.orderInfo.customer.first_name).toBe('first name');
-                    expect(ajax.data.orderInfo.customer.last_name).toBe('   last   ');
+                    expect(ajax.data.orderInfo.customer.last_name).toBe('last');
                 });
             });
 
@@ -2878,6 +2889,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
                         type : 2,
+                        tip_percent: 0,
                         cardInfo : {
                             firstDigits : '',
                             lastDigits : '',
@@ -2979,7 +2991,8 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     model.submit_order_and_pay(3);
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
-                        type : 3
+                        type : 3,
+                        tip_percent : 0
                     });
                 });
 
@@ -2993,6 +3006,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     expect(ajax.data.paymentInfo).toEqual({
                         tip : 1,
                         type : 3,
+                        tip_percent : 0,
                         payer_id : 'id',
                         payment_id : 'payment'
                     });
@@ -3101,7 +3115,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 it('customer.doPayWithGiftCard() returns false', function() {
                     App.Data.customer.doPayWithGiftCard.and.returnValue(false);
                     model.submit_order_and_pay(5);
-                    expect(ajax.data.paymentInfo.cardInfo).toEqual({cardNumber : '123', captchaKey : 'key', captchaValue : 'value'});
+                    expect(ajax.data.paymentInfo.cardInfo).toEqual({cardNumber : '123', captchaValue : 'value'});
                 });
             });
 
@@ -3341,9 +3355,11 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
 
                 describe('ajax error', function() {
+                    beforeEach(function() {
+                    });
+
                     it('general', function() {
                         dfd.reject();
-
                         expect(model.paymentResponse).toEqual({
                             status: 'ERROR',
                             errorMsg: MSG.ERROR_SUBMIT_ORDER
@@ -3361,9 +3377,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     });
 
                     it('`validationOnly` is false, `capturePhase` is true', function() {
+                        this.get_params = App.Data.get_parameters;
+                        App.Data.get_parameters = {
+                            pay: 'true',
+                            UMrefNum: 123456
+                        };
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, true);
                         dfd.reject();
-
+                        App.Data.get_parameters = this.get_params;
                         expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                         expect(model.paymentResponse.status).toBe('error');
                         expect(model.paymentResponse.capturePhase).toBe(true);
@@ -3419,8 +3440,12 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
             expect(model.remove).toHaveBeenCalled();
             expect(model.total.empty).toHaveBeenCalled();
-            expect(model.checkout.set).toHaveBeenCalledWith('dining_option', 'DINING_OPTION_ONLINE');
-            expect(model.checkout.set).toHaveBeenCalledWith('notes', '');
+            expect(model.checkout.set).toHaveBeenCalledWith({
+                dining_option: 'DINING_OPTION_ONLINE',
+                notes: '',
+                discount_code: '',
+                last_discount_code: ''
+            });
         });
 
         it('removeFreeModifiers()', function() {
@@ -3589,71 +3614,14 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
             });
         });
 
-        describe('setShippingAddress()', function() {
-            var checkout = new Backbone.Model(),
-                diningOption = '',
-                getShippingAddress, isProfileAddressSelected;
-
-            beforeEach(function() {
-                this.customer = App.Data.customer;
-                App.Data.customer = new Backbone.Model({
-                    shipping_address: -1,
-                    addresses: ['address 1', 'address 2'],
-                    shipping_selected: -1,
-                    shipping_services: ['shipping service 1', 'shipping service 2'],
-                    deliveryAddressIndex: 0,
-                    shippingAddressIndex: 1,
-                    cateringAddressIndex: 2
-                });
-                App.Data.customer.defaults = {
-                    shipping_address: -1
-                };
-                App.Data.customer.isProfileAddressSelected = jasmine.createSpy();
-                getShippingAddress = spyOn(model, 'getShippingAddress');
-            });
-
-            afterEach(function() {
-                App.Data.customer = this.customer;
-            });
-
-            it('App.Data.customer does not exist', function() {
-                App.Data.customer = undefined;
-                expect(model.setShippingAddress(checkout, diningOption)).toBeUndefined();
-            });
-
-            it('selected address is not from profile', function() {
-                diningOption = 'DINING_OPTION_DELIVERY';
-                shipping_address = App.Data.customer.get('deliveryAddressIndex');
-                expect(shipping_address).toBe(0);
-                getShippingAddress.and.returnValue(shipping_address);
-                App.Data.customer.isProfileAddressSelected.and.returnValue(false);
-
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
-                expect(model.getShippingAddress).toHaveBeenCalledWith(diningOption);
-                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
-            });
-
-            it('selected address is from profile', function() {
-                shipping_address = 4;
-                App.Data.customer.set('shipping_address', shipping_address, {silent: true});
-                diningOption = 'DINING_OPTION_DELIVERY';
-                getShippingAddress.and.returnValue(0);
-                App.Data.customer.isProfileAddressSelected.and.returnValue(true);
-
-                expect(model.setShippingAddress(checkout, diningOption)).toBe(shipping_address);
-                expect(model.getShippingAddress).not.toHaveBeenCalled();
-                expect(App.Data.customer.get('shipping_address')).toBe(shipping_address);
-            });
-        });
-
         describe('getCustomerAddress()', function() {
             var address;
 
             beforeEach(function() {
                 this.customer = App.Data.customer;
-
                 App.Data.customer = new Backbone.Model();
                 App.Data.customer.isDefaultShippingAddress = jasmine.createSpy();
+                App.Data.customer.getOrderAddress = jasmine.createSpy();
 
                 address = {
                     address: 'test',
@@ -3671,53 +3639,11 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 App.Data.customer = this.customer;
             });
 
-            it('shipping address is selected', function() {
-                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
-                App.Data.customer.set({
-                    shipping_address: 1,
-                    addresses: [undefined, address]
-                });
-
-                expect(model.getCustomerAddress()).toEqual(address);
-            });
-
-            it('shipping address is selected, some fields do not exist', function() {
-                App.Data.customer.isDefaultShippingAddress.and.returnValue(false);
-
-                delete address.address;
-                App.Data.customer.set({
-                    shipping_address: 1,
-                    addresses: [undefined, address]
-                });
-
-                address.address = '';
-                expect(model.getCustomerAddress()).toEqual(address);
-            });
-
-            it('shipping address is not selected, address with last index should be used', function() {
-                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
-                App.Data.customer.set({
-                    shipping_address: -1,
-                    addresses: [undefined, address]
-                });
-
-                expect(model.getCustomerAddress()).toEqual(address);
-            });
-
-            it('shipping address is not selected, address with last index should be used, extra fields should be ignored', function() {
-                App.Data.customer.isDefaultShippingAddress.and.returnValue(true);
-
-                address.id = 123;
-                App.Data.customer.set({
-                    shipping_address: -1,
-                    addresses: [undefined, undefined, undefined, address]
-                });
-
-                delete address.id;
+            it('getCustomerAddress', function() {
+                App.Data.customer.getOrderAddress.and.returnValue(address);
                 expect(model.getCustomerAddress()).toEqual(address);
             });
         });
-
     });
 
 //===============================================================

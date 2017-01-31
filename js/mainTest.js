@@ -15,6 +15,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
     // add skins
     skins.set('WEBORDER', 'weborder'); // add `weborder` skin
+    skins.set('RETAIL', 'retail');
     skins.set('WEBORDER_MOBILE', 'weborder_mobile'); // add `weborder` skin
     skins.set('PAYPAL', 'paypal', '../dev/skins/paypal'); // set `paypal` skin
     skins.set('MLB', 'mlb', '../dev/skins/mlb'); // set `mlb` skin
@@ -23,6 +24,12 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     // set REVEL_HOST
     //app.REVEL_HOST = window.location.origin;
     app.REVEL_HOST = 'https://weborder-dev-branch.revelup.com';
+
+    app.instances = {
+        "https://test.revelup.com": {
+            skin: skins['WEBORDER']
+        }
+    };
 
     if(!app.REVEL_HOST)
         return alert('REVEL_HOST is undefined. Please assign it in main.js file. (Need add app.REVEL_HOST = <url>;)');
@@ -52,7 +59,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         });
         settings.set({
             'img_path' : 'test/path/',
-            'settings_skin' : { img_default : 'test/img_default' },
+            //'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 14,
             'host': app.REVEL_HOST //'https://testHost.revelup.com'
         });
@@ -73,7 +80,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             });
         });
 
-        MockAjax(settings_data.defaults_initialized.settings_skin);
+        MockAjax(settings_data.initializing_tests.settings_skin);
         settings.set('settings_system', settings_data.all.settings_system);
         UnmockAjax();
         settings.set('settings_directory', settings_data.all.settings_directory);
@@ -100,7 +107,14 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
 
             if (App.Data.devMode == true) {
                 //starting the tests without code coverage testing:
+
+                /*jasmine.getEnv().addReporter({
+                    specStarted: function(result) {
+                        console.log(result.fullName);
+                    }
+                })*/
                 require(tests_list, function() {
+                    dbgSetAliases();
                     $(window).trigger('load');
                 });
             }
@@ -126,6 +140,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
                     $(document).ready(function() {
                         locale.dfd_load.done(function() {
                             require(tests_list, function(spec) {
+                                dbgSetAliases();
                                 window.onload();
                             });
                         });
