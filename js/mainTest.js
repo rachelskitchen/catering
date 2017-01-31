@@ -6,6 +6,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     app.config.paths['jasmine_blanket'] = "../core/js/utest/jasmine/lib/jasmine2/jasmine-blanket";
     app.config.paths['model_errors'] = "../core/js/models/errors"; // don't use 'errors' path in require([...]) because it should be used in test_Errors.js to be added in total coverage list
     app.config.paths['model_settings'] = "../core/js/models/settings"; // don't use 'settings' path in require([...]) because it should be used in test_Settings.js to be added in total coverage list
+    app.config.paths['deep-diff'] = "js/libs/deep-diff";
 
     app.config.shim['jasmine_blanket'] = {deps: ['blanket'],  exports: 'blanket'};
 
@@ -37,7 +38,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     // set config for require
     require.config(app.config);
 
-    require(['cssua', 'model_errors', 'tests_list', 'e2e_list', 'model_settings', 'tax', 'main_router', 'locale'], function() {
+    require(['cssua', 'deep-diff', 'model_errors', 'tests_list', 'e2e_list', 'model_settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();
         // hardcode English locale
         App.Data.get_parameters = {locale: 'en'};
@@ -59,7 +60,6 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         });
         settings.set({
             'img_path' : 'test/path/',
-            //'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 14,
             'host': app.REVEL_HOST //'https://testHost.revelup.com'
         });
@@ -115,6 +115,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
                 })*/
                 require(tests_list, function() {
                     dbgSetAliases();
+                    dbgSetAsyncHooks();
                     $(window).trigger('load');
                 });
             }
