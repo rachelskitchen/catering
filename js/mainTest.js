@@ -59,7 +59,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
         });
         settings.set({
             'img_path' : 'test/path/',
-            'settings_skin' : { img_default : 'test/img_default' },
+            //'settings_skin' : { img_default : 'test/img_default' },
             'establishment' : 14,
             'host': app.REVEL_HOST //'https://testHost.revelup.com'
         });
@@ -80,7 +80,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
             });
         });
 
-        MockAjax(settings_data.defaults_initialized.settings_skin);
+        MockAjax(settings_data.initializing_tests.settings_skin);
         settings.set('settings_system', settings_data.all.settings_system);
         UnmockAjax();
         settings.set('settings_directory', settings_data.all.settings_directory);
