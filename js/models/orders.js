@@ -372,7 +372,7 @@ define(["backbone", "myorder"], function(Backbone) {
          * @param {object} authorizationHeader - result of {@link App.Models.Customer#getAuthorizationHeader App.Data.customer.getAuthorizationHeader()} call
          * @returns {object} `itemsRequest` attribute's value.
          */
-        reorder: function(authorizationHeader) {
+        reorder: function(authorizationHeader, options) {
             var self = this,
                 itemsRequest = this.setItems(authorizationHeader);
 
@@ -387,7 +387,7 @@ define(["backbone", "myorder"], function(Backbone) {
                     order = _order.toJSON(),
                     items = _order.get('items'),
                     settings = App.Settings,
-                    myorder = App.Data.myorder,
+                    myorder = getOption(options, 'myorder', App.Data.myorder),
                     checkout = myorder.checkout,
                     paymentMethods = App.Data.paymentMethods,
                     addresses = App.Data.customer.get('addresses'),
@@ -467,7 +467,7 @@ define(["backbone", "myorder"], function(Backbone) {
                    myorder.add(App.Models.create(type).set(orderItem.toJSON()));
                 });
 
-                self.trigger('onReorderCompleted', changes);
+                self.trigger('onReorderCompleted', changes, myorder);
             }
         },
         /**
@@ -830,7 +830,7 @@ define(["backbone", "myorder"], function(Backbone) {
          * @param {number} order_id - order id
          * @return {Object} jQuery Deferred object.
          */
-        reorder: function(authorizationHeader, order_id) {
+        reorder: function(authorizationHeader, order_id, options) {
             var dfd = Backbone.$.Deferred(),
                 order = this.get(order_id),
                 self = this,
@@ -851,7 +851,7 @@ define(["backbone", "myorder"], function(Backbone) {
             return dfd;
 
             function reorder() {
-                var itemsReq = order.reorder(authorizationHeader);
+                var itemsReq = order.reorder(authorizationHeader, options);
                 itemsReq.done(dfd.resolve.bind(dfd));
                 itemsReq.fail(dfd.reject.bind(dfd));
             }

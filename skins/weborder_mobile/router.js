@@ -1116,9 +1116,7 @@ define(["main_router"], function(main_router) {
                             mod: 'List',
                             className: 'myorderList',
                             collection: orderCollection,
-                            disallow_edit: true,
-                            parent_mode: 'PastOrder',
-                            _to_all_subviews: ['parent_mode']
+                            disallow_edit: true
                         },
                         {
                             modelName: 'MyOrder',
@@ -1191,8 +1189,7 @@ define(["main_router"], function(main_router) {
 
             function update_data(order) {
                 orderModel.set(order.attributes);
-                orderCollection.checkout.set('notes', order.get('notes'));
-
+                /*orderCollection.checkout.set('notes', order.get('notes'));
                 order.get('items').each(function(orderItem) {
                     var modifiers = orderItem.get_modifiers();
 
@@ -1202,7 +1199,8 @@ define(["main_router"], function(main_router) {
                     }
 
                     orderCollection.add(orderItem);
-                });
+                });*/
+                customer.reorder(order_id, {myorder: orderCollection});
             }
 
             function check_order() {
