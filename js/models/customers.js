@@ -2417,13 +2417,13 @@ define(["backbone", "facebook", "js_cookie", "page_visibility", "giftcard", "ord
          * @param {number} order_id - order id
          * @returns {Object} jQuery Deffered object.
          */
-        reorder: function(order_id) {
+        reorder: function(order_id, options) {
             var self = this,
                 dfd = Backbone.$.Deferred();
 
             if (this.ordersRequest) {
                 this.ordersRequest.done(function() {
-                    var reorder = self.orders.reorder(self.getAuthorizationHeader(), order_id);
+                    var reorder = self.orders.reorder(self.getAuthorizationHeader(), order_id, options);
                     reorder.done(dfd.resolve.bind(dfd));
                     reorder.fail(dfd.reject.bind(dfd));
                 });

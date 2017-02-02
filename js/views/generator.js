@@ -62,7 +62,7 @@ define(['backbone'], function(Backbone) {
                 view = new App.Views[ViewClass + 'View'][ViewClass + options.mod + 'View'](options);
                 if(App.Views.Generator.enableCache && id) {
                     cache[id] = view;
-                    App.Data.devMode && view.$el.attr('x-cache-id', id);
+                    //App.Data.devMode && view.$el.attr('x-cache-id', id);
                 }
             }
 
