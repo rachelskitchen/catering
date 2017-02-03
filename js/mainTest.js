@@ -38,6 +38,8 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     // set config for require
     require.config(app.config);
 
+    App.dbgStackTrace = [];
+
     require(['cssua', 'deep-diff', 'model_errors', 'tests_list', 'e2e_list', 'model_settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();
         // hardcode English locale
