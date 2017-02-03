@@ -1922,7 +1922,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 this.getDiscountsTimeout = setTimeout(function() {
                     self.get_cart_totals(self.last_cart_totals_params); //update_cart_totals func can be called several times with different params during 500 ms interval.
                                                                         //The latest params should be used for get_cart_totals() result call.
-                }, 500);
+                }, 500, this);
             }
         },
         /**

@@ -1136,26 +1136,27 @@ define(["main_router"], function(main_router) {
                                     ok: _loc.YES
                                 },
                                 callback: function(res) {
-                                    res && reorderReq(cb);
+                                    res && updateCart(cb);
                                 }
                             });
                         }
                         else {
-                            reorderReq(cb);
+                            updateCart(cb);
                         }
                     }
                 }
 
-                function reorderReq(cb) {
-                    var reorderReq = customer.reorder(order_id);
-                    reorderReq.done(function() {
-                        var myorder = App.Data.myorder,
-                            removed = _.difference(myorder.pluck('id_product'), orderCollection.pluck('id_product'));
-                        removed.forEach(function(id_product) {
-                            myorder.remove(myorder.findWhere({id_product: id_product}));
-                        });
+                function updateCart(cb) {
+                    var myorder = App.Data.myorder;
+                    myorder.empty_myorder();
+                    orderCollection.forEach(function(model) {
+                        myorder.add(model);
                     });
-                    reorderReq.always(cb);
+                    myorder.checkout.set({
+                        notes: orderCollection.checkout.get('notes'),
+                        dining_option: orderCollection.checkout.get('dining_option')
+                    });
+                    cb();
                 }
             });
 
@@ -1189,17 +1190,6 @@ define(["main_router"], function(main_router) {
 
             function update_data(order) {
                 orderModel.set(order.attributes);
-                /*orderCollection.checkout.set('notes', order.get('notes'));
-                order.get('items').each(function(orderItem) {
-                    var modifiers = orderItem.get_modifiers();
-
-                    if (modifiers) {
-                        modifiers.invoke('reorderFreeModifiers');
-                        modifiers.trigger('modifiers_changed');
-                    }
-
-                    orderCollection.add(orderItem);
-                });*/
                 customer.reorder(order_id, {myorder: orderCollection});
             }
 
