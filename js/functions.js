@@ -2920,13 +2920,10 @@ function get_billing_address() {
 function dbgSetAsyncHooks() {
     var initSetTimeout = setTimeout;
     setTimeout = function() {
-        var curTrace;
-        if (!this.stackTrace) {
-            this.stackTrace = "";
-            curTrace = (new Error).stack;
-            this.stackTrace = curTrace + '\n' + this.stackTrace;
+        if (_.isObject(arguments[2])) {
+            arguments[2].stackTrace = (new Error).stack;
         }
-        initSetTimeout.apply(this, arguments);
+        return initSetTimeout.apply(this, arguments);
     }
 }
 /*
@@ -2934,11 +2931,16 @@ function dbgSetAsyncHooks() {
 */
 function logdiff(o1, o2) {
     if (!window.diff) {
-        window.diff = require('deep-diff');
+        require(['js/libs/deep-diff'], function(diff) {
+           window.diff = diff;
+           logdiff(o1, o2);
+        });
+        return;
     }
     var delta = diff(o1, o2);
     if (!delta) {
         console.log('no differences found');
+        return;
     }
     for (var i = 0; i < delta.length; i++ ) {
         console.log(delta[i].path, delta[i].kind, delta[i].lhs, delta[i].rhs);
