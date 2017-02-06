@@ -763,18 +763,15 @@ define(["backbone"], function(Backbone) {
          * @returns {array} an array of valid days with pickup time grids.
          */
         getPickupList: function(isDelivery, index_by_day_delta) {
-            var self = this, wh, check_day,
+            var self = this, check_day,
                 now = this.base(), key_index = 0,
                 day = now.getDay();
             var days = [];
             var date_range = App.Settings.online_order_date_range;
             for (var i = 0; i < date_range; i++) {
                 check_day = new Date(now.getTime() + i * MILLISECONDS_A_DAY);
-                wh = this.get_working_hours(check_day);
-                if (wh != false) {
-                    //if (!this.checking_work_shop(check_day, isDelivery)) {
-                    //    continue; //#56143 continue to find out the next day which user would make an order for.
-                    //}
+                var isToday = (i === 0);
+                if (this.isWorkingOnDay(check_day, isDelivery, isToday)) {
                     if (index_by_day_delta) {
                         index_by_day_delta[i] = key_index++;
                     }
@@ -817,6 +814,53 @@ define(["backbone"], function(Backbone) {
                     delta: ob_day.index
                 };
             }, self);
+        },
+        /**
+         * Check if the store is working on a specific day
+         * @param {Object} day
+         * @param {Boolean} isDelivery
+         * @param {Boolean} isToday
+         * return {Boolean}
+         */
+        isWorkingOnDay: function(day, isDelivery, isToday) {
+            var hours = this.get_working_hours(day);
+
+            if (!hours) {
+                return false;
+            }
+
+            var now = this.base().getTime(),
+                settings = App.Data.settings.get('settings_system'),
+                delivery_time = settings.estimated_delivery_time,
+                preparation_time = settings.estimated_order_preparation_time,
+                extra_time = (isDelivery ? delivery_time : preparation_time) * 60 * 1000; // in milliseconds
+
+            return hours.some(function(item) {
+                var has_am_pm = (item.from.search(/(am|pm)/i) !== -1);
+
+                var from = (has_am_pm ? new TimeFrm().load_from_str(item.from).toString('24 hour') : item.from).split(':'),
+                    from_h = parseInt(from[0]),
+                    from_m = parseInt(from[1]);
+
+                var to = (has_am_pm ? new TimeFrm().load_from_str(item.to).toString('24 hour') : item.to).split(':'),
+                    to_h = parseInt(to[0]),
+                    to_m = parseInt(to[1]);
+
+                day.setHours(from_h, from_m, 0, 0);
+                var start = day.getTime();
+
+                day.setHours(to_h, to_m, 0, 0);
+                var end = day.getTime();
+
+                var nowInside = isToday && start <= now && now <= end,
+                    duration = end - (nowInside ? now : start);
+
+                if (isToday && !nowInside && now > end) {
+                    duration = 0;
+                }
+
+                return (duration >= extra_time);
+            });
         },
         /**
          * Finds the last pickup time available for the working period later than 'curtime'.
