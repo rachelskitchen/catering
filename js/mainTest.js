@@ -6,7 +6,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     app.config.paths['jasmine_blanket'] = "../core/js/utest/jasmine/lib/jasmine2/jasmine-blanket";
     app.config.paths['model_errors'] = "../core/js/models/errors"; // don't use 'errors' path in require([...]) because it should be used in test_Errors.js to be added in total coverage list
     app.config.paths['model_settings'] = "../core/js/models/settings"; // don't use 'settings' path in require([...]) because it should be used in test_Settings.js to be added in total coverage list
-    app.config.paths['deep-diff'] = "js/libs/deep-diff";
+    app.config.paths['deep-diff'] = "../core/js/libs/deep-diff";
 
     app.config.shim['jasmine_blanket'] = {deps: ['blanket'],  exports: 'blanket'};
 
