@@ -464,10 +464,15 @@ define(["backbone", "myorder"], function(Backbone) {
                     } else {
                         type = 'Myorder';
                     }
-                   myorder.add(App.Models.create(type).set(orderItem.toJSON()));
+                    myorder.add(App.Models.create(type).set(orderItem.toJSON()));
                 });
 
-                self.trigger('onReorderCompleted', changes, myorder);
+                myorder.get_cart_totals().always( function() {
+                    if (parseFloat(myorder.total.get_subtotal()) != _order.get('subtotal')) {
+                        changes.push('Subtotal');
+                    }
+                    self.trigger('onReorderCompleted', changes, myorder);
+                });
             }
         },
         /**
@@ -606,7 +611,7 @@ define(["backbone", "myorder"], function(Backbone) {
                     modifier.modifiers = new_modifiers;
 
                     // Update selected modifiers
-                    if (product.max_price && !modifier.admin_modifier) {
+                /*  if (product.max_price && !modifier.admin_modifier) {
                         var is_price = modifier.amount_free_is_dollars,
                             amount_free = modifier.amount_free,
                             max_price = getMaxPrice(item),
@@ -662,7 +667,7 @@ define(["backbone", "myorder"], function(Backbone) {
                             }
                             max_price = (max_price > price) ? (max_price - price) : 0;
                         });
-                    }
+                    }*/
                 });
             }
 

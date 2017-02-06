@@ -299,7 +299,7 @@ define(["backbone"], function(Backbone) {
             if (this.get('price') !== actual_data.price) {
                 this.set('price', actual_data.price);
                 this.trigger('change:selected', this, this.get('selected')); // emulates modifier selection with new price
-                changes.push('price');
+                //changes.push('price'); //it does not work for free modifiers
             }
 
             // if modifier is inactive right now
