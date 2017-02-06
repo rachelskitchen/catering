@@ -495,12 +495,12 @@ define(["backbone"], function(Backbone) {
                     changes.push('active');
                 }
 
-                if (result.indexOf('price') > -1) {
+                /*if (result.indexOf('price') > -1) {
                     amount_free -= isPrice ? modifier.get('actual_data').price : 1;
                     free_remain = amount_free >= 0 ? 0 : isPrice ? Math.abs(amount_free) : undefined;
                     if(free_remain !== price)
                         changes.push('price');
-                }
+                }*/
             });
 
             return changes;

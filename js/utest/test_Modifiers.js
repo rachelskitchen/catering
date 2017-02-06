@@ -242,7 +242,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 model.once('change:selected', function() {
                     onSelected = true;
                 })
-                expect(model.reorder()).toEqual(['price']);
+                expect(model.reorder()).toEqual([]);
                 expect(model.get('price')).toBe(new_price);
                 expect(onSelected).toBe(true);
             });
@@ -482,7 +482,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                     price: 10,
                     selected: true
                 }]);
-                expect(model.reorder(1, false)).toEqual(['price']);
+                expect(model.reorder(1, false)).toEqual([]);
             });
 
             it('modifier\'s price changed, `amount_free` is 1, `isPrice` is false', function() {
@@ -497,7 +497,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 expect(model.reorder(1, false)).toEqual([]);
             });
 
-            it('modifier\'s price changed, `amount_free` is 0, `isPrice` is false', function() {
+        /*    it('modifier\'s price changed, `amount_free` is 0, `isPrice` is false', function() {
                 model.reset([{
                     actual_data: {
                         price: 11,
@@ -506,7 +506,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                     price: 0,
                     selected: true
                 }]);
-                expect(model.reorder(0, false)).toEqual(['price']);
+                expect(model.reorder(0, false)).toEqual([]);
             });
 
             it('modifier\'s price $0 changed to $2, `amount_free` is $1, `isPrice` is true', function() {
@@ -518,8 +518,8 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                     price: 0,
                     selected: true
                 }]);
-                expect(model.reorder(1, true)).toEqual(['price']);
-            });
+                expect(model.reorder(1, true)).toEqual([]);
+            }); */
         });
     });
 
@@ -1500,7 +1500,7 @@ define(['modifiers', 'js/utest/data/Modifiers'], function(modifiers, data) {
                 }
             ];
             model.addJSON(data);
-            expect(model.reorder().sort()).toEqual(['price', 'active', 'price'].sort());
+            expect(model.reorder().sort()).toEqual(['active'].sort());
         });
     });
 
