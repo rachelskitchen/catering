@@ -97,6 +97,7 @@
             paypal_iOS: /device=ios/.test(location.search),
             devMode: /dev=true/.test(location.search),
             devPath: /\/dev\//.test(location.href),
+            payLog: /trace=pay/.test(location.search),
             images: {},
             log: {},
             curLocale: 'en'
@@ -217,6 +218,8 @@
 
             App.Data.devMode && traceDeferredObjects();
 
+            App.Data.payLog && console.log("App started with params: ", parse_get_params());
+
             app.get = parse_get_params();
 
             // it's for testing:
@@ -238,6 +241,8 @@
             app.get['srv'] == '2-21' && (app.REVEL_HOST = 'https://2-21.revelup.com');
             app.get['srv'] == '2-22' && (app.REVEL_HOST = 'https://2-22.revelup.com');
             app.get['srv'] == 'rde' && (app.REVEL_HOST = 'https://rde.revelup.com');
+app.get['srv'] == 'qa2-oleg' && (app.REVEL_HOST = 'https://qa2-oleg.revelup.com');
+
 
             // Add 'no-focus-css' class to [tabindex] element when user clicks on it.
             // This class is used for :focus CSS disabling.
