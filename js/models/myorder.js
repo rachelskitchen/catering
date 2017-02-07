@@ -2350,6 +2350,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             $.extend(order_info.customer, customerData.payment_info);
 
             // process payment type
+            App.Data.payLog && trace("submit_order_and_pay: payment type is", paymentType2String(payment_type));
             var pt = PaymentProcessor.processPaymentType(payment_type, myorder);
             $.extend(payment_info, pt);
 
