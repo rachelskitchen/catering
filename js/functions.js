@@ -65,6 +65,27 @@ var PAYMENT_TYPE = {
     GIFT: 5,
     STANFORD: 6
 };
+/*
+*  Gets payment type string that is used for debug
+*/
+function paymentType2String(payment_type) {
+    switch (payment_type) {
+        case PAYMENT_TYPE.PAYPAL_MOBILE:
+            return "Paypal Mobile";
+        case PAYMENT_TYPE.CREDIT:
+            return "Credit Card";
+        case PAYMENT_TYPE.PAYPAL:
+            return "Paypal";
+        case PAYMENT_TYPE.NO_PAYMENT:
+            return "NO_PAYMENT";
+        case PAYMENT_TYPE.GIFT:
+            return "Gift";
+        case PAYMENT_TYPE.STANFORD:
+            return "STANFORD";
+        default:
+            return "Undefined"
+    }
+}
 
 var APP_STORE_NAME = {
     ios: 'apple-itunes-app',
@@ -1231,9 +1252,10 @@ function fistLetterToUpperCase(text) {
 /**
  * Trace function.
  */
-function trace() {
-    return console.log.apply(console, arguments);
-}
+//function trace() {
+//    return console.log.apply(console, arguments);
+//}
+window.trace = console.log.bind(window.console);
 
 /**
  * Formats time array as string.
@@ -1418,7 +1440,8 @@ var PaymentProcessor = {
             };
         }
 
-        payment_info = this.getPaymentProcessor(payment_type).processPayment(myorder, payment_info, pay_get_parameter);
+        var payment_processor = this.getPaymentProcessor(payment_type);
+        payment_info = payment_processor.processPayment(myorder, payment_info, pay_get_parameter);
         this.clearQueryString(payment_type);
 
         return payment_info;
@@ -1555,6 +1578,7 @@ var PaymentProcessor = {
         } else if (payment.globalcollect) {
             payment_processor = GlobalCollectPaymentProcessor;
         }
+        App.Data.payLog && trace("Credit card payment processor is:", payment_processor.name);
         return payment_processor;
     },
     /**
@@ -1909,11 +1933,13 @@ var MercuryPaymentProcessor = {
         var customer = App.Data.customer,
             payments = customer.payments;
 
+        App.Data.payLog && trace("processPayment, pay_get_parameter =", pay_get_parameter);
         if (pay_get_parameter) {
             var get_parameters = App.Data.get_parameters,
                 returnCode = Number(get_parameters.ReturnCode),
                 savedIgnoreSelectedToken = this.loadIgnoreSelectedToken();
 
+            App.Data.payLog && trace("processPayment, returnCode =", returnCode, MERCURY_RETURN_MESSAGE[returnCode]);
             if (pay_get_parameter === 'true' && returnCode == MERCURY_RETURN_CODE.SUCCESS) {
                 payment_info.transaction_id = get_parameters.PaymentID;
             } else {

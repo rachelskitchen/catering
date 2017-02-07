@@ -333,6 +333,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             }
         },
         pay: function() {
+            App.Data.payLog && trace("Router: processing #pay hash ...", App.Data.get_parameters);
             App.Data.myorder.submit_order_and_pay(App.Data.myorder.checkout.get('payment_type'), undefined, true);
         },
         loadData: function() {
@@ -689,6 +690,8 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
             // (it happens when user loses connection after return from payment processor, and the app reloads when the connection is restored)
             App.Data.get_parameters = _.extend({}, parse_get_params(), PaymentProcessor.getPaymentData());
 
+            App.Data.payLog && trace("Get payment GET params: ", App.Data.get_parameters);
+            App.Data.payLog && trace("Waiting for paymentResponse ...");
             this.listenTo(myorder, 'paymentResponse', function() {
                 var is_gift, card = App.Data.card,
                     giftcard = App.Data.giftcard,
@@ -2301,6 +2304,7 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
 
             // If payment transaction is in process need restore models at first.
             if(PaymentProcessor.isTransactionInProcess()) {
+                App.Data.payLog && trace("isTransactionInProcess = true");
                 this.loadData().then(fireInitializedEvent.bind(this));
             } else {
                 fireInitializedEvent.call(this);
