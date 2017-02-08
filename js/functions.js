@@ -1249,7 +1249,6 @@ function fistLetterToUpperCase(text) {
 //    return console.log.apply(console, arguments);
 //}
 window.trace = console.log.bind(window.console);
-
 /**
  * Formats time array as string.
  * @param   {array} time - array in format ["hh", "mm"], e.g. ["23", "59"]
@@ -1434,6 +1433,7 @@ var PaymentProcessor = {
         }
 
         var payment_processor = this.getPaymentProcessor(payment_type);
+        App.Data.payLog && trace("payment processor is:", payment_processor.name);
         payment_info = payment_processor.processPayment(myorder, payment_info, pay_get_parameter);
         this.clearQueryString(payment_type);
 
@@ -1466,8 +1466,17 @@ var PaymentProcessor = {
                     type: 'hidden'
                 }));
             }
+            App.Data.payLog && trace("Redirect to", action, getFormParams(newForm[0]));
+            newForm.appendTo(document.body).submit();
+        }
 
-          newForm.appendTo(document.body).submit();
+        function getFormParams(form) {
+            var pairs = [];
+            for ( var i = 0; i < form.elements.length; i++ ) {
+               var e = form.elements[i];
+               pairs.push(encodeURIComponent(e.name) + "=" + encodeURIComponent(e.value));
+            }
+            return pairs.join("&");
         }
 
         function processValue(value) {
@@ -1571,7 +1580,6 @@ var PaymentProcessor = {
         } else if (payment.globalcollect) {
             payment_processor = GlobalCollectPaymentProcessor;
         }
-        App.Data.payLog && trace("Credit card payment processor is:", payment_processor.name);
         return payment_processor;
     },
     /**
