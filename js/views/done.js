@@ -114,6 +114,7 @@ define(["backbone", "factory"], function(Backbone) {
                 reloadPageOnceOnline();
             } else {
                 this.model.trigger('onCheckout');
+                PaymentProcessor.completeTransaction();//#57520
             }
         },
         getPickupTime: function() {

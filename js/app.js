@@ -231,7 +231,7 @@
 
             App.Data.devMode && traceDeferredObjects();
 
-            App.Data.payLog && console.log("App started with params: ", parse_get_params());
+            App.Data.payLog && console.log("Application starts with GET params: ", parse_get_params());
 
             app.get = parse_get_params();
 

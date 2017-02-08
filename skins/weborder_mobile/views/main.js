@@ -283,6 +283,7 @@ define(["done_view", "generator"], function(done_view) {
             '.btnReturn': 'text: select(payment_success, _lp_FOOTER_RETURN_TO_MENU, _lp_RETURN_TO_ORDER_SUMMARY)'
         },
         return_menu: function() {
+            PaymentProcessor.completeTransaction();//#57520
             if (this.options.payment.get('success')) {
                 App.Data.myorder.empty_myorder();
                 App.Data.router.navigate('index', true);
