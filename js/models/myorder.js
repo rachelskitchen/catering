@@ -2423,9 +2423,11 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     }, 1000);
                     throw new Error("Payment processor didn't return transaction_id");
                 } else {
+                    var req_action = validationOnly ? "pre_validate/" : "create_order_and_pay_v1/";
+                    App.Data.payLog && trace("sending ajax", req_action, 'to server...');
                     req = $.ajax({
                         type: "POST",
-                        url: App.Data.settings.get("host") + "/weborders/" + (validationOnly ? "pre_validate/" : "create_order_and_pay_v1/"),
+                        url: App.Data.settings.get("host") + "/weborders/" + req_action,
                         data: myorder_json,
                         dataType: "json",
                         success: new Function(), // to override global ajax success handler
@@ -2444,7 +2446,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                 myorder.paymentResponse.capturePhase = capturePhase;
-
+                App.Data.payLog && trace("server replies with status", data.status);
                 switch(data.status) {
                     case "OK":
                         if (validationOnly) {
