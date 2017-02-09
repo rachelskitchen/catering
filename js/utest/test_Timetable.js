@@ -891,133 +891,104 @@ define(['js/utest/data/Timetable', 'timetable'], function(timetables) {
             var dateBase = new Date(2014, 0, 22);
 
             beforeEach(function() {
-                spyOn(model,'base').and.callFake(function() {
+                App.Settings.online_order_date_range = 100;
+
+                model.set({
+                    timetables: timetables.timetable4
+                });
+
+                spyOn(model, 'base').and.callFake(function() {
                     return new Date(dateBase);
                 });
-                App.Models.WorkingDay = this.working_day;
-                App.Settings.online_order_date_range = 100;
-                model.set({ timetables: timetables.timetable4 });
             });
 
             it('default params', function() {
                 var list = model.getPickupList();
-                expect(list.length).toEqual(5);//number of valid days (not holidays and not closed a full day)
-                expect(list[0].delta).toEqual(10); //10 is delta [in days] between Jan-22 to Feb-1 (first valid day from timetables.timetable)
-                expect(list[4].delta).toEqual(21); //21 is delta [in days] between Jan-22 to Feb-12 (first valid day from timetables.timetable)
+                expect(list.length).toEqual(2); // number of valid days (excluding holidays and closed days)
+                expect(list[0].delta).toEqual(19); // 19 is delta [in days] between Jan-22 to Feb-14 (first valid day from timetables.timetable4)
             });
 
-            it('out index_by_day_delta param', function() {
+            it('out `index_by_day_delta` param', function() {
                 var index_by_day_delta = {};
                 var list = model.getPickupList(false, index_by_day_delta);
+                expect(index_by_day_delta[19]).toEqual(0);
+            });
 
-                expect(index_by_day_delta[10]).toEqual(0); //10 is delta [in days] between Jan-22 to Feb-1 (first valid day from timetables.timetable)
-                expect(index_by_day_delta[21]).toEqual(4); //21 is delta [in days] between Jan-22 to Feb-12 (first valid day from timetables.timetable)
+            it('Test `weekDay` in result. Test other days', function() {
+                var pickup = model.getPickupList();
+                expect(pickup[0].weekDay).toBe('Monday, February 10th');
+                expect(pickup[1].weekDay).toBe('Wednesday, February 12th');
+            });
+
+            it('Test `weekDay` in result. Test `Today`', function() {
+                dateBase = new Date(2014, 1, 10);
+                var pickup = model.getPickupList();
+                expect(pickup[0].weekDay).toBe('Today');
+            });
+
+            it('Test `weekDay` in result. Test `Tomorrow`', function() {
+                dateBase = new Date(2014, 1, 9);
+                var pickup = model.getPickupList();
+                expect(pickup[0].weekDay).toBe('Tomorrow');
+            });
+
+            it('Test weekDay in result. Test 1st, 2nd, 3rd dates', function() {
+                dateBase = new Date(2013, 11, 30);
+                var pickup = model.getPickupList();
+                expect(pickup[0].weekDay).toBe('Wednesday, January 1st');
+                expect(pickup[1].weekDay).toBe('Thursday, January 2nd');
+                expect(pickup[2].weekDay).toBe('Friday, January 3rd');
             });
         });
 
-        describe('getPickupList() #2', function() {
-            var date = new Date(2014, 0, 22),
-                dateBase,
-                counter, getTimetable,
-                table;
+        describe('isWorkingOnDay()', function() {
+            var day, isDelivery, isToday;
 
             beforeEach(function() {
-                model.set({ timetables: timetables.timetable5 });
-                App.Settings.online_order_date_range = 7;
+                day = new Date();
+                isDelivery = false;
+                isToday = false;
 
-                spyOn(model,'base').and.callFake(function() {
-                    return new Date(dateBase);
-                });
-                spyOn(model,'get_working_hours').and.callFake(function() {
-                    return table();
-                });
-                spyOn(model.workingDay,'update');
-                spyOn(model.workingDay,'pickupTimeOptions').and.returnValue('pickup');
+                App.Settings.estimated_delivery_time = 60;
+                App.Settings.estimated_order_preparation_time = 30;
 
-                dateBase = new Date(date);
-                getTimetable = deepClone(timetables.getTimetable);
-                counter = 1;
-                table = function() { return counter++; };
+                spyOn(model, 'base').and.returnValue(
+                    new Date(new Date().setHours(13, 0, 0, 0))
+                );
             });
 
-            it('get_working_hours calls', function() {
-                model.getPickupList();
-                var calls = model.get_working_hours.calls.allArgs(); // check get_working_hours calls
-                expect(calls.length).toBe(7*2);
+            it('`this.get_working_hours()` returns `false`. Should return `false`', function() {
+                var hours = false;
+                spyOn(model, 'get_working_hours').and.returnValue(hours);
+                expect(model.isWorkingOnDay()).toEqual(false);
             });
 
-            it('update calls', function() {
-                model.getPickupList();
-                var calls = model.workingDay.update.calls.allArgs(); // check get_working_hours calls
-                expect(calls.length).toBe(7);
-                expect(calls.filter(function(element, i) {
-                    return !(element[0].curTime.getTime() === date.getTime());
-                }).length).toBe(0);
+            it('`isToday` is true and `now` is within hours range. Should return `true`', function() {
+                isToday = true;
+                var hours = [{ from: '9:00', to: '14:00' }];
+                spyOn(model, 'get_working_hours').and.returnValue(hours);
+                expect(model.isWorkingOnDay(day, isDelivery, isToday)).toEqual(true);
             });
 
-            it('pickupTimeOptions calls', function() {
-                model.getPickupList();
-                var calls = model.workingDay.pickupTimeOptions.calls.allArgs(); // check get_working_hours calls
-                expect(calls.length).toBe(7);
-                expect(calls.filter(function(element, i) {
-                    return !(i === 0 && element[0] === true || true); // only first call with arguments today.
-                }).length).toBe(0);
+            it('`isToday` is true and `now` is out of hours range. Should return `false`', function() {
+                isToday = true;
+                var hours = [{ from: '8:00am', to: '11:00am' }];
+                spyOn(model, 'get_working_hours').and.returnValue(hours);
+                expect(model.isWorkingOnDay(day, isDelivery, isToday)).toEqual(false);
             });
 
-            it('pickupTimeOptions calls isDelivery = true', function() {
-                model.getPickupList(true);
-                var calls = model.workingDay.pickupTimeOptions.calls; // check get_working_hours calls
-                expect(calls.mostRecent().args[0].isDelivery).toBe(true);
+            it('`isToday` and `isDelivery` are true and `delivery_time` is greater than time range. Should return `false`', function() {
+                isDelivery = true;
+                isToday = true;
+                var hours = [{ from: '12:30', to: '13:30' }];
+                spyOn(model, 'get_working_hours').and.returnValue(hours);
+                expect(model.isWorkingOnDay(day, isDelivery, isToday)).toEqual(false);
             });
 
-            it('test workingDay and date attribute in result', function() {
-                var pickup = model.getPickupList();
-                expect(pickup.length).toBe(7);
-                expect(pickup.filter(function(element) {
-                    return element.workingDay !== 'pickup';
-                }).length).toBe(0);
-                expect(pickup.filter(function(element, i) {
-                    return !(element.date.getTime() === new Date(date.getTime() + 24 * 60 * 60 * 1000 * i).getTime());
-                }).length).toBe(0);
-            });
-
-            it('test weekDay in result. Test today, tomorrow', function() {
-                var pickup = model.getPickupList();
-                expect(pickup[0].weekDay).toBe('Today');
-                expect(pickup[1].weekDay).toBe('Tomorrow');
-            });
-
-            it('test weekDay in result. Test 1st, 2nd, 3rd, 4th', function() {
-                dateBase = new Date(2014, 0, 30);
-                var pickup = model.getPickupList();
-                expect(pickup[2].weekDay).toBe('Saturday, February 1st');
-                expect(pickup[3].weekDay).toBe('Sunday, February 2nd');
-                expect(pickup[4].weekDay).toBe('Monday, February 3rd');
-                expect(pickup[5].weekDay).toBe('Tuesday, February 4th');
-            });
-
-            it('test weekDay in result. Test 11th, 12th, 13th', function() {
-                dateBase = new Date(2014, 0, 9);
-                var pickup = model.getPickupList();
-                expect(pickup[2].weekDay).toBe('Saturday, January 11th');
-                expect(pickup[3].weekDay).toBe('Sunday, January 12th');
-                expect(pickup[4].weekDay).toBe('Monday, January 13th');
-                expect(pickup[5].weekDay).toBe('Tuesday, January 14th');
-            });
-
-            it('test weekDay in result. Test 21st, 22nd, 23rd, 24th', function() {
-                dateBase = new Date(2014, 0, 19);
-                var pickup = model.getPickupList();
-                expect(pickup[2].weekDay).toBe('Tuesday, January 21st');
-                expect(pickup[3].weekDay).toBe('Wednesday, January 22nd');
-                expect(pickup[4].weekDay).toBe('Thursday, January 23rd');
-                expect(pickup[5].weekDay).toBe('Friday, January 24th');
-            });
-
-            it('test weekDay in result. Test 31st', function() {
-                dateBase = new Date(2014, 0, 29);
-                var pickup = model.getPickupList();
-                expect(pickup[2].weekDay).toBe('Friday, January 31st');
+            it('`isToday` is false and there is hours range. Should return `true`', function() {
+                var hours = [{ from: '8:00', to: '12:00' }];
+                spyOn(model, 'get_working_hours').and.returnValue(hours);
+                expect(model.isWorkingOnDay(day, isDelivery, isToday)).toEqual(true);
             });
         });
 
