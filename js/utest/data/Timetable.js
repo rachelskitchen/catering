@@ -183,8 +183,21 @@ define([], function() {
         "timetable4": [
             {
                 "from_date": "Jan, 1",
-                "to_date": "Jan, 1",
-                "timetable_data": {}
+                "to_date": "Jan, 5",
+                "timetable_data": {
+                    "wednesday" : [{
+                        "from": "00:00",
+                        "to": "23:59"
+                    }],
+                    "thursday": [{
+                        "from": "00:00",
+                        "to": "23:59"
+                    }],
+                    "friday": [{
+                        "from": "00:00",
+                        "to": "23:59"
+                    }]
+                }
             },
             {
                 "from_date": "Feb, 1",
