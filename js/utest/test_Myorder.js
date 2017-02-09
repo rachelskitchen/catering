@@ -2078,7 +2078,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                 });
                 model._get_cart_totals({apply_discount: true});
 
-                expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_GET_DISCOUNTS) > -1).toBe(true);
+                expect(App.Data.errors.alert.calls.mostRecent().args[0].indexOf(MSG.ERROR_GET_CART_TOTALS) > -1).toBe(true);
             });
 
             it('params.apply_discount is true, checkout.discount_code exists', function() {
