@@ -2049,6 +2049,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                             if (myorder.get_only_product_quantity() > 0) {
                                 myorder.process_cart_totals(data.data);
                             }
+                            myorder.previousError = "OK";
                             break;
                         case "DISCOUNT_CODE_NOT_FOUND":
                         case "DISCOUNT_CODE_NOT_APPLICABLE":
@@ -2064,7 +2065,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 },
                 error: function(xhr) {
                     if (xhr.statusText != "abort") {
-                        reportErrorFrm(MSG.ERROR_GET_DISCOUNTS);
+                        reportErrorFrm(MSG.ERROR_GET_CART_TOTALS);
                     }
                 },
                 complete: function(xhr) {
@@ -2088,7 +2089,14 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
             return request;
 
             function reportErrorFrm(message) {
-                if (is_apply_discount) App.Data.errors.alert(message); // user notification
+                if (is_apply_discount) {
+                    App.Data.errors.alert(message); // user notification
+                    return;
+                }
+                if (myorder.previousError != message) {
+                    myorder.previousError = message;
+                    App.Data.errors.alert(message);
+                }
             }
         },
         /**
