@@ -1248,10 +1248,8 @@ function fistLetterToUpperCase(text) {
 /**
  * Trace function.
  */
-//function trace() {
-//    return console.log.apply(console, arguments);
-//}
 window.trace = console.log.bind(window.console);
+
 /**
  * Formats time array as string.
  * @param   {array} time - array in format ["hh", "mm"], e.g. ["23", "59"]
