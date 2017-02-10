@@ -823,10 +823,11 @@ define(["backbone"], function(Backbone) {
          * return {Boolean}
          */
         isWorkingOnDay: function(day, isDelivery, isToday) {
-            var hours = this.get_working_hours(day);
+            var hours = this.get_working_hours(day),
+                result = false;
 
-            if (!hours) {
-                return false;
+            if (!(hours instanceof Array) || !hours.length) {
+                return result;
             }
 
             var now = this.base().getTime(),
@@ -834,10 +835,12 @@ define(["backbone"], function(Backbone) {
                 preparation_time = App.Settings.estimated_order_preparation_time,
                 extra_time = (isDelivery ? delivery_time : preparation_time) * 60 * 1000; // in milliseconds
 
-            var result = false;
-
             for(var i in hours) {
                 var item = hours[i];
+
+                if (typeof item !== 'object') {
+                    break;
+                }
 
                 var has_am_pm = (item.from.search(/(am|pm)/i) !== -1);
 
@@ -869,33 +872,6 @@ define(["backbone"], function(Backbone) {
             }
 
             return result;
-
-            // return hours.some(function(item) {
-            //     var has_am_pm = (item.from.search(/(am|pm)/i) !== -1);
-
-            //     var from = (has_am_pm ? new TimeFrm().load_from_str(item.from).toString('24 hour') : item.from).split(':'),
-            //         from_h = parseInt(from[0]),
-            //         from_m = parseInt(from[1]);
-
-            //     var to = (has_am_pm ? new TimeFrm().load_from_str(item.to).toString('24 hour') : item.to).split(':'),
-            //         to_h = parseInt(to[0]),
-            //         to_m = parseInt(to[1]);
-
-            //     day.setHours(from_h, from_m, 0, 0);
-            //     var start = day.getTime();
-
-            //     day.setHours(to_h, to_m, 0, 0);
-            //     var end = day.getTime();
-
-            //     var nowInside = isToday && start <= now && now <= end,
-            //         duration = end - (nowInside ? now : start);
-
-            //     if (isToday && !nowInside && now > end) {
-            //         duration = 0;
-            //     }
-
-            //     return (duration >= extra_time);
-            // });
         },
         /**
          * Finds the last pickup time available for the working period later than 'curtime'.
