@@ -957,8 +957,14 @@ define(['js/utest/data/Timetable', 'timetable'], function(timetables) {
                 );
             });
 
-            it('`this.get_working_hours()` returns `false`. Should return `false`', function() {
+            it('`hours` is `false`. Should return `false`', function() {
                 var hours = false;
+                spyOn(model, 'get_working_hours').and.returnValue(hours);
+                expect(model.isWorkingOnDay()).toEqual(false);
+            });
+
+            it('`hours` is an empty array. Should return `false`', function() {
+                var hours = [];
                 spyOn(model, 'get_working_hours').and.returnValue(hours);
                 expect(model.isWorkingOnDay()).toEqual(false);
             });
@@ -972,7 +978,7 @@ define(['js/utest/data/Timetable', 'timetable'], function(timetables) {
 
             it('`isToday` is true and `now` is out of hours range. Should return `false`', function() {
                 isToday = true;
-                var hours = [{ from: '8:00am', to: '11:00am' }];
+                var hours = [{ from: '8:00', to: '11:00' }];
                 spyOn(model, 'get_working_hours').and.returnValue(hours);
                 expect(model.isWorkingOnDay(day, isDelivery, isToday)).toEqual(false);
             });
