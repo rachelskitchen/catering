@@ -978,7 +978,7 @@ define(['js/utest/data/Timetable', 'timetable'], function(timetables) {
 
             it('`isToday` is true and `now` is out of hours range. Should return `false`', function() {
                 isToday = true;
-                var hours = [{ from: '8:00', to: '11:00' }];
+                var hours = [{ from: '8:00am', to: '11:00am' }];
                 spyOn(model, 'get_working_hours').and.returnValue(hours);
                 expect(model.isWorkingOnDay(day, isDelivery, isToday)).toEqual(false);
             });
