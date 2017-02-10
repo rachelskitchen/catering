@@ -137,6 +137,15 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
                        console.log( "Total coverage: " + ((cover.numberOfFilesCovered * 100) / cover.totalSmts).toFixed(2) + "%" );
                     }
 
+                     var reporterCurrentSpec = {
+                        specStarted: function(result) {
+                            if (/App.Models.Settings/.test(result.fullName)) { //to find a potential bug with delivery_charge
+                                App.dbgStackTrace.push({ testName: result.fullName});
+                            }
+                        }
+                    };
+                    jasmine.getEnv().addReporter(reporterCurrentSpec);
+
                     $(document).ready(function() {
                         locale.dfd_load.done(function() {
                             require(tests_list, function(spec) {
