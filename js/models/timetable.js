@@ -177,8 +177,9 @@ define(["backbone"], function(Backbone) {
          */
         _pickupTimesForPeriod: function(period, isDelivery) {
             var start_minutes, end_minutes,
-                start_interval = this.start_time + (isDelivery ? this.delivery_time : this.preparation_time),
-                end_interval = this.end_time - (isDelivery ? this.delivery_time : this.preparation_time),
+                extra_time = (isDelivery ? this.delivery_time : this.preparation_time),
+                start_interval = this.start_time + extra_time,
+                end_interval = (extra_time > this.end_time) ? extra_time : this.end_time - extra_time,
                 options = [];
 
             if (period === "all-the-day") {
