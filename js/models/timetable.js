@@ -313,50 +313,46 @@ define(["backbone"], function(Backbone) {
                 t = new TimeFrm(0, 0),
                 isToday = params.today,
                 asap = false,
-                offest = (this.get_dining_offset(isDelivery) / 60 / 1000),
+                offset = (this.get_dining_offset(isDelivery) / 60 / 1000),
                 asap_text = _loc['TIME_PREFIXES']['ASAP'];
 
-
-            if (offest > 0) {
-                asap_text += ' (' + offest + ' ' + _loc['TIME_PREFIXES']['MINUTES'] + ')';
+            if (offset > 0) {
+                asap_text += ' (' + offset + ' ' + _loc['TIME_PREFIXES']['MINUTES'] + ')';
             }
+
             // get pickup times grid potentially suited for the day
             var times = this._pickupSumTimes(isDelivery);
 
             if (isToday && times.length !== 0) {
                 var curdate = new Date(this.get('curTime').getTime() + this.get_dining_offset(isDelivery)),
-                    cur_min = curdate.getHours() * 60 + curdate.getMinutes(),
-                    i, j;
+                    cur_min = curdate.getHours() * 60 + curdate.getMinutes();
 
-                while (times[0] <= cur_min) {
-                    if (this.enable_asap) {
-                        asap = true;
-                    }
-                    times.shift();
-                }
+                times = times.filter(function(value) {
+                    return value > cur_min;
+                });
+
+                asap = times.length && (times[0] - cur_min) < offset;
             }
-
-            var work_shop = this.checking_work_shop(isDelivery);
 
             if (times.length === 0) {
-                if (isToday && work_shop) {
-                    this.set("options", [asap_text]);
-                    return this.get("options");
-                } else {
-                    this.set("options", ["closed"]);
-                    return this.get("options");
-                }
+                var work_shop = this.checking_work_shop(isDelivery);
+
+                this.set({
+                    options: (isToday && work_shop) ? [asap_text] : ['closed']
+                });
+
+                return this.get('options');
             }
 
-            if (asap) {
-                options.push(asap_text);
-            }
-
-            for (i = 0, j = times.length; i < j; i++) {
+            for (var i = 0; i < times.length; i++) {
                 options.push(t.set_minutes(times[i]).toString());
             }
 
-            this.set("options", options);
+            if (asap) {
+                options[0] = asap_text;
+            }
+
+            this.set('options', options);
             return options;
         },
         /**
