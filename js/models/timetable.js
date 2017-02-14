@@ -331,7 +331,7 @@ define(["backbone"], function(Backbone) {
                     return value > cur_min;
                 });
 
-                asap = times.length && (times[0] - cur_min) < offset;
+                asap = times.length && (times[0] - cur_min) < Math.max(offset, App.Settings.online_order_time_slot);
             }
 
             if (times.length === 0) {
@@ -344,12 +344,10 @@ define(["backbone"], function(Backbone) {
                 return this.get('options');
             }
 
+            asap && options.push(asap_text);
+
             for (var i = 0; i < times.length; i++) {
                 options.push(t.set_minutes(times[i]).toString());
-            }
-
-            if (asap) {
-                options[0] = asap_text;
             }
 
             this.set('options', options);
