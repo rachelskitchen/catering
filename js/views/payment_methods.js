@@ -33,6 +33,18 @@ define(["factory"], function(factory) {
         onEnterListeners: {
             '.payment': 'selectPayment'
         },
+        initialize: function() {
+            App.Views.FactoryView.prototype.initialize.apply(this, arguments);
+
+            this.listenTo(this.getBinding('$orderItems'), 'change:hasGiftCard', function(model, value) {
+                var selected = this.getBinding('selected'),
+                    payments = this.getBinding('available_payments');
+
+                if (value && selected === 'stanford') {
+                    this.setBinding('selected', payments[0]);
+                }
+            }, this);
+        },
         bindings: {
             '.cash': 'text: cash',
             '.payment-systems': 'css: { display: select(equal(selected, "credit_card_button"), "", "none") }',
