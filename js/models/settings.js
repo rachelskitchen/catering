@@ -174,7 +174,7 @@ define(["backbone", "async"], function(Backbone) {
              * @type {Number}
              * @default 60000
              */
-            timeout: 60000,
+            timeout: 180000, //#58172
             /**
              * Indicates that app is in maintenance mode.
              * @type {Boolean}
