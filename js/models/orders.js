@@ -27,7 +27,7 @@
  * @requires module:backbone
  * @see {@link module:config.paths actual path}
  */
-define(["backbone", "myorder"], function(Backbone) {
+define(["backbone"], function(Backbone) {
     'use strict';
 
     /**

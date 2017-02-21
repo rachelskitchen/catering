@@ -2963,7 +2963,8 @@ function dbgSetAsyncHooks() {
 */
 function logdiff(o1, o2) {
     if (!window.diff) {
-        require(['deep-diff'], function(diff) {
+        var deep_diff = ['deep_diff'];
+        require(deep_diff, function(diff) {
            window.diff = diff;
            logdiff(o1, o2);
         });

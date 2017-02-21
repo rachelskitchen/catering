@@ -7,7 +7,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
     app.config.paths['e2e_list'] = "js/utest/_e2e_list";
     app.config.paths['blanket'] = "js/utest/jasmine/lib/jasmine2/blanket";
     app.config.paths['jasmine_blanket'] = "js/utest/jasmine/lib/jasmine2/jasmine-blanket";
-    app.config.paths['deep-diff'] = "js/libs/deep-diff";
+    app.config.paths['deep_diff'] = "js/libs/deep-diff";
 
     app.config.shim['jasmine_blanket'] = {deps: ['blanket'],  exports: 'blanket'};
 
@@ -42,7 +42,7 @@ require(['app', 'js/utest/data/Settings'], function(app, settings_data) {
     App.unitTest = true;
     App.dbgStackTrace = [];
 
-    require(['cssua', 'deep-diff', 'functions', 'errors', 'backbone_epoxy', 'tests_list', 'e2e_list', 'settings', 'tax', 'locale', 'about'], function() { //, 'e2e_list', 'settings', 'tax', 'main_router', 'locale'
+    require(['cssua', 'deep_diff', 'functions', 'errors', 'backbone_epoxy', 'tests_list', 'e2e_list', 'settings', 'tax', 'locale', 'about'], function() { //, 'e2e_list', 'settings', 'tax', 'main_router', 'locale'
 
         console.log("mainAutoTest: step #2 ==>");
 
