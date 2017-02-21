@@ -235,8 +235,8 @@
             app.get['srv'] == '2-21' && (app.REVEL_HOST = 'https://2-21.revelup.com');
             app.get['srv'] == '2-22' && (app.REVEL_HOST = 'https://2-22.revelup.com');
             app.get['srv'] == '2-23' && (app.REVEL_HOST = 'https://2-23.revelup.com');
-            app.get['srv'] == '2-23' && (app.REVEL_HOST = 'https://2-24.revelup.com');
-            app.get['srv'] == '2-23' && (app.REVEL_HOST = 'https://2-25.revelup.com');
+            app.get['srv'] == '2-24' && (app.REVEL_HOST = 'https://2-24.revelup.com');
+            app.get['srv'] == '2-25' && (app.REVEL_HOST = 'https://2-25.revelup.com');
             app.get['srv'] == 'rde' && (app.REVEL_HOST = 'https://rde.revelup.com');
             app.get['srv'] == 'qa2-oleg' && (app.REVEL_HOST = 'https://qa2-oleg.revelup.com');
 
