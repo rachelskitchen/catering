@@ -19,7 +19,7 @@ define([], function() {
                 }
             },
             "settings_system": {},
-            "timeout": 60000,
+            "timeout": 180000,
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
@@ -45,7 +45,7 @@ define([], function() {
                 }
             },
             "settings_system": {},
-            "timeout": 60000,
+            "timeout": 180000,
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
@@ -54,7 +54,6 @@ define([], function() {
             "coreBasePath": window._phantom ? "base" : ".",
             "hostname": "weborder-dev-branch.revelup.com"
         },
-
         "all": {
             "supported_skins": ["weborder", "weborder_mobile", "retail", "paypal", "mlb", "directory_mobile", "directory"],
             "brand": 1,
@@ -234,7 +233,7 @@ define([], function() {
                 "main_header_subtitle": null,
                 "mobile_main_header_title": null
             },
-            "timeout": 60000,
+            "timeout": 180000,
             "isMaintenance": false,
             "maintenanceMessage": "",
             "version": 1.06,
