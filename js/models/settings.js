@@ -172,9 +172,9 @@ define(["backbone", "async"], function(Backbone) {
             /**
              * Ajax timeout in milliseconds.
              * @type {Number}
-             * @default 60000
+             * @default 180000
              */
-            timeout: 180000, //#58172
+            timeout: 180000, //#58172, it was 60000 only.
             /**
              * Indicates that app is in maintenance mode.
              * @type {Boolean}
