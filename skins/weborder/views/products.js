@@ -199,7 +199,9 @@ define(['products_view'], function(products_view) {
             App.Views.FactoryView.prototype.initialize.apply(this, arguments);
         },
         bindings: {
-            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
+            '.price': 'classes: {"gift-amount": giftMode, "product-price": not(giftMode)}, attr: {size: length(monetaryFormat(product_price)), \
+                       readonly: not(giftMode)}, restrictInput: "0123456789.,", kbdSwitcher: select(_product_is_gift, "float", "text"), \
+                       pattern: /^\\d{0,3}(\\.\\d{0,2})?$/',
             '.product-price': 'value: monetaryFormat(product_price)',
             '.gift-amount': 'value: monetaryFormat(price), events: ["input"]',
             '.currency': 'text: _system_settings_currency_symbol',
