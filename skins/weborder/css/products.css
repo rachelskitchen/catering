@@ -189,6 +189,7 @@
     top: 0;
     left: 0;
     text-align: center;
+    background: transparent;
 }
 
 .price-wrapper.product-price-wrapper {
