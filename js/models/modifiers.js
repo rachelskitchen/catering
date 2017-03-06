@@ -487,20 +487,11 @@ define(["backbone"], function(Backbone) {
                 self = this;
 
             this.where({selected: true}).forEach(function(modifier) {
-                var price = modifier.get('price'),   // should be before reorder() call
-                    result = modifier.reorder(),
-                    free_remain;
+                var result = modifier.reorder();
 
                 if (result.indexOf('active') > -1) {
                     changes.push('active');
                 }
-
-                /*if (result.indexOf('price') > -1) {
-                    amount_free -= isPrice ? modifier.get('actual_data').price : 1;
-                    free_remain = amount_free >= 0 ? 0 : isPrice ? Math.abs(amount_free) : undefined;
-                    if(free_remain !== price)
-                        changes.push('price');
-                }*/
             });
 
             return changes;

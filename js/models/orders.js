@@ -468,8 +468,8 @@ define(["backbone"], function(Backbone) {
                 });
 
                 myorder.get_cart_totals().always( function() {
-                    if (parseFloat(myorder.total.get_subtotal()) != _order.get('subtotal')) {
-                        changes.push('Subtotal');
+                    if (parseFloat(myorder.total.get_total()) != _order.get('final_total')) {
+                        changes.push('FinalTotal');
                     }
                     self.trigger('onReorderCompleted', changes, myorder);
                 });
@@ -609,65 +609,6 @@ define(["backbone"], function(Backbone) {
                     });
 
                     modifier.modifiers = new_modifiers;
-
-                    // Update selected modifiers
-                /*  if (product.max_price && !modifier.admin_modifier) {
-                        var is_price = modifier.amount_free_is_dollars,
-                            amount_free = modifier.amount_free,
-                            max_price = getMaxPrice(item),
-                            qty_total = 0;
-
-                        _.where(modifier.modifiers, { selected: true }).forEach(function(m) {
-                            var half_price_koeff = (m.qty_type > 0) ? 0.5 : 1,
-                                qty = m.qty * half_price_koeff;
-
-                            // Updates free items with free price set
-                            if (is_price) {
-                                var mdf_price_sum = model.getSum(m, m.qty);
-
-                                if (amount_free == 0) {
-                                    m.free_amount = undefined;
-                                }
-                                else if (amount_free < mdf_price_sum) {
-                                    m.free_amount = round_monetary_currency(mdf_price_sum - amount_free) * 1;
-                                    amount_free = 0;
-                                }
-                                else {
-                                    m.free_amount = 0;
-                                    amount = round_monetary_currency(amount_free - mdf_price_sum);
-                                }
-                            }
-                            // Updates free items with free quantity set
-                            else {
-                                qty_total += qty;
-
-                                if (qty_total <= amount_free) {
-                                    m.free_amount = 0;
-                                }
-                                else {
-                                    var delta = qty_total - amount_free;
-
-                                    if (delta.toFixed(1)*1 < qty) {
-                                        m.free_amount = round_monetary_currency(delta * m.price) * 1;
-                                    }
-                                    else {
-                                        m.free_amount = undefined;
-                                    }
-                                }
-                            }
-
-                            // Updates modifiers price according to "Max Price" feature
-                            var price = m.free_amount != undefined ? m.free_amount : getSum(m, qty);
-
-                            if (price > max_price) {
-                                m.max_price_amount = max_price;
-                            }
-                            if (m.actual_data && m.price < m.actual_data.price) {
-                                m.price = m.actual_data.price;//the case used now for free modifiers
-                            }
-                            max_price = (max_price > price) ? (max_price - price) : 0;
-                        });
-                    }*/
                 });
             }
 
