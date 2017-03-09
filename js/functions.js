@@ -1568,7 +1568,7 @@ var PaymentProcessor = {
             payment_processor = MonerisPaymentProcessor;
         } else if (payment.quickbooks) {
             payment_processor = QuickBooksPaymentProcessor;
-        } else if (payment.adyen) {
+        } else if (payment.adyen && window.location.hostname != "bellpepper.revelup.com" && window.location.hostname != "bellpepper-dev.revelup.com") {//#55981
             payment_processor = AdyenPaymentProcessor;
         } else if (payment.worldpay) {
             payment_processor = WorldPayPaymentProcessor;
@@ -1580,6 +1580,8 @@ var PaymentProcessor = {
             payment_processor = BraintreePaymentProcessor;
         } else if (payment.globalcollect) {
             payment_processor = GlobalCollectPaymentProcessor;
+        } else if (payment.adyen && (window.location.hostname == "bellpepper.revelup.com" || window.location.hostname == "bellpepper-dev.revelup.com")) {//#55981
+            payment_processor = AdyenPaymentProcessor;
         }
         return payment_processor;
     },
