@@ -208,6 +208,7 @@ define(["backbone", "async"], function(Backbone) {
                 errors = App.Data.errors;
             Backbone.$.ajaxSetup({
                 timeout: self.get('timeout'),
+                data: {nocache: App.Data.nocache ? (new Date).getTime() : undefined},
                 success: function(data) {
                     if (!data.status) {
                         errors.alert(MSG.ERROR_INCORRECT_AJAX_DATA, true, false, {

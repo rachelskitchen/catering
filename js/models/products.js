@@ -1075,7 +1075,7 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
             }
 
             this.load_dfd[cur_page] = tmp_col.get_products({search: pattern, id_category: ids, page: cur_page}).done(function(){
-                self.get('products').add(tmp_col.models);
+                self.get('products').add(tmp_col.models, {silent: true});
                 self.set({
                     num_of_products: tmp_col.meta.count,
                     last_page_loaded: cur_page,
