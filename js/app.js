@@ -99,6 +99,8 @@
             devMode: /dev=true/.test(location.search),
             devPath: /\/dev\//.test(location.href),
             payLog: /trace=pay/.test(location.search),
+            spinnerLog: /trace=spinner/.test(location.search),
+            nocache: /nocache=true/.test(location.search),
             images: {},
             log: {},
             curLocale: 'en'
@@ -258,6 +260,7 @@
 
             App.Data.spinnerEvents = [];
             win.on('hideSpinner', function(event, data) {
+                App.Data.spinnerLog && trace("win::hideSpinner =>");
                 if (!data || !data.startEvent) {
                     data = {startEvent: EVENT.START};
                 }
@@ -279,6 +282,7 @@
                 }, 50);
             });
             win.on('showSpinner', function(evt, data) {
+                App.Data.spinnerLog && trace("win::showSpinner =>");
                 if (!data || !data.startEvent) {
                     data = {startEvent: EVENT.START};
                 }
@@ -448,6 +452,7 @@
         // jquery `spinner` plugin
         $.fn.spinner = function(options) {
             var self = this;
+            App.Data.spinnerLog && trace("$.fn.spinner add");
             this.each(addSpinner);
             if (App.Data.is_stanford_mode) {
                 this.find(".ui-spinner").addClass("stanford");
@@ -455,6 +460,7 @@
             if (options && options.deferred) {
                 this.resourceSpinner = this.find('.ui-spinner');
                 options.deferred.always(function() {
+                    App.Data.spinnerLog && trace("$.fn.spinner remove");
                     self.resourceSpinner.remove();
                     delete self.resourceSpinner;
                 })

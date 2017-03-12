@@ -194,7 +194,7 @@ define(['backbone'], function(Backbone) {
             this.needToUpdate = false;
 
             return Backbone.$.ajax({
-                url: '/weborders/campaigns/',
+                url: '/weborders/campaigns/' + (App.Data.nocache ? ('?nocache=' + (new Date).getTime()) : ''),
                 type: 'POST',
                 dataType: 'json',
                 headers: authorizationHeader,

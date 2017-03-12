@@ -33,15 +33,14 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
         filtersToggle: function(model, value) {
             var $ui = this.getBinding('$ui');
             $ui.set('has_filters', false); // reset animation state
-
-            this.listenToOnce(value, 'change', function() {
-                var hasSubcategories = Array.isArray(this.getBinding('categorySelection_subCategory')),
+            var value = this.options.curProductsSet.get("value");
+            this.listenToOnce(value, "change:status", function() {
+                if (value.get("status") == "resolved") {
+                    var hasSubcategories = Array.isArray(this.getBinding('categorySelection_subCategory')),
                     hasFilters = Boolean(value.get('filters').length);
-
-                setTimeout(function() {
                     $ui.set('has_filters', hasFilters && !hasSubcategories);
-                }, 250);
-            });
+                }
+            }, this);
         },
         bindings: {
             '.categories': 'updateContent: categories',

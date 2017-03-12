@@ -691,7 +691,6 @@ define(["main_router"], function(main_router) {
                     }
                     self.updateStateWithHash(this); // update hash
                     dfd.resolve();
-                    self.restore = $.Deferred();
                 });
 
                 App.Data.header.set('menu_index', 0);
@@ -720,7 +719,7 @@ define(["main_router"], function(main_router) {
                     ]
                 });
 
-                this.preparePromotions();
+                self.preparePromotions();
 
                 dfd.then(function() {
                     // change page

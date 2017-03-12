@@ -340,20 +340,25 @@ define(['products', 'filters'], function() {
             this.pageModel.disableControls();
 
             dfd = this.get_products({start_index: start_index});
-            dfd.always(getChildren);
-
-            function getChildren() {
-                var dfd = self.loadProductsChildren();
-
-                dfd.always(function() {
-                    self.setCategoryStatus();
-                    self.updateFilters();
+            dfd.always(function() {
+                self.setCategoryStatus();
+                if (self.get('isParentCategory')) {
                     self.onFiltered();
                     App.Data.sortItems.sortCollection(self.get('products'));
                     self.set('status', "resolved");
                     self.pageModel.enableControls();
-                });
-            }
+                }
+                else {
+                    var dfd = self.loadProductsChildren();
+                    dfd.always(function() {
+                        self.updateFilters();
+                        self.onFiltered();
+                        App.Data.sortItems.sortCollection(self.get('products'));
+                        self.set('status', "resolved");
+                        self.pageModel.enableControls();
+                    });
+                }
+            });
         },
         /**
          * Filters products and recalculates the number of pages available.
