@@ -34,7 +34,7 @@ define(["./tree", "./filters"], function(tree_view, filters_view) {
             var $ui = this.getBinding('$ui');
             $ui.set('has_filters', false); // reset animation state
             var value = this.options.curProductsSet.get("value");
-            this.listenToOnce(value, "change:status", function() {
+            this.listenTo(value, "change:status", function() {
                 if (value.get("status") == "resolved") {
                     var hasSubcategories = Array.isArray(this.getBinding('categorySelection_subCategory')),
                     hasFilters = Boolean(value.get('filters').length);
