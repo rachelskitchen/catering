@@ -1250,11 +1250,6 @@ function fistLetterToUpperCase(text) {
 }
 
 /**
- * Trace function.
- */
-window.trace = console.log.bind(window.console);
-
-/**
  * Formats time array as string.
  * @param   {array} time - array in format ["hh", "mm"], e.g. ["23", "59"]
  * @returns {string} - formatted string, e.g. "23:59".
@@ -2979,5 +2974,85 @@ function logdiff(o1, o2) {
     }
     for (var i = 0; i < delta.length; i++ ) {
         console.log(delta[i].path, delta[i].kind, delta[i].lhs, delta[i].rhs);
+    }
+}
+
+function raven_init() {
+    window.libs_raven = require('raven');
+
+    if (!libs_raven) {
+        console.error('Raven: raven sdk is not loaded');
+    }
+    libs_raven.config('https://6747797784d64d00b35d77aea85a998e@sentry.revelup.com/21', {
+        autoBreadcrumbs: {
+            'xhr': false,      // XMLHttpRequest
+            'console': false,  // console logging
+            'dom': false,      // DOM interactions, i.e. clicks/typing
+            'location': false  // url changes, including pushState/popState
+        }
+    }).install();
+}
+
+function raven_send_report(title, extra_msg, options) {
+    var details = extra_msg + "\nLOGS:\n" + trace.cache.join("");
+    libs_raven.captureMessage(title + "\n" + details, $.extend({
+        level: 'info',
+        //logger: 'javascript:weborder',
+        tags: {skin: App.skin, hostname: window.location.hostname },
+        extra: {
+                _server_host: App.Data.settings.get('host'),
+                system_settings: App.Settings,
+                directory_settings: App.SettingsDirectory }}, options)
+    );
+}
+
+function raven_send_error(title, extra_info, options) {
+    libs_raven.captureException(
+            new Error(title),
+            $.extend({
+                   message: extra_info,
+                   level: 'error',
+                   //logger: 'javascript:weborder'
+        }, options));
+}
+
+var jsonify=function(obj){
+    var seen=[];
+    var json=JSON.stringify(obj, function(k,v){
+        if (typeof v =='object') {
+            if ( !seen.indexOf(v) ) { return '__cycle__'; }
+            seen.push(v);
+        } return v;
+    });
+    return json;
+};
+
+/**
+ * Alias for trace function.
+ */
+window.log = console.log.bind(window.console);
+
+/**
+ * Trace function with additional functionality like data accomulation for Sentry reporting.
+ */
+trace.cache = [];
+function trace() {
+    var msg = '';
+    for (var i = 0; i < arguments.length; i++) {
+        if( typeof(arguments[i]) == 'object' || $.isArray(arguments[i]) === true)
+            msg += jsonify(arguments[i]) + " ";
+        else
+            msg += arguments[i] + " ";
+    }
+
+    console.log.apply(this, arguments);
+
+    trace.cache.push(msg + "\n");
+}
+
+function trace_init(simple) {
+    simple == undefined && (simple = /trace=simple/.test(location.search) && !/sentry=[^\&]+/.test(location.search));
+    if (simple) {
+        window.trace = console.log.bind(window.console);
     }
 }

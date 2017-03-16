@@ -228,12 +228,14 @@
         // set config for require
         require.config(app.config);
 
-        require(['cssua', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
+        require(['cssua', 'raven', 'functions', 'generator', 'errors', 'errors_view', 'myorder', 'settings', 'timetable', 'log', 'tax', 'main_router', 'locale'], function() {
             var win = Backbone.$(window);
+
+            raven_init();
 
             App.Data.devMode && traceDeferredObjects();
 
-            App.Data.payLog && console.log("Application starts with GET params: ", parse_get_params());
+            App.Data.payLog && trace("Application starts with GET params: ", parse_get_params());
 
             app.get = parse_get_params();
 
