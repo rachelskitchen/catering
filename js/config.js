@@ -475,7 +475,12 @@ define({
          * @type {string}
          * @description The actual path to [smart_banner]{@link module:smart_banner} module.
          */
-        smart_banner: 'js/views/smart_banner'
+        smart_banner: 'js/views/smart_banner',
+        /**
+         * @type {string}
+         * @description The actual path to [raven]{@link module:raven} module. Used for logging
+         */
+        raven: 'https://cdn.ravenjs.com/3.12.1/raven.min' //previously tested with 3.0.4 version
     },
     /**
      * A waiting time of a module loading.
