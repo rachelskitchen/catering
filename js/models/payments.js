@@ -430,6 +430,7 @@ define(['backbone'], function(Backbone) {
                 method: "POST",
                 data: JSON.stringify(order),
                 headers: authorizationHeader,
+                xhrFields: { withCredentials: true },//to send cookie (containing session_id) for CORS requests
                 contentType: "application/json",
                 success: function() {
                     // if selected customer's payment exists set it as primary
