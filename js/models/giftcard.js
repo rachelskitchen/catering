@@ -175,6 +175,7 @@ define(["backbone", "captcha"], function(Backbone) {
                 url: "/weborders/v1/giftcard/" + cardNumber + "/link/",
                 method: "POST",
                 headers: authorizationHeader,
+                xhrFields: { withCredentials: true },//to send cookie (containing session_id) for CORS requests
                 dataType: "json",
                 contentType: "application/json",
                 data: JSON.stringify({
@@ -239,6 +240,7 @@ define(["backbone", "captcha"], function(Backbone) {
                 url: "/weborders/v1/giftcard/" + cardNumber + "/unlink/",
                 method: "GET",
                 headers: authorizationHeader,
+                xhrFields: { withCredentials: true },//to send cookie (containing session_id) for CORS requests
                 success: function(data) {
                     if (data.status == 'OK' && self.collection) {
                         self.collection.remove(self);
@@ -337,6 +339,7 @@ define(["backbone", "captcha"], function(Backbone) {
                 url: "/weborders/v1/giftcard/",
                 method: "GET",
                 headers: authorizationHeader,
+                xhrFields: { withCredentials: true }, //to send cookie (containing session_id) for CORS requests
                 success: function(data) {
                     if (data.status == "OK" && Array.isArray(data.data)) {
                         self.reset(data.data.map(function(giftCard) {
