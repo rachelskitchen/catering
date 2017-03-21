@@ -2991,30 +2991,55 @@ function raven_init() {
             'location': false  // url changes, including pushState/popState
         }
     }).install();
+
+
 }
 
-function raven_send_report(title, extra_msg, options) {
-    var details = extra_msg + "\nLOGS:\n" + trace.cache.join("");
-    libs_raven.captureMessage(title + "\n" + details, $.extend({
-        level: 'info',
-        //logger: 'javascript:weborder',
+function raven_send_report(title, options, cb_success) {
+    var extra_msg = getOption(options, 'extra_msg', ''),
+        details = extra_msg + "\nLOGS:\n" + trace.cache.join("");
+
+    $(window).one('ravenSuccess', function(data){
+        var event_id = libs_raven.lastEventId();
+        console.log("lastEventId = ", event_id);
+        cb_success & cb_success(event_id);
+    });
+
+    libs_raven.captureMessage(title + "\n" + details,
+        $.extend(raven_common_info(), {level: 'info'}, options));
+}
+
+function raven_send_error(title, options) {
+    var details = "STACK: " + (new Error).stack + "\nLOGS:\n" + trace.cache.join("");
+    return libs_raven.captureMessage(title + "\n" + details,
+        $.extend(raven_common_info(), {level: 'error'}, options));
+}
+
+function raven_send_user_issue(title, options) {
+    var details = "\nLOGS:\n" + trace.cache.join("");
+    libs_raven.captureMessage(title + "\n" + details,
+        $.extend(raven_common_info(), {level: 'warning'}, options));
+
+    if (App.Data.customer.isAuthorized()) {
+        libs_raven.showReportDialog({user: {
+            name: App.Data.customer.get('first_name') + " " + App.Data.customer.get('last_name'),
+            email: App.Data.customer.get('email') }});
+    } else {
+        libs_raven.showReportDialog();
+    }
+}
+
+function raven_common_info() {
+    return {
         tags: {skin: App.skin, hostname: window.location.hostname },
         extra: {
-                _server_host: App.Data.settings.get('host'),
-                system_settings: App.Settings,
-                directory_settings: App.SettingsDirectory }}, options)
-    );
+            _server_host: App.Data.settings.get('host'),
+            system_settings: App.Settings,
+            directory_settings: App.SettingsDirectory
+        }
+    }
 }
 
-function raven_send_error(title, extra_info, options) {
-    libs_raven.captureException(
-            new Error(title),
-            $.extend({
-                   message: extra_info,
-                   level: 'error',
-                   //logger: 'javascript:weborder'
-        }, options));
-}
 
 var jsonify=function(obj){
     var seen=[];
@@ -3036,7 +3061,7 @@ window.log = console.log.bind(window.console);
  * Trace function with additional functionality like data accomulation for Sentry reporting.
  */
 trace.cache = [];
-function trace() {
+function trace() { //window.trace
     var msg = '';
     for (var i = 0; i < arguments.length; i++) {
         if( typeof(arguments[i]) == 'object' || $.isArray(arguments[i]) === true)
@@ -3048,6 +3073,11 @@ function trace() {
     console.log.apply(this, arguments);
 
     trace.cache.push(msg + "\n");
+}
+
+function error(title) {
+    trace.apply(this, arguments, {for: 'all'});
+    raven_send_error("ERROR_" + title.substring(0, 30));
 }
 
 function trace_init(simple) {

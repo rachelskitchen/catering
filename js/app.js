@@ -101,6 +101,7 @@
             payLog: /trace=pay/.test(location.search),
             spinnerLog: /trace=spinner/.test(location.search),
             nocache: /nocache=true/.test(location.search),
+            reportBugNumber: /bug=[0-9]+/.test(location.search) ? location.search.match(/bug=([0-9]+)/)[1] : false,
             images: {},
             log: {},
             curLocale: 'en'
@@ -239,22 +240,21 @@
 
             app.get = parse_get_params();
 
-            // it's for testing:
-            app.get['srv'] == 'qa' && (app.REVEL_HOST = 'https://qa.revelup.com');
-            app.get['srv'] == 'qa2' && (app.REVEL_HOST = 'https://qa2.revelup.com');
-            app.get['srv'] == 'rde-lab' && (app.REVEL_HOST = 'https://rde-lab.revelup.com');
-            app.get['srv'] == 'ee-dev1' && (app.REVEL_HOST = 'https://eegorov-dev1.revelup.com');
-            app.get['srv'] == '2-16' && (app.REVEL_HOST = 'https://2-16.revelup.com');
-            app.get['srv'] == '2-18' && (app.REVEL_HOST = 'https://2-18.revelup.com');
-            app.get['srv'] == '2-19' && (app.REVEL_HOST = 'https://2-19.revelup.com');
-            app.get['srv'] == '2-20' && (app.REVEL_HOST = 'https://2-20.revelup.com');
-            app.get['srv'] == '2-21' && (app.REVEL_HOST = 'https://2-21.revelup.com');
-            app.get['srv'] == '2-22' && (app.REVEL_HOST = 'https://2-22.revelup.com');
-            app.get['srv'] == '2-23' && (app.REVEL_HOST = 'https://2-23.revelup.com');
-            app.get['srv'] == '2-24' && (app.REVEL_HOST = 'https://2-24.revelup.com');
-            app.get['srv'] == '2-25' && (app.REVEL_HOST = 'https://2-25.revelup.com');
-            app.get['srv'] == 'rde' && (app.REVEL_HOST = 'https://rde.revelup.com');
-            app.get['srv'] == 'qa2-oleg' && (app.REVEL_HOST = 'https://qa2-oleg.revelup.com');
+           /*
+            * !IMPORTANT: Changing target Back-end server is done here:
+            * You can use url params like srv=some_backend (i.e. https://some_frontend.revelup.com/weborder?srv=some_backened)
+            * to redirect all data requests to some_backened.revelup.com
+            * As well you can write the full server domain name e.g. srv=https://qa2.revelup.com or srv=qa2.revelup.com
+            */
+            if (app.get['srv'].length > 0) {
+                if (/^https:\/\//.test(app.get['srv'])) {
+                    app.REVEL_HOST = app.get['srv'];
+                } else if (/\./.test(app.get['srv'])) {
+                    app.REVEL_HOST = "https://" + app.get['srv'];
+                } else {
+                    app.REVEL_HOST = "https://" + app.get['srv'] + ".revelup.com";
+                }
+            }
 
             // Add 'no-focus-css' class to [tabindex] element when user clicks on it.
             // This class is used for :focus CSS disabling.
