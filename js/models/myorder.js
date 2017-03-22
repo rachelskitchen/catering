@@ -2483,6 +2483,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 } else {
                     var req_action = validationOnly ? "pre_validate/" : "create_order_and_pay_v1/";
                     App.Data.payLog && trace("sending ajax", req_action, 'to server...');
+                    App.Data.payLog && trace("requesting data:", myorder_json);
                     req = $.ajax({
                         type: "POST",
                         url: App.Data.settings.get("host") + "/weborders/" + req_action,
@@ -2504,7 +2505,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                 myorder.paymentResponse.capturePhase = capturePhase;
-                App.Data.payLog && trace("server replies with status", data.status);
+                App.Data.payLog && trace("server replies with status:", data.status, " and data:", data.data);
                 switch(data.status) {
                     case "OK":
                         if (validationOnly) {
@@ -2584,6 +2585,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             // failure payment handler
             req.fail(function(xhr) {
+                App.Data.payLog && error("ajax request fails", xhr.status, xhr.statusText);
                 var errorMsg = '';
                 if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
                     // network connection is lost after return from payment processor

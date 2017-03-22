@@ -236,7 +236,8 @@
 
             App.Data.devMode && traceDeferredObjects();
 
-            App.Data.payLog && trace("Application starts with GET params: ", parse_get_params());
+            trace("==> Application starts ............");
+            App.Data.payLog && trace("with GET params: ", parse_get_params());
 
             app.get = parse_get_params();
 
@@ -325,9 +326,10 @@
 
             // init settings object
             var settings = App.Data.settings = new App.Models.Settings({
-                supported_skins: app.skins.available
-            }),
-                locale = App.Data.locale = new App.Models.Locale,
+                supported_skins: app.skins.available });
+            trace_restore_log();
+
+            var locale = App.Data.locale = new App.Models.Locale,
                 isNotFirstLaunch = false;
 
             // if `storage_data` attribute isn't the web storage need to show a message

@@ -2997,7 +2997,7 @@ function raven_init() {
 
 function raven_send_report(title, options, cb_success) {
     var extra_msg = getOption(options, 'extra_msg', ''),
-        details = extra_msg + "\nLOGS:\n" + trace.cache.join("");
+        details = extra_msg + "\nLOGS:\n" + trace.prev_cache.join("") + trace.cache.join("");
 
     $(window).one('ravenSuccess', function(data){
         var event_id = libs_raven.lastEventId();
@@ -3061,6 +3061,7 @@ window.log = console.log.bind(window.console);
  * Trace function with additional functionality like data accomulation for Sentry reporting.
  */
 trace.cache = [];
+trace.prev_cache = [];
 function trace() { //window.trace
     var msg = '';
     for (var i = 0; i < arguments.length; i++) {
@@ -3073,6 +3074,7 @@ function trace() { //window.trace
     console.log.apply(this, arguments);
 
     trace.cache.push(msg + "\n");
+    !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
 }
 
 function error(title) {
@@ -3081,8 +3083,20 @@ function error(title) {
 }
 
 function trace_init(simple) {
-    simple == undefined && (simple = /trace=simple/.test(location.search) && !/sentry=[^\&]+/.test(location.search));
+    simple == undefined && (simple = /trace=simple/.test(location.search) && !/bug=[^\&]+/.test(location.search));
     if (simple) {
         window.trace = console.log.bind(window.console);
+        trace.simple = true;
+    }
+}
+
+function trace_restore_log() {
+    if (trace.simple) {
+        return;  // the case for unit tests
+    }
+    trace.prev_cache = getData("traceLog"); //we restoring the prev. session trace log to get info about e.g. whole payament process with rediration to third-patry site
+    removeData("traceLog");
+    if (!Array.isArray(trace.prev_cache)) {
+        trace.prev_cache = [];
     }
 }
