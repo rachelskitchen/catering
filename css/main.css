@@ -14,10 +14,11 @@
     width: 70px;
     height: 40px;
     border-radius: 15px;
-    background-color: rgba(253, 53, 53, 0.86);
+    background-color: rgba(220, 54, 54, 0.86);
     padding-left: 7px;
     padding-top: 13px;
     box-sizing: border-box;
     text-shadow: 0 0 1px #fff;
     cursor: pointer;
+    z-index: 1000;
 }

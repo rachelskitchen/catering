@@ -2505,7 +2505,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 }
                 myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                 myorder.paymentResponse.capturePhase = capturePhase;
-                App.Data.payLog && trace("server replies with status:", data.status, " and data:", data.data);
+                App.Data.payLog && trace("server replies with data:", data);
                 switch(data.status) {
                     case "OK":
                         if (validationOnly) {
