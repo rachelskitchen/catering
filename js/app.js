@@ -247,7 +247,7 @@
             * to redirect all data requests to some_backened.revelup.com
             * As well you can write the full server domain name e.g. srv=https://qa2.revelup.com or srv=qa2.revelup.com
             */
-            if (app.get['srv'].length > 0) {
+            if (app.get['srv'] && app.get['srv'].length > 0) {
                 if (/^https:\/\//.test(app.get['srv'])) {
                     app.REVEL_HOST = app.get['srv'];
                 } else if (/\./.test(app.get['srv'])) {
