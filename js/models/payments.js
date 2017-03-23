@@ -433,6 +433,7 @@ define(['backbone'], function(Backbone) {
                 method: "POST",
                 data: JSON.stringify(order),
                 headers: authorizationHeader,
+                xhrFields: { withCredentials: true },//to send cookie (containing session_id) for CORS requests
                 contentType: "application/json",
                 success: function() {
                     App.Data.payLog && trace("server replies 200 status");

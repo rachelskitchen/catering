@@ -2489,6 +2489,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                         url: App.Data.settings.get("host") + "/weborders/" + req_action,
                         data: myorder_json,
                         dataType: "json",
+                        xhrFields: { withCredentials: true },//to send cookie (containing session_id) for CORS requests
                         success: new Function(), // to override global ajax success handler
                         error: new Function()    // to override global ajax error handler
                     });
