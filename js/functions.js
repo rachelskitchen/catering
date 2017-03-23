@@ -1250,11 +1250,6 @@ function fistLetterToUpperCase(text) {
 }
 
 /**
- * Trace function.
- */
-window.trace = console.log.bind(window.console);
-
-/**
  * Formats time array as string.
  * @param   {array} time - array in format ["hh", "mm"], e.g. ["23", "59"]
  * @returns {string} - formatted string, e.g. "23:59".
@@ -2979,5 +2974,129 @@ function logdiff(o1, o2) {
     }
     for (var i = 0; i < delta.length; i++ ) {
         console.log(delta[i].path, delta[i].kind, delta[i].lhs, delta[i].rhs);
+    }
+}
+
+function raven_init() {
+    window.libs_raven = require('raven');
+
+    if (!libs_raven) {
+        console.error('Raven: raven sdk is not loaded');
+    }
+    libs_raven.config('https://6747797784d64d00b35d77aea85a998e@sentry.revelup.com/21', {
+        autoBreadcrumbs: {
+            'xhr': false,      // XMLHttpRequest
+            'console': false,  // console logging
+            'dom': false,      // DOM interactions, i.e. clicks/typing
+            'location': false  // url changes, including pushState/popState
+        }
+    }).install();
+
+
+}
+
+function raven_send_report(title, options, cb_success) {
+    var extra_msg = getOption(options, 'extra_msg', ''),
+        details = extra_msg + "\nLOGS:\n" + trace.prev_cache.join("") + trace.cache.join("");
+
+    $(window).one('ravenSuccess', function(data){
+        var event_id = libs_raven.lastEventId();
+        console.log("lastEventId = ", event_id);
+        cb_success & cb_success(event_id);
+    });
+
+    libs_raven.captureMessage(title + "\n" + details,
+        $.extend(raven_common_info(), {level: 'info'}, options));
+}
+
+function raven_send_error(title, options) {
+    var details = "STACK: " + (new Error).stack + "\nLOGS:\n" + trace.cache.join("");
+    return libs_raven.captureMessage(title + "\n" + details,
+        $.extend(raven_common_info(), {level: 'error'}, options));
+}
+
+function raven_send_user_issue(title, options) {
+    var details = "\nLOGS:\n" + trace.cache.join("");
+    libs_raven.captureMessage(title + "\n" + details,
+        $.extend(raven_common_info(), {level: 'warning'}, options));
+
+    if (App.Data.customer.isAuthorized()) {
+        libs_raven.showReportDialog({user: {
+            name: App.Data.customer.get('first_name') + " " + App.Data.customer.get('last_name'),
+            email: App.Data.customer.get('email') }});
+    } else {
+        libs_raven.showReportDialog();
+    }
+}
+
+function raven_common_info() {
+    return {
+        tags: {skin: App.skin, hostname: window.location.hostname },
+        extra: {
+            _server_host: App.Data.settings.get('host'),
+            system_settings: App.Settings,
+            directory_settings: App.SettingsDirectory
+        }
+    }
+}
+
+
+var jsonify=function(obj){
+    var seen=[];
+    var json=JSON.stringify(obj, function(k,v){
+        if (typeof v =='object') {
+            if ( !seen.indexOf(v) ) { return '__cycle__'; }
+            seen.push(v);
+        } return v;
+    });
+    return json;
+};
+
+/**
+ * Alias for trace function.
+ */
+window.log = console.log.bind(window.console);
+
+/**
+ * Trace function with additional functionality like data accomulation for Sentry reporting.
+ */
+trace.cache = [];
+trace.prev_cache = [];
+function trace() { //window.trace
+    var msg = '';
+    for (var i = 0; i < arguments.length; i++) {
+        if( typeof(arguments[i]) == 'object' || $.isArray(arguments[i]) === true)
+            msg += jsonify(arguments[i]) + " ";
+        else
+            msg += arguments[i] + " ";
+    }
+
+    console.log.apply(this, arguments);
+
+    trace.cache.push(msg + "\n");
+    !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
+}
+
+function error(title) {
+    trace.apply(this, arguments, {for: 'all'});
+    raven_send_error("ERROR_" + title.substring(0, 30));
+}
+
+function trace_init(simple) {
+    simple == undefined && (simple = /trace=simple/.test(location.search) && !/bug=[^\&]+/.test(location.search));
+    if (simple) {
+        window.trace = console.log.bind(window.console);
+        trace.simple = true;
+    }
+}
+
+function trace_restore_log() {
+    if (trace.simple) {
+        return;  // the case for unit tests
+    }
+    trace.prev_cache = getData("traceLog"); //we restoring the prev. session trace log to get info about e.g. whole payament process with rediration to third-patry site
+    removeData("traceLog");
+    if (!Array.isArray(trace.prev_cache)) {
+        trace.prev_cache = [];
     }
 }

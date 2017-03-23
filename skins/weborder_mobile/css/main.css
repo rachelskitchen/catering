@@ -563,3 +563,17 @@ select::-ms-expand { /*Removes default IE style*/
 .captcha_container {
     min-height: 4em;
 }
+
+#report_bug_info[class] {
+    bottom: 0.6em;
+    left: 0.6em;
+    width: 5em;
+    height: 3.0em;
+    border-radius: 1em;
+    background-color: rgba(203, 34, 34, 0.87);
+    padding-left: 0.5em;
+    padding-top: 1em;
+    text-shadow: 0 0 1px #fff;
+    font-size: 2.3em;
+    color: #333333;
+}
