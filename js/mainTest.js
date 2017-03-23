@@ -39,6 +39,7 @@ require(['app', 'utest/data/Settings'], function(app, settings_data) {
     require.config(app.config);
 
     App.dbgStackTrace = [];
+    trace_init(true);
 
     require(['cssua', 'deep_diff', 'model_errors', 'tests_list', 'e2e_list', 'model_settings', 'tax', 'main_router', 'locale'], function() {
         app.get = parse_get_params();

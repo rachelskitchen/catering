@@ -1062,6 +1062,16 @@ define(["backbone", "backbone_extensions", "factory"], function(Backbone) {
                 //set debug aliases
                 dbgSetAliases();
             }
+
+            if (App.Data.reportBugNumber) {
+                $("<div id=report_bug_info class=''>REPORT</div>").appendTo("body");
+                $("#report_bug_info").on('click', function() {
+                    raven_send_report("Report_bug_" + App.Data.reportBugNumber, {}, function(event_id) {
+                        App.Data.errors.alert("An issue #" + App.Data.reportBugNumber + " report was send successfully, id = " + event_id);
+                        $("#report_bug_info").addClass('disabled');
+                    });
+                });
+            }
         }
     });
 
