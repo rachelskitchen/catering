@@ -1166,8 +1166,8 @@ define(["main_router"], function(main_router) {
                 // if searchLine and categorySelection contain default attributes need to select first subcategory replacing state.
                 if (!searchLine.get('searchString') && categorySelection.areDefaultAttrs()) {
                     categorySelection.set({
-                        parentCategory: tree.at(0).get('id'),
-                        subCategory: tree.at(0).get('id'),
+                        parentCategory: tree.at(1) ? tree.at(1).get('id') : tree.at(0).get('id'),
+                        subCategory: tree.at(1) ? tree.at(1).get('id') : tree.at(0).get('id'),
                     }, {
                         replaceState: true
                     });
