@@ -33,11 +33,11 @@ define(["done_view", "generator"], function(done_view) {
             spinner.css('position', 'fixed');
         },
         showSpinner: function(event) {
-            App.Data.spinnerLog && trace("SpinnerView: showSpinner=>");
+            trace({for: 'spinner'}, "SpinnerView: showSpinner=>");
             $(window).trigger('showSpinner', {startEvent: event});
         },
         hideSpinner: function(event, isLast) {
-            App.Data.spinnerLog && trace("SpinnerView: hideSpinner=>");
+            trace({for: 'spinner'}, "SpinnerView: hideSpinner=>");
             $(window).trigger('hideSpinner', {startEvent: event, isLastEvent: isLast});
         }
     });

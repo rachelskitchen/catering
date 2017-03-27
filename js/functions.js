@@ -1433,7 +1433,7 @@ var PaymentProcessor = {
         }
 
         var payment_processor = this.getPaymentProcessor(payment_type);
-        App.Data.payLog && trace("payment processor is:", payment_processor.name);
+        trace({for: 'pay'}, "payment processor is:", payment_processor.name);
         payment_info = payment_processor.processPayment(myorder, payment_info, pay_get_parameter);
         this.clearQueryString(payment_type);
 
@@ -1466,7 +1466,7 @@ var PaymentProcessor = {
                     type: 'hidden'
                 }));
             }
-            App.Data.payLog && trace("Redirect to", action, getFormParams(newForm[0]));
+            trace({for: 'pay'}, "Redirect to", action, getFormParams(newForm[0]));
             newForm.appendTo(document.body).submit();
         }
 
@@ -1936,13 +1936,13 @@ var MercuryPaymentProcessor = {
         var customer = App.Data.customer,
             payments = customer.payments;
 
-        App.Data.payLog && trace("processPayment, pay_get_parameter =", pay_get_parameter);
+        trace({for: 'pay'}, "processPayment, pay_get_parameter =", pay_get_parameter);
         if (pay_get_parameter) {
             var get_parameters = App.Data.get_parameters,
                 returnCode = Number(get_parameters.ReturnCode),
                 savedIgnoreSelectedToken = this.loadIgnoreSelectedToken();
 
-            App.Data.payLog && trace("processPayment, returnCode =", returnCode, MERCURY_RETURN_MESSAGE[returnCode]);
+            trace({for: 'pay'}, "processPayment, returnCode =", returnCode, MERCURY_RETURN_MESSAGE[returnCode]);
             if (pay_get_parameter === 'true' && returnCode == MERCURY_RETURN_CODE.SUCCESS) {
                 payment_info.transaction_id = get_parameters.PaymentID;
             } else {
@@ -3062,23 +3062,36 @@ window.log = console.log.bind(window.console);
  */
 trace.cache = [];
 trace.prev_cache = [];
-function trace() { //window.trace
-    var msg = '';
-    for (var i = 0; i < arguments.length; i++) {
+function trace(opt) { //window.trace
+    var msg = '',
+        _for = getOption(opt, 'for'),
+        isShow = false,
+        isReport = false;
+
+    if (App.Data.traceTags.indexOf(_for) != -1 || _for == undefined) {
+        isReport = true;
+        isShow = true;
+    } else if (_for == 'pay') {
+        isReport = true;
+    }
+
+    var start = _for == undefined ? 0 : 1;
+    for (var i = start; i < arguments.length; i++) {
         if( typeof(arguments[i]) == 'object' || $.isArray(arguments[i]) === true)
             msg += jsonify(arguments[i]) + " ";
         else
             msg += arguments[i] + " ";
     }
 
-    console.log.apply(this, arguments);
+    var args = Array.prototype.slice.call(arguments, start); //don't show the first opt {for: 'some_tag'} argument
+    isShow && console.log.apply(window.console, args);
 
-    trace.cache.push(msg + "\n");
-    !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
+    isReport && trace.cache.push("> " + msg + "\n");
+    isReport && !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
 }
 
 function error(title) {
-    trace.apply(this, arguments, {for: 'all'});
+    trace.apply(this, arguments);
     raven_send_error("ERROR_" + title.substring(0, 30));
 }
 
