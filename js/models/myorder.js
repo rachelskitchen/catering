@@ -2586,7 +2586,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             // failure payment handler
             req.fail(function(xhr) {
-                error({for: 'pay'}, "ajax request fails", xhr.status, xhr.statusText);
+                error("ajax request fails", xhr.status, xhr.statusText);
                 var errorMsg = '';
                 if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
                     // network connection is lost after return from payment processor
