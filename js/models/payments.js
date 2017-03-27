@@ -447,7 +447,7 @@ define(['backbone'], function(Backbone) {
                     }
                 },
                 error: function(xhr) {
-                    error({for: 'pay'}, "ajax request fails", xhr.status, xhr.statusText);
+                    error("ajax request fails", xhr.status, xhr.statusText);
                 }// to override global ajax error handler
             });
         },

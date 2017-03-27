@@ -3092,7 +3092,9 @@ function trace(opt) { //window.trace
 
 function error(title) {
     trace.apply(this, arguments);
-    raven_send_error("ERROR_" + title.substring(0, 30));
+    if (typeof title == 'string') {
+        raven_send_error("ERROR_" + title.substring(0, 30));
+    }
 }
 
 function trace_init(simple) {
