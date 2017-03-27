@@ -425,8 +425,8 @@ define(['backbone'], function(Backbone) {
                 cardInfo.payment_processor = this.paymentProcessor;
             }
 
-            App.Data.payLog && trace("send ajax /order-pay-token to server...");
-            App.Data.payLog && trace("request data:", order);
+            trace({for: 'pay'}, "send ajax /order-pay-token to server...");
+            trace({for: 'pay'}, "request data:", order);
 
             return Backbone.$.ajax({
                 url: "/weborders/v1/order-pay-token/",
@@ -436,7 +436,7 @@ define(['backbone'], function(Backbone) {
                 xhrFields: { withCredentials: true },//to send cookie (containing session_id) for CORS requests
                 contentType: "application/json",
                 success: function() {
-                    App.Data.payLog && trace("server replies 200 status");
+                    trace({for: 'pay'}, "server replies 200 status");
                     // if selected customer's payment exists set it as primary
                     if (payment) {
                         payment.setSelectedAsPrimary();
@@ -447,7 +447,7 @@ define(['backbone'], function(Backbone) {
                     }
                 },
                 error: function(xhr) {
-                    App.Data.payLog && trace("ajax request fails", xhr.status, xhr.statusText);
+                    error({for: 'pay'}, "ajax request fails", xhr.status, xhr.statusText);
                 }// to override global ajax error handler
             });
         },

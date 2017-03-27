@@ -98,8 +98,6 @@
             paypal_iOS: /device=ios/.test(location.search),
             devMode: /dev=true/.test(location.search),
             devPath: /\/dev\//.test(location.href),
-            payLog: /trace=pay/.test(location.search),
-            spinnerLog: /trace=spinner/.test(location.search),
             nocache: /nocache=true/.test(location.search),
             reportBugNumber: /bug=[0-9]+/.test(location.search) ? location.search.match(/bug=([0-9]+)/)[1] : false,
             images: {},
@@ -155,6 +153,8 @@
         App.dbgView = {};
     }
 
+    var tmp_values = location.search.match(/trace=([^\&\#]+)/g) || [];
+    App.Data.traceTags = tmp_values.map(function(m){ return m.replace('trace=', ''); });
     /**
      * A simple object factory for App.Models objects
      * @param {string} type_name - the subname of the object constructor to be used
@@ -236,8 +236,8 @@
 
             App.Data.devMode && traceDeferredObjects();
 
-            trace("==> Application starts ............");
-            App.Data.payLog && trace("with GET params: ", parse_get_params());
+            trace(">>>> Application starts .................");
+            trace({for: 'pay'}, "with GET params: ", parse_get_params());
 
             app.get = parse_get_params();
 
@@ -277,7 +277,7 @@
 
             App.Data.spinnerEvents = [];
             win.on('hideSpinner', function(event, data) {
-                App.Data.spinnerLog && trace("win::hideSpinner =>");
+                trace({for: 'spinner'}, "win::hideSpinner =>");
                 if (!data || !data.startEvent) {
                     data = {startEvent: EVENT.START};
                 }
@@ -299,7 +299,7 @@
                 }, 50);
             });
             win.on('showSpinner', function(evt, data) {
-                App.Data.spinnerLog && trace("win::showSpinner =>");
+                trace({for: 'spinner'}, "win::showSpinner =>");
                 if (!data || !data.startEvent) {
                     data = {startEvent: EVENT.START};
                 }
@@ -470,7 +470,7 @@
         // jquery `spinner` plugin
         $.fn.spinner = function(options) {
             var self = this;
-            App.Data.spinnerLog && trace("$.fn.spinner add");
+            trace({for: 'spinner'}, "$.fn.spinner add");
             this.each(addSpinner);
             if (App.Data.is_stanford_mode) {
                 this.find(".ui-spinner").addClass("stanford");
@@ -478,7 +478,7 @@
             if (options && options.deferred) {
                 this.resourceSpinner = this.find('.ui-spinner');
                 options.deferred.always(function() {
-                    App.Data.spinnerLog && trace("$.fn.spinner remove");
+                    trace({for: 'spinner'}, "$.fn.spinner remove");
                     self.resourceSpinner.remove();
                     delete self.resourceSpinner;
                 })
