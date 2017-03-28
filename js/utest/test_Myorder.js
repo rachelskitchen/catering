@@ -3359,7 +3359,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                     });
 
                     it('general', function() {
-                        dfd.reject();
+                        dfd.rejectWith( ajax, [ {status: 0, statusText: 'error'}, 'error', '' ] );
                         expect(model.paymentResponse).toEqual({
                             status: 'ERROR',
                             errorMsg: MSG.ERROR_SUBMIT_ORDER
@@ -3371,8 +3371,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
 
                     it('`validationOnly` is true', function() {
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, true);
-                        dfd.reject();
-
+                        dfd.rejectWith( ajax, [ {status: 0, statusText: 'error'}, 'error', '' ] );
                         expect(model.trigger.calls.mostRecent().args[0]).toBe('paymentFailedValid');
                     });
 
@@ -3383,7 +3382,7 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                             UMrefNum: 123456
                         };
                         model.submit_order_and_pay(PAYMENT_TYPE.CREDIT, false, true);
-                        dfd.reject();
+                        dfd.rejectWith( ajax, [ {status: 0, statusText: 'error'}, 'error', '' ] );
                         App.Data.get_parameters = this.get_params;
                         expect(model.trigger).toHaveBeenCalledWith('paymentResponse');
                         expect(model.paymentResponse.status).toBe('error');

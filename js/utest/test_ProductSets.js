@@ -28,8 +28,16 @@ define(['js/utest/data/ProductSets', 'product_sets'], function(data) {
                 expect(modelJson.order_products.models[1].get('product').toJSON()).toEqual(Backbone.$.extend(product2, {images: [product2.image]}));
             }
             else {
-                expect(modelJson.order_products.models[0].get('product').toJSON()).toEqual(product1);
-                expect(modelJson.order_products.models[1].get('product').toJSON()).toEqual(product2);
+                var p1 = modelJson.order_products.models[0].get('product').toJSON()
+                if (window._phantom) {
+                    p1.image = decodeURIComponent(p1.image);
+                }
+                expect(p1).toEqual(product1);
+                var p2 = modelJson.order_products.models[1].get('product').toJSON()
+                if (window._phantom) {
+                    p2.image = decodeURIComponent(p1.image);
+                }
+                expect(p2).toEqual(product2);
             }
             expect(modelJson.id).toBe(addJson.id);
             expect(modelJson.name).toBe(addJson.name);

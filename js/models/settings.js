@@ -172,7 +172,7 @@ define(["backbone", "async"], function(Backbone) {
             /**
              * Ajax timeout in milliseconds.
              * @type {Number}
-             * @default 180000
+             * @default 360000
              */
             timeout: 360000, //#58172, it was 60000 only.
             /**
