@@ -3100,7 +3100,22 @@ function error(title) {
 function trace_init(simple) {
     simple == undefined && (simple = /trace=simple/.test(location.search) && !/bug=[^\&]+/.test(location.search));
     if (simple) {
-        window.trace = console.log.bind(window.console);
+        if (!App.Data.devMode) {
+            window.trace = new Function;
+            window.error = new Function;
+        } else {
+            window.trace = function(opt) {
+                //For unit tests logs like trace({for: 'pay'}, 'some text', ...) is ignored here, only like trace('some text', ...) i.e. w/o 'for' param
+                var _for = getOption(opt, 'for'),
+                    isShow = !(typeof _for == 'string');
+
+                if (isShow) {
+                    console.log.apply(window.console, arguments);
+                }
+            }
+            window.error = console.error.bind(window.console);
+        }
+
         trace.simple = true;
     }
 }
