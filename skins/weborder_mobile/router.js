@@ -680,11 +680,11 @@ define(["main_router"], function(main_router) {
                         page_title: _loc.CUSTOMIZE,
                         link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
-                            header.updateProduct(order);
-                            order.set('discount', originOrder.get('discount').clone(), {silent: true});
-                            // originOrderItem.update(orderItem);
-                            originOrder = order.clone();
-                            isOrderChanged = false;
+                            var status = header.updateProduct(order);
+                            if (status) {
+                                originOrder = order.clone();
+                                isOrderChanged = false;
+                            }
                         }
                     });
                 }
