@@ -681,10 +681,11 @@ define(["main_router"], function(main_router) {
                         link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
                             order.set('discount', originOrder.get('discount').clone());
-                            header.updateProduct(order);
-                            // originOrderItem.update(orderItem);
-                            originOrder = order.clone();
-                            isOrderChanged = false;
+                            var status = header.updateProduct(order);
+                            if (status) {
+                                originOrder = order.clone();
+                                isOrderChanged = false;
+                            }
                         }
                     });
                 }
