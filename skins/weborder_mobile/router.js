@@ -680,7 +680,6 @@ define(["main_router"], function(main_router) {
                         page_title: _loc.CUSTOMIZE,
                         link_title: _loc.UPDATE,
                         link: !App.Settings.online_orders ? header.defaults.link : function() {
-                            order.set('discount', originOrder.get('discount').clone());
                             var status = header.updateProduct(order);
                             if (status) {
                                 originOrder = order.clone();
