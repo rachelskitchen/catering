@@ -2409,6 +2409,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             // process payment type
             trace({for: 'pay'}, "submit_order_and_pay: payment type is", paymentType2String(payment_type));
+            ASSERT(payment_type, 'Unexpected payment_type');
             var pt = PaymentProcessor.processPaymentType(payment_type, myorder);
             $.extend(payment_info, pt);
 
@@ -2586,7 +2587,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
 
             // failure payment handler
             req.fail(function(xhr) {
-                error("create order request fails", xhr.status, xhr.statusText);
+                errorSend("create order request fails", xhr.status, xhr.statusText);
                 var errorMsg = '';
                 if ('onLine' in window.navigator && !window.navigator.onLine && capturePhase) {
                     // network connection is lost after return from payment processor
