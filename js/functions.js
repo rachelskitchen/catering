@@ -1474,9 +1474,9 @@ var PaymentProcessor = {
             var pairs = [];
             for ( var i = 0; i < form.elements.length; i++ ) {
                var e = form.elements[i];
-               pairs.push(encodeURIComponent(e.name) + "=" + encodeURIComponent(e.value));
+               pairs.push(decodeURIComponent(e.name) + "=" + decodeURIComponent(e.value));
             }
-            return pairs.join("&");
+            return pairs.join(", ");
         }
 
         function processValue(value) {
@@ -3090,10 +3090,21 @@ function trace(opt) { //window.trace
     isReport && !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
 }
 
-function error(title) {
+function errorSend(title) {
     trace.apply(this, arguments);
     if (typeof title == 'string') {
         raven_send_error("ERROR_" + title.substring(0, 30));
+    }
+}
+
+function ASSERT(condition, descr) {
+    if (!condition) {
+        trace.bind(this, 'ASSERT:').apply(this, arguments);
+        if (typeof descr != 'string') {
+            console.error("Wrong ASSERT() usage: descr:", descr);
+        } else {
+            raven_send_error("ASSERT_" + descr.substring(0, 30));
+        }
     }
 }
 

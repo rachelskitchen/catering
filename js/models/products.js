@@ -1089,7 +1089,9 @@ define(["backbone", 'childproducts', 'collection_sort', 'product_sets'], functio
                     App.Data.products[id_category].add(tmp_col.where({id_category: id_category}), {silent: true});
                 });
                 if (typeof _app_start_time != "undefined" && _app_start_time instanceof Date) {
-                    trace("App startup time is", ((new Date).getTime() - _app_start_time.getTime()) / 1000, 'sec.');
+                    if (App.skin == 'weborder' || App.skin == 'retail') {
+                        trace("App startup time is", ((new Date).getTime() - _app_start_time.getTime()) / 1000, 'sec.');
+                    }
                     _app_start_time = true;
                 }
             });
