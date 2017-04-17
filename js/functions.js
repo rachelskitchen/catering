@@ -3103,7 +3103,9 @@ function ASSERT(condition, descr) {
         if (typeof descr != 'string') {
             console.error("Wrong ASSERT() usage: descr:", descr);
         } else {
-            raven_send_error("ASSERT_" + descr.substring(0, 30));
+            if (!trace.simple) {
+                raven_send_error("ASSERT_" + descr.substring(0, 30));
+            }
         }
     }
 }
@@ -3121,7 +3123,7 @@ function trace_init(simple) {
     if (simple) {
         if (!App.Data.devMode) {
             window.trace = new Function;
-            window.error = new Function;
+            window.errorSend = new Function;
         } else {
             window.trace = function(opt) {
                 //For unit tests logs like trace({for: 'pay'}, 'some text', ...) is ignored here, only like trace('some text', ...) i.e. w/o 'for' param
@@ -3132,7 +3134,7 @@ function trace_init(simple) {
                     console.log.apply(window.console, arguments);
                 }
             }
-            window.error = console.error.bind(window.console);
+            window.errorSend = console.error.bind(window.console);
         }
 
         trace.simple = true;
