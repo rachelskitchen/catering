@@ -327,6 +327,7 @@
             // init settings object
             var settings = App.Data.settings = new App.Models.Settings({
                 supported_skins: app.skins.available });
+
             trace_restore_log();
 
             var locale = App.Data.locale = new App.Models.Locale,
