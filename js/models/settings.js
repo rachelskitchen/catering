@@ -542,6 +542,8 @@ define(["backbone", "async"], function(Backbone) {
                             var srvDate = new Date(settings_system.server_time);
                             var clientDate = new Date();
 
+                            trace({for: 'pay'}, "Server time:", settings_system.server_time);
+
                             settings_system.time_zone_offset = settings_system.time_zone_offset * 1000 || 0;
 
                             // create the delta in ms. between server and client by time_zone offset:
@@ -549,6 +551,8 @@ define(["backbone", "async"], function(Backbone) {
                             // add the delta in ms. between server and client times set:
                             settings_system.server_time +=  srvDate.getTime() - clientDate.getTime();
                             settings_system.geolocation_load = $.Deferred();
+
+                            trace({for: 'pay'}, "Client time:", clientDate.getTime(), "offset:", (new Date()).getTimezoneOffset());
 
                             // fix for bug 7233
                             if(settings_system.delivery_for_online_orders) {

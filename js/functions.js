@@ -1433,7 +1433,7 @@ var PaymentProcessor = {
         }
 
         var payment_processor = this.getPaymentProcessor(payment_type);
-        trace({for: 'pay'}, "payment processor is:", payment_processor.name);
+        trace({for: 'pay'}, "payment processor is:", logSafe(payment_processor, 'name'));
         payment_info = payment_processor.processPayment(myorder, payment_info, pay_get_parameter);
         this.clearQueryString(payment_type);
 
@@ -3105,6 +3105,14 @@ function ASSERT(condition, descr) {
         } else {
             raven_send_error("ASSERT_" + descr.substring(0, 30));
         }
+    }
+}
+
+function logSafe(obj, key) {
+    if( _.isObject(obj) && key ) {
+       return obj[key];
+    } else {
+       return 'Error:NotAnObject';
     }
 }
 
