@@ -1433,7 +1433,7 @@ var PaymentProcessor = {
         }
 
         var payment_processor = this.getPaymentProcessor(payment_type);
-        trace({for: 'pay'}, "payment processor is:", payment_processor.name);
+        trace({for: 'pay'}, "payment processor is:", logSafe(payment_processor, 'name'));
         payment_info = payment_processor.processPayment(myorder, payment_info, pay_get_parameter);
         this.clearQueryString(payment_type);
 
@@ -1474,9 +1474,9 @@ var PaymentProcessor = {
             var pairs = [];
             for ( var i = 0; i < form.elements.length; i++ ) {
                var e = form.elements[i];
-               pairs.push(encodeURIComponent(e.name) + "=" + encodeURIComponent(e.value));
+               pairs.push(decodeURIComponent(e.name) + "=" + decodeURIComponent(e.value));
             }
-            return pairs.join("&");
+            return pairs.join(", ");
         }
 
         function processValue(value) {
@@ -3090,10 +3090,31 @@ function trace(opt) { //window.trace
     isReport && !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
 }
 
-function error(title) {
+function errorSend(title) {
     trace.apply(this, arguments);
     if (typeof title == 'string') {
         raven_send_error("ERROR_" + title.substring(0, 30));
+    }
+}
+
+function ASSERT(condition, descr) {
+    if (!condition) {
+        trace.bind(this, 'ASSERT:').apply(this, arguments);
+        if (typeof descr != 'string') {
+            console.error("Wrong ASSERT() usage: descr:", descr);
+        } else {
+            if (!trace.simple) {
+                raven_send_error("ASSERT_" + descr.substring(0, 30));
+            }
+        }
+    }
+}
+
+function logSafe(obj, key) {
+    if( _.isObject(obj) && key ) {
+       return obj[key];
+    } else {
+       return 'Error:NotAnObject';
     }
 }
 
@@ -3102,7 +3123,7 @@ function trace_init(simple) {
     if (simple) {
         if (!App.Data.devMode) {
             window.trace = new Function;
-            window.error = new Function;
+            window.errorSend = new Function;
         } else {
             window.trace = function(opt) {
                 //For unit tests logs like trace({for: 'pay'}, 'some text', ...) is ignored here, only like trace('some text', ...) i.e. w/o 'for' param
@@ -3113,7 +3134,7 @@ function trace_init(simple) {
                     console.log.apply(window.console, arguments);
                 }
             }
-            window.error = console.error.bind(window.console);
+            window.errorSend = console.error.bind(window.console);
         }
 
         trace.simple = true;
