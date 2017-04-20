@@ -99,7 +99,7 @@
             devMode: /dev=true/.test(location.search),
             devPath: /\/dev\//.test(location.href),
             nocache: /nocache=true/.test(location.search),
-            reportBugNumber: /bug=[0-9]+/.test(location.search) ? location.search.match(/bug=([0-9]+)/)[1] : false,
+            reportBugNumber: /bug=[^#&]+/.test(location.search) ? location.search.match(/bug=([^#&]+)/)[1] : false,
             images: {},
             log: {},
             curLocale: 'en'
