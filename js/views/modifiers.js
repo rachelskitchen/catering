@@ -39,6 +39,7 @@ define(["backbone", "factory", 'generator', 'list'], function(Backbone) {
             'mouseout .info': 'hideTooltip'
         },
         bindings: {
+            ':el': 'toggle:any(active, selected)',
             '.mdf_quantity select': 'value: decimal(quantity)',
             '.mdf_split': 'classes: {hide: not(split)}',
             '.mdf_split select': 'value: decimal(qty_type), change_split_modifier: qty_type'
