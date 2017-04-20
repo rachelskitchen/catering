@@ -3110,6 +3110,12 @@ function ASSERT(condition, descr) {
     }
 }
 
+function triggerJSError() {
+    setTimeout( function() {
+        throw new Error("Test Error");
+    }, 100);
+}
+
 function logSafe(obj, key) {
     if( _.isObject(obj) && key ) {
        return obj[key];
