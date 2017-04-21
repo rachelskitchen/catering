@@ -1956,7 +1956,6 @@ define(['js/utest/data/Myorder', 'js/utest/data/Products', 'myorder', 'products'
                                         status: "ERROR" };
                 }
                 model._get_cart_totals();
-                expect(model.preparePickupTime).toHaveBeenCalled();
 
                 expect($.ajax).toHaveBeenCalledWith({
                     type: "POST",
