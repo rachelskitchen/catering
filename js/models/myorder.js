@@ -2029,7 +2029,6 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 isShipping, isDelivery, isCatering,
                 request;
 
-            this.preparePickupTime();
             checkout = this.checkout.toJSON();
 
             if (checkout.discount_code && is_apply_discount) {
