@@ -289,7 +289,11 @@ Date.prototype.format = function(date_format) {
         'DD': wday.toUpperCase(), //MONDAY
         'Dd': wday, //Monday
         'dd': ('0' + this.getDate()).slice(-2), //01
-        'd': this.getDate() //1
+        'd': this.getDate(), //1
+        'H2': ('0' + this.getHours()).slice(-2),
+        'H': this.getHours(),
+        'M2': ('0' + this.getMinutes()).slice(-2),
+        'M': this.getMinutes()
     };
 
     var re = new RegExp(Object.keys(map).join("|"), "gi");
@@ -2991,13 +2995,11 @@ function raven_init() {
             'location': false  // url changes, including pushState/popState
         }
     }).install();
-
-
 }
 
 function raven_send_report(title, options, cb_success) {
     var extra_msg = getOption(options, 'extra_msg', ''),
-        details = extra_msg + "\nLOGS:\n" + trace.prev_cache.join("") + trace.cache.join("");
+        details = (extra_msg + "\nLOGS:\n" + trace.prev_cache.join("").substring(-4000) + trace.cache.join("")).substring(0, 8200);
 
     $(window).one('ravenSuccess', function(data){
         var event_id = libs_raven.lastEventId();
@@ -3010,9 +3012,15 @@ function raven_send_report(title, options, cb_success) {
 }
 
 function raven_send_error(title, options) {
-    var details = "STACK: " + (new Error).stack + "\nLOGS:\n" + trace.cache.join("");
+    var details = "STACK: " + (new Error).stack + "\nLogs(" + trace.cache.length + "):\n" + trace.cache.join("").substring(0, 8200);
+
+    var logData = {},
+        maxSize = 40;
+    for(var i = 0; i < Math.min(maxSize, trace.cache.length); i++) {
+        logData['zlog' + ('0' + (maxSize - i)).slice(-2)] = trace.cache[trace.cache.length - i - 1];
+    }
     return libs_raven.captureMessage(title + "\n" + details,
-        $.extend(raven_common_info(), {level: 'error'}, options));
+        $.extend(true, {level: 'error', extra: logData}, raven_common_info(), options));
 }
 
 function raven_send_user_issue(title, options) {
@@ -3085,6 +3093,10 @@ function trace(opt) { //window.trace
 
     var args = Array.prototype.slice.call(arguments, start); //don't show the first opt {for: 'some_tag'} argument
     isShow && console.log.apply(window.console, args);
+
+    if (trace.cache.length > 250) { //limit cache size
+        trace.cache = trace.cache.slice(-200);
+    }
 
     isReport && trace.cache.push("> " + msg + "\n");
     isReport && !empty_object(App.Data.settings) && setData("traceLog", trace.cache);
