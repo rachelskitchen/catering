@@ -2484,6 +2484,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                     var req_action = validationOnly ? "pre_validate/" : "create_order_and_pay_v1/";
                     trace({for: 'pay'}, "sending ajax", req_action, 'to server...');
                     trace({for: 'pay'}, "requesting data:", myorder_json);
+                    try { //TMP: to reproduce WOMA-214
+                        var pickup_date_str = (new Date(checkout.pickupTS)).format("mm/dd/yyyy H2:M2");
+                    }
+                    catch(e) {
+                        ASSERT(false, 'Can\'t verify WOMA-214', e.stack);
+                    }
+
                     req = $.ajax({
                         type: "POST",
                         url: App.Data.settings.get("host") + "/weborders/" + req_action,
@@ -2507,6 +2514,7 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                 myorder.paymentResponse = data instanceof Object ? _.extend(data, {paymentType: payment_type}) : {};
                 myorder.paymentResponse.capturePhase = capturePhase;
                 trace({for: 'pay'}, "server replies with data:", data);
+
                 switch(data.status) {
                     case "OK":
                         if (validationOnly) {
@@ -2523,6 +2531,13 @@ define(["backbone", 'total', 'checkout', 'products', 'rewards', 'stanfordcard'],
                                 App.Data.customer.getGiftCards();
                                 App.Data.customer.getRewardCards();
                                 App.Data.customer.getAddresses();
+                            }
+                            try {  //TMP: to reproduce WOMA-214
+                                if (data && data.checkout && data.checkout.asap == false && data.pickup_time) {
+                                    ASSERT(data.pickup_time == pickup_date_str, "WOMA-214 pickup time", data.pickup_time, " vz ", pickup_date_str, "\n", checkout, " vz ", JSON.stringify(getData('checkout')));
+                                }
+                            } catch(e) {
+                                ASSERT(false, 'Can\'t verify WOMA-214', e.stack);
                             }
                             myorder.trigger('paymentResponse');
                         }
